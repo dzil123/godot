@@ -740,15 +740,6 @@ Error OS_JavaScript::initialize(const VideoMode &p_desired, int p_video_driver, 
 	}
 
 	webgl_ctx = emscripten_webgl_create_context(canvas_id, &attributes);
-	if (!gles3) {
-		if (emscripten_webgl_enable_extension(webgl_ctx, "OES_standard_derivatives") != EM_TRUE) {
-			ERR_PRINT("CABBAGE - Failed to enable 'OES_standard_derivatives'");
-		} else {
-			ERR_PRINT("CABBAGE - success");
-		}
-	} else {
-		ERR_PRINT("CABBAGE - GLES3");
-	}
 	if (emscripten_webgl_make_context_current(webgl_ctx) != EMSCRIPTEN_RESULT_SUCCESS) {
 		gl_initialization_error = true;
 	}
