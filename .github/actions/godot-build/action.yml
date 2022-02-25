@@ -30,7 +30,7 @@ runs:
           SCONSFLAGS: ${{ inputs.sconsflags }}
           SCONS_CACHE: ${{ inputs.scons-cache }}
           SCONS_CACHE_LIMIT: ${{ inputs.scons-cache-limit }}
-          BUILDNAME: mine.${ GITHUB_SHA::8 }
+          BUILD_NAME: mine.${GITHUB_SHA::8}
       run: |
         echo "Building with flags:" ${{ env.SCONSFLAGS }}
         scons p=${{ inputs.platform }} target=${{ inputs.target }} tools=${{ inputs.tools }} tests=${{ inputs.tests }} --jobs=2 ${{ env.SCONSFLAGS }}
