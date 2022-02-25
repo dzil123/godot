@@ -45,7 +45,7 @@ jobs:
       - name: Setup python and scons
         uses: ./.github/actions/godot-deps
 
-      - name: Compilation
+      - name: Compilation Release
         uses: ./.github/actions/godot-build
         with:
           sconsflags: ${{ env.SCONSFLAGS }}
@@ -53,5 +53,20 @@ jobs:
           target: release
           tools: false
 
-      - name: Upload artifact
+      - name: Upload artifact Release
         uses: ./.github/actions/upload-artifact
+        with:
+          name: javascript-release
+
+      - name: Compilation Debug
+        uses: ./.github/actions/godot-build
+        with:
+          sconsflags: ${{ env.SCONSFLAGS }}
+          platform: javascript
+          target: debug
+          tools: false
+
+      - name: Upload artifact Debug
+        uses: ./.github/actions/upload-artifact
+        with:
+          name: javascript-debug
