@@ -24,6 +24,7 @@ jobs:
       - name: Load Emscripten cache
         id: javascript-template-emscripten-cache
         uses: actions/cache@v2
+        if: ${{ false }}
         with:
           path: ${{env.EM_CACHE_FOLDER}}
           key: ${{env.EM_VERSION}}-${{github.job}}
@@ -41,6 +42,7 @@ jobs:
       - name: Setup Godot build cache
         uses: ./.github/actions/godot-cache
         continue-on-error: true
+        if: ${{ false }}
 
       - name: Setup python and scons
         uses: ./.github/actions/godot-deps
@@ -57,6 +59,8 @@ jobs:
         uses: ./.github/actions/upload-artifact
         with:
           name: javascript-release
+
+      - uses: actions/checkout@v2
 
       - name: Compilation Debug
         uses: ./.github/actions/godot-build
