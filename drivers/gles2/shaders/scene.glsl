@@ -725,6 +725,8 @@ VERTEX_SHADER_CODE
 /* clang-format off */
 [fragment]
 
+#extension GL_OES_standard_derivatives : enable
+
 // texture2DLodEXT and textureCubeLodEXT are fragment shader specific.
 // Do not copy these defines in the vertex section.
 #ifndef USE_GLES_OVER_GL
