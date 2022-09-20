@@ -324,15 +324,17 @@ struct VariantUtilityFunctions {
 
 	static inline Variant lerp(const Variant &from, const Variant &to, double weight, Callable::CallError &r_error) {
 		r_error.error = Callable::CallError::CALL_OK;
-		if (from.get_type() != to.get_type()) {
+		if ((from.get_type() != to.get_type()) && !(from.is_num() && to.is_num())) {
 			r_error.error = Callable::CallError::CALL_ERROR_INVALID_ARGUMENT;
 			r_error.argument = 1;
+            r_error.expected = from.get_type();
 			return Variant();
 		}
 
 		switch (from.get_type()) {
+			case Variant::INT:
 			case Variant::FLOAT: {
-				return lerpf(VariantInternalAccessor<double>::get(&from), to, weight);
+				return lerpf(from.operator double(), to.operator double(), weight);
 			} break;
 			case Variant::VECTOR2: {
 				return VariantInternalAccessor<Vector2>::get(&from).lerp(VariantInternalAccessor<Vector2>::get(&to), weight);
