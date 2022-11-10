@@ -283,6 +283,7 @@ public:
 		SYSTEM_DIR_MUSIC,
 		SYSTEM_DIR_PICTURES,
 		SYSTEM_DIR_RINGTONES,
+		SYSTEM_DIR_MAX,
 	};
 
 	virtual String get_system_dir(SystemDir p_dir, bool p_shared_storage = true);

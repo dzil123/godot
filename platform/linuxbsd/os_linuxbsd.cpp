@@ -753,6 +753,8 @@ String OS_LinuxBSD::get_system_dir(SystemDir p_dir, bool p_shared_storage) {
 			xdgparam = "MUSIC";
 
 		} break;
+		case SYSTEM_DIR_MAX:
+			break; // Can't happen, but silences warning
 	}
 
 	String pipe;

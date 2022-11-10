@@ -713,5 +713,8 @@
 		<constant name="SYSTEM_DIR_RINGTONES" value="7" enum="SystemDir">
 			Ringtones directory path.
 		</constant>
+		<constant name="SYSTEM_DIR_MAX" value="8" enum="SystemDir">
+			Represents the size of the [enum SystemDir] enum.
+		</constant>
 	</constants>
 </class>
