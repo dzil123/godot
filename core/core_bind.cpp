@@ -480,7 +480,7 @@ bool OS::is_debug_build() const {
 #endif
 }
 
-String OS::get_system_dir(SystemDir p_dir, bool p_shared_storage) const {
+String OS::get_system_dir(SystemDir p_dir, bool p_shared_storage) {
 	return ::OS::get_singleton()->get_system_dir(::OS::SystemDir(p_dir), p_shared_storage);
 }
 

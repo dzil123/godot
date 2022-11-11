@@ -379,7 +379,7 @@
 				Returns the amount of static memory being used by the program in bytes (only works in debug).
 			</description>
 		</method>
-		<method name="get_system_dir" qualifiers="const">
+		<method name="get_system_dir">
 			<return type="String" />
 			<param index="0" name="dir" type="int" enum="OS.SystemDir" />
 			<param index="1" name="shared_storage" type="bool" default="true" />

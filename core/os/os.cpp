@@ -267,7 +267,7 @@ String OS::get_resource_dir() const {
 }
 
 // Access system-specific dirs like Documents, Downloads, etc.
-String OS::get_system_dir(SystemDir p_dir, bool p_shared_storage) const {
+String OS::get_system_dir(SystemDir p_dir, bool p_shared_storage) {
 	return ".";
 }
 

@@ -1116,7 +1116,7 @@ String OS_Windows::get_godot_dir_name() const {
 	return String(VERSION_SHORT_NAME).capitalize();
 }
 
-String OS_Windows::get_system_dir(SystemDir p_dir, bool p_shared_storage) const {
+String OS_Windows::get_system_dir(SystemDir p_dir, bool p_shared_storage) {
 	KNOWNFOLDERID id;
 
 	switch (p_dir) {

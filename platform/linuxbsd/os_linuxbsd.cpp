@@ -718,7 +718,7 @@ String OS_LinuxBSD::get_cache_path() const {
 	}
 }
 
-String OS_LinuxBSD::get_system_dir(SystemDir p_dir, bool p_shared_storage) const {
+String OS_LinuxBSD::get_system_dir(SystemDir p_dir, bool p_shared_storage) {
 	String xdgparam;
 
 	switch (p_dir) {

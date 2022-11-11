@@ -376,7 +376,7 @@ String OS_Android::get_unique_id() const {
 	return OS::get_unique_id();
 }
 
-String OS_Android::get_system_dir(SystemDir p_dir, bool p_shared_storage) const {
+String OS_Android::get_system_dir(SystemDir p_dir, bool p_shared_storage) {
 	return godot_io_java->get_system_dir(p_dir, p_shared_storage);
 }
 

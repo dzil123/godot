@@ -239,7 +239,7 @@ public:
 		SYSTEM_DIR_RINGTONES,
 	};
 
-	String get_system_dir(SystemDir p_dir, bool p_shared_storage = true) const;
+	String get_system_dir(SystemDir p_dir, bool p_shared_storage = true);
 
 	Error move_to_trash(const String &p_path) const;
 	String get_user_data_dir() const;
