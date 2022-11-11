@@ -719,6 +719,11 @@ String OS_LinuxBSD::get_cache_path() const {
 }
 
 String OS_LinuxBSD::get_system_dir(SystemDir p_dir, bool p_shared_storage) {
+	ERR_FAIL_INDEX_V(p_dir, SYSTEM_DIR_MAX, "");
+	if (!system_dir_cache[p_dir].is_empty()) {
+		return system_dir_cache[p_dir];
+	}
+
 	String xdgparam;
 
 	switch (p_dir) {
@@ -727,31 +732,24 @@ String OS_LinuxBSD::get_system_dir(SystemDir p_dir, bool p_shared_storage) {
 		} break;
 		case SYSTEM_DIR_DCIM: {
 			xdgparam = "PICTURES";
-
 		} break;
 		case SYSTEM_DIR_DOCUMENTS: {
 			xdgparam = "DOCUMENTS";
-
 		} break;
 		case SYSTEM_DIR_DOWNLOADS: {
 			xdgparam = "DOWNLOAD";
-
 		} break;
 		case SYSTEM_DIR_MOVIES: {
 			xdgparam = "VIDEOS";
-
 		} break;
 		case SYSTEM_DIR_MUSIC: {
 			xdgparam = "MUSIC";
-
 		} break;
 		case SYSTEM_DIR_PICTURES: {
 			xdgparam = "PICTURES";
-
 		} break;
 		case SYSTEM_DIR_RINGTONES: {
 			xdgparam = "MUSIC";
-
 		} break;
 		case SYSTEM_DIR_MAX:
 			break; // Can't happen, but silences warning
@@ -761,10 +759,12 @@ String OS_LinuxBSD::get_system_dir(SystemDir p_dir, bool p_shared_storage) {
 	List<String> arg;
 	arg.push_back(xdgparam);
 	Error err = const_cast<OS_LinuxBSD *>(this)->execute("xdg-user-dir", arg, &pipe);
-	if (err != OK) {
-		return ".";
+	if (err == OK) {
+		system_dir_cache[p_dir] = pipe.strip_edges();
+	} else {
+		system_dir_cache[p_dir] = ".";
 	}
-	return pipe.strip_edges();
+	return system_dir_cache[p_dir];
 }
 
 void OS_LinuxBSD::run() {
