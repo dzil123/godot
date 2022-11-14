@@ -2398,7 +2398,7 @@ String Main::get_rendering_driver_name() {
 static MainTimerSync main_timer_sync;
 
 bool Main::start() {
-	ZoneScopedS(60);
+	ZoneScoped;
 	ERR_FAIL_COND_V(!_start_success, false);
 
 	bool hasicon = false;

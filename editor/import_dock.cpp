@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  import_dock.cpp                                                      */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "import_dock.h"
 
 #include "core/config/project_settings.h"
@@ -97,6 +128,7 @@ public:
 ImportDock *ImportDock::singleton = nullptr;
 
 void ImportDock::set_edit_path(const String &p_path) {
+	ZoneScoped;
 	Ref<ConfigFile> config;
 	config.instantiate();
 	Error err = config->load(p_path + ".import");
@@ -148,6 +180,7 @@ void ImportDock::set_edit_path(const String &p_path) {
 }
 
 void ImportDock::_add_keep_import_option(const String &p_importer_name) {
+	ZoneScoped;
 	import_as->add_separator();
 	import_as->add_item(TTR("Keep File (No Import)"));
 	import_as->set_item_metadata(-1, "keep");
@@ -157,6 +190,7 @@ void ImportDock::_add_keep_import_option(const String &p_importer_name) {
 }
 
 void ImportDock::_update_options(const String &p_path, const Ref<ConfigFile> &p_config) {
+	ZoneScoped;
 	List<ResourceImporter::ImportOption> options;
 
 	if (params->importer.is_valid()) {
@@ -191,6 +225,7 @@ void ImportDock::_update_options(const String &p_path, const Ref<ConfigFile> &p_
 }
 
 void ImportDock::set_edit_multiple_paths(const Vector<String> &p_paths) {
+	ZoneScoped;
 	clear();
 
 	// Use the value that is repeated the most.
@@ -317,6 +352,7 @@ void ImportDock::set_edit_multiple_paths(const Vector<String> &p_paths) {
 }
 
 void ImportDock::_update_preset_menu() {
+	ZoneScoped;
 	preset->get_popup()->clear();
 
 	if (params->importer.is_null()) {
@@ -344,6 +380,7 @@ void ImportDock::_update_preset_menu() {
 }
 
 void ImportDock::_importer_selected(int i_idx) {
+	ZoneScoped;
 	String name = import_as->get_selected_metadata();
 	if (name == "keep") {
 		params->importer.unref();
@@ -367,6 +404,7 @@ void ImportDock::_importer_selected(int i_idx) {
 }
 
 void ImportDock::_preset_selected(int p_idx) {
+	ZoneScoped;
 	int item_id = preset->get_popup()->get_item_id(p_idx);
 
 	switch (item_id) {
@@ -424,6 +462,7 @@ void ImportDock::_preset_selected(int p_idx) {
 }
 
 void ImportDock::clear() {
+	ZoneScoped;
 	imported->set_text("");
 	import->set_disabled(true);
 	import_as->clear();
@@ -438,6 +477,7 @@ void ImportDock::clear() {
 }
 
 static bool _find_owners(EditorFileSystemDirectory *efsd, const String &p_path) {
+	ZoneScoped;
 	if (!efsd) {
 		return false;
 	}
@@ -459,6 +499,7 @@ static bool _find_owners(EditorFileSystemDirectory *efsd, const String &p_path) 
 }
 
 void ImportDock::_reimport_attempt() {
+	ZoneScoped;
 	bool need_restart = false;
 	bool used_in_resources = false;
 
@@ -493,6 +534,7 @@ void ImportDock::_reimport_attempt() {
 }
 
 void ImportDock::_reimport_and_restart() {
+	ZoneScoped;
 	EditorNode::get_singleton()->save_all_scenes();
 	EditorResourcePreview::get_singleton()->stop(); //don't try to re-create previews after import
 	_reimport();
@@ -500,11 +542,13 @@ void ImportDock::_reimport_and_restart() {
 }
 
 void ImportDock::_advanced_options() {
+	ZoneScoped;
 	if (params->paths.size() == 1 && params->importer.is_valid()) {
 		params->importer->show_advanced_options(params->paths[0]);
 	}
 }
 void ImportDock::_reimport() {
+	ZoneScoped;
 	for (int i = 0; i < params->paths.size(); i++) {
 		Ref<ConfigFile> config;
 		config.instantiate();
@@ -562,6 +606,7 @@ void ImportDock::_reimport() {
 }
 
 void ImportDock::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
 			imported->add_theme_style_override("normal", get_theme_stylebox(SNAME("normal"), SNAME("LineEdit")));
@@ -576,10 +621,12 @@ void ImportDock::_notification(int p_what) {
 }
 
 void ImportDock::_property_edited(const StringName &p_prop) {
+	ZoneScoped;
 	_set_dirty(true);
 }
 
 void ImportDock::_set_dirty(bool p_dirty) {
+	ZoneScoped;
 	if (p_dirty) {
 		// Add a dirty marker to notify the user that they should reimport the selected resource to see changes.
 		import->set_text(TTR("Reimport") + " (*)");
@@ -594,6 +641,7 @@ void ImportDock::_set_dirty(bool p_dirty) {
 }
 
 void ImportDock::_property_toggled(const StringName &p_prop, bool p_checked) {
+	ZoneScoped;
 	if (p_checked) {
 		params->checked.insert(p_prop);
 	} else {
@@ -602,16 +650,19 @@ void ImportDock::_property_toggled(const StringName &p_prop, bool p_checked) {
 }
 
 void ImportDock::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("_reimport"), &ImportDock::_reimport);
 }
 
 void ImportDock::initialize_import_options() const {
+	ZoneScoped;
 	ERR_FAIL_COND(!import_opts || !params);
 
 	import_opts->edit(params);
 }
 
 ImportDock::ImportDock() {
+	ZoneScoped;
 	singleton = this;
 	set_name("Import");
 
@@ -698,6 +749,7 @@ ImportDock::ImportDock() {
 }
 
 ImportDock::~ImportDock() {
+	ZoneScoped;
 	singleton = nullptr;
 	memdelete(params);
 }

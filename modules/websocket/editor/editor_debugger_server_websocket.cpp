@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_debugger_server_websocket.cpp                                 */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_debugger_server_websocket.h"
 
 #ifdef TOOLS_ENABLED
@@ -39,6 +70,7 @@
 #include "editor/editor_settings.h"
 
 void EditorDebuggerServerWebSocket::poll() {
+	ZoneScoped;
 	if (pending_peer.is_null() && tcp_server->is_connection_available()) {
 		Ref<WebSocketPeer> peer = Ref<WebSocketPeer>(WebSocketPeer::create());
 		ERR_FAIL_COND(peer.is_null()); // Bug.
@@ -66,6 +98,7 @@ void EditorDebuggerServerWebSocket::poll() {
 }
 
 String EditorDebuggerServerWebSocket::get_uri() const {
+	ZoneScoped;
 	return endpoint;
 }
 
@@ -104,19 +137,23 @@ Error EditorDebuggerServerWebSocket::start(const String &p_uri) {
 }
 
 void EditorDebuggerServerWebSocket::stop() {
+	ZoneScoped;
 	pending_peer.unref();
 	tcp_server->stop();
 }
 
 bool EditorDebuggerServerWebSocket::is_active() const {
+	ZoneScoped;
 	return tcp_server->is_listening();
 }
 
 bool EditorDebuggerServerWebSocket::is_connection_available() const {
+	ZoneScoped;
 	return pending_peer.is_valid() && pending_peer->get_ready_state() == WebSocketPeer::STATE_OPEN;
 }
 
 Ref<RemoteDebuggerPeer> EditorDebuggerServerWebSocket::take_connection() {
+	ZoneScoped;
 	ERR_FAIL_COND_V(!is_connection_available(), Ref<RemoteDebuggerPeer>());
 	RemoteDebuggerPeer *peer = memnew(RemoteDebuggerPeerWebSocket(pending_peer));
 	pending_peer.unref();
@@ -124,14 +161,17 @@ Ref<RemoteDebuggerPeer> EditorDebuggerServerWebSocket::take_connection() {
 }
 
 EditorDebuggerServerWebSocket::EditorDebuggerServerWebSocket() {
+	ZoneScoped;
 	tcp_server.instantiate();
 }
 
 EditorDebuggerServerWebSocket::~EditorDebuggerServerWebSocket() {
+	ZoneScoped;
 	stop();
 }
 
 EditorDebuggerServer *EditorDebuggerServerWebSocket::create(const String &p_protocol) {
+	ZoneScoped;
 	ERR_FAIL_COND_V(p_protocol != "ws://", nullptr);
 	return memnew(EditorDebuggerServerWebSocket);
 }

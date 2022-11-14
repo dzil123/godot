@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_dir_dialog.cpp                                                */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_dir_dialog.h"
 
 #include "core/os/keyboard.h"
@@ -38,6 +69,7 @@
 #include "servers/display_server.h"
 
 void EditorDirDialog::_update_dir(TreeItem *p_item, EditorFileSystemDirectory *p_dir, const String &p_select_path) {
+	ZoneScoped;
 	updating = true;
 
 	String path = p_dir->get_path();
@@ -66,6 +98,7 @@ void EditorDirDialog::_update_dir(TreeItem *p_item, EditorFileSystemDirectory *p
 }
 
 void EditorDirDialog::reload(const String &p_path) {
+	ZoneScoped;
 	if (!is_visible()) {
 		must_reload = true;
 		return;
@@ -79,6 +112,7 @@ void EditorDirDialog::reload(const String &p_path) {
 }
 
 void EditorDirDialog::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			EditorFileSystem::get_singleton()->connect("filesystem_changed", callable_mp(this, &EditorDirDialog::reload).bind(""));
@@ -108,6 +142,7 @@ void EditorDirDialog::_notification(int p_what) {
 }
 
 void EditorDirDialog::_item_collapsed(Object *p_item) {
+	ZoneScoped;
 	TreeItem *item = Object::cast_to<TreeItem>(p_item);
 
 	if (updating) {
@@ -122,10 +157,12 @@ void EditorDirDialog::_item_collapsed(Object *p_item) {
 }
 
 void EditorDirDialog::_item_activated() {
+	ZoneScoped;
 	_ok_pressed(); // From AcceptDialog.
 }
 
 void EditorDirDialog::ok_pressed() {
+	ZoneScoped;
 	TreeItem *ti = tree->get_selected();
 	if (!ti) {
 		return;
@@ -137,6 +174,7 @@ void EditorDirDialog::ok_pressed() {
 }
 
 void EditorDirDialog::_make_dir() {
+	ZoneScoped;
 	TreeItem *ti = tree->get_selected();
 	if (!ti) {
 		mkdirerr->set_text(TTR("Please select a base directory first."));
@@ -149,6 +187,7 @@ void EditorDirDialog::_make_dir() {
 }
 
 void EditorDirDialog::_make_dir_confirm() {
+	ZoneScoped;
 	TreeItem *ti = tree->get_selected();
 	if (!ti) {
 		return;
@@ -179,10 +218,12 @@ void EditorDirDialog::_make_dir_confirm() {
 }
 
 void EditorDirDialog::_bind_methods() {
+	ZoneScoped;
 	ADD_SIGNAL(MethodInfo("dir_selected", PropertyInfo(Variant::STRING, "dir")));
 }
 
 EditorDirDialog::EditorDirDialog() {
+	ZoneScoped;
 	set_title(TTR("Choose a Directory"));
 	set_hide_on_ok(false);
 

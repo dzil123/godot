@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  openxr_action_map_editor.cpp                                         */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "openxr_action_map_editor.h"
 
 #include "core/config/project_settings.h"
@@ -39,6 +70,7 @@
 // TODO implement redo/undo system
 
 void OpenXRActionMapEditor::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method("_add_action_set_editor", &OpenXRActionMapEditor::_add_action_set_editor);
 	ClassDB::bind_method("_update_action_sets", &OpenXRActionMapEditor::_update_action_sets);
 
@@ -51,6 +83,7 @@ void OpenXRActionMapEditor::_bind_methods() {
 }
 
 void OpenXRActionMapEditor::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -70,6 +103,7 @@ void OpenXRActionMapEditor::_notification(int p_what) {
 }
 
 OpenXRActionSetEditor *OpenXRActionMapEditor::_add_action_set_editor(Ref<OpenXRActionSet> p_action_set) {
+	ZoneScoped;
 	ERR_FAIL_COND_V(p_action_set.is_null(), nullptr);
 
 	OpenXRActionSetEditor *action_set_editor = memnew(OpenXRActionSetEditor(action_map, p_action_set));
@@ -97,6 +131,7 @@ void OpenXRActionMapEditor::_update_action_sets() {
 }
 
 OpenXRInteractionProfileEditorBase *OpenXRActionMapEditor::_add_interaction_profile_editor(Ref<OpenXRInteractionProfile> p_interaction_profile) {
+	ZoneScoped;
 	ERR_FAIL_COND_V(p_interaction_profile.is_null(), nullptr);
 
 	String profile_path = p_interaction_profile->get_interaction_profile_path();
@@ -142,6 +177,7 @@ void OpenXRActionMapEditor::_update_interaction_profiles() {
 }
 
 OpenXRActionSetEditor *OpenXRActionMapEditor::_add_action_set(String p_name) {
+	ZoneScoped;
 	ERR_FAIL_COND_V(action_map.is_null(), nullptr);
 	Ref<OpenXRActionSet> new_action_set;
 
@@ -156,6 +192,7 @@ OpenXRActionSetEditor *OpenXRActionMapEditor::_add_action_set(String p_name) {
 }
 
 void OpenXRActionMapEditor::_remove_action_set(String p_name) {
+	ZoneScoped;
 	ERR_FAIL_COND(action_map.is_null());
 	Ref<OpenXRActionSet> action_set = action_map->find_action_set(p_name);
 	ERR_FAIL_COND(action_set.is_null());
@@ -170,6 +207,7 @@ void OpenXRActionMapEditor::_remove_action_set(String p_name) {
 }
 
 void OpenXRActionMapEditor::_on_add_action_set() {
+	ZoneScoped;
 	ERR_FAIL_COND(action_map.is_null());
 	String new_name = "New";
 	int count = 0;
@@ -195,6 +233,7 @@ void OpenXRActionMapEditor::_set_focus_on_action_set(OpenXRActionSetEditor *p_ac
 }
 
 void OpenXRActionMapEditor::_on_remove_action_set(Object *p_action_set_editor) {
+	ZoneScoped;
 	ERR_FAIL_COND(action_map.is_null());
 
 	OpenXRActionSetEditor *action_set_editor = Object::cast_to<OpenXRActionSetEditor>(p_action_set_editor);
@@ -214,6 +253,7 @@ void OpenXRActionMapEditor::_on_action_removed() {
 }
 
 void OpenXRActionMapEditor::_on_add_interaction_profile() {
+	ZoneScoped;
 	ERR_FAIL_COND(action_map.is_null());
 
 	PackedStringArray already_selected;
@@ -226,6 +266,7 @@ void OpenXRActionMapEditor::_on_add_interaction_profile() {
 }
 
 void OpenXRActionMapEditor::_on_interaction_profile_selected(const String p_path) {
+	ZoneScoped;
 	ERR_FAIL_COND(action_map.is_null());
 
 	Ref<OpenXRInteractionProfile> new_profile;
@@ -239,6 +280,7 @@ void OpenXRActionMapEditor::_on_interaction_profile_selected(const String p_path
 }
 
 void OpenXRActionMapEditor::_load_action_map(const String p_path, bool p_create_new_if_missing) {
+	ZoneScoped;
 	action_map = ResourceLoader::load(p_path, "", ResourceFormatLoader::CACHE_MODE_IGNORE);
 	if (action_map.is_null()) {
 		if (p_create_new_if_missing) {
@@ -258,6 +300,7 @@ void OpenXRActionMapEditor::_load_action_map(const String p_path, bool p_create_
 }
 
 void OpenXRActionMapEditor::_on_save_action_map() {
+	ZoneScoped;
 	Error err = ResourceSaver::save(action_map, edited_path);
 	if (err != OK) {
 		EditorNode::get_singleton()->show_warning(vformat(TTR("Error saving file: %s"), edited_path));
@@ -282,6 +325,7 @@ void OpenXRActionMapEditor::_on_tabs_tab_changed(int p_tab) {
 }
 
 void OpenXRActionMapEditor::_on_tab_button_pressed(int p_tab) {
+	ZoneScoped;
 	OpenXRInteractionProfileEditorBase *profile_editor = static_cast<OpenXRInteractionProfileEditorBase *>(tabs->get_tab_control(p_tab));
 	ERR_FAIL_NULL(profile_editor);
 
@@ -294,6 +338,7 @@ void OpenXRActionMapEditor::_on_tab_button_pressed(int p_tab) {
 }
 
 void OpenXRActionMapEditor::open_action_map(String p_path) {
+	ZoneScoped;
 	EditorNode::get_singleton()->make_bottom_panel_item_visible(this);
 
 	_load_action_map(p_path);
@@ -303,6 +348,7 @@ void OpenXRActionMapEditor::open_action_map(String p_path) {
 }
 
 OpenXRActionMapEditor::OpenXRActionMapEditor() {
+	ZoneScoped;
 	set_custom_minimum_size(Size2(0.0, 300.0));
 
 	top_hb = memnew(HBoxContainer);

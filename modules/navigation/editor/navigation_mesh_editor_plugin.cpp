@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  navigation_mesh_editor_plugin.cpp                                    */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "navigation_mesh_editor_plugin.h"
 
 #ifdef TOOLS_ENABLED
@@ -40,6 +71,7 @@
 #include "scene/gui/box_container.h"
 
 void NavigationMeshEditor::_node_removed(Node *p_node) {
+	ZoneScoped;
 	if (p_node == node) {
 		node = nullptr;
 
@@ -48,6 +80,7 @@ void NavigationMeshEditor::_node_removed(Node *p_node) {
 }
 
 void NavigationMeshEditor::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			button_bake->set_icon(get_theme_icon(SNAME("Bake"), SNAME("EditorIcons")));
@@ -57,6 +90,7 @@ void NavigationMeshEditor::_notification(int p_what) {
 }
 
 void NavigationMeshEditor::_bake_pressed() {
+	ZoneScoped;
 	button_bake->set_pressed(false);
 
 	ERR_FAIL_COND(!node);
@@ -73,6 +107,7 @@ void NavigationMeshEditor::_bake_pressed() {
 }
 
 void NavigationMeshEditor::_clear_pressed() {
+	ZoneScoped;
 	if (node) {
 		NavigationMeshGenerator::get_singleton()->clear(node->get_navigation_mesh());
 	}
@@ -86,6 +121,7 @@ void NavigationMeshEditor::_clear_pressed() {
 }
 
 void NavigationMeshEditor::edit(NavigationRegion3D *p_nav_region) {
+	ZoneScoped;
 	if (p_nav_region == nullptr || node == p_nav_region) {
 		return;
 	}
@@ -97,6 +133,7 @@ void NavigationMeshEditor::_bind_methods() {
 }
 
 NavigationMeshEditor::NavigationMeshEditor() {
+	ZoneScoped;
 	bake_hbox = memnew(HBoxContainer);
 
 	button_bake = memnew(Button);
@@ -125,14 +162,17 @@ NavigationMeshEditor::~NavigationMeshEditor() {
 }
 
 void NavigationMeshEditorPlugin::edit(Object *p_object) {
+	ZoneScoped;
 	navigation_mesh_editor->edit(Object::cast_to<NavigationRegion3D>(p_object));
 }
 
 bool NavigationMeshEditorPlugin::handles(Object *p_object) const {
+	ZoneScoped;
 	return p_object->is_class("NavigationRegion3D");
 }
 
 void NavigationMeshEditorPlugin::make_visible(bool p_visible) {
+	ZoneScoped;
 	if (p_visible) {
 		navigation_mesh_editor->show();
 		navigation_mesh_editor->bake_hbox->show();
@@ -144,6 +184,7 @@ void NavigationMeshEditorPlugin::make_visible(bool p_visible) {
 }
 
 NavigationMeshEditorPlugin::NavigationMeshEditorPlugin() {
+	ZoneScoped;
 	navigation_mesh_editor = memnew(NavigationMeshEditor);
 	EditorNode::get_singleton()->get_main_screen_control()->add_child(navigation_mesh_editor);
 	add_control_to_container(CONTAINER_SPATIAL_EDITOR_MENU, navigation_mesh_editor->bake_hbox);

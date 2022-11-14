@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_inspector.cpp                                                 */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_inspector.h"
 
 #include "array_property_edit.h"
@@ -47,6 +78,7 @@
 #include "scene/resources/packed_scene.h"
 
 static bool _property_path_matches(const String &p_property_path, const String &p_filter, EditorPropertyNameProcessor::Style p_style) {
+	ZoneScoped;
 	if (p_property_path.findn(p_filter) != -1) {
 		return true;
 	}
@@ -61,6 +93,7 @@ static bool _property_path_matches(const String &p_property_path, const String &
 }
 
 Size2 EditorProperty::get_minimum_size() const {
+	ZoneScoped;
 	Size2 ms;
 	Ref<Font> font = get_theme_font(SNAME("font"), SNAME("Tree"));
 	int font_size = get_theme_font_size(SNAME("font_size"), SNAME("Tree"));
@@ -113,6 +146,7 @@ Size2 EditorProperty::get_minimum_size() const {
 }
 
 void EditorProperty::emit_changed(const StringName &p_property, const Variant &p_value, const StringName &p_field, bool p_changing) {
+	ZoneScoped;
 	Variant args[4] = { p_property, p_value, p_field, p_changing };
 	const Variant *argptrs[4] = { &args[0], &args[1], &args[2], &args[3] };
 
@@ -121,6 +155,7 @@ void EditorProperty::emit_changed(const StringName &p_property, const Variant &p
 }
 
 void EditorProperty::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_SORT_CHILDREN: {
 			Size2 size = get_size();
@@ -398,27 +433,33 @@ void EditorProperty::_notification(int p_what) {
 }
 
 void EditorProperty::set_label(const String &p_label) {
+	ZoneScoped;
 	label = p_label;
 	queue_redraw();
 }
 
 String EditorProperty::get_label() const {
+	ZoneScoped;
 	return label;
 }
 
 Object *EditorProperty::get_edited_object() {
+	ZoneScoped;
 	return object;
 }
 
 StringName EditorProperty::get_edited_property() const {
+	ZoneScoped;
 	return property;
 }
 
 void EditorProperty::set_doc_path(const String &p_doc_path) {
+	ZoneScoped;
 	doc_path = p_doc_path;
 }
 
 void EditorProperty::update_property() {
+	ZoneScoped;
 	GDVIRTUAL_CALL(_update_property);
 }
 
@@ -426,6 +467,7 @@ void EditorProperty::_set_read_only(bool p_read_only) {
 }
 
 void EditorProperty::set_read_only(bool p_read_only) {
+	ZoneScoped;
 	read_only = p_read_only;
 	if (GDVIRTUAL_CALL(_set_read_only, p_read_only)) {
 		return;
@@ -434,10 +476,12 @@ void EditorProperty::set_read_only(bool p_read_only) {
 }
 
 bool EditorProperty::is_read_only() const {
+	ZoneScoped;
 	return read_only;
 }
 
 Variant EditorPropertyRevert::get_property_revert_value(Object *p_object, const StringName &p_property, bool *r_is_valid) {
+	ZoneScoped;
 	if (p_object->property_can_revert(p_property)) {
 		if (r_is_valid) {
 			*r_is_valid = true;
@@ -449,6 +493,7 @@ Variant EditorPropertyRevert::get_property_revert_value(Object *p_object, const 
 }
 
 bool EditorPropertyRevert::can_property_revert(Object *p_object, const StringName &p_property, const Variant *p_custom_current_value) {
+	ZoneScoped;
 	bool is_valid_revert = false;
 	Variant revert_value = EditorPropertyRevert::get_property_revert_value(p_object, p_property, &is_valid_revert);
 	if (!is_valid_revert) {
@@ -459,10 +504,12 @@ bool EditorPropertyRevert::can_property_revert(Object *p_object, const StringNam
 }
 
 StringName EditorProperty::_get_revert_property() const {
+	ZoneScoped;
 	return property;
 }
 
 void EditorProperty::update_editor_property_status() {
+	ZoneScoped;
 	if (property == StringName()) {
 		return; //no property, so nothing to do
 	}
@@ -498,6 +545,7 @@ void EditorProperty::update_editor_property_status() {
 }
 
 bool EditorProperty::use_keying_next() const {
+	ZoneScoped;
 	List<PropertyInfo> plist;
 	object->get_property_list(&plist, true);
 
@@ -513,54 +561,65 @@ bool EditorProperty::use_keying_next() const {
 }
 
 void EditorProperty::set_checkable(bool p_checkable) {
+	ZoneScoped;
 	checkable = p_checkable;
 	queue_redraw();
 	queue_sort();
 }
 
 bool EditorProperty::is_checkable() const {
+	ZoneScoped;
 	return checkable;
 }
 
 void EditorProperty::set_checked(bool p_checked) {
+	ZoneScoped;
 	checked = p_checked;
 	queue_redraw();
 }
 
 bool EditorProperty::is_checked() const {
+	ZoneScoped;
 	return checked;
 }
 
 void EditorProperty::set_draw_warning(bool p_draw_warning) {
+	ZoneScoped;
 	draw_warning = p_draw_warning;
 	queue_redraw();
 }
 
 void EditorProperty::set_keying(bool p_keying) {
+	ZoneScoped;
 	keying = p_keying;
 	queue_redraw();
 	queue_sort();
 }
 
 void EditorProperty::set_deletable(bool p_deletable) {
+	ZoneScoped;
 	deletable = p_deletable;
 	queue_redraw();
 	queue_sort();
 }
 
 bool EditorProperty::is_deletable() const {
+	ZoneScoped;
 	return deletable;
 }
 
 bool EditorProperty::is_keying() const {
+	ZoneScoped;
 	return keying;
 }
 
 bool EditorProperty::is_draw_warning() const {
+	ZoneScoped;
 	return draw_warning;
 }
 
 void EditorProperty::_focusable_focused(int p_index) {
+	ZoneScoped;
 	if (!selectable) {
 		return;
 	}
@@ -574,11 +633,13 @@ void EditorProperty::_focusable_focused(int p_index) {
 }
 
 void EditorProperty::add_focusable(Control *p_control) {
+	ZoneScoped;
 	p_control->connect("focus_entered", callable_mp(this, &EditorProperty::_focusable_focused).bind(focusables.size()));
 	focusables.push_back(p_control);
 }
 
 void EditorProperty::select(int p_focusable) {
+	ZoneScoped;
 	bool already_selected = selected;
 
 	if (p_focusable >= 0) {
@@ -595,16 +656,19 @@ void EditorProperty::select(int p_focusable) {
 }
 
 void EditorProperty::deselect() {
+	ZoneScoped;
 	selected = false;
 	selected_focusable = -1;
 	queue_redraw();
 }
 
 bool EditorProperty::is_selected() const {
+	ZoneScoped;
 	return selected;
 }
 
 void EditorProperty::gui_input(const Ref<InputEvent> &p_event) {
+	ZoneScoped;
 	ERR_FAIL_COND(p_event.is_null());
 
 	if (property == StringName()) {
@@ -710,6 +774,7 @@ void EditorProperty::gui_input(const Ref<InputEvent> &p_event) {
 }
 
 void EditorProperty::shortcut_input(const Ref<InputEvent> &p_event) {
+	ZoneScoped;
 	if (!selected || !p_event->is_pressed()) {
 		return;
 	}
@@ -731,6 +796,7 @@ void EditorProperty::shortcut_input(const Ref<InputEvent> &p_event) {
 }
 
 const Color *EditorProperty::_get_property_colors() {
+	ZoneScoped;
 	static Color c[4];
 	c[0] = get_theme_color(SNAME("property_color_x"), SNAME("Editor"));
 	c[1] = get_theme_color(SNAME("property_color_y"), SNAME("Editor"));
@@ -740,18 +806,22 @@ const Color *EditorProperty::_get_property_colors() {
 }
 
 void EditorProperty::set_label_reference(Control *p_control) {
+	ZoneScoped;
 	label_reference = p_control;
 }
 
 void EditorProperty::set_bottom_editor(Control *p_control) {
+	ZoneScoped;
 	bottom_editor = p_control;
 }
 
 Variant EditorProperty::_get_cache_value(const StringName &p_prop, bool &r_valid) const {
+	ZoneScoped;
 	return object->get(p_prop, &r_valid);
 }
 
 bool EditorProperty::is_cache_valid() const {
+	ZoneScoped;
 	if (object) {
 		for (const KeyValue<StringName, Variant> &E : cache) {
 			bool valid;
@@ -764,6 +834,7 @@ bool EditorProperty::is_cache_valid() const {
 	return true;
 }
 void EditorProperty::update_cache() {
+	ZoneScoped;
 	cache.clear();
 	if (object && property != StringName()) {
 		bool valid;
@@ -774,6 +845,7 @@ void EditorProperty::update_cache() {
 	}
 }
 Variant EditorProperty::get_drag_data(const Point2 &p_point) {
+	ZoneScoped;
 	if (property == StringName()) {
 		return Variant();
 	}
@@ -791,10 +863,12 @@ Variant EditorProperty::get_drag_data(const Point2 &p_point) {
 }
 
 void EditorProperty::set_use_folding(bool p_use_folding) {
+	ZoneScoped;
 	use_folding = p_use_folding;
 }
 
 bool EditorProperty::is_using_folding() const {
+	ZoneScoped;
 	return use_folding;
 }
 
@@ -808,22 +882,27 @@ void EditorProperty::expand_revertable() {
 }
 
 void EditorProperty::set_selectable(bool p_selectable) {
+	ZoneScoped;
 	selectable = p_selectable;
 }
 
 bool EditorProperty::is_selectable() const {
+	ZoneScoped;
 	return selectable;
 }
 
 void EditorProperty::set_name_split_ratio(float p_ratio) {
+	ZoneScoped;
 	split_ratio = p_ratio;
 }
 
 float EditorProperty::get_name_split_ratio() const {
+	ZoneScoped;
 	return split_ratio;
 }
 
 void EditorProperty::set_object_and_property(Object *p_object, const StringName &p_property) {
+	ZoneScoped;
 	object = p_object;
 	property = p_property;
 	_update_pin_flags();
@@ -846,6 +925,7 @@ static bool _is_value_potential_override(Node *p_node, const String &p_property)
 }
 
 void EditorProperty::_update_pin_flags() {
+	ZoneScoped;
 	can_pin = false;
 	pin_hidden = true;
 	if (read_only) {
@@ -880,6 +960,7 @@ void EditorProperty::_update_pin_flags() {
 }
 
 static Control *make_help_bit(const String &p_text, bool p_property) {
+	ZoneScoped;
 	EditorHelpBit *help_bit = memnew(EditorHelpBit);
 	help_bit->get_rich_text()->set_fixed_size_to_width(360 * EDSCALE);
 
@@ -911,10 +992,12 @@ static Control *make_help_bit(const String &p_text, bool p_property) {
 }
 
 Control *EditorProperty::make_custom_tooltip(const String &p_text) const {
+	ZoneScoped;
 	return make_help_bit(p_text, true);
 }
 
 void EditorProperty::menu_option(int p_option) {
+	ZoneScoped;
 	switch (p_option) {
 		case MENU_COPY_VALUE: {
 			InspectorDock::get_inspector_singleton()->set_property_clipboard(object->get(property));
@@ -937,6 +1020,7 @@ void EditorProperty::menu_option(int p_option) {
 }
 
 void EditorProperty::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("set_label", "text"), &EditorProperty::set_label);
 	ClassDB::bind_method(D_METHOD("get_label"), &EditorProperty::get_label);
 
@@ -995,6 +1079,7 @@ void EditorProperty::_bind_methods() {
 }
 
 EditorProperty::EditorProperty() {
+	ZoneScoped;
 	object = nullptr;
 	split_ratio = 0.5;
 	text_size = 0;
@@ -1007,6 +1092,7 @@ EditorProperty::EditorProperty() {
 }
 
 void EditorProperty::_update_popup() {
+	ZoneScoped;
 	if (menu) {
 		menu->clear();
 	} else {
@@ -1040,12 +1126,14 @@ void EditorProperty::_update_popup() {
 ////////////////////////////////////////////////
 
 void EditorInspectorPlugin::add_custom_control(Control *control) {
+	ZoneScoped;
 	AddedEditor ae;
 	ae.property_editor = control;
 	added_editors.push_back(ae);
 }
 
 void EditorInspectorPlugin::add_property_editor(const String &p_for_property, Control *p_prop, bool p_add_to_end) {
+	ZoneScoped;
 	AddedEditor ae;
 	ae.properties.push_back(p_for_property);
 	ae.property_editor = p_prop;
@@ -1054,6 +1142,7 @@ void EditorInspectorPlugin::add_property_editor(const String &p_for_property, Co
 }
 
 void EditorInspectorPlugin::add_property_editor_for_multiple_properties(const String &p_label, const Vector<String> &p_properties, Control *p_prop) {
+	ZoneScoped;
 	AddedEditor ae;
 	ae.properties = p_properties;
 	ae.property_editor = p_prop;
@@ -1062,34 +1151,41 @@ void EditorInspectorPlugin::add_property_editor_for_multiple_properties(const St
 }
 
 bool EditorInspectorPlugin::can_handle(Object *p_object) {
+	ZoneScoped;
 	bool success = false;
 	GDVIRTUAL_CALL(_can_handle, p_object, success);
 	return success;
 }
 
 void EditorInspectorPlugin::parse_begin(Object *p_object) {
+	ZoneScoped;
 	GDVIRTUAL_CALL(_parse_begin, p_object);
 }
 
 void EditorInspectorPlugin::parse_category(Object *p_object, const String &p_category) {
+	ZoneScoped;
 	GDVIRTUAL_CALL(_parse_category, p_object, p_category);
 }
 
 void EditorInspectorPlugin::parse_group(Object *p_object, const String &p_group) {
+	ZoneScoped;
 	GDVIRTUAL_CALL(_parse_group, p_object, p_group);
 }
 
 bool EditorInspectorPlugin::parse_property(Object *p_object, const Variant::Type p_type, const String &p_path, const PropertyHint p_hint, const String &p_hint_text, const uint32_t p_usage, const bool p_wide) {
+	ZoneScoped;
 	bool ret = false;
 	GDVIRTUAL_CALL(_parse_property, p_object, p_type, p_path, p_hint, p_hint_text, p_usage, p_wide, ret);
 	return ret;
 }
 
 void EditorInspectorPlugin::parse_end(Object *p_object) {
+	ZoneScoped;
 	GDVIRTUAL_CALL(_parse_end, p_object);
 }
 
 void EditorInspectorPlugin::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("add_custom_control", "control"), &EditorInspectorPlugin::add_custom_control);
 	ClassDB::bind_method(D_METHOD("add_property_editor", "property", "editor", "add_to_end"), &EditorInspectorPlugin::add_property_editor, DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("add_property_editor_for_multiple_properties", "label", "properties", "editor"), &EditorInspectorPlugin::add_property_editor_for_multiple_properties);
@@ -1106,6 +1202,7 @@ void EditorInspectorPlugin::_bind_methods() {
 ////////////////////////////////////////////////
 
 void EditorInspectorCategory::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
 			Ref<StyleBox> sb = get_theme_stylebox(SNAME("bg"));
@@ -1136,10 +1233,12 @@ void EditorInspectorCategory::_notification(int p_what) {
 }
 
 Control *EditorInspectorCategory::make_custom_tooltip(const String &p_text) const {
+	ZoneScoped;
 	return make_help_bit(p_text, false);
 }
 
 Size2 EditorInspectorCategory::get_minimum_size() const {
+	ZoneScoped;
 	Ref<Font> font = get_theme_font(SNAME("bold"), SNAME("EditorFonts"));
 	int font_size = get_theme_font_size(SNAME("bold_size"), SNAME("EditorFonts"));
 
@@ -1160,6 +1259,7 @@ EditorInspectorCategory::EditorInspectorCategory() {
 ////////////////////////////////////////////////
 
 void EditorInspectorSection::_test_unfold() {
+	ZoneScoped;
 	if (!vbox_added) {
 		add_child(vbox);
 		move_child(vbox, 0);
@@ -1168,6 +1268,7 @@ void EditorInspectorSection::_test_unfold() {
 }
 
 void EditorInspectorSection::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			update_minimum_size();
@@ -1409,6 +1510,7 @@ void EditorInspectorSection::_notification(int p_what) {
 }
 
 Size2 EditorInspectorSection::get_minimum_size() const {
+	ZoneScoped;
 	Size2 ms;
 	for (int i = 0; i < get_child_count(); i++) {
 		Control *c = Object::cast_to<Control>(get_child(i));
@@ -1444,6 +1546,7 @@ Size2 EditorInspectorSection::get_minimum_size() const {
 }
 
 void EditorInspectorSection::setup(const String &p_section, const String &p_label, Object *p_object, const Color &p_bg_color, bool p_foldable, int p_indent_depth) {
+	ZoneScoped;
 	section = p_section;
 	label = p_label;
 	object = p_object;
@@ -1468,6 +1571,7 @@ void EditorInspectorSection::setup(const String &p_section, const String &p_labe
 }
 
 void EditorInspectorSection::gui_input(const Ref<InputEvent> &p_event) {
+	ZoneScoped;
 	ERR_FAIL_COND(p_event.is_null());
 
 	if (!foldable) {
@@ -1494,10 +1598,12 @@ void EditorInspectorSection::gui_input(const Ref<InputEvent> &p_event) {
 }
 
 VBoxContainer *EditorInspectorSection::get_vbox() {
+	ZoneScoped;
 	return vbox;
 }
 
 void EditorInspectorSection::unfold() {
+	ZoneScoped;
 	if (!foldable) {
 		return;
 	}
@@ -1510,6 +1616,7 @@ void EditorInspectorSection::unfold() {
 }
 
 void EditorInspectorSection::fold() {
+	ZoneScoped;
 	if (!foldable) {
 		return;
 	}
@@ -1524,10 +1631,12 @@ void EditorInspectorSection::fold() {
 }
 
 bool EditorInspectorSection::has_revertable_properties() const {
+	ZoneScoped;
 	return !revertable_properties.is_empty();
 }
 
 void EditorInspectorSection::property_can_revert_changed(const String &p_path, bool p_can_revert) {
+	ZoneScoped;
 	bool had_revertable_properties = has_revertable_properties();
 	if (p_can_revert) {
 		revertable_properties.insert(p_path);
@@ -1540,6 +1649,7 @@ void EditorInspectorSection::property_can_revert_changed(const String &p_path, b
 }
 
 void EditorInspectorSection::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("setup", "section", "label", "object", "bg_color", "foldable"), &EditorInspectorSection::setup);
 	ClassDB::bind_method(D_METHOD("get_vbox"), &EditorInspectorSection::get_vbox);
 	ClassDB::bind_method(D_METHOD("unfold"), &EditorInspectorSection::unfold);
@@ -1547,6 +1657,7 @@ void EditorInspectorSection::_bind_methods() {
 }
 
 EditorInspectorSection::EditorInspectorSection() {
+	ZoneScoped;
 	vbox = memnew(VBoxContainer);
 
 	dropping_unfold_timer = memnew(Timer);
@@ -1557,6 +1668,7 @@ EditorInspectorSection::EditorInspectorSection() {
 }
 
 EditorInspectorSection::~EditorInspectorSection() {
+	ZoneScoped;
 	if (!vbox_added) {
 		memdelete(vbox);
 	}
@@ -1566,6 +1678,7 @@ EditorInspectorSection::~EditorInspectorSection() {
 ////////////////////////////////////////////////
 
 int EditorInspectorArray::_get_array_count() {
+	ZoneScoped;
 	if (mode == MODE_USE_MOVE_ARRAY_ELEMENT_FUNCTION) {
 		List<PropertyInfo> object_property_list;
 		object->get_property_list(&object_property_list);
@@ -1580,14 +1693,17 @@ int EditorInspectorArray::_get_array_count() {
 }
 
 void EditorInspectorArray::_add_button_pressed() {
+	ZoneScoped;
 	_move_element(-1, -1);
 }
 
 void EditorInspectorArray::_paginator_page_changed(int p_page) {
+	ZoneScoped;
 	emit_signal("page_change_request", p_page);
 }
 
 void EditorInspectorArray::_rmb_popup_id_pressed(int p_id) {
+	ZoneScoped;
 	switch (p_id) {
 		case OPTION_MOVE_UP:
 			if (popup_array_index_pressed > 0) {
@@ -1624,6 +1740,7 @@ void EditorInspectorArray::_rmb_popup_id_pressed(int p_id) {
 }
 
 void EditorInspectorArray::_control_dropping_draw() {
+	ZoneScoped;
 	int drop_position = _drop_position();
 
 	if (dropping && drop_position >= 0) {
@@ -1645,10 +1762,12 @@ void EditorInspectorArray::_control_dropping_draw() {
 }
 
 void EditorInspectorArray::_vbox_visibility_changed() {
+	ZoneScoped;
 	control_dropping->set_visible(vbox->is_visible_in_tree());
 }
 
 void EditorInspectorArray::_panel_draw(int p_index) {
+	ZoneScoped;
 	ERR_FAIL_INDEX(p_index, (int)array_elements.size());
 
 	Ref<StyleBox> style = get_theme_stylebox(SNAME("Focus"), SNAME("EditorStyles"));
@@ -1661,6 +1780,7 @@ void EditorInspectorArray::_panel_draw(int p_index) {
 }
 
 void EditorInspectorArray::_panel_gui_input(Ref<InputEvent> p_event, int p_index) {
+	ZoneScoped;
 	ERR_FAIL_INDEX(p_index, (int)array_elements.size());
 
 	if (read_only) {
@@ -1691,6 +1811,7 @@ void EditorInspectorArray::_panel_gui_input(Ref<InputEvent> p_event, int p_index
 }
 
 void EditorInspectorArray::_move_element(int p_element_index, int p_to_pos) {
+	ZoneScoped;
 	String action_name;
 	if (p_element_index < 0) {
 		action_name = vformat("Add element to property array with prefix %s.", array_element_prefix);
@@ -1843,6 +1964,7 @@ void EditorInspectorArray::_move_element(int p_element_index, int p_to_pos) {
 }
 
 void EditorInspectorArray::_clear_array() {
+	ZoneScoped;
 	Ref<EditorUndoRedoManager> &undo_redo = EditorNode::get_undo_redo();
 	undo_redo->create_action(vformat("Clear property array with prefix %s.", array_element_prefix));
 	if (mode == MODE_USE_MOVE_ARRAY_ELEMENT_FUNCTION) {
@@ -1891,6 +2013,7 @@ void EditorInspectorArray::_clear_array() {
 }
 
 void EditorInspectorArray::_resize_array(int p_size) {
+	ZoneScoped;
 	ERR_FAIL_COND(p_size < 0);
 	if (p_size == count) {
 		return;
@@ -1967,6 +2090,7 @@ void EditorInspectorArray::_resize_array(int p_size) {
 }
 
 Array EditorInspectorArray::_extract_properties_as_array(const List<PropertyInfo> &p_list) {
+	ZoneScoped;
 	Array output;
 
 	for (const PropertyInfo &pi : p_list) {
@@ -2001,6 +2125,7 @@ Array EditorInspectorArray::_extract_properties_as_array(const List<PropertyInfo
 }
 
 int EditorInspectorArray::_drop_position() const {
+	ZoneScoped;
 	for (int i = 0; i < (int)array_elements.size(); i++) {
 		const ArrayElement &ae = array_elements[i];
 
@@ -2019,6 +2144,7 @@ int EditorInspectorArray::_drop_position() const {
 }
 
 void EditorInspectorArray::_resize_dialog_confirmed() {
+	ZoneScoped;
 	if (int(new_size_spin_box->get_value()) == count) {
 		return;
 	}
@@ -2028,10 +2154,12 @@ void EditorInspectorArray::_resize_dialog_confirmed() {
 }
 
 void EditorInspectorArray::_new_size_spin_box_value_changed(float p_value) {
+	ZoneScoped;
 	resize_dialog->get_ok_button()->set_disabled(int(p_value) == count);
 }
 
 void EditorInspectorArray::_new_size_spin_box_text_submitted(String p_text) {
+	ZoneScoped;
 	_resize_dialog_confirmed();
 }
 
@@ -2142,10 +2270,12 @@ void EditorInspectorArray::_setup() {
 }
 
 void EditorInspectorArray::_remove_item(int p_index) {
+	ZoneScoped;
 	_move_element(p_index, -1);
 }
 
 Variant EditorInspectorArray::get_drag_data_fw(const Point2 &p_point, Control *p_from) {
+	ZoneScoped;
 	if (!movable) {
 		return Variant();
 	}
@@ -2159,6 +2289,7 @@ Variant EditorInspectorArray::get_drag_data_fw(const Point2 &p_point, Control *p
 }
 
 void EditorInspectorArray::drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) {
+	ZoneScoped;
 	Dictionary dict = p_data;
 
 	int to_drop = dict["index"];
@@ -2170,6 +2301,7 @@ void EditorInspectorArray::drop_data_fw(const Point2 &p_point, const Variant &p_
 }
 
 bool EditorInspectorArray::can_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) const {
+	ZoneScoped;
 	if (!movable || read_only) {
 		return false;
 	}
@@ -2193,6 +2325,7 @@ bool EditorInspectorArray::can_drop_data_fw(const Point2 &p_point, const Variant
 }
 
 void EditorInspectorArray::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -2239,6 +2372,7 @@ void EditorInspectorArray::_notification(int p_what) {
 }
 
 void EditorInspectorArray::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("_get_drag_data_fw"), &EditorInspectorArray::get_drag_data_fw);
 	ClassDB::bind_method(D_METHOD("_can_drop_data_fw"), &EditorInspectorArray::can_drop_data_fw);
 	ClassDB::bind_method(D_METHOD("_drop_data_fw"), &EditorInspectorArray::drop_data_fw);
@@ -2247,6 +2381,7 @@ void EditorInspectorArray::_bind_methods() {
 }
 
 void EditorInspectorArray::setup_with_move_element_function(Object *p_object, String p_label, const StringName &p_array_element_prefix, int p_page, const Color &p_bg_color, bool p_foldable, bool p_movable, bool p_numbered, int p_page_length, const String &p_add_item_text) {
+	ZoneScoped;
 	count_property = "";
 	mode = MODE_USE_MOVE_ARRAY_ELEMENT_FUNCTION;
 	array_element_prefix = p_array_element_prefix;
@@ -2261,6 +2396,7 @@ void EditorInspectorArray::setup_with_move_element_function(Object *p_object, St
 }
 
 void EditorInspectorArray::setup_with_count_property(Object *p_object, String p_label, const StringName &p_count_property, const StringName &p_array_element_prefix, int p_page, const Color &p_bg_color, bool p_foldable, bool p_movable, bool p_numbered, int p_page_length, const String &p_add_item_text, const String &p_swap_method) {
+	ZoneScoped;
 	count_property = p_count_property;
 	mode = MODE_USE_COUNT_PROPERTY;
 	array_element_prefix = p_array_element_prefix;
@@ -2277,6 +2413,7 @@ void EditorInspectorArray::setup_with_count_property(Object *p_object, String p_
 }
 
 VBoxContainer *EditorInspectorArray::get_vbox(int p_index) {
+	ZoneScoped;
 	if (p_index >= begin_array_index && p_index < end_array_index) {
 		return array_elements[p_index - begin_array_index].vbox;
 	} else if (p_index < 0) {
@@ -2287,6 +2424,7 @@ VBoxContainer *EditorInspectorArray::get_vbox(int p_index) {
 }
 
 EditorInspectorArray::EditorInspectorArray(bool p_read_only) {
+	ZoneScoped;
 	read_only = p_read_only;
 
 	set_mouse_filter(Control::MOUSE_FILTER_STOP);
@@ -2345,14 +2483,17 @@ EditorInspectorArray::EditorInspectorArray(bool p_read_only) {
 ////////////////////////////////////////////////
 
 void EditorPaginator::_first_page_button_pressed() {
+	ZoneScoped;
 	emit_signal("page_changed", 0);
 }
 
 void EditorPaginator::_prev_page_button_pressed() {
+	ZoneScoped;
 	emit_signal("page_changed", MAX(0, page - 1));
 }
 
 void EditorPaginator::_page_line_edit_text_submitted(String p_text) {
+	ZoneScoped;
 	if (p_text.is_valid_int()) {
 		int new_page = p_text.to_int() - 1;
 		new_page = MIN(MAX(0, new_page), max_page);
@@ -2364,14 +2505,17 @@ void EditorPaginator::_page_line_edit_text_submitted(String p_text) {
 }
 
 void EditorPaginator::_next_page_button_pressed() {
+	ZoneScoped;
 	emit_signal("page_changed", MIN(max_page, page + 1));
 }
 
 void EditorPaginator::_last_page_button_pressed() {
+	ZoneScoped;
 	emit_signal("page_changed", max_page);
 }
 
 void EditorPaginator::update(int p_page, int p_max_page) {
+	ZoneScoped;
 	page = p_page;
 	max_page = p_max_page;
 
@@ -2387,6 +2531,7 @@ void EditorPaginator::update(int p_page, int p_max_page) {
 }
 
 void EditorPaginator::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -2399,10 +2544,12 @@ void EditorPaginator::_notification(int p_what) {
 }
 
 void EditorPaginator::_bind_methods() {
+	ZoneScoped;
 	ADD_SIGNAL(MethodInfo("page_changed", PropertyInfo(Variant::INT, "page")));
 }
 
 EditorPaginator::EditorPaginator() {
+	ZoneScoped;
 	set_h_size_flags(SIZE_EXPAND_FILL);
 	set_alignment(ALIGNMENT_CENTER);
 
@@ -2442,6 +2589,7 @@ Ref<EditorInspectorPlugin> EditorInspector::inspector_plugins[MAX_PLUGINS];
 int EditorInspector::inspector_plugin_count = 0;
 
 EditorProperty *EditorInspector::instantiate_property_editor(Object *p_object, const Variant::Type p_type, const String &p_path, PropertyHint p_hint, const String &p_hint_text, const uint32_t p_usage, const bool p_wide) {
+	ZoneScoped;
 	for (int i = inspector_plugin_count - 1; i >= 0; i--) {
 		inspector_plugins[i]->parse_property(p_object, p_type, p_path, p_hint, p_hint_text, p_usage, p_wide);
 		if (inspector_plugins[i]->added_editors.size()) {
@@ -2463,6 +2611,7 @@ EditorProperty *EditorInspector::instantiate_property_editor(Object *p_object, c
 }
 
 void EditorInspector::add_inspector_plugin(const Ref<EditorInspectorPlugin> &p_plugin) {
+	ZoneScoped;
 	ERR_FAIL_COND(inspector_plugin_count == MAX_PLUGINS);
 
 	for (int i = 0; i < inspector_plugin_count; i++) {
@@ -2474,6 +2623,7 @@ void EditorInspector::add_inspector_plugin(const Ref<EditorInspectorPlugin> &p_p
 }
 
 void EditorInspector::remove_inspector_plugin(const Ref<EditorInspectorPlugin> &p_plugin) {
+	ZoneScoped;
 	ERR_FAIL_COND(inspector_plugin_count == MAX_PLUGINS);
 
 	int idx = -1;
@@ -2494,6 +2644,7 @@ void EditorInspector::remove_inspector_plugin(const Ref<EditorInspectorPlugin> &
 }
 
 void EditorInspector::cleanup_plugins() {
+	ZoneScoped;
 	for (int i = 0; i < inspector_plugin_count; i++) {
 		inspector_plugins[i].unref();
 	}
@@ -2501,6 +2652,7 @@ void EditorInspector::cleanup_plugins() {
 }
 
 Button *EditorInspector::create_inspector_action_button(const String &p_text) {
+	ZoneScoped;
 	Button *button = memnew(Button);
 	button->set_text(p_text);
 	button->set_theme_type_variation(SNAME("InspectorActionButton"));
@@ -2509,10 +2661,12 @@ Button *EditorInspector::create_inspector_action_button(const String &p_text) {
 }
 
 String EditorInspector::get_selected_path() const {
+	ZoneScoped;
 	return property_selected;
 }
 
 void EditorInspector::_parse_added_editors(VBoxContainer *current_vbox, EditorInspectorSection *p_section, Ref<EditorInspectorPlugin> ped) {
+	ZoneScoped;
 	for (const EditorInspectorPlugin::AddedEditor &F : ped->added_editors) {
 		EditorProperty *ep = Object::cast_to<EditorProperty>(F.property_editor);
 		current_vbox->add_child(F.property_editor);
@@ -2568,6 +2722,7 @@ void EditorInspector::_parse_added_editors(VBoxContainer *current_vbox, EditorIn
 }
 
 bool EditorInspector::_is_property_disabled_by_feature_profile(const StringName &p_property) {
+	ZoneScoped;
 	Ref<EditorFeatureProfile> profile = EditorFeatureProfileManager::get_singleton()->get_current_profile();
 	if (profile.is_null()) {
 		return false;
@@ -3296,6 +3451,7 @@ void EditorInspector::update_tree() {
 }
 
 void EditorInspector::update_property(const String &p_prop) {
+	ZoneScoped;
 	if (!editor_property_map.has(p_prop)) {
 		return;
 	}
@@ -3308,6 +3464,7 @@ void EditorInspector::update_property(const String &p_prop) {
 }
 
 void EditorInspector::_clear() {
+	ZoneScoped;
 	while (main_vbox->get_child_count()) {
 		memdelete(main_vbox->get_child(0));
 	}
@@ -3320,10 +3477,12 @@ void EditorInspector::_clear() {
 }
 
 Object *EditorInspector::get_edited_object() {
+	ZoneScoped;
 	return object;
 }
 
 void EditorInspector::edit(Object *p_object) {
+	ZoneScoped;
 	if (object == p_object) {
 		return;
 	}
@@ -3347,6 +3506,7 @@ void EditorInspector::edit(Object *p_object) {
 }
 
 void EditorInspector::set_keying(bool p_active) {
+	ZoneScoped;
 	if (keying == p_active) {
 		return;
 	}
@@ -3355,15 +3515,18 @@ void EditorInspector::set_keying(bool p_active) {
 }
 
 void EditorInspector::set_read_only(bool p_read_only) {
+	ZoneScoped;
 	read_only = p_read_only;
 	update_tree();
 }
 
 EditorPropertyNameProcessor::Style EditorInspector::get_property_name_style() const {
+	ZoneScoped;
 	return property_name_style;
 }
 
 void EditorInspector::set_property_name_style(EditorPropertyNameProcessor::Style p_style) {
+	ZoneScoped;
 	if (property_name_style == p_style) {
 		return;
 	}
@@ -3372,35 +3535,42 @@ void EditorInspector::set_property_name_style(EditorPropertyNameProcessor::Style
 }
 
 void EditorInspector::set_autoclear(bool p_enable) {
+	ZoneScoped;
 	autoclear = p_enable;
 }
 
 void EditorInspector::set_show_categories(bool p_show) {
+	ZoneScoped;
 	show_categories = p_show;
 	update_tree();
 }
 
 void EditorInspector::set_use_doc_hints(bool p_enable) {
+	ZoneScoped;
 	use_doc_hints = p_enable;
 	update_tree();
 }
 
 void EditorInspector::set_hide_script(bool p_hide) {
+	ZoneScoped;
 	hide_script = p_hide;
 	update_tree();
 }
 
 void EditorInspector::set_hide_metadata(bool p_hide) {
+	ZoneScoped;
 	hide_metadata = p_hide;
 	update_tree();
 }
 
 void EditorInspector::set_use_filter(bool p_use) {
+	ZoneScoped;
 	use_filter = p_use;
 	update_tree();
 }
 
 void EditorInspector::register_text_enter(Node *p_line_edit) {
+	ZoneScoped;
 	search_box = Object::cast_to<LineEdit>(p_line_edit);
 	if (search_box) {
 		search_box->connect("text_changed", callable_mp(this, &EditorInspector::_filter_changed));
@@ -3408,20 +3578,24 @@ void EditorInspector::register_text_enter(Node *p_line_edit) {
 }
 
 void EditorInspector::_filter_changed(const String &p_text) {
+	ZoneScoped;
 	_clear();
 	update_tree();
 }
 
 void EditorInspector::set_use_folding(bool p_enable) {
+	ZoneScoped;
 	use_folding = p_enable;
 	update_tree();
 }
 
 bool EditorInspector::is_using_folding() {
+	ZoneScoped;
 	return use_folding;
 }
 
 void EditorInspector::collapse_all_folding() {
+	ZoneScoped;
 	for (EditorInspectorSection *E : sections) {
 		E->fold();
 	}
@@ -3434,6 +3608,7 @@ void EditorInspector::collapse_all_folding() {
 }
 
 void EditorInspector::expand_all_folding() {
+	ZoneScoped;
 	for (EditorInspectorSection *E : sections) {
 		E->unfold();
 	}
@@ -3445,6 +3620,7 @@ void EditorInspector::expand_all_folding() {
 }
 
 void EditorInspector::expand_revertable() {
+	ZoneScoped;
 	HashSet<EditorInspectorSection *> sections_to_unfold[2];
 	for (EditorInspectorSection *E : sections) {
 		if (E->has_revertable_properties()) {
@@ -3483,18 +3659,22 @@ void EditorInspector::expand_revertable() {
 }
 
 void EditorInspector::set_scroll_offset(int p_offset) {
+	ZoneScoped;
 	set_v_scroll(p_offset);
 }
 
 int EditorInspector::get_scroll_offset() const {
+	ZoneScoped;
 	return get_v_scroll();
 }
 
 void EditorInspector::set_use_wide_editors(bool p_enable) {
+	ZoneScoped;
 	wide_editors = p_enable;
 }
 
 void EditorInspector::_update_inspector_bg() {
+	ZoneScoped;
 	if (sub_inspector) {
 		int count_subinspectors = 0;
 		Node *n = get_parent();
@@ -3512,6 +3692,7 @@ void EditorInspector::_update_inspector_bg() {
 	}
 }
 void EditorInspector::set_sub_inspector(bool p_enable) {
+	ZoneScoped;
 	sub_inspector = p_enable;
 	if (!is_inside_tree()) {
 		return;
@@ -3521,10 +3702,12 @@ void EditorInspector::set_sub_inspector(bool p_enable) {
 }
 
 void EditorInspector::set_use_deletable_properties(bool p_enabled) {
+	ZoneScoped;
 	deletable_properties = p_enabled;
 }
 
 void EditorInspector::_page_change_request(int p_new_page, const StringName &p_array_prefix) {
+	ZoneScoped;
 	int prev_page = per_array_page.has(p_array_prefix) ? per_array_page[p_array_prefix] : 0;
 	int new_page = MAX(0, p_new_page);
 	if (new_page != prev_page) {
@@ -3534,6 +3717,7 @@ void EditorInspector::_page_change_request(int p_new_page, const StringName &p_a
 }
 
 void EditorInspector::_edit_request_change(Object *p_object, const String &p_property) {
+	ZoneScoped;
 	if (object != p_object) { //may be undoing/redoing for a non edited object, so ignore
 		return;
 	}
@@ -3550,6 +3734,7 @@ void EditorInspector::_edit_request_change(Object *p_object, const String &p_pro
 }
 
 void EditorInspector::_edit_set(const String &p_name, const Variant &p_value, bool p_refresh_all, const String &p_changed_field) {
+	ZoneScoped;
 	if (autoclear && editor_property_map.has(p_name)) {
 		for (EditorProperty *E : editor_property_map[p_name]) {
 			if (E->is_checkable()) {
@@ -3670,6 +3855,7 @@ void EditorInspector::_property_changed(const String &p_path, const Variant &p_v
 }
 
 void EditorInspector::_multiple_properties_changed(Vector<String> p_paths, Array p_values, bool p_changing) {
+	ZoneScoped;
 	ERR_FAIL_COND(p_paths.size() == 0 || p_values.size() == 0);
 	ERR_FAIL_COND(p_paths.size() != p_values.size());
 	String names;
@@ -3697,6 +3883,7 @@ void EditorInspector::_multiple_properties_changed(Vector<String> p_paths, Array
 }
 
 void EditorInspector::_property_keyed(const String &p_path, bool p_advance) {
+	ZoneScoped;
 	if (!object) {
 		return;
 	}
@@ -3708,6 +3895,7 @@ void EditorInspector::_property_keyed(const String &p_path, bool p_advance) {
 }
 
 void EditorInspector::_property_deleted(const String &p_path) {
+	ZoneScoped;
 	if (!object) {
 		return;
 	}
@@ -3725,6 +3913,7 @@ void EditorInspector::_property_deleted(const String &p_path) {
 }
 
 void EditorInspector::_property_keyed_with_value(const String &p_path, const Variant &p_value, bool p_advance) {
+	ZoneScoped;
 	if (!object) {
 		return;
 	}
@@ -3736,6 +3925,7 @@ void EditorInspector::_property_keyed_with_value(const String &p_path, const Var
 }
 
 void EditorInspector::_property_checked(const String &p_path, bool p_checked) {
+	ZoneScoped;
 	if (!object) {
 		return;
 	}
@@ -3773,6 +3963,7 @@ void EditorInspector::_property_checked(const String &p_path, bool p_checked) {
 }
 
 void EditorInspector::_property_pinned(const String &p_path, bool p_pinned) {
+	ZoneScoped;
 	if (!object) {
 		return;
 	}
@@ -3803,6 +3994,7 @@ void EditorInspector::_property_pinned(const String &p_path, bool p_pinned) {
 }
 
 void EditorInspector::_property_selected(const String &p_path, int p_focusable) {
+	ZoneScoped;
 	property_selected = p_path;
 	property_focusable = p_focusable;
 	// Deselect the others.
@@ -3821,20 +4013,24 @@ void EditorInspector::_property_selected(const String &p_path, int p_focusable) 
 }
 
 void EditorInspector::_object_id_selected(const String &p_path, ObjectID p_id) {
+	ZoneScoped;
 	emit_signal(SNAME("object_id_selected"), p_id);
 }
 
 void EditorInspector::_resource_selected(const String &p_path, Ref<Resource> p_resource) {
+	ZoneScoped;
 	emit_signal(SNAME("resource_selected"), p_resource, p_path);
 }
 
 void EditorInspector::_node_removed(Node *p_node) {
+	ZoneScoped;
 	if (p_node == object) {
 		edit(nullptr);
 	}
 }
 
 void EditorInspector::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_READY: {
 			EditorFeatureProfileManager::get_singleton()->connect("current_feature_profile_changed", callable_mp(this, &EditorInspector::_feature_profile_changed));
@@ -3928,6 +4124,7 @@ void EditorInspector::_changed_callback() {
 }
 
 void EditorInspector::_vscroll_changed(double p_offset) {
+	ZoneScoped;
 	if (update_scroll_request >= 0) { //waiting, do nothing
 		return;
 	}
@@ -3938,39 +4135,48 @@ void EditorInspector::_vscroll_changed(double p_offset) {
 }
 
 void EditorInspector::set_property_prefix(const String &p_prefix) {
+	ZoneScoped;
 	property_prefix = p_prefix;
 }
 
 String EditorInspector::get_property_prefix() const {
+	ZoneScoped;
 	return property_prefix;
 }
 
 void EditorInspector::set_object_class(const String &p_class) {
+	ZoneScoped;
 	object_class = p_class;
 }
 
 String EditorInspector::get_object_class() const {
+	ZoneScoped;
 	return object_class;
 }
 
 void EditorInspector::_feature_profile_changed() {
+	ZoneScoped;
 	update_tree();
 }
 
 void EditorInspector::set_restrict_to_basic_settings(bool p_restrict) {
+	ZoneScoped;
 	restrict_to_basic = p_restrict;
 	update_tree();
 }
 
 void EditorInspector::set_property_clipboard(const Variant &p_value) {
+	ZoneScoped;
 	property_clipboard = p_value;
 }
 
 Variant EditorInspector::get_property_clipboard() const {
+	ZoneScoped;
 	return property_clipboard;
 }
 
 void EditorInspector::_add_meta_confirm() {
+	ZoneScoped;
 	String name = add_meta_name->get_text();
 
 	object->editor_set_section_unfold("metadata", true); // Ensure metadata is unfolded when adding a new metadata.
@@ -3986,6 +4192,7 @@ void EditorInspector::_add_meta_confirm() {
 }
 
 void EditorInspector::_check_meta_name(const String &p_name) {
+	ZoneScoped;
 	String error;
 
 	if (p_name == "") {
@@ -4010,6 +4217,7 @@ void EditorInspector::_check_meta_name(const String &p_name) {
 }
 
 void EditorInspector::_show_add_meta_dialog() {
+	ZoneScoped;
 	if (!add_meta_dialog) {
 		add_meta_dialog = memnew(ConfirmationDialog);
 
@@ -4057,6 +4265,7 @@ void EditorInspector::_show_add_meta_dialog() {
 }
 
 void EditorInspector::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method("_edit_request_change", &EditorInspector::_edit_request_change);
 	ClassDB::bind_method("get_selected_path", &EditorInspector::get_selected_path);
 
@@ -4072,6 +4281,7 @@ void EditorInspector::_bind_methods() {
 }
 
 EditorInspector::EditorInspector() {
+	ZoneScoped;
 	object = nullptr;
 	main_vbox = memnew(VBoxContainer);
 	main_vbox->set_h_size_flags(SIZE_EXPAND_FILL);

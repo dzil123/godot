@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_vcs_interface.cpp                                             */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_vcs_interface.h"
 
 #include "editor_node.h"
@@ -42,6 +73,7 @@ void EditorVCSInterface::popup_error(String p_msg) {
 }
 
 bool EditorVCSInterface::initialize(String p_project_path) {
+	ZoneScoped;
 	bool result = false;
 	if (!GDVIRTUAL_CALL(_initialize, p_project_path, result)) {
 		UNIMPLEMENTED();
@@ -51,12 +83,14 @@ bool EditorVCSInterface::initialize(String p_project_path) {
 }
 
 void EditorVCSInterface::set_credentials(String p_username, String p_password, String p_ssh_public_key, String p_ssh_private_key, String p_ssh_passphrase) {
+	ZoneScoped;
 	if (!GDVIRTUAL_CALL(_set_credentials, p_username, p_password, p_ssh_public_key, p_ssh_private_key, p_ssh_passphrase)) {
 		UNIMPLEMENTED();
 	}
 }
 
 List<String> EditorVCSInterface::get_remotes() {
+	ZoneScoped;
 	TypedArray<Dictionary> result;
 	if (!GDVIRTUAL_CALL(_get_remotes, result)) {
 		UNIMPLEMENTED();
@@ -71,6 +105,7 @@ List<String> EditorVCSInterface::get_remotes() {
 }
 
 List<EditorVCSInterface::StatusFile> EditorVCSInterface::get_modified_files_data() {
+	ZoneScoped;
 	TypedArray<Dictionary> result;
 	if (!GDVIRTUAL_CALL(_get_modified_files_data, result)) {
 		UNIMPLEMENTED();
@@ -85,30 +120,35 @@ List<EditorVCSInterface::StatusFile> EditorVCSInterface::get_modified_files_data
 }
 
 void EditorVCSInterface::stage_file(String p_file_path) {
+	ZoneScoped;
 	if (!GDVIRTUAL_CALL(_stage_file, p_file_path)) {
 		UNIMPLEMENTED();
 	}
 }
 
 void EditorVCSInterface::unstage_file(String p_file_path) {
+	ZoneScoped;
 	if (!GDVIRTUAL_CALL(_unstage_file, p_file_path)) {
 		UNIMPLEMENTED();
 	}
 }
 
 void EditorVCSInterface::discard_file(String p_file_path) {
+	ZoneScoped;
 	if (!GDVIRTUAL_CALL(_discard_file, p_file_path)) {
 		UNIMPLEMENTED();
 	}
 }
 
 void EditorVCSInterface::commit(String p_msg) {
+	ZoneScoped;
 	if (!GDVIRTUAL_CALL(_commit, p_msg)) {
 		UNIMPLEMENTED();
 	}
 }
 
 List<EditorVCSInterface::DiffFile> EditorVCSInterface::get_diff(String p_identifier, TreeArea p_area) {
+	ZoneScoped;
 	TypedArray<Dictionary> result;
 	if (!GDVIRTUAL_CALL(_get_diff, p_identifier, int(p_area), result)) {
 		UNIMPLEMENTED();
@@ -123,6 +163,7 @@ List<EditorVCSInterface::DiffFile> EditorVCSInterface::get_diff(String p_identif
 }
 
 List<EditorVCSInterface::Commit> EditorVCSInterface::get_previous_commits(int p_max_commits) {
+	ZoneScoped;
 	TypedArray<Dictionary> result;
 	if (!GDVIRTUAL_CALL(_get_previous_commits, p_max_commits, result)) {
 		UNIMPLEMENTED();
@@ -137,6 +178,7 @@ List<EditorVCSInterface::Commit> EditorVCSInterface::get_previous_commits(int p_
 }
 
 List<String> EditorVCSInterface::get_branch_list() {
+	ZoneScoped;
 	TypedArray<Dictionary> result;
 	if (!GDVIRTUAL_CALL(_get_branch_list, result)) {
 		UNIMPLEMENTED();
@@ -151,30 +193,35 @@ List<String> EditorVCSInterface::get_branch_list() {
 }
 
 void EditorVCSInterface::create_branch(String p_branch_name) {
+	ZoneScoped;
 	if (!GDVIRTUAL_CALL(_create_branch, p_branch_name)) {
 		UNIMPLEMENTED();
 	}
 }
 
 void EditorVCSInterface::create_remote(String p_remote_name, String p_remote_url) {
+	ZoneScoped;
 	if (!GDVIRTUAL_CALL(_create_remote, p_remote_name, p_remote_url)) {
 		UNIMPLEMENTED();
 	}
 }
 
 void EditorVCSInterface::remove_branch(String p_branch_name) {
+	ZoneScoped;
 	if (!GDVIRTUAL_CALL(_remove_branch, p_branch_name)) {
 		UNIMPLEMENTED();
 	}
 }
 
 void EditorVCSInterface::remove_remote(String p_remote_name) {
+	ZoneScoped;
 	if (!GDVIRTUAL_CALL(_remove_remote, p_remote_name)) {
 		UNIMPLEMENTED();
 	}
 }
 
 String EditorVCSInterface::get_current_branch_name() {
+	ZoneScoped;
 	String result;
 	if (!GDVIRTUAL_CALL(_get_current_branch_name, result)) {
 		UNIMPLEMENTED();
@@ -184,6 +231,7 @@ String EditorVCSInterface::get_current_branch_name() {
 }
 
 bool EditorVCSInterface::checkout_branch(String p_branch_name) {
+	ZoneScoped;
 	bool result = false;
 	if (!GDVIRTUAL_CALL(_checkout_branch, p_branch_name, result)) {
 		UNIMPLEMENTED();
@@ -192,24 +240,28 @@ bool EditorVCSInterface::checkout_branch(String p_branch_name) {
 }
 
 void EditorVCSInterface::pull(String p_remote) {
+	ZoneScoped;
 	if (!GDVIRTUAL_CALL(_pull, p_remote)) {
 		UNIMPLEMENTED();
 	}
 }
 
 void EditorVCSInterface::push(String p_remote, bool p_force) {
+	ZoneScoped;
 	if (!GDVIRTUAL_CALL(_push, p_remote, p_force)) {
 		UNIMPLEMENTED();
 	}
 }
 
 void EditorVCSInterface::fetch(String p_remote) {
+	ZoneScoped;
 	if (!GDVIRTUAL_CALL(_fetch, p_remote)) {
 		UNIMPLEMENTED();
 	}
 }
 
 List<EditorVCSInterface::DiffHunk> EditorVCSInterface::get_line_diff(String p_file_path, String p_text) {
+	ZoneScoped;
 	TypedArray<Dictionary> result;
 	if (!GDVIRTUAL_CALL(_get_line_diff, p_file_path, p_text, result)) {
 		UNIMPLEMENTED();
@@ -224,6 +276,7 @@ List<EditorVCSInterface::DiffHunk> EditorVCSInterface::get_line_diff(String p_fi
 }
 
 bool EditorVCSInterface::shut_down() {
+	ZoneScoped;
 	bool result = false;
 	if (!GDVIRTUAL_CALL(_shut_down, result)) {
 		UNIMPLEMENTED();
@@ -233,6 +286,7 @@ bool EditorVCSInterface::shut_down() {
 }
 
 String EditorVCSInterface::get_vcs_name() {
+	ZoneScoped;
 	String result;
 	if (!GDVIRTUAL_CALL(_get_vcs_name, result)) {
 		UNIMPLEMENTED();
@@ -242,6 +296,7 @@ String EditorVCSInterface::get_vcs_name() {
 }
 
 Dictionary EditorVCSInterface::create_diff_line(int p_new_line_no, int p_old_line_no, String p_content, String p_status) {
+	ZoneScoped;
 	Dictionary diff_line;
 	diff_line["new_line_no"] = p_new_line_no;
 	diff_line["old_line_no"] = p_old_line_no;
@@ -252,6 +307,7 @@ Dictionary EditorVCSInterface::create_diff_line(int p_new_line_no, int p_old_lin
 }
 
 Dictionary EditorVCSInterface::create_diff_hunk(int p_old_start, int p_new_start, int p_old_lines, int p_new_lines) {
+	ZoneScoped;
 	Dictionary diff_hunk;
 	diff_hunk["new_lines"] = p_new_lines;
 	diff_hunk["old_lines"] = p_old_lines;
@@ -262,11 +318,13 @@ Dictionary EditorVCSInterface::create_diff_hunk(int p_old_start, int p_new_start
 }
 
 Dictionary EditorVCSInterface::add_line_diffs_into_diff_hunk(Dictionary p_diff_hunk, TypedArray<Dictionary> p_line_diffs) {
+	ZoneScoped;
 	p_diff_hunk["diff_lines"] = p_line_diffs;
 	return p_diff_hunk;
 }
 
 Dictionary EditorVCSInterface::create_diff_file(String p_new_file, String p_old_file) {
+	ZoneScoped;
 	Dictionary file_diff;
 	file_diff["new_file"] = p_new_file;
 	file_diff["old_file"] = p_old_file;
@@ -275,6 +333,7 @@ Dictionary EditorVCSInterface::create_diff_file(String p_new_file, String p_old_
 }
 
 Dictionary EditorVCSInterface::create_commit(String p_msg, String p_author, String p_id, int64_t p_unix_timestamp, int64_t p_offset_minutes) {
+	ZoneScoped;
 	Dictionary commit_info;
 	commit_info["message"] = p_msg;
 	commit_info["author"] = p_author;
@@ -285,11 +344,13 @@ Dictionary EditorVCSInterface::create_commit(String p_msg, String p_author, Stri
 }
 
 Dictionary EditorVCSInterface::add_diff_hunks_into_diff_file(Dictionary p_diff_file, TypedArray<Dictionary> p_diff_hunks) {
+	ZoneScoped;
 	p_diff_file["diff_hunks"] = p_diff_hunks;
 	return p_diff_file;
 }
 
 Dictionary EditorVCSInterface::create_status_file(String p_file_path, ChangeType p_change, TreeArea p_area) {
+	ZoneScoped;
 	Dictionary sf;
 	sf["file_path"] = p_file_path;
 	sf["change_type"] = p_change;
@@ -298,6 +359,7 @@ Dictionary EditorVCSInterface::create_status_file(String p_file_path, ChangeType
 }
 
 EditorVCSInterface::DiffLine EditorVCSInterface::_convert_diff_line(Dictionary p_diff_line) {
+	ZoneScoped;
 	DiffLine d;
 	d.new_line_no = p_diff_line["new_line_no"];
 	d.old_line_no = p_diff_line["old_line_no"];
@@ -307,6 +369,7 @@ EditorVCSInterface::DiffLine EditorVCSInterface::_convert_diff_line(Dictionary p
 }
 
 EditorVCSInterface::DiffHunk EditorVCSInterface::_convert_diff_hunk(Dictionary p_diff_hunk) {
+	ZoneScoped;
 	DiffHunk dh;
 	dh.new_lines = p_diff_hunk["new_lines"];
 	dh.old_lines = p_diff_hunk["old_lines"];
@@ -321,6 +384,7 @@ EditorVCSInterface::DiffHunk EditorVCSInterface::_convert_diff_hunk(Dictionary p
 }
 
 EditorVCSInterface::DiffFile EditorVCSInterface::_convert_diff_file(Dictionary p_diff_file) {
+	ZoneScoped;
 	DiffFile df;
 	df.new_file = p_diff_file["new_file"];
 	df.old_file = p_diff_file["old_file"];
@@ -333,6 +397,7 @@ EditorVCSInterface::DiffFile EditorVCSInterface::_convert_diff_file(Dictionary p
 }
 
 EditorVCSInterface::Commit EditorVCSInterface::_convert_commit(Dictionary p_commit) {
+	ZoneScoped;
 	EditorVCSInterface::Commit c;
 	c.msg = p_commit["message"];
 	c.author = p_commit["author"];
@@ -343,6 +408,7 @@ EditorVCSInterface::Commit EditorVCSInterface::_convert_commit(Dictionary p_comm
 }
 
 EditorVCSInterface::StatusFile EditorVCSInterface::_convert_status_file(Dictionary p_status_file) {
+	ZoneScoped;
 	StatusFile sf;
 	sf.file_path = p_status_file["file_path"];
 	sf.change_type = (ChangeType)(int)p_status_file["change_type"];
@@ -398,14 +464,17 @@ void EditorVCSInterface::_bind_methods() {
 }
 
 EditorVCSInterface *EditorVCSInterface::get_singleton() {
+	ZoneScoped;
 	return singleton;
 }
 
 void EditorVCSInterface::set_singleton(EditorVCSInterface *p_singleton) {
+	ZoneScoped;
 	singleton = p_singleton;
 }
 
 void EditorVCSInterface::create_vcs_metadata_files(VCSMetadata p_vcs_metadata_type, String &p_dir) {
+	ZoneScoped;
 	if (p_vcs_metadata_type == VCSMetadata::GIT) {
 		Ref<FileAccess> f = FileAccess::open(p_dir.path_join(".gitignore"), FileAccess::WRITE);
 		if (f.is_null()) {

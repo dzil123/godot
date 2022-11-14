@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  shader_globals_editor.cpp                                            */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "shader_globals_editor.h"
 
 #include "core/config/project_settings.h"
@@ -243,6 +274,7 @@ public:
 };
 
 static Variant create_var(RS::GlobalShaderParameterType p_type) {
+	ZoneScoped;
 	switch (p_type) {
 		case RS::GLOBAL_VAR_TYPE_BOOL: {
 			return false;
@@ -375,6 +407,7 @@ static Variant create_var(RS::GlobalShaderParameterType p_type) {
 }
 
 void ShaderGlobalsEditor::_variable_added() {
+	ZoneScoped;
 	String var = variable_name->get_text().strip_edges();
 	if (var.is_empty() || !var.is_valid_identifier()) {
 		EditorNode::get_singleton()->show_warning(TTR("Please specify a valid shader uniform identifier name."));
@@ -413,6 +446,7 @@ void ShaderGlobalsEditor::_variable_added() {
 }
 
 void ShaderGlobalsEditor::_variable_deleted(const String &p_variable) {
+	ZoneScoped;
 	Ref<EditorUndoRedoManager> undo_redo = EditorNode::get_singleton()->get_undo_redo();
 
 	undo_redo->create_action(TTR("Add Shader Global Parameter"));
@@ -427,6 +461,7 @@ void ShaderGlobalsEditor::_variable_deleted(const String &p_variable) {
 }
 
 void ShaderGlobalsEditor::_changed() {
+	ZoneScoped;
 	emit_signal(SNAME("globals_changed"));
 	if (!interface->block_update) {
 		interface->notify_property_list_changed();
@@ -434,11 +469,13 @@ void ShaderGlobalsEditor::_changed() {
 }
 
 void ShaderGlobalsEditor::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method("_changed", &ShaderGlobalsEditor::_changed);
 	ADD_SIGNAL(MethodInfo("globals_changed"));
 }
 
 void ShaderGlobalsEditor::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_VISIBILITY_CHANGED: {
 			if (is_visible_in_tree()) {
@@ -453,6 +490,7 @@ void ShaderGlobalsEditor::_notification(int p_what) {
 }
 
 ShaderGlobalsEditor::ShaderGlobalsEditor() {
+	ZoneScoped;
 	HBoxContainer *add_menu_hb = memnew(HBoxContainer);
 	add_child(add_menu_hb);
 
@@ -487,5 +525,6 @@ ShaderGlobalsEditor::ShaderGlobalsEditor() {
 }
 
 ShaderGlobalsEditor::~ShaderGlobalsEditor() {
+	ZoneScoped;
 	memdelete(interface);
 }

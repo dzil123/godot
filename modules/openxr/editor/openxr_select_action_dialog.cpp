@@ -28,14 +28,47 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "openxr_select_action_dialog.h"
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  openxr_select_action_dialog.cpp                                      */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor/editor_node.h"
+#include "openxr_select_action_dialog.h"
 
 void OpenXRSelectActionDialog::_bind_methods() {
+	ZoneScoped;
 	ADD_SIGNAL(MethodInfo("action_selected", PropertyInfo(Variant::STRING, "action")));
 }
 
 void OpenXRSelectActionDialog::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -45,6 +78,7 @@ void OpenXRSelectActionDialog::_notification(int p_what) {
 }
 
 void OpenXRSelectActionDialog::_on_select_action(const String p_action) {
+	ZoneScoped;
 	if (selected_action != "") {
 		NodePath button_path = action_buttons[selected_action];
 		Button *button = static_cast<Button *>(get_node(button_path));
@@ -65,6 +99,7 @@ void OpenXRSelectActionDialog::_on_select_action(const String p_action) {
 }
 
 void OpenXRSelectActionDialog::open() {
+	ZoneScoped;
 	ERR_FAIL_COND(action_map.is_null());
 
 	// out with the old...
@@ -109,6 +144,7 @@ void OpenXRSelectActionDialog::open() {
 }
 
 void OpenXRSelectActionDialog::ok_pressed() {
+	ZoneScoped;
 	if (selected_action == "") {
 		return;
 	}
@@ -119,6 +155,7 @@ void OpenXRSelectActionDialog::ok_pressed() {
 }
 
 OpenXRSelectActionDialog::OpenXRSelectActionDialog(Ref<OpenXRActionMap> p_action_map) {
+	ZoneScoped;
 	action_map = p_action_map;
 
 	set_title(TTR("Select an action"));

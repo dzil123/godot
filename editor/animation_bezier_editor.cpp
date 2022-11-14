@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  animation_bezier_editor.cpp                                          */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "animation_bezier_editor.h"
 
 #include "editor/editor_node.h"
@@ -39,6 +70,7 @@
 #include <limits.h>
 
 float AnimationBezierTrackEdit::_bezier_h_to_pixel(float p_h) {
+	ZoneScoped;
 	float h = p_h;
 	h = (h - v_scroll) / v_zoom;
 	h = (get_size().height / 2.0) - h;
@@ -46,6 +78,7 @@ float AnimationBezierTrackEdit::_bezier_h_to_pixel(float p_h) {
 }
 
 void AnimationBezierTrackEdit::_draw_track(int p_track, const Color &p_color) {
+	ZoneScoped;
 	float scale = timeline->get_zoom_scale();
 
 	int limit = timeline->get_name_limit();
@@ -177,6 +210,7 @@ void AnimationBezierTrackEdit::_draw_track(int p_track, const Color &p_color) {
 }
 
 void AnimationBezierTrackEdit::_draw_line_clipped(const Vector2 &p_from, const Vector2 &p_to, const Color &p_color, int p_clip_left, int p_clip_right) {
+	ZoneScoped;
 	Vector2 from = p_from;
 	Vector2 to = p_to;
 
@@ -209,6 +243,7 @@ void AnimationBezierTrackEdit::_draw_line_clipped(const Vector2 &p_from, const V
 }
 
 void AnimationBezierTrackEdit::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
 			panner->setup((ViewPanner::ControlScheme)EDITOR_GET("editors/panning/animation_editors_panning_scheme").operator int(), ED_GET_SHORTCUT("canvas_item_editor/pan_view"), bool(EDITOR_GET("editors/panning/simple_panning")));
@@ -641,10 +676,12 @@ void AnimationBezierTrackEdit::_notification(int p_what) {
 }
 
 Ref<Animation> AnimationBezierTrackEdit::get_animation() const {
+	ZoneScoped;
 	return animation;
 }
 
 void AnimationBezierTrackEdit::set_animation_and_track(const Ref<Animation> &p_animation, int p_track, bool p_read_only) {
+	ZoneScoped;
 	animation = p_animation;
 	read_only = p_read_only;
 	selected_track = p_track;
@@ -652,26 +689,31 @@ void AnimationBezierTrackEdit::set_animation_and_track(const Ref<Animation> &p_a
 }
 
 Size2 AnimationBezierTrackEdit::get_minimum_size() const {
+	ZoneScoped;
 	return Vector2(1, 1);
 }
 
 void AnimationBezierTrackEdit::set_undo_redo(Ref<EditorUndoRedoManager> p_undo_redo) {
+	ZoneScoped;
 	undo_redo = p_undo_redo;
 }
 
 void AnimationBezierTrackEdit::set_timeline(AnimationTimelineEdit *p_timeline) {
+	ZoneScoped;
 	timeline = p_timeline;
 	timeline->connect("zoom_changed", callable_mp(this, &AnimationBezierTrackEdit::_zoom_changed));
 	timeline->connect("name_limit_changed", callable_mp(this, &AnimationBezierTrackEdit::_zoom_changed));
 }
 
 void AnimationBezierTrackEdit::set_editor(AnimationTrackEditor *p_editor) {
+	ZoneScoped;
 	editor = p_editor;
 	connect("clear_selection", callable_mp(editor, &AnimationTrackEditor::_clear_selection).bind(false));
 	connect("select_key", callable_mp(editor, &AnimationTrackEditor::_key_selected), CONNECT_DEFERRED);
 }
 
 void AnimationBezierTrackEdit::_play_position_draw() {
+	ZoneScoped;
 	if (!animation.is_valid() || play_position_pos < 0) {
 		return;
 	}
@@ -690,19 +732,23 @@ void AnimationBezierTrackEdit::_play_position_draw() {
 }
 
 void AnimationBezierTrackEdit::set_play_position(real_t p_pos) {
+	ZoneScoped;
 	play_position_pos = p_pos;
 	play_position->queue_redraw();
 }
 
 void AnimationBezierTrackEdit::update_play_position() {
+	ZoneScoped;
 	play_position->queue_redraw();
 }
 
 void AnimationBezierTrackEdit::set_root(Node *p_root) {
+	ZoneScoped;
 	root = p_root;
 }
 
 void AnimationBezierTrackEdit::set_filtered(bool p_filtered) {
+	ZoneScoped;
 	is_filtered = p_filtered;
 	if (animation == nullptr) {
 		return;
@@ -738,11 +784,13 @@ void AnimationBezierTrackEdit::set_filtered(bool p_filtered) {
 }
 
 void AnimationBezierTrackEdit::_zoom_changed() {
+	ZoneScoped;
 	queue_redraw();
 	play_position->queue_redraw();
 }
 
 void AnimationBezierTrackEdit::_update_locked_tracks_after(int p_track) {
+	ZoneScoped;
 	if (locked_tracks.has(p_track)) {
 		locked_tracks.erase(p_track);
 	}
@@ -762,6 +810,7 @@ void AnimationBezierTrackEdit::_update_locked_tracks_after(int p_track) {
 }
 
 void AnimationBezierTrackEdit::_update_hidden_tracks_after(int p_track) {
+	ZoneScoped;
 	if (hidden_tracks.has(p_track)) {
 		hidden_tracks.erase(p_track);
 	}
@@ -781,16 +830,19 @@ void AnimationBezierTrackEdit::_update_hidden_tracks_after(int p_track) {
 }
 
 String AnimationBezierTrackEdit::get_tooltip(const Point2 &p_pos) const {
+	ZoneScoped;
 	return Control::get_tooltip(p_pos);
 }
 
 void AnimationBezierTrackEdit::_clear_selection() {
+	ZoneScoped;
 	selection.clear();
 	emit_signal(SNAME("clear_selection"));
 	queue_redraw();
 }
 
 void AnimationBezierTrackEdit::_change_selected_keys_handle_mode(Animation::HandleMode p_mode, bool p_auto) {
+	ZoneScoped;
 	undo_redo->create_action(TTR("Update Selected Key Handles"));
 	for (SelectionSet::Element *E = selection.back(); E; E = E->prev()) {
 		const IntPair track_key_pair = E->get();
@@ -803,6 +855,7 @@ void AnimationBezierTrackEdit::_change_selected_keys_handle_mode(Animation::Hand
 }
 
 void AnimationBezierTrackEdit::_clear_selection_for_anim(const Ref<Animation> &p_anim) {
+	ZoneScoped;
 	if (!(animation == p_anim)) {
 		return;
 	}
@@ -810,6 +863,7 @@ void AnimationBezierTrackEdit::_clear_selection_for_anim(const Ref<Animation> &p
 }
 
 void AnimationBezierTrackEdit::_select_at_anim(const Ref<Animation> &p_anim, int p_track, real_t p_pos) {
+	ZoneScoped;
 	if (!(animation == p_anim)) {
 		return;
 	}
@@ -823,6 +877,7 @@ void AnimationBezierTrackEdit::_select_at_anim(const Ref<Animation> &p_anim, int
 }
 
 void AnimationBezierTrackEdit::gui_input(const Ref<InputEvent> &p_event) {
+	ZoneScoped;
 	ERR_FAIL_COND(p_event.is_null());
 
 	if (panner->gui_input(p_event)) {
@@ -1484,10 +1539,12 @@ void AnimationBezierTrackEdit::gui_input(const Ref<InputEvent> &p_event) {
 }
 
 void AnimationBezierTrackEdit::_scroll_callback(Vector2 p_scroll_vec, bool p_alt) {
+	ZoneScoped;
 	_pan_callback(-p_scroll_vec * 32);
 }
 
 void AnimationBezierTrackEdit::_pan_callback(Vector2 p_scroll_vec) {
+	ZoneScoped;
 	v_scroll += p_scroll_vec.y * v_zoom;
 	v_scroll = CLAMP(v_scroll, -100000, 100000);
 	timeline->set_value(timeline->get_value() - p_scroll_vec.x / timeline->get_zoom_scale());
@@ -1495,6 +1552,7 @@ void AnimationBezierTrackEdit::_pan_callback(Vector2 p_scroll_vec) {
 }
 
 void AnimationBezierTrackEdit::_zoom_callback(Vector2 p_scroll_vec, Vector2 p_origin, bool p_alt) {
+	ZoneScoped;
 	const float v_zoom_orig = v_zoom;
 	if (p_alt) {
 		// Alternate zoom (doesn't affect timeline).
@@ -1515,6 +1573,7 @@ void AnimationBezierTrackEdit::_zoom_callback(Vector2 p_scroll_vec, Vector2 p_or
 }
 
 void AnimationBezierTrackEdit::_menu_selected(int p_index) {
+	ZoneScoped;
 	switch (p_index) {
 		case MENU_KEY_INSERT: {
 			if (animation->get_track_count() > 0) {
@@ -1572,6 +1631,7 @@ void AnimationBezierTrackEdit::_menu_selected(int p_index) {
 }
 
 void AnimationBezierTrackEdit::duplicate_selection() {
+	ZoneScoped;
 	if (selection.size() == 0) {
 		return;
 	}
@@ -1628,6 +1688,7 @@ void AnimationBezierTrackEdit::duplicate_selection() {
 }
 
 void AnimationBezierTrackEdit::delete_selection() {
+	ZoneScoped;
 	if (selection.size()) {
 		undo_redo->create_action(TTR("Anim Delete Keys"));
 
@@ -1644,12 +1705,14 @@ void AnimationBezierTrackEdit::delete_selection() {
 }
 
 void AnimationBezierTrackEdit::_bezier_track_insert_key(int p_track, double p_time, real_t p_value, const Vector2 &p_in_handle, const Vector2 &p_out_handle, const Animation::HandleMode p_handle_mode) {
+	ZoneScoped;
 	ERR_FAIL_COND(animation.is_null());
 	int idx = animation->bezier_track_insert_key(p_track, p_time, p_value, p_in_handle, p_out_handle);
 	animation->bezier_track_set_key_handle_mode(p_track, idx, p_handle_mode);
 }
 
 void AnimationBezierTrackEdit::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("_clear_selection"), &AnimationBezierTrackEdit::_clear_selection);
 	ClassDB::bind_method(D_METHOD("_clear_selection_for_anim"), &AnimationBezierTrackEdit::_clear_selection_for_anim);
 	ClassDB::bind_method(D_METHOD("_select_at_anim"), &AnimationBezierTrackEdit::_select_at_anim);
@@ -1671,6 +1734,7 @@ void AnimationBezierTrackEdit::_bind_methods() {
 }
 
 AnimationBezierTrackEdit::AnimationBezierTrackEdit() {
+	ZoneScoped;
 	panner.instantiate();
 	panner->set_callbacks(callable_mp(this, &AnimationBezierTrackEdit::_scroll_callback), callable_mp(this, &AnimationBezierTrackEdit::_pan_callback), callable_mp(this, &AnimationBezierTrackEdit::_zoom_callback));
 

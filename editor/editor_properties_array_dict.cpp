@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_properties_array_dict.cpp                                     */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_properties_array_dict.h"
 
 #include "core/input/input.h"
@@ -37,6 +68,7 @@
 #include "editor/inspector_dock.h"
 
 bool EditorPropertyArrayObject::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScoped;
 	String name = p_name;
 
 	if (name.begins_with("indices")) {
@@ -49,6 +81,7 @@ bool EditorPropertyArrayObject::_set(const StringName &p_name, const Variant &p_
 }
 
 bool EditorPropertyArrayObject::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScoped;
 	String name = p_name;
 
 	if (name.begins_with("indices")) {
@@ -66,10 +99,12 @@ bool EditorPropertyArrayObject::_get(const StringName &p_name, Variant &r_ret) c
 }
 
 void EditorPropertyArrayObject::set_array(const Variant &p_array) {
+	ZoneScoped;
 	array = p_array;
 }
 
 Variant EditorPropertyArrayObject::get_array() {
+	ZoneScoped;
 	return array;
 }
 
@@ -79,6 +114,7 @@ EditorPropertyArrayObject::EditorPropertyArrayObject() {
 ///////////////////
 
 bool EditorPropertyDictionaryObject::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScoped;
 	String name = p_name;
 
 	if (name == "new_item_key") {
@@ -102,6 +138,7 @@ bool EditorPropertyDictionaryObject::_set(const StringName &p_name, const Varian
 }
 
 bool EditorPropertyDictionaryObject::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScoped;
 	String name = p_name;
 
 	if (name == "new_item_key") {
@@ -129,26 +166,32 @@ bool EditorPropertyDictionaryObject::_get(const StringName &p_name, Variant &r_r
 }
 
 void EditorPropertyDictionaryObject::set_dict(const Dictionary &p_dict) {
+	ZoneScoped;
 	dict = p_dict;
 }
 
 Dictionary EditorPropertyDictionaryObject::get_dict() {
+	ZoneScoped;
 	return dict;
 }
 
 void EditorPropertyDictionaryObject::set_new_item_key(const Variant &p_new_item) {
+	ZoneScoped;
 	new_item_key = p_new_item;
 }
 
 Variant EditorPropertyDictionaryObject::get_new_item_key() {
+	ZoneScoped;
 	return new_item_key;
 }
 
 void EditorPropertyDictionaryObject::set_new_item_value(const Variant &p_new_item) {
+	ZoneScoped;
 	new_item_value = p_new_item;
 }
 
 Variant EditorPropertyDictionaryObject::get_new_item_value() {
+	ZoneScoped;
 	return new_item_value;
 }
 
@@ -158,6 +201,7 @@ EditorPropertyDictionaryObject::EditorPropertyDictionaryObject() {
 ///////////////////// ARRAY ///////////////////////////
 
 void EditorPropertyArray::_property_changed(const String &p_property, Variant p_value, const String &p_name, bool p_changing) {
+	ZoneScoped;
 	if (p_property.begins_with("indices")) {
 		int index = p_property.get_slice("/", 1).to_int();
 		Variant array = object->get_array();
@@ -172,6 +216,7 @@ void EditorPropertyArray::_property_changed(const String &p_property, Variant p_
 }
 
 void EditorPropertyArray::_change_type(Object *p_button, int p_index) {
+	ZoneScoped;
 	Button *button = Object::cast_to<Button>(p_button);
 	changing_type_index = p_index;
 	Rect2 rect = button->get_screen_rect();
@@ -181,6 +226,7 @@ void EditorPropertyArray::_change_type(Object *p_button, int p_index) {
 }
 
 void EditorPropertyArray::_change_type_menu(int p_index) {
+	ZoneScoped;
 	if (p_index == Variant::VARIANT_MAX) {
 		_remove_pressed(changing_type_index);
 		return;
@@ -203,10 +249,12 @@ void EditorPropertyArray::_change_type_menu(int p_index) {
 }
 
 void EditorPropertyArray::_object_id_selected(const StringName &p_property, ObjectID p_id) {
+	ZoneScoped;
 	emit_signal(SNAME("object_id_selected"), p_property, p_id);
 }
 
 void EditorPropertyArray::update_property() {
+	ZoneScoped;
 	Variant array = get_edited_object()->get(get_edited_property());
 
 	String array_type_name = Variant::get_type_name(array_type);
@@ -400,6 +448,7 @@ void EditorPropertyArray::update_property() {
 }
 
 void EditorPropertyArray::_remove_pressed(int p_index) {
+	ZoneScoped;
 	Variant array = object->get_array();
 	array.call("remove_at", p_index);
 
@@ -408,6 +457,7 @@ void EditorPropertyArray::_remove_pressed(int p_index) {
 }
 
 void EditorPropertyArray::_button_draw() {
+	ZoneScoped;
 	if (dropping) {
 		Color color = get_theme_color(SNAME("accent_color"), SNAME("Editor"));
 		edit->draw_rect(Rect2(Point2(), edit->get_size()), color, false);
@@ -415,6 +465,7 @@ void EditorPropertyArray::_button_draw() {
 }
 
 bool EditorPropertyArray::_is_drop_valid(const Dictionary &p_drag_data) const {
+	ZoneScoped;
 	if (is_read_only()) {
 		return false;
 	}
@@ -453,10 +504,12 @@ bool EditorPropertyArray::_is_drop_valid(const Dictionary &p_drag_data) const {
 }
 
 bool EditorPropertyArray::can_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) const {
+	ZoneScoped;
 	return _is_drop_valid(p_data);
 }
 
 void EditorPropertyArray::drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) {
+	ZoneScoped;
 	ERR_FAIL_COND(!_is_drop_valid(p_data));
 
 	Dictionary drag_data = p_data;
@@ -494,6 +547,7 @@ void EditorPropertyArray::drop_data_fw(const Point2 &p_point, const Variant &p_d
 }
 
 void EditorPropertyArray::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_THEME_CHANGED:
 		case NOTIFICATION_ENTER_TREE: {
@@ -534,6 +588,7 @@ void EditorPropertyArray::_notification(int p_what) {
 }
 
 void EditorPropertyArray::_edit_pressed() {
+	ZoneScoped;
 	Variant array = get_edited_object()->get(get_edited_property());
 	if (!array.is_array()) {
 		Callable::CallError ce;
@@ -547,6 +602,7 @@ void EditorPropertyArray::_edit_pressed() {
 }
 
 void EditorPropertyArray::_page_changed(int p_page) {
+	ZoneScoped;
 	if (updating) {
 		return;
 	}
@@ -555,6 +611,7 @@ void EditorPropertyArray::_page_changed(int p_page) {
 }
 
 void EditorPropertyArray::_length_changed(double p_page) {
+	ZoneScoped;
 	if (updating) {
 		return;
 	}
@@ -594,10 +651,12 @@ void EditorPropertyArray::_length_changed(double p_page) {
 }
 
 void EditorPropertyArray::_add_element() {
+	ZoneScoped;
 	_length_changed(double(object->get_array().call("size")) + 1.0);
 }
 
 void EditorPropertyArray::setup(Variant::Type p_array_type, const String &p_hint_string) {
+	ZoneScoped;
 	array_type = p_array_type;
 
 	// The format of p_hint_string is:
@@ -619,6 +678,7 @@ void EditorPropertyArray::setup(Variant::Type p_array_type, const String &p_hint
 }
 
 void EditorPropertyArray::_reorder_button_gui_input(const Ref<InputEvent> &p_event) {
+	ZoneScoped;
 	if (reorder_from_index < 0 || is_read_only()) {
 		return;
 	}
@@ -656,6 +716,7 @@ void EditorPropertyArray::_reorder_button_gui_input(const Ref<InputEvent> &p_eve
 }
 
 void EditorPropertyArray::_reorder_button_down(int p_index) {
+	ZoneScoped;
 	if (is_read_only()) {
 		return;
 	}
@@ -670,6 +731,7 @@ void EditorPropertyArray::_reorder_button_down(int p_index) {
 }
 
 void EditorPropertyArray::_reorder_button_up() {
+	ZoneScoped;
 	if (is_read_only()) {
 		return;
 	}
@@ -699,11 +761,13 @@ void EditorPropertyArray::_reorder_button_up() {
 }
 
 void EditorPropertyArray::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("_can_drop_data_fw"), &EditorPropertyArray::can_drop_data_fw);
 	ClassDB::bind_method(D_METHOD("_drop_data_fw"), &EditorPropertyArray::drop_data_fw);
 }
 
 EditorPropertyArray::EditorPropertyArray() {
+	ZoneScoped;
 	object.instantiate();
 	page_length = int(EDITOR_GET("interface/inspector/max_array_dictionary_items_per_page"));
 
@@ -735,6 +799,7 @@ EditorPropertyArray::EditorPropertyArray() {
 ///////////////////// DICTIONARY ///////////////////////////
 
 void EditorPropertyDictionary::_property_changed(const String &p_property, Variant p_value, const String &p_name, bool p_changing) {
+	ZoneScoped;
 	if (p_property == "new_item_key") {
 		object->set_new_item_key(p_value);
 	} else if (p_property == "new_item_value") {
@@ -753,6 +818,7 @@ void EditorPropertyDictionary::_property_changed(const String &p_property, Varia
 }
 
 void EditorPropertyDictionary::_change_type(Object *p_button, int p_index) {
+	ZoneScoped;
 	Button *button = Object::cast_to<Button>(p_button);
 
 	Rect2 rect = button->get_screen_rect();
@@ -782,6 +848,7 @@ void EditorPropertyDictionary::_add_key_value() {
 }
 
 void EditorPropertyDictionary::_change_type_menu(int p_index) {
+	ZoneScoped;
 	if (changing_type_index < 0) {
 		Variant value;
 		Callable::CallError ce;
@@ -816,6 +883,7 @@ void EditorPropertyDictionary::_change_type_menu(int p_index) {
 }
 
 void EditorPropertyDictionary::update_property() {
+	ZoneScoped;
 	Variant updated_val = get_edited_object()->get(get_edited_property());
 
 	if (updated_val.get_type() == Variant::NIL) {
@@ -1185,10 +1253,12 @@ void EditorPropertyDictionary::update_property() {
 }
 
 void EditorPropertyDictionary::_object_id_selected(const StringName &p_property, ObjectID p_id) {
+	ZoneScoped;
 	emit_signal(SNAME("object_id_selected"), p_property, p_id);
 }
 
 void EditorPropertyDictionary::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_THEME_CHANGED:
 		case NOTIFICATION_ENTER_TREE: {
@@ -1213,6 +1283,7 @@ void EditorPropertyDictionary::_notification(int p_what) {
 }
 
 void EditorPropertyDictionary::_edit_pressed() {
+	ZoneScoped;
 	Variant prop_val = get_edited_object()->get(get_edited_property());
 	if (prop_val.get_type() == Variant::NIL) {
 		Callable::CallError ce;
@@ -1225,6 +1296,7 @@ void EditorPropertyDictionary::_edit_pressed() {
 }
 
 void EditorPropertyDictionary::_page_changed(int p_page) {
+	ZoneScoped;
 	if (updating) {
 		return;
 	}
@@ -1236,6 +1308,7 @@ void EditorPropertyDictionary::_bind_methods() {
 }
 
 EditorPropertyDictionary::EditorPropertyDictionary() {
+	ZoneScoped;
 	object.instantiate();
 	page_length = int(EDITOR_GET("interface/inspector/max_array_dictionary_items_per_page"));
 
@@ -1259,6 +1332,7 @@ EditorPropertyDictionary::EditorPropertyDictionary() {
 ///////////////////// LOCALIZABLE STRING ///////////////////////////
 
 void EditorPropertyLocalizableString::_property_changed(const String &p_property, Variant p_value, const String &p_name, bool p_changing) {
+	ZoneScoped;
 	if (p_property.begins_with("indices")) {
 		int index = p_property.get_slice("/", 1).to_int();
 		Dictionary dict = object->get_dict();
@@ -1273,10 +1347,12 @@ void EditorPropertyLocalizableString::_property_changed(const String &p_property
 }
 
 void EditorPropertyLocalizableString::_add_locale_popup() {
+	ZoneScoped;
 	locale_select->popup_locale_dialog();
 }
 
 void EditorPropertyLocalizableString::_add_locale(const String &p_locale) {
+	ZoneScoped;
 	Dictionary dict = object->get_dict();
 
 	object->set_new_item_key(p_locale);
@@ -1291,6 +1367,7 @@ void EditorPropertyLocalizableString::_add_locale(const String &p_locale) {
 }
 
 void EditorPropertyLocalizableString::_remove_item(Object *p_button, int p_index) {
+	ZoneScoped;
 	Dictionary dict = object->get_dict();
 
 	Variant key = dict.get_key_at_index(p_index);
@@ -1304,6 +1381,7 @@ void EditorPropertyLocalizableString::_remove_item(Object *p_button, int p_index
 }
 
 void EditorPropertyLocalizableString::update_property() {
+	ZoneScoped;
 	Variant updated_val = get_edited_object()->get(get_edited_property());
 
 	if (updated_val.get_type() == Variant::NIL) {
@@ -1424,10 +1502,12 @@ void EditorPropertyLocalizableString::update_property() {
 }
 
 void EditorPropertyLocalizableString::_object_id_selected(const StringName &p_property, ObjectID p_id) {
+	ZoneScoped;
 	emit_signal(SNAME("object_id_selected"), p_property, p_id);
 }
 
 void EditorPropertyLocalizableString::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_THEME_CHANGED:
 		case NOTIFICATION_ENTER_TREE: {
@@ -1439,6 +1519,7 @@ void EditorPropertyLocalizableString::_notification(int p_what) {
 }
 
 void EditorPropertyLocalizableString::_edit_pressed() {
+	ZoneScoped;
 	Variant prop_val = get_edited_object()->get(get_edited_property());
 	if (prop_val.get_type() == Variant::NIL) {
 		Callable::CallError ce;
@@ -1451,6 +1532,7 @@ void EditorPropertyLocalizableString::_edit_pressed() {
 }
 
 void EditorPropertyLocalizableString::_page_changed(int p_page) {
+	ZoneScoped;
 	if (updating) {
 		return;
 	}
@@ -1462,6 +1544,7 @@ void EditorPropertyLocalizableString::_bind_methods() {
 }
 
 EditorPropertyLocalizableString::EditorPropertyLocalizableString() {
+	ZoneScoped;
 	object.instantiate();
 	page_length = int(EDITOR_GET("interface/inspector/max_array_dictionary_items_per_page"));
 

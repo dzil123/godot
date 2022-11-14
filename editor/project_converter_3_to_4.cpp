@@ -43,6 +43,7 @@ const int ERROR_CODE = 77;
 #include "core/templates/hash_map.h"
 #include "core/templates/list.h"
 #include "core/templates/local_vector.h"
+#include "modules/tracy/include.h"
 
 static const char *enum_renames[][2] = {
 	//// constants
@@ -1946,12 +1947,14 @@ public:
 };
 
 ProjectConverter3To4::ProjectConverter3To4(int p_maximum_file_size_kb, int p_maximum_line_length) {
+	ZoneScoped;
 	maximum_file_size = p_maximum_file_size_kb * 1024;
 	maximum_line_length = p_maximum_line_length;
 }
 
 // Function responsible for converting project.
 int ProjectConverter3To4::convert() {
+	ZoneScoped;
 	print_line("Starting conversion.");
 	uint64_t conversion_start_time = Time::get_singleton()->get_ticks_msec();
 
@@ -2124,6 +2127,7 @@ int ProjectConverter3To4::convert() {
 
 // Function responsible for validating project conversion.
 int ProjectConverter3To4::validate_conversion() {
+	ZoneScoped;
 	print_line("Starting checking if project conversion can be done.");
 	uint64_t conversion_start_time = Time::get_singleton()->get_ticks_msec();
 
@@ -2282,6 +2286,7 @@ int ProjectConverter3To4::validate_conversion() {
 
 // Collect files which will be checked, excluding ".txt", ".mp4", ".wav" etc. files.
 Vector<String> ProjectConverter3To4::check_for_files() {
+	ZoneScoped;
 	Vector<String> collected_files = Vector<String>();
 
 	Vector<String> directories_to_check = Vector<String>();
@@ -2325,6 +2330,7 @@ Vector<String> ProjectConverter3To4::check_for_files() {
 
 // Test expected results of gdscript
 bool ProjectConverter3To4::test_conversion_gdscript_builtin(String name, String expected, void (ProjectConverter3To4::*func)(Vector<String> &, const RegExContainer &, bool), String what, const RegExContainer &reg_container, bool builtin_script) {
+	ZoneScoped;
 	Vector<String> got = name.split("\n");
 	(this->*func)(got, reg_container, builtin_script);
 	String got_str = collect_string_from_vector(got);
@@ -2334,6 +2340,7 @@ bool ProjectConverter3To4::test_conversion_gdscript_builtin(String name, String 
 }
 
 bool ProjectConverter3To4::test_conversion_with_regex(String name, String expected, void (ProjectConverter3To4::*func)(Vector<String> &, const RegExContainer &), String what, const RegExContainer &reg_container) {
+	ZoneScoped;
 	Vector<String> got = name.split("\n");
 	(this->*func)(got, reg_container);
 	String got_str = collect_string_from_vector(got);
@@ -2343,6 +2350,7 @@ bool ProjectConverter3To4::test_conversion_with_regex(String name, String expect
 }
 
 bool ProjectConverter3To4::test_conversion_basic(String name, String expected, const char *array[][2], LocalVector<RegEx *> &regex_cache, String what) {
+	ZoneScoped;
 	Vector<String> got = name.split("\n");
 	rename_common(array, regex_cache, got);
 	String got_str = collect_string_from_vector(got);
@@ -2353,6 +2361,7 @@ bool ProjectConverter3To4::test_conversion_basic(String name, String expected, c
 
 // Validate if conversions are proper.
 bool ProjectConverter3To4::test_conversion(RegExContainer &reg_container) {
+	ZoneScoped;
 	bool valid = true;
 
 	valid = valid && test_conversion_basic("TYPE_REAL", "TYPE_FLOAT", enum_renames, reg_container.enum_regexes, "enum");
@@ -2649,6 +2658,7 @@ return valid;
 
 // Validate in all arrays if names don't do cyclic renames "Node" -> "Node2D" | "Node2D" -> "2DNode"
 bool ProjectConverter3To4::test_array_names() {
+	ZoneScoped;
 	bool valid = true;
 	Vector<String> names = Vector<String>();
 
@@ -2737,6 +2747,7 @@ bool ProjectConverter3To4::test_array_names() {
 // Validates the array to prevent cyclic renames, such as `Node` -> `Node2D`, then `Node2D` -> `2DNode`.
 // Also checks if names contain leading or trailing spaces.
 bool ProjectConverter3To4::test_single_array(const char *p_array[][2], bool p_ignore_4_0_name) {
+	ZoneScoped;
 	bool valid = true;
 	Vector<String> names = Vector<String>();
 
@@ -2771,6 +2782,7 @@ bool ProjectConverter3To4::test_single_array(const char *p_array[][2], bool p_ig
 // Returns arguments from given function execution, this cannot be really done as regex.
 // `abc(d,e(f,g),h)` -> [d], [e(f,g)], [h]
 Vector<String> ProjectConverter3To4::parse_arguments(const String &line) {
+	ZoneScoped;
 	Vector<String> parts;
 	int string_size = line.length();
 	int start_part = 0; // Index of beginning of start part.
@@ -2842,6 +2854,7 @@ Vector<String> ProjectConverter3To4::parse_arguments(const String &line) {
 // Finds latest parenthesis owned by function.
 // `function(abc(a,b),DD)):` finds this parenthess `function(abc(a,b),DD => ) <= ):`
 int ProjectConverter3To4::get_end_parenthesis(const String &line) const {
+	ZoneScoped;
 	int current_state = 0;
 	for (int current_index = 0; line.length() > current_index; current_index++) {
 		char32_t character = line.get(current_index);
@@ -2861,6 +2874,7 @@ int ProjectConverter3To4::get_end_parenthesis(const String &line) const {
 // Merges multiple arguments into a single String.
 // Needed when after processing e.g. 2 arguments, later arguments are not changed in any way.
 String ProjectConverter3To4::connect_arguments(const Vector<String> &arguments, int from, int to) const {
+	ZoneScoped;
 	if (to == -1) {
 		to = arguments.size();
 	}
@@ -2881,6 +2895,7 @@ String ProjectConverter3To4::connect_arguments(const Vector<String> &arguments, 
 
 // Returns the indentation (spaces and tabs) at the start of the line e.g. `\t\tmove_this` returns `\t\t`.
 String ProjectConverter3To4::get_starting_space(const String &line) const {
+	ZoneScoped;
 	String empty_space;
 	int current_character = 0;
 
@@ -2914,6 +2929,7 @@ String ProjectConverter3To4::get_starting_space(const String &line) const {
 // Returns the object that’s executing the function in the line.
 // e.g. Passing the line "var roman = kieliszek.funkcja()" to this function returns "kieliszek".
 String ProjectConverter3To4::get_object_of_execution(const String &line) const {
+	ZoneScoped;
 	int end = line.size() - 1; // Last one is \0
 	int variable_start = end - 1;
 	int start = end - 1;
@@ -2955,6 +2971,7 @@ String ProjectConverter3To4::get_object_of_execution(const String &line) const {
 }
 
 void ProjectConverter3To4::rename_colors(Vector<String> &lines, const RegExContainer &reg_container) {
+	ZoneScoped;
 	for (String &line : lines) {
 		if (uint64_t(line.length()) <= maximum_line_length) {
 			if (line.contains("Color.")) {
@@ -2967,6 +2984,7 @@ void ProjectConverter3To4::rename_colors(Vector<String> &lines, const RegExConta
 };
 
 Vector<String> ProjectConverter3To4::check_for_rename_colors(Vector<String> &lines, const RegExContainer &reg_container) {
+	ZoneScoped;
 	Vector<String> found_renames;
 
 	int current_line = 1;
@@ -2988,6 +3006,7 @@ Vector<String> ProjectConverter3To4::check_for_rename_colors(Vector<String> &lin
 }
 
 void ProjectConverter3To4::rename_classes(Vector<String> &lines, const RegExContainer &reg_container) {
+	ZoneScoped;
 	for (String &line : lines) {
 		if (uint64_t(line.length()) <= maximum_line_length) {
 			for (unsigned int current_index = 0; class_renames[current_index][0]; current_index++) {
@@ -3017,6 +3036,7 @@ void ProjectConverter3To4::rename_classes(Vector<String> &lines, const RegExCont
 };
 
 Vector<String> ProjectConverter3To4::check_for_rename_classes(Vector<String> &lines, const RegExContainer &reg_container) {
+	ZoneScoped;
 	Vector<String> found_renames;
 
 	int current_line = 1;
@@ -3056,6 +3076,7 @@ Vector<String> ProjectConverter3To4::check_for_rename_classes(Vector<String> &li
 }
 
 void ProjectConverter3To4::rename_gdscript_functions(Vector<String> &lines, const RegExContainer &reg_container, bool builtin) {
+	ZoneScoped;
 	for (String &line : lines) {
 		if (uint64_t(line.length()) <= maximum_line_length) {
 			process_gdscript_line(line, reg_container, builtin);
@@ -3064,6 +3085,7 @@ void ProjectConverter3To4::rename_gdscript_functions(Vector<String> &lines, cons
 };
 
 Vector<String> ProjectConverter3To4::check_for_rename_gdscript_functions(Vector<String> &lines, const RegExContainer &reg_container, bool builtin) {
+	ZoneScoped;
 	int current_line = 1;
 
 	Vector<String> found_renames;
@@ -3660,6 +3682,7 @@ void ProjectConverter3To4::process_gdscript_line(String &line, const RegExContai
 }
 
 void ProjectConverter3To4::process_csharp_line(String &line, const RegExContainer &reg_container) {
+	ZoneScoped;
 	line = line.replace("OS.GetWindowSafeArea()", "DisplayServer.ScreenGetUsableRect()");
 
 	// -- Connect(,,,things) -> Connect(,Callable(,),things)      Object
@@ -3701,6 +3724,7 @@ void ProjectConverter3To4::process_csharp_line(String &line, const RegExContaine
 }
 
 void ProjectConverter3To4::rename_csharp_functions(Vector<String> &lines, const RegExContainer &reg_container) {
+	ZoneScoped;
 	for (String &line : lines) {
 		if (uint64_t(line.length()) <= maximum_line_length) {
 			process_csharp_line(line, reg_container);
@@ -3709,6 +3733,7 @@ void ProjectConverter3To4::rename_csharp_functions(Vector<String> &lines, const 
 };
 
 Vector<String> ProjectConverter3To4::check_for_rename_csharp_functions(Vector<String> &lines, const RegExContainer &reg_container) {
+	ZoneScoped;
 	int current_line = 1;
 
 	Vector<String> found_renames;
@@ -3727,6 +3752,7 @@ Vector<String> ProjectConverter3To4::check_for_rename_csharp_functions(Vector<St
 }
 
 void ProjectConverter3To4::rename_csharp_attributes(Vector<String> &lines, const RegExContainer &reg_container) {
+	ZoneScoped;
 	static String error_message = "The master and mastersync rpc behavior is not officially supported anymore. Try using another keyword or making custom logic using Multiplayer.GetRemoteSenderId()\n";
 
 	for (String &line : lines) {
@@ -3742,6 +3768,7 @@ void ProjectConverter3To4::rename_csharp_attributes(Vector<String> &lines, const
 }
 
 Vector<String> ProjectConverter3To4::check_for_rename_csharp_attributes(Vector<String> &lines, const RegExContainer &reg_container) {
+	ZoneScoped;
 	int current_line = 1;
 
 	Vector<String> found_renames;
@@ -3792,6 +3819,7 @@ Vector<String> ProjectConverter3To4::check_for_rename_csharp_attributes(Vector<S
 }
 
 void ProjectConverter3To4::rename_gdscript_keywords(Vector<String> &lines, const RegExContainer &reg_container) {
+	ZoneScoped;
 	static String error_message = "The master and mastersync rpc behavior is not officially supported anymore. Try using another keyword or making custom logic using get_multiplayer().get_remote_sender_id()\n";
 
 	for (String &line : lines) {
@@ -3837,6 +3865,7 @@ void ProjectConverter3To4::rename_gdscript_keywords(Vector<String> &lines, const
 }
 
 Vector<String> ProjectConverter3To4::check_for_rename_gdscript_keywords(Vector<String> &lines, const RegExContainer &reg_container) {
+	ZoneScoped;
 	Vector<String> found_renames;
 
 	int current_line = 1;
@@ -3947,6 +3976,7 @@ Vector<String> ProjectConverter3To4::check_for_rename_gdscript_keywords(Vector<S
 }
 
 void ProjectConverter3To4::custom_rename(Vector<String> &lines, String from, String to) {
+	ZoneScoped;
 	RegEx reg = RegEx(String("\\b") + from + "\\b");
 	CRASH_COND(!reg.is_valid());
 	for (String &line : lines) {
@@ -3957,6 +3987,7 @@ void ProjectConverter3To4::custom_rename(Vector<String> &lines, String from, Str
 };
 
 Vector<String> ProjectConverter3To4::check_for_custom_rename(Vector<String> &lines, String from, String to) {
+	ZoneScoped;
 	Vector<String> found_renames;
 
 	RegEx reg = RegEx(String("\\b") + from + "\\b");
@@ -3976,6 +4007,7 @@ Vector<String> ProjectConverter3To4::check_for_custom_rename(Vector<String> &lin
 }
 
 void ProjectConverter3To4::rename_common(const char *array[][2], LocalVector<RegEx *> &cached_regexes, Vector<String> &lines) {
+	ZoneScoped;
 	for (String &line : lines) {
 		if (uint64_t(line.length()) <= maximum_line_length) {
 			for (unsigned int current_index = 0; current_index < cached_regexes.size(); current_index++) {
@@ -3988,6 +4020,7 @@ void ProjectConverter3To4::rename_common(const char *array[][2], LocalVector<Reg
 }
 
 Vector<String> ProjectConverter3To4::check_for_rename_common(const char *array[][2], LocalVector<RegEx *> &cached_regexes, Vector<String> &lines) {
+	ZoneScoped;
 	Vector<String> found_renames;
 
 	int current_line = 1;
@@ -4012,6 +4045,7 @@ Vector<String> ProjectConverter3To4::check_for_rename_common(const char *array[]
 // Prints full info about renamed things e.g.:
 // Line (67) remove -> remove_at  -  LINE """ doubler._blacklist.remove(0) """
 String ProjectConverter3To4::line_formatter(int current_line, String from, String to, String line) {
+	ZoneScoped;
 	if (from.size() > 200) {
 		from = from.substr(0, 197) + "...";
 	}
@@ -4032,6 +4066,7 @@ String ProjectConverter3To4::line_formatter(int current_line, String from, Strin
 // Prints only full lines e.g.:
 // Line (1) - FULL LINES - """yield(get_tree().create_timer(3), 'timeout')"""  =====>  """ await get_tree().create_timer(3).timeout """
 String ProjectConverter3To4::simple_line_formatter(int current_line, String old_line, String new_line) {
+	ZoneScoped;
 	if (old_line.size() > 1000) {
 		old_line = old_line.substr(0, 997) + "...";
 	}
@@ -4047,6 +4082,7 @@ String ProjectConverter3To4::simple_line_formatter(int current_line, String old_
 
 // Collects string from vector strings
 String ProjectConverter3To4::collect_string_from_vector(Vector<String> &vector) {
+	ZoneScoped;
 	String string = "";
 	for (int i = 0; i < vector.size(); i++) {
 		string += vector[i];
@@ -4063,10 +4099,12 @@ String ProjectConverter3To4::collect_string_from_vector(Vector<String> &vector) 
 ProjectConverter3To4::ProjectConverter3To4(int _p_maximum_file_size_kb, int _p_maximum_line_length) {}
 
 int ProjectConverter3To4::convert() {
+	ZoneScoped;
 	ERR_FAIL_V_MSG(ERROR_CODE, "Can't run converter for Godot 3.x projects, because RegEx module is disabled.");
 }
 
 int ProjectConverter3To4::validate_conversion() {
+	ZoneScoped;
 	ERR_FAIL_V_MSG(ERROR_CODE, "Can't validate conversion for Godot 3.x projects, because RegEx module is disabled.");
 }
 

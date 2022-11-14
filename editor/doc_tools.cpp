@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  doc_tools.cpp                                                        */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "doc_tools.h"
 
 #include "core/config/engine.h"
@@ -47,6 +78,7 @@
 #include "modules/modules_enabled.gen.h" // For mono.
 
 static String _get_indent(const String &p_text) {
+	ZoneScoped;
 	String indent;
 	bool has_text = false;
 	int line_start = 0;
@@ -68,6 +100,7 @@ static String _get_indent(const String &p_text) {
 }
 
 static String _translate_doc_string(const String &p_text) {
+	ZoneScoped;
 	const String indent = _get_indent(p_text);
 	const String message = p_text.dedent().strip_edges();
 	const String translated = TranslationServer::get_singleton()->doc_translate(message, "");
@@ -76,6 +109,7 @@ static String _translate_doc_string(const String &p_text) {
 }
 
 void DocTools::merge_from(const DocTools &p_data) {
+	ZoneScoped;
 	for (KeyValue<String, DocData::ClassDoc> &E : class_list) {
 		DocData::ClassDoc &c = E.value;
 
@@ -307,6 +341,7 @@ void DocTools::merge_from(const DocTools &p_data) {
 }
 
 void DocTools::remove_from(const DocTools &p_data) {
+	ZoneScoped;
 	for (const KeyValue<String, DocData::ClassDoc> &E : p_data.class_list) {
 		if (class_list.has(E.key)) {
 			class_list.erase(E.key);
@@ -315,16 +350,19 @@ void DocTools::remove_from(const DocTools &p_data) {
 }
 
 void DocTools::add_doc(const DocData::ClassDoc &p_class_doc) {
+	ZoneScoped;
 	ERR_FAIL_COND(p_class_doc.name.is_empty());
 	class_list[p_class_doc.name] = p_class_doc;
 }
 
 void DocTools::remove_doc(const String &p_class_name) {
+	ZoneScoped;
 	ERR_FAIL_COND(p_class_name.is_empty() || !class_list.has(p_class_name));
 	class_list.erase(p_class_name);
 }
 
 bool DocTools::has_doc(const String &p_class_name) {
+	ZoneScoped;
 	if (p_class_name.is_empty()) {
 		return false;
 	}
@@ -332,6 +370,7 @@ bool DocTools::has_doc(const String &p_class_name) {
 }
 
 static Variant get_documentation_default_value(const StringName &p_class_name, const StringName &p_property_name, bool &r_default_value_valid) {
+	ZoneScoped;
 	Variant default_value = Variant();
 	r_default_value_valid = false;
 
@@ -1012,6 +1051,7 @@ void DocTools::generate(bool p_basic_types) {
 }
 
 static Error _parse_methods(Ref<XMLParser> &parser, Vector<DocData::MethodDoc> &methods) {
+	ZoneScoped;
 	String section = parser->get_node_name();
 	String element = section.substr(0, section.length() - 1);
 
@@ -1082,6 +1122,7 @@ static Error _parse_methods(Ref<XMLParser> &parser, Vector<DocData::MethodDoc> &
 }
 
 Error DocTools::load_classes(const String &p_dir) {
+	ZoneScoped;
 	Error err;
 	Ref<DirAccess> da = DirAccess::open(p_dir, &err);
 	if (da.is_null()) {
@@ -1110,6 +1151,7 @@ Error DocTools::load_classes(const String &p_dir) {
 }
 
 Error DocTools::erase_classes(const String &p_dir) {
+	ZoneScoped;
 	Error err;
 	Ref<DirAccess> da = DirAccess::open(p_dir, &err);
 	if (da.is_null()) {
@@ -1138,6 +1180,7 @@ Error DocTools::erase_classes(const String &p_dir) {
 }
 
 Error DocTools::_load(Ref<XMLParser> parser) {
+	ZoneScoped;
 	Error err = OK;
 
 	while ((err = parser->read()) == OK) {
@@ -1348,6 +1391,7 @@ Error DocTools::_load(Ref<XMLParser> parser) {
 }
 
 static void _write_string(Ref<FileAccess> f, int p_tablevel, const String &p_string) {
+	ZoneScoped;
 	if (p_string.is_empty()) {
 		return;
 	}
@@ -1359,6 +1403,7 @@ static void _write_string(Ref<FileAccess> f, int p_tablevel, const String &p_str
 }
 
 static void _write_method_doc(Ref<FileAccess> f, const String &p_name, Vector<DocData::MethodDoc> &p_method_docs) {
+	ZoneScoped;
 	if (!p_method_docs.is_empty()) {
 		p_method_docs.sort();
 		_write_string(f, 1, "<" + p_name + "s>");
@@ -1420,6 +1465,7 @@ static void _write_method_doc(Ref<FileAccess> f, const String &p_name, Vector<Do
 }
 
 Error DocTools::save_classes(const String &p_default_path, const HashMap<String, String> &p_class_path) {
+	ZoneScoped;
 	for (KeyValue<String, DocData::ClassDoc> &E : class_list) {
 		DocData::ClassDoc &c = E.value;
 
@@ -1580,6 +1626,7 @@ Error DocTools::save_classes(const String &p_default_path, const HashMap<String,
 }
 
 Error DocTools::load_compressed(const uint8_t *p_data, int p_compressed_size, int p_uncompressed_size) {
+	ZoneScoped;
 	Vector<uint8_t> data;
 	data.resize(p_uncompressed_size);
 	int ret = Compression::decompress(data.ptrw(), p_uncompressed_size, p_data, p_compressed_size, Compression::MODE_DEFLATE);

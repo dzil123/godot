@@ -28,12 +28,44 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_quick_open.cpp                                                */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_quick_open.h"
 
 #include "core/os/keyboard.h"
 #include "editor/editor_node.h"
 
 void EditorQuickOpen::popup_dialog(const StringName &p_base, bool p_enable_multi, bool p_dontclear) {
+	ZoneScoped;
 	base_type = p_base;
 	allow_multi_select = p_enable_multi;
 	search_options->set_select_mode(allow_multi_select ? Tree::SELECT_MULTI : Tree::SELECT_SINGLE);
@@ -52,6 +84,7 @@ void EditorQuickOpen::popup_dialog(const StringName &p_base, bool p_enable_multi
 }
 
 void EditorQuickOpen::_build_search_cache(EditorFileSystemDirectory *p_efsd) {
+	ZoneScoped;
 	for (int i = 0; i < p_efsd->get_subdir_count(); i++) {
 		_build_search_cache(p_efsd->get_subdir(i));
 	}
@@ -91,6 +124,7 @@ void EditorQuickOpen::_build_search_cache(EditorFileSystemDirectory *p_efsd) {
 }
 
 void EditorQuickOpen::_update_search() {
+	ZoneScoped;
 	const String search_text = search_box->get_text();
 	const bool empty_search = search_text.is_empty();
 
@@ -136,6 +170,7 @@ void EditorQuickOpen::_update_search() {
 }
 
 float EditorQuickOpen::_score_path(const String &p_search, const String &p_path) {
+	ZoneScoped;
 	float score = 0.9f + .1f * (p_search.length() / (float)p_path.length());
 
 	// Exact match.
@@ -155,6 +190,7 @@ float EditorQuickOpen::_score_path(const String &p_search, const String &p_path)
 }
 
 void EditorQuickOpen::_confirmed() {
+	ZoneScoped;
 	if (!search_options->get_selected()) {
 		return;
 	}
@@ -164,19 +200,23 @@ void EditorQuickOpen::_confirmed() {
 }
 
 void EditorQuickOpen::cancel_pressed() {
+	ZoneScoped;
 	_cleanup();
 }
 
 void EditorQuickOpen::_cleanup() {
+	ZoneScoped;
 	files.clear();
 	icons.clear();
 }
 
 void EditorQuickOpen::_text_changed(const String &p_newtext) {
+	ZoneScoped;
 	_update_search();
 }
 
 void EditorQuickOpen::_sbox_input(const Ref<InputEvent> &p_ie) {
+	ZoneScoped;
 	Ref<InputEventKey> k = p_ie;
 	if (k.is_valid()) {
 		switch (k->get_keycode()) {
@@ -211,6 +251,7 @@ void EditorQuickOpen::_sbox_input(const Ref<InputEvent> &p_ie) {
 }
 
 String EditorQuickOpen::get_selected() const {
+	ZoneScoped;
 	TreeItem *ti = search_options->get_selected();
 	if (!ti) {
 		return String();
@@ -220,6 +261,7 @@ String EditorQuickOpen::get_selected() const {
 }
 
 Vector<String> EditorQuickOpen::get_selected_files() const {
+	ZoneScoped;
 	Vector<String> selected_files;
 
 	TreeItem *item = search_options->get_next_selected(search_options->get_root());
@@ -232,10 +274,12 @@ Vector<String> EditorQuickOpen::get_selected_files() const {
 }
 
 StringName EditorQuickOpen::get_base_type() const {
+	ZoneScoped;
 	return base_type;
 }
 
 void EditorQuickOpen::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			connect("confirmed", callable_mp(this, &EditorQuickOpen::_confirmed));
@@ -250,14 +294,17 @@ void EditorQuickOpen::_notification(int p_what) {
 }
 
 void EditorQuickOpen::_theme_changed() {
+	ZoneScoped;
 	search_box->set_right_icon(search_options->get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
 }
 
 void EditorQuickOpen::_bind_methods() {
+	ZoneScoped;
 	ADD_SIGNAL(MethodInfo("quick_open"));
 }
 
 EditorQuickOpen::EditorQuickOpen() {
+	ZoneScoped;
 	VBoxContainer *vbc = memnew(VBoxContainer);
 	vbc->connect("theme_changed", callable_mp(this, &EditorQuickOpen::_theme_changed));
 	add_child(vbc);

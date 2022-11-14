@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  inspector_dock.cpp                                                   */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "inspector_dock.h"
 
 #include "editor/editor_file_dialog.h"
@@ -40,6 +71,7 @@
 InspectorDock *InspectorDock::singleton = nullptr;
 
 void InspectorDock::_prepare_menu() {
+	ZoneScoped;
 	PopupMenu *menu = object_menu->get_popup();
 	for (int i = EditorPropertyNameProcessor::STYLE_RAW; i <= EditorPropertyNameProcessor::STYLE_LOCALIZED; i++) {
 		menu->set_item_checked(menu->get_item_index(PROPERTY_NAME_STYLE_RAW + i), i == property_name_style);
@@ -47,14 +79,17 @@ void InspectorDock::_prepare_menu() {
 }
 
 void InspectorDock::_menu_option(int p_option) {
+	ZoneScoped;
 	_menu_option_confirm(p_option, false);
 }
 
 void InspectorDock::_menu_confirm_current() {
+	ZoneScoped;
 	_menu_option_confirm(current_option, true);
 }
 
 void InspectorDock::_menu_option_confirm(int p_option, bool p_confirmed) {
+	ZoneScoped;
 	if (!p_confirmed) {
 		current_option = p_option;
 	}
@@ -214,10 +249,12 @@ void InspectorDock::_menu_option_confirm(int p_option, bool p_confirmed) {
 }
 
 void InspectorDock::_new_resource() {
+	ZoneScoped;
 	new_resource_dialog->popup_create(true);
 }
 
 void InspectorDock::_load_resource(const String &p_type) {
+	ZoneScoped;
 	load_resource_dialog->set_file_mode(EditorFileDialog::FILE_MODE_OPEN_FILE);
 
 	List<String> extensions;
@@ -237,6 +274,7 @@ void InspectorDock::_load_resource(const String &p_type) {
 }
 
 void InspectorDock::_resource_file_selected(String p_file) {
+	ZoneScoped;
 	Ref<Resource> res;
 	if (ResourceLoader::exists(p_file, "")) {
 		res = ResourceLoader::load(p_file);
@@ -256,6 +294,7 @@ void InspectorDock::_resource_file_selected(String p_file) {
 }
 
 void InspectorDock::_save_resource(bool save_as) {
+	ZoneScoped;
 	ObjectID current_id = EditorNode::get_singleton()->get_editor_selection_history()->get_current();
 	Object *current_obj = current_id.is_valid() ? ObjectDB::get_instance(current_id) : nullptr;
 
@@ -271,6 +310,7 @@ void InspectorDock::_save_resource(bool save_as) {
 }
 
 void InspectorDock::_unref_resource() {
+	ZoneScoped;
 	ObjectID current_id = EditorNode::get_singleton()->get_editor_selection_history()->get_current();
 	Object *current_obj = current_id.is_valid() ? ObjectDB::get_instance(current_id) : nullptr;
 
@@ -282,6 +322,7 @@ void InspectorDock::_unref_resource() {
 }
 
 void InspectorDock::_copy_resource() {
+	ZoneScoped;
 	ObjectID current_id = EditorNode::get_singleton()->get_editor_selection_history()->get_current();
 	Object *current_obj = current_id.is_valid() ? ObjectDB::get_instance(current_id) : nullptr;
 
@@ -293,6 +334,7 @@ void InspectorDock::_copy_resource() {
 }
 
 void InspectorDock::_paste_resource() {
+	ZoneScoped;
 	Ref<Resource> r = EditorSettings::get_singleton()->get_resource_clipboard();
 	if (r.is_valid()) {
 		EditorNode::get_singleton()->push_item(EditorSettings::get_singleton()->get_resource_clipboard().ptr(), String());
@@ -300,12 +342,14 @@ void InspectorDock::_paste_resource() {
 }
 
 void InspectorDock::_prepare_resource_extra_popup() {
+	ZoneScoped;
 	Ref<Resource> r = EditorSettings::get_singleton()->get_resource_clipboard();
 	PopupMenu *popup = resource_extra_button->get_popup();
 	popup->set_item_disabled(popup->get_item_index(RESOURCE_EDIT_CLIPBOARD), r.is_null());
 }
 
 void InspectorDock::_prepare_history() {
+	ZoneScoped;
 	EditorSelectionHistory *editor_history = EditorNode::get_singleton()->get_editor_selection_history();
 
 	int history_to = MAX(0, editor_history->get_history_len() - 25);
@@ -365,6 +409,7 @@ void InspectorDock::_select_history(int p_idx) {
 }
 
 void InspectorDock::_resource_created() {
+	ZoneScoped;
 	Variant c = new_resource_dialog->instance_selected();
 
 	ERR_FAIL_COND(!c);
@@ -375,6 +420,7 @@ void InspectorDock::_resource_created() {
 }
 
 void InspectorDock::_resource_selected(const Ref<Resource> &p_res, const String &p_property) {
+	ZoneScoped;
 	if (p_res.is_null()) {
 		return;
 	}
@@ -384,12 +430,14 @@ void InspectorDock::_resource_selected(const Ref<Resource> &p_res, const String 
 }
 
 void InspectorDock::_edit_forward() {
+	ZoneScoped;
 	if (EditorNode::get_singleton()->get_editor_selection_history()->next()) {
 		EditorNode::get_singleton()->edit_current();
 	}
 }
 
 void InspectorDock::_edit_back() {
+	ZoneScoped;
 	EditorSelectionHistory *editor_history = EditorNode::get_singleton()->get_editor_selection_history();
 	if ((current && editor_history->previous()) || editor_history->get_path_size() == 1) {
 		EditorNode::get_singleton()->edit_current();
@@ -397,26 +445,32 @@ void InspectorDock::_edit_back() {
 }
 
 void InspectorDock::_menu_collapseall() {
+	ZoneScoped;
 	inspector->collapse_all_folding();
 }
 
 void InspectorDock::_menu_expandall() {
+	ZoneScoped;
 	inspector->expand_all_folding();
 }
 
 void InspectorDock::_menu_expand_revertable() {
+	ZoneScoped;
 	inspector->expand_revertable();
 }
 
 void InspectorDock::_info_pressed() {
+	ZoneScoped;
 	info_dialog->popup_centered();
 }
 
 Container *InspectorDock::get_addon_area() {
+	ZoneScoped;
 	return this;
 }
 
 void InspectorDock::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_TRANSLATION_CHANGED:
@@ -457,6 +511,7 @@ void InspectorDock::_notification(int p_what) {
 }
 
 void InspectorDock::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method("_unref_resource", &InspectorDock::_unref_resource);
 	ClassDB::bind_method("_paste_resource", &InspectorDock::_paste_resource);
 	ClassDB::bind_method("_copy_resource", &InspectorDock::_copy_resource);
@@ -473,14 +528,17 @@ void InspectorDock::_bind_methods() {
 }
 
 void InspectorDock::edit_resource(const Ref<Resource> &p_resource) {
+	ZoneScoped;
 	_resource_selected(p_resource, "");
 }
 
 void InspectorDock::open_resource(const String &p_type) {
+	ZoneScoped;
 	_load_resource(p_type);
 }
 
 void InspectorDock::set_info(const String &p_button_text, const String &p_message, bool p_is_warning) {
+	ZoneScoped;
 	info->hide();
 	info_is_warning = p_is_warning;
 
@@ -503,6 +561,7 @@ void InspectorDock::clear() {
 }
 
 void InspectorDock::update(Object *p_object) {
+	ZoneScoped;
 	EditorSelectionHistory *editor_history = EditorNode::get_singleton()->get_editor_selection_history();
 	backward_button->set_disabled(editor_history->is_at_beginning());
 	forward_button->set_disabled(editor_history->is_at_end());
@@ -587,14 +646,17 @@ void InspectorDock::update(Object *p_object) {
 }
 
 void InspectorDock::go_back() {
+	ZoneScoped;
 	_edit_back();
 }
 
 EditorPropertyNameProcessor::Style InspectorDock::get_property_name_style() const {
+	ZoneScoped;
 	return property_name_style;
 }
 
 void InspectorDock::store_script_properties(Object *p_object) {
+	ZoneScoped;
 	ERR_FAIL_NULL(p_object);
 	ScriptInstance *si = p_object->get_script_instance();
 	if (!si) {
@@ -604,6 +666,7 @@ void InspectorDock::store_script_properties(Object *p_object) {
 }
 
 void InspectorDock::apply_script_properties(Object *p_object) {
+	ZoneScoped;
 	ERR_FAIL_NULL(p_object);
 	ScriptInstance *si = p_object->get_script_instance();
 	if (!si) {
@@ -620,6 +683,7 @@ void InspectorDock::apply_script_properties(Object *p_object) {
 }
 
 InspectorDock::InspectorDock(EditorData &p_editor_data) {
+	ZoneScoped;
 	singleton = this;
 	set_name("Inspector");
 
@@ -777,5 +841,6 @@ InspectorDock::InspectorDock(EditorData &p_editor_data) {
 }
 
 InspectorDock::~InspectorDock() {
+	ZoneScoped;
 	singleton = nullptr;
 }

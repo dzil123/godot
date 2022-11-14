@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_translation_parser.cpp                                        */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_translation_parser.h"
 
 #include "core/error/error_macros.h"
@@ -38,6 +69,7 @@
 EditorTranslationParser *EditorTranslationParser::singleton = nullptr;
 
 Error EditorTranslationParserPlugin::parse_file(const String &p_path, Vector<String> *r_ids, Vector<Vector<String>> *r_ids_ctx_plural) {
+	ZoneScoped;
 	TypedArray<String> ids;
 	TypedArray<Array> ids_ctx_plural;
 
@@ -66,6 +98,7 @@ Error EditorTranslationParserPlugin::parse_file(const String &p_path, Vector<Str
 }
 
 void EditorTranslationParserPlugin::get_recognized_extensions(List<String> *r_extensions) const {
+	ZoneScoped;
 	Vector<String> extensions;
 	if (GDVIRTUAL_CALL(_get_recognized_extensions, extensions)) {
 		for (int i = 0; i < extensions.size(); i++) {
@@ -77,6 +110,7 @@ void EditorTranslationParserPlugin::get_recognized_extensions(List<String> *r_ex
 }
 
 void EditorTranslationParserPlugin::_bind_methods() {
+	ZoneScoped;
 	GDVIRTUAL_BIND(_parse_file, "path", "msgids", "msgids_context_plural");
 	GDVIRTUAL_BIND(_get_recognized_extensions);
 }
@@ -84,6 +118,7 @@ void EditorTranslationParserPlugin::_bind_methods() {
 /////////////////////////
 
 void EditorTranslationParser::get_recognized_extensions(List<String> *r_extensions) const {
+	ZoneScoped;
 	HashSet<String> extensions;
 	List<String> temp;
 	for (int i = 0; i < standard_parsers.size(); i++) {
@@ -102,6 +137,7 @@ void EditorTranslationParser::get_recognized_extensions(List<String> *r_extensio
 }
 
 bool EditorTranslationParser::can_parse(const String &p_extension) const {
+	ZoneScoped;
 	List<String> extensions;
 	get_recognized_extensions(&extensions);
 	for (int i = 0; i < extensions.size(); i++) {
@@ -140,6 +176,7 @@ Ref<EditorTranslationParserPlugin> EditorTranslationParser::get_parser(const Str
 }
 
 void EditorTranslationParser::add_parser(const Ref<EditorTranslationParserPlugin> &p_parser, ParserType p_type) {
+	ZoneScoped;
 	if (p_type == ParserType::STANDARD) {
 		standard_parsers.push_back(p_parser);
 	} else if (p_type == ParserType::CUSTOM) {
@@ -148,6 +185,7 @@ void EditorTranslationParser::add_parser(const Ref<EditorTranslationParserPlugin
 }
 
 void EditorTranslationParser::remove_parser(const Ref<EditorTranslationParserPlugin> &p_parser, ParserType p_type) {
+	ZoneScoped;
 	if (p_type == ParserType::STANDARD) {
 		standard_parsers.erase(p_parser);
 	} else if (p_type == ParserType::CUSTOM) {
@@ -156,11 +194,13 @@ void EditorTranslationParser::remove_parser(const Ref<EditorTranslationParserPlu
 }
 
 void EditorTranslationParser::clean_parsers() {
+	ZoneScoped;
 	standard_parsers.clear();
 	custom_parsers.clear();
 }
 
 EditorTranslationParser *EditorTranslationParser::get_singleton() {
+	ZoneScoped;
 	if (!singleton) {
 		singleton = memnew(EditorTranslationParser);
 	}
@@ -171,6 +211,7 @@ EditorTranslationParser::EditorTranslationParser() {
 }
 
 EditorTranslationParser::~EditorTranslationParser() {
+	ZoneScoped;
 	memdelete(singleton);
 	singleton = nullptr;
 }

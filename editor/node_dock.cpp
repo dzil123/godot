@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  node_dock.cpp                                                        */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "node_dock.h"
 
 #include "connections_dialog.h"
@@ -35,6 +66,7 @@
 #include "editor/editor_scale.h"
 
 void NodeDock::show_groups() {
+	ZoneScoped;
 	groups_button->set_pressed(true);
 	connections_button->set_pressed(false);
 	groups->show();
@@ -42,6 +74,7 @@ void NodeDock::show_groups() {
 }
 
 void NodeDock::show_connections() {
+	ZoneScoped;
 	groups_button->set_pressed(false);
 	connections_button->set_pressed(true);
 	groups->hide();
@@ -52,6 +85,7 @@ void NodeDock::_bind_methods() {
 }
 
 void NodeDock::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -64,10 +98,12 @@ void NodeDock::_notification(int p_what) {
 NodeDock *NodeDock::singleton = nullptr;
 
 void NodeDock::update_lists() {
+	ZoneScoped;
 	connections->update_tree();
 }
 
 void NodeDock::set_node(Node *p_node) {
+	ZoneScoped;
 	connections->set_node(p_node);
 	groups->set_current(p_node);
 
@@ -89,6 +125,7 @@ void NodeDock::set_node(Node *p_node) {
 }
 
 NodeDock::NodeDock() {
+	ZoneScoped;
 	singleton = this;
 
 	set_name("Node");
@@ -137,5 +174,6 @@ NodeDock::NodeDock() {
 }
 
 NodeDock::~NodeDock() {
+	ZoneScoped;
 	singleton = nullptr;
 }

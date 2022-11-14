@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  action_map_editor.cpp                                                */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor/action_map_editor.h"
 
 #include "editor/editor_scale.h"
@@ -37,6 +68,7 @@
 #include "scene/gui/tree.h"
 
 static bool _is_action_name_valid(const String &p_name) {
+	ZoneScoped;
 	const char32_t *cstr = p_name.get_data();
 	for (int i = 0; cstr[i]; i++) {
 		if (cstr[i] == '/' || cstr[i] == ':' || cstr[i] == '"' ||
@@ -48,6 +80,7 @@ static bool _is_action_name_valid(const String &p_name) {
 }
 
 void ActionMapEditor::_event_config_confirmed() {
+	ZoneScoped;
 	Ref<InputEvent> ev = event_config_dialog->get_event();
 
 	Dictionary new_action = current_action.duplicate();
@@ -66,10 +99,12 @@ void ActionMapEditor::_event_config_confirmed() {
 }
 
 void ActionMapEditor::_add_action_pressed() {
+	ZoneScoped;
 	_add_action(add_edit->get_text());
 }
 
 String ActionMapEditor::_check_new_action_name(const String &p_name) {
+	ZoneScoped;
 	if (p_name.is_empty() || !_is_action_name_valid(p_name)) {
 		return TTR("Invalid action name. It cannot be empty nor contain '/', ':', '=', '\\' or '\"'");
 	}
@@ -82,12 +117,14 @@ String ActionMapEditor::_check_new_action_name(const String &p_name) {
 }
 
 void ActionMapEditor::_add_edit_text_changed(const String &p_name) {
+	ZoneScoped;
 	String error = _check_new_action_name(p_name);
 	add_button->set_tooltip_text(error);
 	add_button->set_disabled(!error.is_empty());
 }
 
 bool ActionMapEditor::_has_action(const String &p_name) const {
+	ZoneScoped;
 	for (const ActionInfo &action_info : actions_cache) {
 		if (p_name == action_info.name) {
 			return true;
@@ -97,6 +134,7 @@ bool ActionMapEditor::_has_action(const String &p_name) const {
 }
 
 void ActionMapEditor::_add_action(const String &p_name) {
+	ZoneScoped;
 	String error = _check_new_action_name(p_name);
 	if (!error.is_empty()) {
 		show_message(error);
@@ -108,6 +146,7 @@ void ActionMapEditor::_add_action(const String &p_name) {
 }
 
 void ActionMapEditor::_action_edited() {
+	ZoneScoped;
 	TreeItem *ti = action_tree->get_edited();
 	if (!ti) {
 		return;
@@ -148,6 +187,7 @@ void ActionMapEditor::_action_edited() {
 }
 
 void ActionMapEditor::_tree_button_pressed(Object *p_item, int p_column, int p_id, MouseButton p_button) {
+	ZoneScoped;
 	if (p_button != MouseButton::LEFT) {
 		return;
 	}
@@ -203,6 +243,7 @@ void ActionMapEditor::_tree_button_pressed(Object *p_item, int p_column, int p_i
 }
 
 void ActionMapEditor::_tree_item_activated() {
+	ZoneScoped;
 	TreeItem *item = action_tree->get_selected();
 
 	if (!item || !item->has_meta("__event")) {
@@ -213,6 +254,7 @@ void ActionMapEditor::_tree_item_activated() {
 }
 
 void ActionMapEditor::set_show_builtin_actions(bool p_show) {
+	ZoneScoped;
 	show_builtin_actions = p_show;
 	show_builtin_actions_checkbutton->set_pressed(p_show);
 
@@ -223,16 +265,19 @@ void ActionMapEditor::set_show_builtin_actions(bool p_show) {
 }
 
 void ActionMapEditor::_search_term_updated(const String &) {
+	ZoneScoped;
 	update_action_list();
 }
 
 void ActionMapEditor::_search_by_event(const Ref<InputEvent> &p_event) {
+	ZoneScoped;
 	if (p_event.is_null() || (p_event->is_pressed() && !p_event->is_echo())) {
 		update_action_list();
 	}
 }
 
 Variant ActionMapEditor::get_drag_data_fw(const Point2 &p_point, Control *p_from) {
+	ZoneScoped;
 	TreeItem *selected = action_tree->get_selected();
 	if (!selected) {
 		return Variant();
@@ -260,6 +305,7 @@ Variant ActionMapEditor::get_drag_data_fw(const Point2 &p_point, Control *p_from
 }
 
 bool ActionMapEditor::can_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) const {
+	ZoneScoped;
 	Dictionary d = p_data;
 	if (!d.has("input_type")) {
 		return false;
@@ -285,6 +331,7 @@ bool ActionMapEditor::can_drop_data_fw(const Point2 &p_point, const Variant &p_d
 }
 
 void ActionMapEditor::drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) {
+	ZoneScoped;
 	if (!can_drop_data_fw(p_point, p_data, p_from)) {
 		return;
 	}
@@ -341,6 +388,7 @@ void ActionMapEditor::drop_data_fw(const Point2 &p_point, const Variant &p_data,
 }
 
 void ActionMapEditor::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -353,6 +401,7 @@ void ActionMapEditor::_notification(int p_what) {
 }
 
 void ActionMapEditor::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("_get_drag_data_fw"), &ActionMapEditor::get_drag_data_fw);
 	ClassDB::bind_method(D_METHOD("_can_drop_data_fw"), &ActionMapEditor::can_drop_data_fw);
 	ClassDB::bind_method(D_METHOD("_drop_data_fw"), &ActionMapEditor::drop_data_fw);
@@ -365,14 +414,17 @@ void ActionMapEditor::_bind_methods() {
 }
 
 LineEdit *ActionMapEditor::get_search_box() const {
+	ZoneScoped;
 	return action_list_search;
 }
 
 InputEventConfigurationDialog *ActionMapEditor::get_configuration_dialog() {
+	ZoneScoped;
 	return event_config_dialog;
 }
 
 bool ActionMapEditor::_should_display_action(const String &p_name, const Array &p_events) const {
+	ZoneScoped;
 	const Ref<InputEvent> search_ev = action_list_search_by_event->get_event();
 	bool event_match = true;
 	if (search_ev.is_valid()) {
@@ -389,6 +441,7 @@ bool ActionMapEditor::_should_display_action(const String &p_name, const Array &
 }
 
 void ActionMapEditor::update_action_list(const Vector<ActionInfo> &p_action_infos) {
+	ZoneScoped;
 	if (!p_action_infos.is_empty()) {
 		actions_cache = p_action_infos;
 	}
@@ -482,11 +535,13 @@ void ActionMapEditor::update_action_list(const Vector<ActionInfo> &p_action_info
 }
 
 void ActionMapEditor::show_message(const String &p_message) {
+	ZoneScoped;
 	message->set_text(p_message);
 	message->popup_centered();
 }
 
 void ActionMapEditor::use_external_search_box(LineEdit *p_searchbox) {
+	ZoneScoped;
 	memdelete(action_list_search);
 	action_list_search = p_searchbox;
 	action_list_search->connect("text_changed", callable_mp(this, &ActionMapEditor::_search_term_updated));

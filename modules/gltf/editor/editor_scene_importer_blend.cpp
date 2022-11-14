@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_scene_importer_blend.cpp                                      */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_scene_importer_blend.h"
 
 #ifdef TOOLS_ENABLED
@@ -50,10 +81,12 @@
 #endif
 
 uint32_t EditorSceneFormatImporterBlend::get_import_flags() const {
+	ZoneScoped;
 	return ImportFlags::IMPORT_SCENE | ImportFlags::IMPORT_ANIMATION;
 }
 
 void EditorSceneFormatImporterBlend::get_extensions(List<String> *r_extensions) const {
+	ZoneScoped;
 	r_extensions->push_back("blend");
 }
 
@@ -252,6 +285,7 @@ Variant EditorSceneFormatImporterBlend::get_option_visibility(const String &p_pa
 }
 
 void EditorSceneFormatImporterBlend::get_import_options(const String &p_path, List<ResourceImporter::ImportOption> *r_options) {
+	ZoneScoped;
 	if (p_path.get_extension().to_lower() != "blend") {
 		return;
 	}
@@ -284,6 +318,7 @@ void EditorSceneFormatImporterBlend::get_import_options(const String &p_path, Li
 ///////////////////////////
 
 static bool _test_blender_path(const String &p_path, String *r_err = nullptr) {
+	ZoneScoped;
 	String path = p_path;
 #ifdef WINDOWS_ENABLED
 	path = path.path_join("blender.exe");
@@ -347,6 +382,7 @@ static bool _test_blender_path(const String &p_path, String *r_err = nullptr) {
 }
 
 bool EditorFileSystemImportFormatSupportQueryBlend::is_active() const {
+	ZoneScoped;
 	bool blend_enabled = GLOBAL_GET("filesystem/import/blender/enabled");
 
 	if (blend_enabled && !_test_blender_path(EDITOR_GET("filesystem/import/blender/blender3_path").operator String())) {
@@ -357,12 +393,14 @@ bool EditorFileSystemImportFormatSupportQueryBlend::is_active() const {
 	return false;
 }
 Vector<String> EditorFileSystemImportFormatSupportQueryBlend::get_file_extensions() const {
+	ZoneScoped;
 	Vector<String> ret;
 	ret.push_back("blend");
 	return ret;
 }
 
 void EditorFileSystemImportFormatSupportQueryBlend::_validate_path(String p_path) {
+	ZoneScoped;
 	String error;
 	bool success = false;
 	if (p_path == "") {
@@ -390,6 +428,7 @@ void EditorFileSystemImportFormatSupportQueryBlend::_validate_path(String p_path
 }
 
 bool EditorFileSystemImportFormatSupportQueryBlend::_autodetect_path(String p_path) {
+	ZoneScoped;
 	if (_test_blender_path(p_path)) {
 		auto_detected_path = p_path;
 		return true;
@@ -398,14 +437,17 @@ bool EditorFileSystemImportFormatSupportQueryBlend::_autodetect_path(String p_pa
 }
 
 void EditorFileSystemImportFormatSupportQueryBlend::_path_confirmed() {
+	ZoneScoped;
 	confirmed = true;
 }
 
 void EditorFileSystemImportFormatSupportQueryBlend::_select_install(String p_path) {
+	ZoneScoped;
 	blender_path->set_text(p_path);
 	_validate_path(p_path);
 }
 void EditorFileSystemImportFormatSupportQueryBlend::_browse_install() {
+	ZoneScoped;
 	if (blender_path->get_text() != String()) {
 		browse_dialog->set_current_dir(blender_path->get_text());
 	}
@@ -414,6 +456,7 @@ void EditorFileSystemImportFormatSupportQueryBlend::_browse_install() {
 }
 
 bool EditorFileSystemImportFormatSupportQueryBlend::query() {
+	ZoneScoped;
 	if (!configure_blender_dialog) {
 		configure_blender_dialog = memnew(ConfirmationDialog);
 		configure_blender_dialog->set_title(TTR("Configure Blender Importer"));

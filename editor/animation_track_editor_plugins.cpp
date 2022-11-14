@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  animation_track_editor_plugins.cpp                                   */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "animation_track_editor_plugins.h"
 
 #include "editor/audio_stream_preview.h"
@@ -43,20 +74,24 @@
 
 /// BOOL ///
 int AnimationTrackEditBool::get_key_height() const {
+	ZoneScoped;
 	Ref<Texture2D> checked = get_theme_icon(SNAME("checked"), SNAME("CheckBox"));
 	return checked->get_height();
 }
 
 Rect2 AnimationTrackEditBool::get_key_rect(int p_index, float p_pixels_sec) {
+	ZoneScoped;
 	Ref<Texture2D> checked = get_theme_icon(SNAME("checked"), SNAME("CheckBox"));
 	return Rect2(-checked->get_width() / 2, 0, checked->get_width(), get_size().height);
 }
 
 bool AnimationTrackEditBool::is_key_selectable_by_distance() const {
+	ZoneScoped;
 	return false;
 }
 
 void AnimationTrackEditBool::draw_key(int p_index, float p_pixels_sec, int p_x, bool p_selected, int p_clip_left, int p_clip_right) {
+	ZoneScoped;
 	bool checked = get_animation()->track_get_key_value(get_track(), p_index);
 	Ref<Texture2D> icon = get_theme_icon(checked ? "checked" : "unchecked", "CheckBox");
 
@@ -81,12 +116,14 @@ void AnimationTrackEditBool::draw_key(int p_index, float p_pixels_sec, int p_x, 
 /// COLOR ///
 
 int AnimationTrackEditColor::get_key_height() const {
+	ZoneScoped;
 	Ref<Font> font = get_theme_font(SNAME("font"), SNAME("Label"));
 	int font_size = get_theme_font_size(SNAME("font_size"), SNAME("Label"));
 	return font->get_height(font_size) * 0.8;
 }
 
 Rect2 AnimationTrackEditColor::get_key_rect(int p_index, float p_pixels_sec) {
+	ZoneScoped;
 	Ref<Font> font = get_theme_font(SNAME("font"), SNAME("Label"));
 	int font_size = get_theme_font_size(SNAME("font_size"), SNAME("Label"));
 	int fh = font->get_height(font_size) * 0.8;
@@ -94,10 +131,12 @@ Rect2 AnimationTrackEditColor::get_key_rect(int p_index, float p_pixels_sec) {
 }
 
 bool AnimationTrackEditColor::is_key_selectable_by_distance() const {
+	ZoneScoped;
 	return false;
 }
 
 void AnimationTrackEditColor::draw_key_link(int p_index, float p_pixels_sec, int p_x, int p_next_x, int p_clip_left, int p_clip_right) {
+	ZoneScoped;
 	Ref<Font> font = get_theme_font(SNAME("font"), SNAME("Label"));
 	int font_size = get_theme_font_size(SNAME("font_size"), SNAME("Label"));
 	int fh = (font->get_height(font_size) * 0.8);
@@ -165,6 +204,7 @@ void AnimationTrackEditColor::draw_key_link(int p_index, float p_pixels_sec, int
 }
 
 void AnimationTrackEditColor::draw_key(int p_index, float p_pixels_sec, int p_x, bool p_selected, int p_clip_left, int p_clip_right) {
+	ZoneScoped;
 	Color color = get_animation()->track_get_key_value(get_track(), p_index);
 
 	Ref<Font> font = get_theme_font(SNAME("font"), SNAME("Label"));
@@ -188,6 +228,7 @@ void AnimationTrackEditColor::draw_key(int p_index, float p_pixels_sec, int p_x,
 /// AUDIO ///
 
 void AnimationTrackEditAudio::_preview_changed(ObjectID p_which) {
+	ZoneScoped;
 	Object *object = ObjectDB::get_instance(id);
 
 	if (!object) {
@@ -202,6 +243,7 @@ void AnimationTrackEditAudio::_preview_changed(ObjectID p_which) {
 }
 
 int AnimationTrackEditAudio::get_key_height() const {
+	ZoneScoped;
 	if (!ObjectDB::get_instance(id)) {
 		return AnimationTrackEdit::get_key_height();
 	}
@@ -212,6 +254,7 @@ int AnimationTrackEditAudio::get_key_height() const {
 }
 
 Rect2 AnimationTrackEditAudio::get_key_rect(int p_index, float p_pixels_sec) {
+	ZoneScoped;
 	Object *object = ObjectDB::get_instance(id);
 
 	if (!object) {
@@ -247,10 +290,12 @@ Rect2 AnimationTrackEditAudio::get_key_rect(int p_index, float p_pixels_sec) {
 }
 
 bool AnimationTrackEditAudio::is_key_selectable_by_distance() const {
+	ZoneScoped;
 	return false;
 }
 
 void AnimationTrackEditAudio::draw_key(int p_index, float p_pixels_sec, int p_x, bool p_selected, int p_clip_left, int p_clip_right) {
+	ZoneScoped;
 	Object *object = ObjectDB::get_instance(id);
 
 	if (!object) {
@@ -350,6 +395,7 @@ void AnimationTrackEditAudio::draw_key(int p_index, float p_pixels_sec, int p_x,
 }
 
 void AnimationTrackEditAudio::set_node(Object *p_object) {
+	ZoneScoped;
 	id = p_object->get_instance_id();
 }
 
@@ -357,12 +403,14 @@ void AnimationTrackEditAudio::_bind_methods() {
 }
 
 AnimationTrackEditAudio::AnimationTrackEditAudio() {
+	ZoneScoped;
 	AudioStreamPreviewGenerator::get_singleton()->connect("preview_updated", callable_mp(this, &AnimationTrackEditAudio::_preview_changed));
 }
 
 /// SPRITE FRAME / FRAME_COORDS ///
 
 int AnimationTrackEditSpriteFrame::get_key_height() const {
+	ZoneScoped;
 	if (!ObjectDB::get_instance(id)) {
 		return AnimationTrackEdit::get_key_height();
 	}
@@ -373,6 +421,7 @@ int AnimationTrackEditSpriteFrame::get_key_height() const {
 }
 
 Rect2 AnimationTrackEditSpriteFrame::get_key_rect(int p_index, float p_pixels_sec) {
+	ZoneScoped;
 	Object *object = ObjectDB::get_instance(id);
 
 	if (!object) {
@@ -444,10 +493,12 @@ Rect2 AnimationTrackEditSpriteFrame::get_key_rect(int p_index, float p_pixels_se
 }
 
 bool AnimationTrackEditSpriteFrame::is_key_selectable_by_distance() const {
+	ZoneScoped;
 	return false;
 }
 
 void AnimationTrackEditSpriteFrame::draw_key(int p_index, float p_pixels_sec, int p_x, bool p_selected, int p_clip_left, int p_clip_right) {
+	ZoneScoped;
 	Object *object = ObjectDB::get_instance(id);
 
 	if (!object) {
@@ -556,16 +607,19 @@ void AnimationTrackEditSpriteFrame::draw_key(int p_index, float p_pixels_sec, in
 }
 
 void AnimationTrackEditSpriteFrame::set_node(Object *p_object) {
+	ZoneScoped;
 	id = p_object->get_instance_id();
 }
 
 void AnimationTrackEditSpriteFrame::set_as_coords() {
+	ZoneScoped;
 	is_coords = true;
 }
 
 /// SUB ANIMATION ///
 
 int AnimationTrackEditSubAnim::get_key_height() const {
+	ZoneScoped;
 	if (!ObjectDB::get_instance(id)) {
 		return AnimationTrackEdit::get_key_height();
 	}
@@ -576,6 +630,7 @@ int AnimationTrackEditSubAnim::get_key_height() const {
 }
 
 Rect2 AnimationTrackEditSubAnim::get_key_rect(int p_index, float p_pixels_sec) {
+	ZoneScoped;
 	Object *object = ObjectDB::get_instance(id);
 
 	if (!object) {
@@ -607,10 +662,12 @@ Rect2 AnimationTrackEditSubAnim::get_key_rect(int p_index, float p_pixels_sec) {
 }
 
 bool AnimationTrackEditSubAnim::is_key_selectable_by_distance() const {
+	ZoneScoped;
 	return false;
 }
 
 void AnimationTrackEditSubAnim::draw_key(int p_index, float p_pixels_sec, int p_x, bool p_selected, int p_clip_left, int p_clip_right) {
+	ZoneScoped;
 	Object *object = ObjectDB::get_instance(id);
 
 	if (!object) {
@@ -723,17 +780,20 @@ void AnimationTrackEditSubAnim::draw_key(int p_index, float p_pixels_sec, int p_
 }
 
 void AnimationTrackEditSubAnim::set_node(Object *p_object) {
+	ZoneScoped;
 	id = p_object->get_instance_id();
 }
 
 //// VOLUME DB ////
 
 int AnimationTrackEditVolumeDB::get_key_height() const {
+	ZoneScoped;
 	Ref<Texture2D> volume_texture = get_theme_icon(SNAME("ColorTrackVu"), SNAME("EditorIcons"));
 	return volume_texture->get_height() * 1.2;
 }
 
 void AnimationTrackEditVolumeDB::draw_bg(int p_clip_left, int p_clip_right) {
+	ZoneScoped;
 	Ref<Texture2D> volume_texture = get_theme_icon(SNAME("ColorTrackVu"), SNAME("EditorIcons"));
 	int tex_h = volume_texture->get_height();
 
@@ -745,6 +805,7 @@ void AnimationTrackEditVolumeDB::draw_bg(int p_clip_left, int p_clip_right) {
 }
 
 void AnimationTrackEditVolumeDB::draw_fg(int p_clip_left, int p_clip_right) {
+	ZoneScoped;
 	Ref<Texture2D> volume_texture = get_theme_icon(SNAME("ColorTrackVu"), SNAME("EditorIcons"));
 	int tex_h = volume_texture->get_height();
 	int y_from = (get_size().height - tex_h) / 2;
@@ -754,6 +815,7 @@ void AnimationTrackEditVolumeDB::draw_fg(int p_clip_left, int p_clip_right) {
 }
 
 void AnimationTrackEditVolumeDB::draw_key_link(int p_index, float p_pixels_sec, int p_x, int p_next_x, int p_clip_left, int p_clip_right) {
+	ZoneScoped;
 	if (p_x > p_clip_right || p_next_x < p_clip_left) {
 		return;
 	}
@@ -796,6 +858,7 @@ void AnimationTrackEditVolumeDB::draw_key_link(int p_index, float p_pixels_sec, 
 /// AUDIO ///
 
 void AnimationTrackEditTypeAudio::_preview_changed(ObjectID p_which) {
+	ZoneScoped;
 	for (int i = 0; i < get_animation()->track_get_key_count(get_track()); i++) {
 		Ref<AudioStream> stream = get_animation()->audio_track_get_key_stream(get_track(), i);
 		if (stream.is_valid() && stream->get_instance_id() == p_which) {
@@ -806,12 +869,14 @@ void AnimationTrackEditTypeAudio::_preview_changed(ObjectID p_which) {
 }
 
 int AnimationTrackEditTypeAudio::get_key_height() const {
+	ZoneScoped;
 	Ref<Font> font = get_theme_font(SNAME("font"), SNAME("Label"));
 	int font_size = get_theme_font_size(SNAME("font_size"), SNAME("Label"));
 	return int(font->get_height(font_size) * 1.5);
 }
 
 Rect2 AnimationTrackEditTypeAudio::get_key_rect(int p_index, float p_pixels_sec) {
+	ZoneScoped;
 	Ref<AudioStream> stream = get_animation()->audio_track_get_key_stream(get_track(), p_index);
 
 	if (!stream.is_valid()) {
@@ -842,10 +907,12 @@ Rect2 AnimationTrackEditTypeAudio::get_key_rect(int p_index, float p_pixels_sec)
 }
 
 bool AnimationTrackEditTypeAudio::is_key_selectable_by_distance() const {
+	ZoneScoped;
 	return false;
 }
 
 void AnimationTrackEditTypeAudio::draw_key(int p_index, float p_pixels_sec, int p_x, bool p_selected, int p_clip_left, int p_clip_right) {
+	ZoneScoped;
 	Ref<AudioStream> stream = get_animation()->audio_track_get_key_stream(get_track(), p_index);
 
 	if (!stream.is_valid()) {
@@ -966,10 +1033,12 @@ void AnimationTrackEditTypeAudio::_bind_methods() {
 }
 
 AnimationTrackEditTypeAudio::AnimationTrackEditTypeAudio() {
+	ZoneScoped;
 	AudioStreamPreviewGenerator::get_singleton()->connect("preview_updated", callable_mp(this, &AnimationTrackEditTypeAudio::_preview_changed));
 }
 
 bool AnimationTrackEditTypeAudio::can_drop_data(const Point2 &p_point, const Variant &p_data) const {
+	ZoneScoped;
 	if (p_point.x > get_timeline()->get_name_limit() && p_point.x < get_size().width - get_timeline()->get_buttons_width()) {
 		Dictionary drag_data = p_data;
 		if (drag_data.has("type") && String(drag_data["type"]) == "resource") {
@@ -996,6 +1065,7 @@ bool AnimationTrackEditTypeAudio::can_drop_data(const Point2 &p_point, const Var
 }
 
 void AnimationTrackEditTypeAudio::drop_data(const Point2 &p_point, const Variant &p_data) {
+	ZoneScoped;
 	if (p_point.x > get_timeline()->get_name_limit() && p_point.x < get_size().width - get_timeline()->get_buttons_width()) {
 		Ref<AudioStream> stream;
 		Dictionary drag_data = p_data;
@@ -1035,6 +1105,7 @@ void AnimationTrackEditTypeAudio::drop_data(const Point2 &p_point, const Variant
 }
 
 void AnimationTrackEditTypeAudio::gui_input(const Ref<InputEvent> &p_event) {
+	ZoneScoped;
 	ERR_FAIL_COND(p_event.is_null());
 
 	Ref<InputEventMouseMotion> mm = p_event;
@@ -1129,6 +1200,7 @@ void AnimationTrackEditTypeAudio::gui_input(const Ref<InputEvent> &p_event) {
 }
 
 Control::CursorShape AnimationTrackEditTypeAudio::get_cursor_shape(const Point2 &p_pos) const {
+	ZoneScoped;
 	if (over_drag_position || len_resizing) {
 		return Control::CURSOR_HSIZE;
 	} else {
@@ -1140,6 +1212,7 @@ Control::CursorShape AnimationTrackEditTypeAudio::get_cursor_shape(const Point2 
 /// SUB ANIMATION ///
 
 int AnimationTrackEditTypeAnimation::get_key_height() const {
+	ZoneScoped;
 	if (!ObjectDB::get_instance(id)) {
 		return AnimationTrackEdit::get_key_height();
 	}
@@ -1150,6 +1223,7 @@ int AnimationTrackEditTypeAnimation::get_key_height() const {
 }
 
 Rect2 AnimationTrackEditTypeAnimation::get_key_rect(int p_index, float p_pixels_sec) {
+	ZoneScoped;
 	Object *object = ObjectDB::get_instance(id);
 
 	if (!object) {
@@ -1181,10 +1255,12 @@ Rect2 AnimationTrackEditTypeAnimation::get_key_rect(int p_index, float p_pixels_
 }
 
 bool AnimationTrackEditTypeAnimation::is_key_selectable_by_distance() const {
+	ZoneScoped;
 	return false;
 }
 
 void AnimationTrackEditTypeAnimation::draw_key(int p_index, float p_pixels_sec, int p_x, bool p_selected, int p_clip_left, int p_clip_right) {
+	ZoneScoped;
 	Object *object = ObjectDB::get_instance(id);
 
 	if (!object) {
@@ -1297,6 +1373,7 @@ void AnimationTrackEditTypeAnimation::draw_key(int p_index, float p_pixels_sec, 
 }
 
 void AnimationTrackEditTypeAnimation::set_node(Object *p_object) {
+	ZoneScoped;
 	id = p_object->get_instance_id();
 }
 
@@ -1305,6 +1382,7 @@ AnimationTrackEditTypeAnimation::AnimationTrackEditTypeAnimation() {
 
 /////////
 AnimationTrackEdit *AnimationTrackEditDefaultPlugin::create_value_track_edit(Object *p_object, Variant::Type p_type, const String &p_property, PropertyHint p_hint, const String &p_hint_string, int p_usage) {
+	ZoneScoped;
 	if (p_property == "playing" && (p_object->is_class("AudioStreamPlayer") || p_object->is_class("AudioStreamPlayer2D") || p_object->is_class("AudioStreamPlayer3D"))) {
 		AnimationTrackEditAudio *audio = memnew(AnimationTrackEditAudio);
 		audio->set_node(p_object);
@@ -1346,10 +1424,12 @@ AnimationTrackEdit *AnimationTrackEditDefaultPlugin::create_value_track_edit(Obj
 }
 
 AnimationTrackEdit *AnimationTrackEditDefaultPlugin::create_audio_track_edit() {
+	ZoneScoped;
 	return memnew(AnimationTrackEditTypeAudio);
 }
 
 AnimationTrackEdit *AnimationTrackEditDefaultPlugin::create_animation_track_edit(Object *p_object) {
+	ZoneScoped;
 	AnimationTrackEditTypeAnimation *an = memnew(AnimationTrackEditTypeAnimation);
 	an->set_node(p_object);
 	return an;

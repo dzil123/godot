@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  plugin_config_dialog.cpp                                             */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "plugin_config_dialog.h"
 
 #include "core/io/config_file.h"
@@ -39,6 +70,7 @@
 #include "scene/gui/grid_container.h"
 
 void PluginConfigDialog::_clear_fields() {
+	ZoneScoped;
 	name_edit->set_text("");
 	subfolder_edit->set_text("");
 	desc_edit->set_text("");
@@ -48,6 +80,7 @@ void PluginConfigDialog::_clear_fields() {
 }
 
 void PluginConfigDialog::_on_confirmed() {
+	ZoneScoped;
 	String path = "res://addons/" + _get_subfolder();
 
 	if (!_edit_mode) {
@@ -93,14 +126,17 @@ void PluginConfigDialog::_on_confirmed() {
 }
 
 void PluginConfigDialog::_on_cancelled() {
+	ZoneScoped;
 	_clear_fields();
 }
 
 void PluginConfigDialog::_on_language_changed(const int) {
+	ZoneScoped;
 	_on_required_text_changed(String());
 }
 
 void PluginConfigDialog::_on_required_text_changed(const String &) {
+	ZoneScoped;
 	int lang_idx = script_option_edit->get_selected();
 	String ext = ScriptServer::get_language(lang_idx)->get_extension();
 
@@ -145,14 +181,17 @@ void PluginConfigDialog::_on_required_text_changed(const String &) {
 }
 
 String PluginConfigDialog::_get_subfolder() {
+	ZoneScoped;
 	return subfolder_edit->get_text().is_empty() ? name_edit->get_text().replace(" ", "_").to_lower() : subfolder_edit->get_text();
 }
 
 String PluginConfigDialog::_to_absolute_plugin_path(const String &p_plugin_name) {
+	ZoneScoped;
 	return "res://addons/" + p_plugin_name + "/plugin.cfg";
 }
 
 void PluginConfigDialog::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_VISIBILITY_CHANGED: {
 			if (is_visible()) {
@@ -168,6 +207,7 @@ void PluginConfigDialog::_notification(int p_what) {
 }
 
 void PluginConfigDialog::config(const String &p_config_path) {
+	ZoneScoped;
 	if (p_config_path.length()) {
 		Ref<ConfigFile> cf = memnew(ConfigFile);
 		Error err = cf->load(p_config_path);
@@ -205,10 +245,12 @@ void PluginConfigDialog::config(const String &p_config_path) {
 }
 
 void PluginConfigDialog::_bind_methods() {
+	ZoneScoped;
 	ADD_SIGNAL(MethodInfo("plugin_ready", PropertyInfo(Variant::STRING, "script_path", PROPERTY_HINT_NONE, ""), PropertyInfo(Variant::STRING, "activate_name")));
 }
 
 PluginConfigDialog::PluginConfigDialog() {
+	ZoneScoped;
 	get_ok_button()->set_disabled(true);
 	set_hide_on_ok(true);
 

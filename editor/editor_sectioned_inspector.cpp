@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_sectioned_inspector.cpp                                       */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_sectioned_inspector.h"
 
 #include "editor/editor_property_name_processor.h"
@@ -35,6 +66,7 @@
 #include "editor/editor_settings.h"
 
 static bool _property_path_matches(const String &p_property_path, const String &p_filter, EditorPropertyNameProcessor::Style p_style) {
+	ZoneScoped;
 	if (p_property_path.findn(p_filter) != -1) {
 		return true;
 	}
@@ -136,10 +168,12 @@ public:
 };
 
 void SectionedInspector::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method("update_category_list", &SectionedInspector::update_category_list);
 }
 
 void SectionedInspector::_section_selected() {
+	ZoneScoped;
 	if (!sections->get_selected()) {
 		return;
 	}
@@ -150,6 +184,7 @@ void SectionedInspector::_section_selected() {
 }
 
 void SectionedInspector::set_current_section(const String &p_section) {
+	ZoneScoped;
 	if (section_map.has(p_section)) {
 		TreeItem *item = section_map[p_section];
 		item->select(0);
@@ -158,6 +193,7 @@ void SectionedInspector::set_current_section(const String &p_section) {
 }
 
 String SectionedInspector::get_current_section() const {
+	ZoneScoped;
 	if (sections->get_selected()) {
 		return sections->get_selected()->get_metadata(0);
 	} else {
@@ -166,6 +202,7 @@ String SectionedInspector::get_current_section() const {
 }
 
 String SectionedInspector::get_full_item_path(const String &p_item) {
+	ZoneScoped;
 	String base = get_current_section();
 
 	if (!base.is_empty()) {
@@ -176,6 +213,7 @@ String SectionedInspector::get_full_item_path(const String &p_item) {
 }
 
 void SectionedInspector::edit(Object *p_object) {
+	ZoneScoped;
 	if (!p_object) {
 		obj = ObjectID();
 		sections->clear();
@@ -212,6 +250,7 @@ void SectionedInspector::edit(Object *p_object) {
 }
 
 void SectionedInspector::update_category_list() {
+	ZoneScoped;
 	sections->clear();
 
 	Object *o = ObjectDB::get_instance(obj);
@@ -300,16 +339,19 @@ void SectionedInspector::update_category_list() {
 }
 
 void SectionedInspector::register_search_box(LineEdit *p_box) {
+	ZoneScoped;
 	search_box = p_box;
 	inspector->register_text_enter(p_box);
 	search_box->connect("text_changed", callable_mp(this, &SectionedInspector::_search_changed));
 }
 
 void SectionedInspector::_search_changed(const String &p_what) {
+	ZoneScoped;
 	update_category_list();
 }
 
 void SectionedInspector::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
 			inspector->set_property_name_style(EditorPropertyNameProcessor::get_settings_style());
@@ -318,10 +360,12 @@ void SectionedInspector::_notification(int p_what) {
 }
 
 EditorInspector *SectionedInspector::get_inspector() {
+	ZoneScoped;
 	return inspector;
 }
 
 void SectionedInspector::set_restrict_to_basic_settings(bool p_restrict) {
+	ZoneScoped;
 	restrict_to_basic = p_restrict;
 	update_category_list();
 	inspector->set_restrict_to_basic_settings(p_restrict);
@@ -356,5 +400,6 @@ SectionedInspector::SectionedInspector() :
 }
 
 SectionedInspector::~SectionedInspector() {
+	ZoneScoped;
 	memdelete(filter);
 }

@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_toaster.cpp                                                   */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_toaster.h"
 
 #include "editor/editor_scale.h"
@@ -39,6 +70,7 @@
 EditorToaster *EditorToaster::singleton = nullptr;
 
 void EditorToaster::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_INTERNAL_PROCESS: {
 			double delta = get_process_delta_time();
@@ -144,6 +176,7 @@ void EditorToaster::_notification(int p_what) {
 }
 
 void EditorToaster::_error_handler(void *p_self, const char *p_func, const char *p_file, int p_line, const char *p_error, const char *p_errorexp, bool p_editor_notify, ErrorHandlerType p_type) {
+	ZoneScoped;
 	if (!EditorToaster::get_singleton() || !EditorToaster::get_singleton()->is_inside_tree()) {
 		return;
 	}
@@ -185,6 +218,7 @@ void EditorToaster::_update_vbox_position() {
 }
 
 void EditorToaster::_update_disable_notifications_button() {
+	ZoneScoped;
 	bool any_visible = false;
 	for (KeyValue<Control *, Toast> element : toasts) {
 		if (element.key->is_visible()) {
@@ -247,6 +281,7 @@ void EditorToaster::_auto_hide_or_free_toasts() {
 }
 
 void EditorToaster::_draw_button() {
+	ZoneScoped;
 	bool has_one = false;
 	Severity highest_severity = SEVERITY_INFO;
 	for (const KeyValue<Control *, Toast> &element : toasts) {
@@ -282,6 +317,7 @@ void EditorToaster::_draw_button() {
 }
 
 void EditorToaster::_draw_progress(Control *panel) {
+	ZoneScoped;
 	if (toasts.has(panel) && toasts[panel].remaining_time > 0 && toasts[panel].duration > 0) {
 		Size2 size = panel->get_size();
 		size.x *= MIN(1, Math::remap(toasts[panel].remaining_time, 0, toasts[panel].duration, 0, 2));
@@ -305,6 +341,7 @@ void EditorToaster::_draw_progress(Control *panel) {
 }
 
 void EditorToaster::_set_notifications_enabled(bool p_enabled) {
+	ZoneScoped;
 	vbox_container->set_visible(p_enabled);
 	if (p_enabled) {
 		main_button->set_icon(get_theme_icon(SNAME("Notification"), SNAME("EditorIcons")));
@@ -395,6 +432,7 @@ Control *EditorToaster::popup(Control *p_control, Severity p_severity, double p_
 }
 
 void EditorToaster::popup_str(String p_message, Severity p_severity, String p_tooltip) {
+	ZoneScoped;
 	if (is_processing_error) {
 		return;
 	}
@@ -407,6 +445,7 @@ void EditorToaster::popup_str(String p_message, Severity p_severity, String p_to
 }
 
 void EditorToaster::_popup_str(String p_message, Severity p_severity, String p_tooltip) {
+	ZoneScoped;
 	is_processing_error = true;
 	// Check if we already have a popup with the given message.
 	Control *control = nullptr;
@@ -453,12 +492,14 @@ void EditorToaster::_popup_str(String p_message, Severity p_severity, String p_t
 }
 
 void EditorToaster::close(Control *p_control) {
+	ZoneScoped;
 	ERR_FAIL_COND(!toasts.has(p_control));
 	toasts[p_control].remaining_time = -1.0;
 	toasts[p_control].popped = false;
 }
 
 void EditorToaster::_close_button_theme_changed(Control *p_close_button) {
+	ZoneScoped;
 	Button *close_button = Object::cast_to<Button>(p_close_button);
 	if (close_button) {
 		close_button->set_icon(get_theme_icon(SNAME("Close"), SNAME("EditorIcons")));
@@ -466,6 +507,7 @@ void EditorToaster::_close_button_theme_changed(Control *p_close_button) {
 }
 
 EditorToaster *EditorToaster::get_singleton() {
+	ZoneScoped;
 	return singleton;
 }
 
@@ -475,6 +517,7 @@ void EditorToaster::_bind_methods() {
 }
 
 EditorToaster::EditorToaster() {
+	ZoneScoped;
 	set_notify_transform(true);
 	set_process_internal(true);
 
@@ -544,6 +587,7 @@ EditorToaster::EditorToaster() {
 };
 
 EditorToaster::~EditorToaster() {
+	ZoneScoped;
 	singleton = nullptr;
 	remove_error_handler(&eh);
 }

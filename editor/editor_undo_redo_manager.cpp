@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_undo_redo_manager.cpp                                         */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_undo_redo_manager.h"
 
 #include "core/io/resource.h"
@@ -39,6 +70,7 @@
 #include "scene/main/node.h"
 
 EditorUndoRedoManager::History &EditorUndoRedoManager::get_or_create_history(int p_idx) {
+	ZoneScoped;
 	if (!history_map.has(p_idx)) {
 		History history;
 		history.undo_redo = memnew(UndoRedo);
@@ -52,11 +84,13 @@ EditorUndoRedoManager::History &EditorUndoRedoManager::get_or_create_history(int
 }
 
 UndoRedo *EditorUndoRedoManager::get_history_undo_redo(int p_idx) const {
+	ZoneScoped;
 	ERR_FAIL_COND_V(!history_map.has(p_idx), nullptr);
 	return history_map[p_idx].undo_redo;
 }
 
 int EditorUndoRedoManager::get_history_id_for_object(Object *p_object) const {
+	ZoneScoped;
 	int history_id = INVALID_HISTORY;
 
 	if (Node *node = Object::cast_to<Node>(p_object)) {
@@ -97,6 +131,7 @@ int EditorUndoRedoManager::get_history_id_for_object(Object *p_object) const {
 }
 
 EditorUndoRedoManager::History &EditorUndoRedoManager::get_history_for_object(Object *p_object) {
+	ZoneScoped;
 	int history_id = get_history_id_for_object(p_object);
 	ERR_FAIL_COND_V_MSG(pending_action.history_id != INVALID_HISTORY && history_id != pending_action.history_id, get_or_create_history(pending_action.history_id), vformat("UndoRedo history mismatch: expected %d, got %d.", pending_action.history_id, history_id));
 
@@ -110,6 +145,7 @@ EditorUndoRedoManager::History &EditorUndoRedoManager::get_history_for_object(Ob
 }
 
 void EditorUndoRedoManager::create_action_for_history(const String &p_name, int p_history_id, UndoRedo::MergeMode p_mode) {
+	ZoneScoped;
 	pending_action.action_name = p_name;
 	pending_action.timestamp = OS::get_singleton()->get_unix_time();
 	pending_action.merge_mode = p_mode;
@@ -122,6 +158,7 @@ void EditorUndoRedoManager::create_action_for_history(const String &p_name, int 
 }
 
 void EditorUndoRedoManager::create_action(const String &p_name, UndoRedo::MergeMode p_mode, Object *p_custom_context) {
+	ZoneScoped;
 	create_action_for_history(p_name, INVALID_HISTORY, p_mode);
 
 	if (p_custom_context) {
@@ -131,16 +168,19 @@ void EditorUndoRedoManager::create_action(const String &p_name, UndoRedo::MergeM
 }
 
 void EditorUndoRedoManager::add_do_methodp(Object *p_object, const StringName &p_method, const Variant **p_args, int p_argcount) {
+	ZoneScoped;
 	UndoRedo *undo_redo = get_history_for_object(p_object).undo_redo;
 	undo_redo->add_do_method(Callable(p_object, p_method).bindp(p_args, p_argcount));
 }
 
 void EditorUndoRedoManager::add_undo_methodp(Object *p_object, const StringName &p_method, const Variant **p_args, int p_argcount) {
+	ZoneScoped;
 	UndoRedo *undo_redo = get_history_for_object(p_object).undo_redo;
 	undo_redo->add_undo_method(Callable(p_object, p_method).bindp(p_args, p_argcount));
 }
 
 void EditorUndoRedoManager::_add_do_method(const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+	ZoneScoped;
 	if (p_argcount < 2) {
 		r_error.error = Callable::CallError::CALL_ERROR_TOO_FEW_ARGUMENTS;
 		r_error.argument = 0;
@@ -170,6 +210,7 @@ void EditorUndoRedoManager::_add_do_method(const Variant **p_args, int p_argcoun
 }
 
 void EditorUndoRedoManager::_add_undo_method(const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+	ZoneScoped;
 	if (p_argcount < 2) {
 		r_error.error = Callable::CallError::CALL_ERROR_TOO_FEW_ARGUMENTS;
 		r_error.argument = 0;
@@ -199,26 +240,31 @@ void EditorUndoRedoManager::_add_undo_method(const Variant **p_args, int p_argco
 }
 
 void EditorUndoRedoManager::add_do_property(Object *p_object, const StringName &p_property, const Variant &p_value) {
+	ZoneScoped;
 	UndoRedo *undo_redo = get_history_for_object(p_object).undo_redo;
 	undo_redo->add_do_property(p_object, p_property, p_value);
 }
 
 void EditorUndoRedoManager::add_undo_property(Object *p_object, const StringName &p_property, const Variant &p_value) {
+	ZoneScoped;
 	UndoRedo *undo_redo = get_history_for_object(p_object).undo_redo;
 	undo_redo->add_undo_property(p_object, p_property, p_value);
 }
 
 void EditorUndoRedoManager::add_do_reference(Object *p_object) {
+	ZoneScoped;
 	UndoRedo *undo_redo = get_history_for_object(p_object).undo_redo;
 	undo_redo->add_do_reference(p_object);
 }
 
 void EditorUndoRedoManager::add_undo_reference(Object *p_object) {
+	ZoneScoped;
 	UndoRedo *undo_redo = get_history_for_object(p_object).undo_redo;
 	undo_redo->add_undo_reference(p_object);
 }
 
 void EditorUndoRedoManager::commit_action(bool p_execute) {
+	ZoneScoped;
 	if (pending_action.history_id == INVALID_HISTORY) {
 		return; // Empty action, do nothing.
 	}
@@ -246,10 +292,12 @@ void EditorUndoRedoManager::commit_action(bool p_execute) {
 }
 
 bool EditorUndoRedoManager::is_committing_action() const {
+	ZoneScoped;
 	return is_committing;
 }
 
 bool EditorUndoRedoManager::undo() {
+	ZoneScoped;
 	if (!has_undo()) {
 		return false;
 	}
@@ -280,6 +328,7 @@ bool EditorUndoRedoManager::undo() {
 }
 
 bool EditorUndoRedoManager::undo_history(int p_id) {
+	ZoneScoped;
 	ERR_FAIL_COND_V(p_id == INVALID_HISTORY, false);
 	History &history = get_or_create_history(p_id);
 
@@ -295,6 +344,7 @@ bool EditorUndoRedoManager::undo_history(int p_id) {
 }
 
 bool EditorUndoRedoManager::redo() {
+	ZoneScoped;
 	if (!has_redo()) {
 		return false;
 	}
@@ -325,6 +375,7 @@ bool EditorUndoRedoManager::redo() {
 }
 
 bool EditorUndoRedoManager::redo_history(int p_id) {
+	ZoneScoped;
 	ERR_FAIL_COND_V(p_id == INVALID_HISTORY, false);
 	History &history = get_or_create_history(p_id);
 
@@ -340,21 +391,25 @@ bool EditorUndoRedoManager::redo_history(int p_id) {
 }
 
 void EditorUndoRedoManager::set_history_as_saved(int p_id) {
+	ZoneScoped;
 	History &history = get_or_create_history(p_id);
 	history.saved_version = history.undo_redo->get_version();
 }
 
 void EditorUndoRedoManager::set_history_as_unsaved(int p_id) {
+	ZoneScoped;
 	History &history = get_or_create_history(p_id);
 	history.saved_version = -1;
 }
 
 bool EditorUndoRedoManager::is_history_unsaved(int p_id) {
+	ZoneScoped;
 	History &history = get_or_create_history(p_id);
 	return history.undo_redo->get_version() != history.saved_version;
 }
 
 bool EditorUndoRedoManager::has_undo() {
+	ZoneScoped;
 	for (const KeyValue<int, History> &E : history_map) {
 		if ((E.key == GLOBAL_HISTORY || E.key == EditorNode::get_editor_data().get_current_edited_scene_history_id()) && !E.value.undo_stack.is_empty()) {
 			return true;
@@ -364,6 +419,7 @@ bool EditorUndoRedoManager::has_undo() {
 }
 
 bool EditorUndoRedoManager::has_redo() {
+	ZoneScoped;
 	for (const KeyValue<int, History> &E : history_map) {
 		if ((E.key == GLOBAL_HISTORY || E.key == EditorNode::get_editor_data().get_current_edited_scene_history_id()) && !E.value.redo_stack.is_empty()) {
 			return true;
@@ -373,6 +429,7 @@ bool EditorUndoRedoManager::has_redo() {
 }
 
 void EditorUndoRedoManager::clear_history(bool p_increase_version, int p_idx) {
+	ZoneScoped;
 	if (p_idx != INVALID_HISTORY) {
 		get_or_create_history(p_idx).undo_redo->clear_history(p_increase_version);
 		if (!p_increase_version) {
@@ -390,6 +447,7 @@ void EditorUndoRedoManager::clear_history(bool p_increase_version, int p_idx) {
 }
 
 String EditorUndoRedoManager::get_current_action_name() {
+	ZoneScoped;
 	if (has_undo()) {
 		History *selected_history = nullptr;
 		double global_timestamp = 0;
@@ -418,6 +476,7 @@ String EditorUndoRedoManager::get_current_action_name() {
 }
 
 void EditorUndoRedoManager::discard_history(int p_idx, bool p_erase_from_map) {
+	ZoneScoped;
 	ERR_FAIL_COND(!history_map.has(p_idx));
 	History &history = history_map[p_idx];
 
@@ -432,6 +491,7 @@ void EditorUndoRedoManager::discard_history(int p_idx, bool p_erase_from_map) {
 }
 
 void EditorUndoRedoManager::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("create_action", "name", "merge_mode", "custom_context"), &EditorUndoRedoManager::create_action, DEFVAL(UndoRedo::MERGE_DISABLE), DEFVAL((Object *)nullptr));
 	ClassDB::bind_method(D_METHOD("commit_action", "execute"), &EditorUndoRedoManager::commit_action, DEFVAL(true));
 	ClassDB::bind_method(D_METHOD("is_committing_action"), &EditorUndoRedoManager::is_committing_action);
@@ -470,6 +530,7 @@ void EditorUndoRedoManager::_bind_methods() {
 }
 
 EditorUndoRedoManager::~EditorUndoRedoManager() {
+	ZoneScoped;
 	for (const KeyValue<int, History> &E : history_map) {
 		discard_history(E.key, false);
 	}

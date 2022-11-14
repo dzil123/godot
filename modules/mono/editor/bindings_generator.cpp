@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  bindings_generator.cpp                                               */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "bindings_generator.h"
 
 #if defined(DEBUG_METHODS_ENABLED) && defined(TOOLS_ENABLED)
@@ -46,11 +77,13 @@
 #include "../utils/string_utils.h"
 
 StringBuilder &operator<<(StringBuilder &r_sb, const String &p_string) {
+	ZoneScoped;
 	r_sb.append(p_string);
 	return r_sb;
 }
 
 StringBuilder &operator<<(StringBuilder &r_sb, const char *p_cstring) {
+	ZoneScoped;
 	r_sb.append(p_cstring);
 	return r_sb;
 }
@@ -145,6 +178,7 @@ static String fix_doc_description(const String &p_bbcode) {
 }
 
 static String snake_to_pascal_case(const String &p_identifier, bool p_input_is_upper = false) {
+	ZoneScoped;
 	String ret;
 	Vector<String> parts = p_identifier.split("_", true);
 
@@ -178,6 +212,7 @@ static String snake_to_pascal_case(const String &p_identifier, bool p_input_is_u
 }
 
 static String snake_to_camel_case(const String &p_identifier, bool p_input_is_upper = false) {
+	ZoneScoped;
 	String ret;
 	Vector<String> parts = p_identifier.split("_", true);
 
@@ -521,6 +556,7 @@ String BindingsGenerator::bbcode_to_xml(const String &p_bbcode, const TypeInterf
 }
 
 void BindingsGenerator::_append_xml_method(StringBuilder &p_xml_output, const TypeInterface *p_target_itype, const StringName &p_target_cname, const String &p_link_target, const Vector<String> &p_link_target_parts) {
+	ZoneScoped;
 	if (p_link_target_parts[0] == name_cache.type_at_GlobalScope) {
 		if (OS::get_singleton()->is_stdout_verbose()) {
 			OS::get_singleton()->print("Cannot resolve @GlobalScope method reference in documentation: %s\n", p_link_target.utf8().get_data());
@@ -565,6 +601,7 @@ void BindingsGenerator::_append_xml_method(StringBuilder &p_xml_output, const Ty
 }
 
 void BindingsGenerator::_append_xml_member(StringBuilder &p_xml_output, const TypeInterface *p_target_itype, const StringName &p_target_cname, const String &p_link_target, const Vector<String> &p_link_target_parts) {
+	ZoneScoped;
 	if (p_link_target.find("/") >= 0) {
 		// Properties with '/' (slash) in the name are not declared in C#, so there is nothing to reference.
 		_append_xml_undeclared(p_xml_output, p_link_target);
@@ -604,6 +641,7 @@ void BindingsGenerator::_append_xml_member(StringBuilder &p_xml_output, const Ty
 }
 
 void BindingsGenerator::_append_xml_signal(StringBuilder &p_xml_output, const TypeInterface *p_target_itype, const StringName &p_target_cname, const String &p_link_target, const Vector<String> &p_link_target_parts) {
+	ZoneScoped;
 	if (!p_target_itype || !p_target_itype->is_object_type) {
 		if (OS::get_singleton()->is_stdout_verbose()) {
 			if (p_target_itype) {
@@ -632,6 +670,7 @@ void BindingsGenerator::_append_xml_signal(StringBuilder &p_xml_output, const Ty
 }
 
 void BindingsGenerator::_append_xml_enum(StringBuilder &p_xml_output, const TypeInterface *p_target_itype, const StringName &p_target_cname, const String &p_link_target, const Vector<String> &p_link_target_parts) {
+	ZoneScoped;
 	const StringName search_cname = !p_target_itype ? p_target_cname : StringName(p_target_itype->name + "." + (String)p_target_cname);
 
 	HashMap<StringName, TypeInterface>::ConstIterator enum_match = enum_types.find(search_cname);
@@ -653,6 +692,7 @@ void BindingsGenerator::_append_xml_enum(StringBuilder &p_xml_output, const Type
 }
 
 void BindingsGenerator::_append_xml_constant(StringBuilder &p_xml_output, const TypeInterface *p_target_itype, const StringName &p_target_cname, const String &p_link_target, const Vector<String> &p_link_target_parts) {
+	ZoneScoped;
 	if (p_link_target_parts[0] == name_cache.type_at_GlobalScope) {
 		_append_xml_constant_in_global_scope(p_xml_output, p_target_cname, p_link_target);
 	} else if (!p_target_itype || !p_target_itype->is_object_type) {
@@ -749,12 +789,14 @@ void BindingsGenerator::_append_xml_constant_in_global_scope(StringBuilder &p_xm
 }
 
 void BindingsGenerator::_append_xml_undeclared(StringBuilder &p_xml_output, const String &p_link_target) {
+	ZoneScoped;
 	p_xml_output.append("<c>");
 	p_xml_output.append(p_link_target);
 	p_xml_output.append("</c>");
 }
 
 int BindingsGenerator::_determine_enum_prefix(const EnumInterface &p_ienum) {
+	ZoneScoped;
 	CRASH_COND(p_ienum.constants.is_empty());
 
 	const ConstantInterface &front_iconstant = p_ienum.constants.front()->get();
@@ -789,6 +831,7 @@ int BindingsGenerator::_determine_enum_prefix(const EnumInterface &p_ienum) {
 }
 
 void BindingsGenerator::_apply_prefix_to_enum_constants(BindingsGenerator::EnumInterface &p_ienum, int p_prefix_length) {
+	ZoneScoped;
 	if (p_prefix_length > 0) {
 		for (ConstantInterface &iconstant : p_ienum.constants) {
 			int curr_prefix_length = p_prefix_length;
@@ -825,6 +868,7 @@ void BindingsGenerator::_apply_prefix_to_enum_constants(BindingsGenerator::EnumI
 }
 
 Error BindingsGenerator::_populate_method_icalls_table(const TypeInterface &p_itype) {
+	ZoneScoped;
 	for (const MethodInterface &imethod : p_itype.methods) {
 		if (imethod.is_virtual) {
 			continue;
@@ -881,6 +925,7 @@ Error BindingsGenerator::_populate_method_icalls_table(const TypeInterface &p_it
 }
 
 void BindingsGenerator::_generate_array_extensions(StringBuilder &p_output) {
+	ZoneScoped;
 	p_output.append("namespace " BINDINGS_NAMESPACE ";\n\n");
 	p_output.append("using System;\n\n");
 	// The class where we put the extensions doesn't matter, so just use "GD".
@@ -1057,6 +1102,7 @@ void BindingsGenerator::_generate_global_constants(StringBuilder &p_output) {
 }
 
 Error BindingsGenerator::generate_cs_core_project(const String &p_proj_dir) {
+	ZoneScoped;
 	ERR_FAIL_COND_V(!initialized, ERR_UNCONFIGURED);
 
 	Ref<DirAccess> da = DirAccess::create(DirAccess::ACCESS_FILESYSTEM);
@@ -1190,6 +1236,7 @@ Error BindingsGenerator::generate_cs_core_project(const String &p_proj_dir) {
 }
 
 Error BindingsGenerator::generate_cs_editor_project(const String &p_proj_dir) {
+	ZoneScoped;
 	ERR_FAIL_COND_V(!initialized, ERR_UNCONFIGURED);
 
 	Ref<DirAccess> da = DirAccess::create(DirAccess::ACCESS_FILESYSTEM);
@@ -1299,6 +1346,7 @@ Error BindingsGenerator::generate_cs_editor_project(const String &p_proj_dir) {
 }
 
 Error BindingsGenerator::generate_cs_api(const String &p_output_dir) {
+	ZoneScoped;
 	ERR_FAIL_COND_V(!initialized, ERR_UNCONFIGURED);
 
 	String output_dir = path::abspath(path::realpath(p_output_dir));
@@ -1346,6 +1394,7 @@ Error BindingsGenerator::generate_cs_api(const String &p_output_dir) {
 // - Csc warning e.g.:
 // ObjectType/LineEdit.cs(140,38): warning CS0108: 'LineEdit.FocusMode' hides inherited member 'Control.FocusMode'. Use the new keyword if hiding was intended.
 Error BindingsGenerator::_generate_cs_type(const TypeInterface &itype, const String &p_output_file) {
+	ZoneScoped;
 	CRASH_COND(!itype.is_object_type);
 
 	bool is_derived_type = itype.base_name != StringName();
@@ -1772,6 +1821,7 @@ Error BindingsGenerator::_generate_cs_type(const TypeInterface &itype, const Str
 }
 
 Error BindingsGenerator::_generate_cs_property(const BindingsGenerator::TypeInterface &p_itype, const PropertyInterface &p_iprop, StringBuilder &p_output) {
+	ZoneScoped;
 	const MethodInterface *setter = p_itype.find_method_by_name(p_iprop.setter);
 
 	// Search it in base types too
@@ -1926,6 +1976,7 @@ Error BindingsGenerator::_generate_cs_property(const BindingsGenerator::TypeInte
 }
 
 Error BindingsGenerator::_generate_cs_method(const BindingsGenerator::TypeInterface &p_itype, const BindingsGenerator::MethodInterface &p_imethod, int &p_method_bind_count, StringBuilder &p_output) {
+	ZoneScoped;
 	const TypeInterface *return_type = _get_type_or_null(p_imethod.return_type);
 	ERR_FAIL_NULL_V(return_type, ERR_BUG); // Return type not found
 
@@ -2199,6 +2250,7 @@ Error BindingsGenerator::_generate_cs_method(const BindingsGenerator::TypeInterf
 }
 
 Error BindingsGenerator::_generate_cs_signal(const BindingsGenerator::TypeInterface &p_itype, const BindingsGenerator::SignalInterface &p_isignal, StringBuilder &p_output) {
+	ZoneScoped;
 	String arguments_sig;
 	String delegate_type_params;
 
@@ -2381,6 +2433,7 @@ Error BindingsGenerator::_generate_cs_signal(const BindingsGenerator::TypeInterf
 }
 
 Error BindingsGenerator::_generate_cs_native_calls(const InternalCall &p_icall, StringBuilder &r_output) {
+	ZoneScoped;
 	bool ret_void = p_icall.return_type.cname == name_cache.type_void;
 
 	const TypeInterface *return_type = _get_type_or_null(p_icall.return_type);
@@ -2585,6 +2638,7 @@ Error BindingsGenerator::_generate_cs_native_calls(const InternalCall &p_icall, 
 }
 
 Error BindingsGenerator::_save_file(const String &p_path, const StringBuilder &p_content) {
+	ZoneScoped;
 	Ref<FileAccess> file = FileAccess::open(p_path, FileAccess::WRITE);
 	ERR_FAIL_COND_V_MSG(file.is_null(), ERR_FILE_CANT_WRITE, "Cannot open file: '" + p_path + "'.");
 
@@ -2594,6 +2648,7 @@ Error BindingsGenerator::_save_file(const String &p_path, const StringBuilder &p
 }
 
 const BindingsGenerator::TypeInterface *BindingsGenerator::_get_type_or_null(const TypeReference &p_typeref) {
+	ZoneScoped;
 	HashMap<StringName, TypeInterface>::ConstIterator builtin_type_match = builtin_types.find(p_typeref.cname);
 
 	if (builtin_type_match) {
@@ -2623,6 +2678,7 @@ const BindingsGenerator::TypeInterface *BindingsGenerator::_get_type_or_null(con
 }
 
 const String BindingsGenerator::_get_generic_type_parameters(const TypeInterface &p_itype, const List<TypeReference> &p_generic_type_parameters) {
+	ZoneScoped;
 	if (p_generic_type_parameters.is_empty()) {
 		return "";
 	}
@@ -2660,6 +2716,7 @@ const String BindingsGenerator::_get_generic_type_parameters(const TypeInterface
 }
 
 StringName BindingsGenerator::_get_type_name_from_meta(Variant::Type p_type, GodotTypeInfo::Metadata p_meta) {
+	ZoneScoped;
 	if (p_type == Variant::INT) {
 		return _get_int_type_name_from_meta(p_meta);
 	} else if (p_type == Variant::FLOAT) {
@@ -2670,6 +2727,7 @@ StringName BindingsGenerator::_get_type_name_from_meta(Variant::Type p_type, God
 }
 
 StringName BindingsGenerator::_get_int_type_name_from_meta(GodotTypeInfo::Metadata p_meta) {
+	ZoneScoped;
 	switch (p_meta) {
 		case GodotTypeInfo::METADATA_INT_IS_INT8:
 			return "sbyte";
@@ -2702,6 +2760,7 @@ StringName BindingsGenerator::_get_int_type_name_from_meta(GodotTypeInfo::Metada
 }
 
 StringName BindingsGenerator::_get_float_type_name_from_meta(GodotTypeInfo::Metadata p_meta) {
+	ZoneScoped;
 	switch (p_meta) {
 		case GodotTypeInfo::METADATA_REAL_IS_FLOAT:
 			return "float";
@@ -2716,6 +2775,7 @@ StringName BindingsGenerator::_get_float_type_name_from_meta(GodotTypeInfo::Meta
 }
 
 bool BindingsGenerator::_arg_default_value_is_assignable_to_type(const Variant &p_val, const TypeInterface &p_arg_type) {
+	ZoneScoped;
 	if (p_arg_type.name == name_cache.type_Variant) {
 		// Variant can take anything
 		return true;
@@ -2796,6 +2856,7 @@ bool BindingsGenerator::_arg_default_value_is_assignable_to_type(const Variant &
 }
 
 bool BindingsGenerator::_populate_object_type_interfaces() {
+	ZoneScoped;
 	obj_types.clear();
 
 	List<StringName> class_list;
@@ -3262,6 +3323,7 @@ bool BindingsGenerator::_populate_object_type_interfaces() {
 }
 
 bool BindingsGenerator::_arg_default_value_from_variant(const Variant &p_val, ArgumentInterface &r_iarg) {
+	ZoneScoped;
 	r_iarg.def_param_value = p_val;
 	r_iarg.default_argument = p_val.operator String();
 
@@ -3447,6 +3509,7 @@ bool BindingsGenerator::_arg_default_value_from_variant(const Variant &p_val, Ar
 }
 
 void BindingsGenerator::_populate_builtin_type_interfaces() {
+	ZoneScoped;
 	builtin_types.clear();
 
 	TypeInterface itype;
@@ -3805,6 +3868,7 @@ void BindingsGenerator::_populate_builtin_type_interfaces() {
 }
 
 void BindingsGenerator::_populate_global_constants() {
+	ZoneScoped;
 	int global_constants_count = CoreConstants::get_global_constant_count();
 
 	if (global_constants_count > 0) {
@@ -3896,12 +3960,14 @@ void BindingsGenerator::_populate_global_constants() {
 }
 
 void BindingsGenerator::_initialize_blacklisted_methods() {
+	ZoneScoped;
 	blacklisted_methods["Object"].push_back("to_string"); // there is already ToString
 	blacklisted_methods["Object"].push_back("_to_string"); // override ToString instead
 	blacklisted_methods["Object"].push_back("_init"); // never called in C# (TODO: implement it)
 }
 
 void BindingsGenerator::_log(const char *p_format, ...) {
+	ZoneScoped;
 	if (log_print_enabled) {
 		va_list list;
 
@@ -3912,6 +3978,7 @@ void BindingsGenerator::_log(const char *p_format, ...) {
 }
 
 void BindingsGenerator::_initialize() {
+	ZoneScoped;
 	initialized = false;
 
 	EditorHelp::generate_doc();
@@ -3941,6 +4008,7 @@ void BindingsGenerator::_initialize() {
 static String generate_all_glue_option = "--generate-mono-glue";
 
 static void handle_cmdline_options(String glue_dir_path) {
+	ZoneScoped;
 	BindingsGenerator bindings_generator;
 	bindings_generator.set_log_print_enabled(true);
 
@@ -3963,6 +4031,7 @@ static void cleanup_and_exit_godot() {
 }
 
 void BindingsGenerator::handle_cmdline_args(const List<String> &p_cmdline_args) {
+	ZoneScoped;
 	String glue_dir_path;
 
 	const List<String>::Element *elem = p_cmdline_args.front();

@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  localization_editor.cpp                                              */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "localization_editor.h"
 
 #include "core/config/project_settings.h"
@@ -42,6 +73,7 @@
 #include "scene/gui/control.h"
 
 void LocalizationEditor::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			translation_list->connect("button_clicked", callable_mp(this, &LocalizationEditor::_translation_delete));
@@ -67,12 +99,14 @@ void LocalizationEditor::_notification(int p_what) {
 }
 
 void LocalizationEditor::add_translation(const String &p_translation) {
+	ZoneScoped;
 	PackedStringArray translations;
 	translations.push_back(p_translation);
 	_translation_add(translations);
 }
 
 void LocalizationEditor::_translation_add(const PackedStringArray &p_paths) {
+	ZoneScoped;
 	PackedStringArray translations = GLOBAL_GET("internationalization/locale/translations");
 	for (int i = 0; i < p_paths.size(); i++) {
 		if (!translations.has(p_paths[i])) {
@@ -93,10 +127,12 @@ void LocalizationEditor::_translation_add(const PackedStringArray &p_paths) {
 }
 
 void LocalizationEditor::_translation_file_open() {
+	ZoneScoped;
 	translation_file_open->popup_file_dialog();
 }
 
 void LocalizationEditor::_translation_delete(Object *p_item, int p_column, int p_button, MouseButton p_mouse_button) {
+	ZoneScoped;
 	if (p_mouse_button != MouseButton::LEFT) {
 		return;
 	}
@@ -124,10 +160,12 @@ void LocalizationEditor::_translation_delete(Object *p_item, int p_column, int p
 }
 
 void LocalizationEditor::_translation_res_file_open() {
+	ZoneScoped;
 	translation_res_file_open_dialog->popup_file_dialog();
 }
 
 void LocalizationEditor::_translation_res_add(const PackedStringArray &p_paths) {
+	ZoneScoped;
 	Variant prev;
 	Dictionary remaps;
 
@@ -155,10 +193,12 @@ void LocalizationEditor::_translation_res_add(const PackedStringArray &p_paths) 
 }
 
 void LocalizationEditor::_translation_res_option_file_open() {
+	ZoneScoped;
 	translation_res_option_file_open_dialog->popup_file_dialog();
 }
 
 void LocalizationEditor::_translation_res_option_add(const PackedStringArray &p_paths) {
+	ZoneScoped;
 	ERR_FAIL_COND(!ProjectSettings::get_singleton()->has_setting("internationalization/locale/translation_remaps"));
 
 	Dictionary remaps = GLOBAL_GET("internationalization/locale/translation_remaps");
@@ -187,6 +227,7 @@ void LocalizationEditor::_translation_res_option_add(const PackedStringArray &p_
 }
 
 void LocalizationEditor::_translation_res_select() {
+	ZoneScoped;
 	if (updating_translations) {
 		return;
 	}
@@ -194,6 +235,7 @@ void LocalizationEditor::_translation_res_select() {
 }
 
 void LocalizationEditor::_translation_res_option_popup(bool p_arrow_clicked) {
+	ZoneScoped;
 	TreeItem *ed = translation_remap_options->get_edited();
 	ERR_FAIL_COND(!ed);
 
@@ -202,6 +244,7 @@ void LocalizationEditor::_translation_res_option_popup(bool p_arrow_clicked) {
 }
 
 void LocalizationEditor::_translation_res_option_selected(const String &p_locale) {
+	ZoneScoped;
 	TreeItem *ed = translation_remap_options->get_edited();
 	ERR_FAIL_COND(!ed);
 
@@ -212,6 +255,7 @@ void LocalizationEditor::_translation_res_option_selected(const String &p_locale
 }
 
 void LocalizationEditor::_translation_res_option_changed() {
+	ZoneScoped;
 	if (updating_translations) {
 		return;
 	}
@@ -252,6 +296,7 @@ void LocalizationEditor::_translation_res_option_changed() {
 }
 
 void LocalizationEditor::_translation_res_delete(Object *p_item, int p_column, int p_button, MouseButton p_mouse_button) {
+	ZoneScoped;
 	if (updating_translations) {
 		return;
 	}
@@ -285,6 +330,7 @@ void LocalizationEditor::_translation_res_delete(Object *p_item, int p_column, i
 }
 
 void LocalizationEditor::_translation_res_option_delete(Object *p_item, int p_column, int p_button, MouseButton p_mouse_button) {
+	ZoneScoped;
 	if (updating_translations) {
 		return;
 	}
@@ -325,6 +371,7 @@ void LocalizationEditor::_translation_res_option_delete(Object *p_item, int p_co
 }
 
 void LocalizationEditor::_pot_add(const PackedStringArray &p_paths) {
+	ZoneScoped;
 	PackedStringArray pot_translations = GLOBAL_GET("internationalization/locale/translations_pot_files");
 	for (int i = 0; i < p_paths.size(); i++) {
 		if (!pot_translations.has(p_paths[i])) {
@@ -344,6 +391,7 @@ void LocalizationEditor::_pot_add(const PackedStringArray &p_paths) {
 }
 
 void LocalizationEditor::_pot_delete(Object *p_item, int p_column, int p_button, MouseButton p_mouse_button) {
+	ZoneScoped;
 	if (p_mouse_button != MouseButton::LEFT) {
 		return;
 	}
@@ -371,18 +419,22 @@ void LocalizationEditor::_pot_delete(Object *p_item, int p_column, int p_button,
 }
 
 void LocalizationEditor::_pot_file_open() {
+	ZoneScoped;
 	pot_file_open_dialog->popup_file_dialog();
 }
 
 void LocalizationEditor::_pot_generate_open() {
+	ZoneScoped;
 	pot_generate_dialog->popup_file_dialog();
 }
 
 void LocalizationEditor::_pot_generate(const String &p_file) {
+	ZoneScoped;
 	POTGenerator::get_singleton()->generate_pot(p_file);
 }
 
 void LocalizationEditor::_update_pot_file_extensions() {
+	ZoneScoped;
 	pot_file_open_dialog->clear_filters();
 	List<String> translation_parse_file_extensions;
 	EditorTranslationParser::get_singleton()->get_recognized_extensions(&translation_parse_file_extensions);
@@ -392,6 +444,7 @@ void LocalizationEditor::_update_pot_file_extensions() {
 }
 
 void LocalizationEditor::connect_filesystem_dock_signals(FileSystemDock *p_fs_dock) {
+	ZoneScoped;
 	p_fs_dock->connect("files_moved", callable_mp(this, &LocalizationEditor::_filesystem_files_moved));
 	p_fs_dock->connect("file_removed", callable_mp(this, &LocalizationEditor::_filesystem_file_removed));
 }
@@ -481,6 +534,7 @@ void LocalizationEditor::_filesystem_file_removed(const String &p_file) {
 }
 
 void LocalizationEditor::update_translations() {
+	ZoneScoped;
 	if (updating_translations) {
 		return;
 	}
@@ -596,12 +650,14 @@ void LocalizationEditor::update_translations() {
 }
 
 void LocalizationEditor::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("update_translations"), &LocalizationEditor::update_translations);
 
 	ADD_SIGNAL(MethodInfo("localization_changed"));
 }
 
 LocalizationEditor::LocalizationEditor() {
+	ZoneScoped;
 	localization_changed = "localization_changed";
 
 	TabContainer *translations = memnew(TabContainer);

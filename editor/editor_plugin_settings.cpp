@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_plugin_settings.cpp                                           */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_plugin_settings.h"
 
 #include "core/config/project_settings.h"
@@ -40,6 +71,7 @@
 #include "scene/gui/tree.h"
 
 void EditorPluginSettings::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_WM_WINDOW_FOCUS_IN: {
 			update_plugins();
@@ -53,6 +85,7 @@ void EditorPluginSettings::_notification(int p_what) {
 }
 
 void EditorPluginSettings::update_plugins() {
+	ZoneScoped;
 	plugin_list->clear();
 	updating = true;
 	TreeItem *root = plugin_list->create_item();
@@ -122,6 +155,7 @@ void EditorPluginSettings::update_plugins() {
 }
 
 void EditorPluginSettings::_plugin_activity_changed() {
+	ZoneScoped;
 	if (updating) {
 		return;
 	}
@@ -143,11 +177,13 @@ void EditorPluginSettings::_plugin_activity_changed() {
 }
 
 void EditorPluginSettings::_create_clicked() {
+	ZoneScoped;
 	plugin_config_dialog->config("");
 	plugin_config_dialog->popup_centered();
 }
 
 void EditorPluginSettings::_cell_button_pressed(Object *p_item, int p_column, int p_id, MouseButton p_button) {
+	ZoneScoped;
 	if (p_button != MouseButton::LEFT) {
 		return;
 	}
@@ -165,6 +201,7 @@ void EditorPluginSettings::_cell_button_pressed(Object *p_item, int p_column, in
 }
 
 Vector<String> EditorPluginSettings::_get_plugins(const String &p_dir) {
+	ZoneScoped;
 	Ref<DirAccess> da = DirAccess::create(DirAccess::ACCESS_RESOURCES);
 	Error err = da->change_dir(p_dir);
 	if (err != OK) {
@@ -195,6 +232,7 @@ void EditorPluginSettings::_bind_methods() {
 }
 
 EditorPluginSettings::EditorPluginSettings() {
+	ZoneScoped;
 	plugin_config_dialog = memnew(PluginConfigDialog);
 	plugin_config_dialog->config("");
 	add_child(plugin_config_dialog);

@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  dependency_editor.cpp                                                */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "dependency_editor.h"
 
 #include "core/config/project_settings.h"
@@ -41,6 +72,7 @@
 #include "scene/gui/margin_container.h"
 
 void DependencyEditor::_searched(const String &p_path) {
+	ZoneScoped;
 	HashMap<String, String> dep_rename;
 	dep_rename[replacing] = p_path;
 
@@ -51,6 +83,7 @@ void DependencyEditor::_searched(const String &p_path) {
 }
 
 void DependencyEditor::_load_pressed(Object *p_item, int p_cell, int p_button, MouseButton p_mouse_button) {
+	ZoneScoped;
 	if (p_mouse_button != MouseButton::LEFT) {
 		return;
 	}
@@ -72,6 +105,7 @@ void DependencyEditor::_load_pressed(Object *p_item, int p_cell, int p_button, M
 }
 
 void DependencyEditor::_fix_and_find(EditorFileSystemDirectory *efsd, HashMap<String, HashMap<String, String>> &candidates) {
+	ZoneScoped;
 	for (int i = 0; i < efsd->get_subdir_count(); i++) {
 		_fix_and_find(efsd->get_subdir(i), candidates);
 	}
@@ -124,6 +158,7 @@ void DependencyEditor::_fix_and_find(EditorFileSystemDirectory *efsd, HashMap<St
 }
 
 void DependencyEditor::_fix_all() {
+	ZoneScoped;
 	if (!EditorFileSystem::get_singleton()->get_filesystem()) {
 		return;
 	}
@@ -160,10 +195,12 @@ void DependencyEditor::_fix_all() {
 }
 
 void DependencyEditor::_update_file() {
+	ZoneScoped;
 	EditorFileSystem::get_singleton()->update_file(editing);
 }
 
 void DependencyEditor::_update_list() {
+	ZoneScoped;
 	List<String> deps;
 	ResourceLoader::get_dependencies(editing, &deps, true);
 
@@ -218,6 +255,7 @@ void DependencyEditor::_update_list() {
 }
 
 void DependencyEditor::edit(const String &p_path) {
+	ZoneScoped;
 	editing = p_path;
 	set_title(TTR("Dependencies For:") + " " + p_path.get_file());
 
@@ -235,6 +273,7 @@ void DependencyEditor::_bind_methods() {
 }
 
 DependencyEditor::DependencyEditor() {
+	ZoneScoped;
 	VBoxContainer *vb = memnew(VBoxContainer);
 	vb->set_name(TTR("Dependencies"));
 	add_child(vb);
@@ -279,6 +318,7 @@ DependencyEditor::DependencyEditor() {
 
 /////////////////////////////////////
 void DependencyEditorOwners::_list_rmb_clicked(int p_item, const Vector2 &p_pos, MouseButton p_mouse_button_index) {
+	ZoneScoped;
 	if (p_mouse_button_index != MouseButton::RIGHT) {
 		return;
 	}
@@ -299,6 +339,7 @@ void DependencyEditorOwners::_list_rmb_clicked(int p_item, const Vector2 &p_pos,
 }
 
 void DependencyEditorOwners::_select_file(int p_idx) {
+	ZoneScoped;
 	String fpath = owners->get_item_text(p_idx);
 
 	if (ResourceLoader::get_resource_type(fpath) == "PackedScene") {
@@ -309,6 +350,7 @@ void DependencyEditorOwners::_select_file(int p_idx) {
 }
 
 void DependencyEditorOwners::_file_option(int p_option) {
+	ZoneScoped;
 	switch (p_option) {
 		case FILE_OPEN: {
 			PackedInt32Array selected_items = owners->get_selected_items();
@@ -327,6 +369,7 @@ void DependencyEditorOwners::_bind_methods() {
 }
 
 void DependencyEditorOwners::_fill_owners(EditorFileSystemDirectory *efsd) {
+	ZoneScoped;
 	if (!efsd) {
 		return;
 	}
@@ -355,6 +398,7 @@ void DependencyEditorOwners::_fill_owners(EditorFileSystemDirectory *efsd) {
 }
 
 void DependencyEditorOwners::show(const String &p_path) {
+	ZoneScoped;
 	editing = p_path;
 	owners->clear();
 	_fill_owners(EditorFileSystem::get_singleton()->get_filesystem());
@@ -364,6 +408,7 @@ void DependencyEditorOwners::show(const String &p_path) {
 }
 
 DependencyEditorOwners::DependencyEditorOwners() {
+	ZoneScoped;
 	file_options = memnew(PopupMenu);
 	add_child(file_options);
 	file_options->connect("id_pressed", callable_mp(this, &DependencyEditorOwners::_file_option));
@@ -379,6 +424,7 @@ DependencyEditorOwners::DependencyEditorOwners() {
 ///////////////////////
 
 void DependencyRemoveDialog::_find_files_in_removed_folder(EditorFileSystemDirectory *efsd, const String &p_folder) {
+	ZoneScoped;
 	if (!efsd) {
 		return;
 	}
@@ -394,6 +440,7 @@ void DependencyRemoveDialog::_find_files_in_removed_folder(EditorFileSystemDirec
 }
 
 void DependencyRemoveDialog::_find_all_removed_dependencies(EditorFileSystemDirectory *efsd, Vector<RemovedDependency> &p_removed) {
+	ZoneScoped;
 	if (!efsd) {
 		return;
 	}
@@ -425,6 +472,7 @@ void DependencyRemoveDialog::_find_all_removed_dependencies(EditorFileSystemDire
 }
 
 void DependencyRemoveDialog::_find_localization_remaps_of_removed_files(Vector<RemovedDependency> &p_removed) {
+	ZoneScoped;
 	for (KeyValue<String, String> &files : all_remove_files) {
 		const String &path = files.key;
 
@@ -464,6 +512,7 @@ void DependencyRemoveDialog::_find_localization_remaps_of_removed_files(Vector<R
 }
 
 void DependencyRemoveDialog::_build_removed_dependency_tree(const Vector<RemovedDependency> &p_removed) {
+	ZoneScoped;
 	owners->clear();
 	owners->create_item(); // root
 
@@ -502,6 +551,7 @@ void DependencyRemoveDialog::_build_removed_dependency_tree(const Vector<Removed
 }
 
 void DependencyRemoveDialog::show(const Vector<String> &p_folders, const Vector<String> &p_files) {
+	ZoneScoped;
 	all_remove_files.clear();
 	dirs_to_delete.clear();
 	files_to_delete.clear();
@@ -536,6 +586,7 @@ void DependencyRemoveDialog::show(const Vector<String> &p_folders, const Vector<
 }
 
 void DependencyRemoveDialog::ok_pressed() {
+	ZoneScoped;
 	for (int i = 0; i < files_to_delete.size(); ++i) {
 		if (ResourceCache::has(files_to_delete[i])) {
 			Ref<Resource> res = ResourceCache::get_ref(files_to_delete[i]);
@@ -621,11 +672,13 @@ void DependencyRemoveDialog::ok_pressed() {
 }
 
 void DependencyRemoveDialog::_bind_methods() {
+	ZoneScoped;
 	ADD_SIGNAL(MethodInfo("file_removed", PropertyInfo(Variant::STRING, "file")));
 	ADD_SIGNAL(MethodInfo("folder_removed", PropertyInfo(Variant::STRING, "folder")));
 }
 
 DependencyRemoveDialog::DependencyRemoveDialog() {
+	ZoneScoped;
 	set_ok_button_text(TTR("Remove"));
 
 	VBoxContainer *vb = memnew(VBoxContainer);
@@ -643,6 +696,7 @@ DependencyRemoveDialog::DependencyRemoveDialog() {
 //////////////
 
 void DependencyErrorDialog::show(Mode p_mode, const String &p_for_file, const Vector<String> &report) {
+	ZoneScoped;
 	mode = p_mode;
 	for_file = p_for_file;
 	set_title(TTR("Error loading:") + " " + p_for_file.get_file());
@@ -668,6 +722,7 @@ void DependencyErrorDialog::show(Mode p_mode, const String &p_for_file, const Ve
 }
 
 void DependencyErrorDialog::ok_pressed() {
+	ZoneScoped;
 	switch (mode) {
 		case MODE_SCENE:
 			EditorNode::get_singleton()->load_scene(for_file, true);
@@ -679,10 +734,12 @@ void DependencyErrorDialog::ok_pressed() {
 }
 
 void DependencyErrorDialog::custom_action(const String &) {
+	ZoneScoped;
 	EditorNode::get_singleton()->fix_dependencies(for_file);
 }
 
 DependencyErrorDialog::DependencyErrorDialog() {
+	ZoneScoped;
 	VBoxContainer *vb = memnew(VBoxContainer);
 	add_child(vb);
 
@@ -709,6 +766,7 @@ DependencyErrorDialog::DependencyErrorDialog() {
 //////////////////////////////////////////////////////////////////////
 
 void OrphanResourcesDialog::ok_pressed() {
+	ZoneScoped;
 	paths.clear();
 
 	_find_to_delete(files->get_root(), paths);
@@ -721,6 +779,7 @@ void OrphanResourcesDialog::ok_pressed() {
 }
 
 bool OrphanResourcesDialog::_fill_owners(EditorFileSystemDirectory *efsd, HashMap<String, int> &refs, TreeItem *p_parent) {
+	ZoneScoped;
 	if (!efsd) {
 		return false;
 	}
@@ -780,6 +839,7 @@ bool OrphanResourcesDialog::_fill_owners(EditorFileSystemDirectory *efsd, HashMa
 }
 
 void OrphanResourcesDialog::refresh() {
+	ZoneScoped;
 	HashMap<String, int> refs;
 	_fill_owners(EditorFileSystem::get_singleton()->get_filesystem(), refs, nullptr);
 	files->clear();
@@ -788,11 +848,13 @@ void OrphanResourcesDialog::refresh() {
 }
 
 void OrphanResourcesDialog::show() {
+	ZoneScoped;
 	refresh();
 	popup_centered_ratio(0.4);
 }
 
 void OrphanResourcesDialog::_find_to_delete(TreeItem *p_item, List<String> &r_paths) {
+	ZoneScoped;
 	while (p_item) {
 		if (p_item->get_cell_mode(0) == TreeItem::CELL_MODE_CHECK && p_item->is_checked(0)) {
 			r_paths.push_back(p_item->get_metadata(0));
@@ -807,6 +869,7 @@ void OrphanResourcesDialog::_find_to_delete(TreeItem *p_item, List<String> &r_pa
 }
 
 void OrphanResourcesDialog::_delete_confirm() {
+	ZoneScoped;
 	Ref<DirAccess> da = DirAccess::create(DirAccess::ACCESS_RESOURCES);
 	for (const String &E : paths) {
 		da->remove(E);
@@ -816,6 +879,7 @@ void OrphanResourcesDialog::_delete_confirm() {
 }
 
 void OrphanResourcesDialog::_button_pressed(Object *p_item, int p_column, int p_id, MouseButton p_button) {
+	ZoneScoped;
 	if (p_button != MouseButton::LEFT) {
 		return;
 	}
@@ -829,6 +893,7 @@ void OrphanResourcesDialog::_bind_methods() {
 }
 
 OrphanResourcesDialog::OrphanResourcesDialog() {
+	ZoneScoped;
 	set_title(TTR("Orphan Resource Explorer"));
 	delete_confirm = memnew(ConfirmationDialog);
 	set_ok_button_text(TTR("Delete"));

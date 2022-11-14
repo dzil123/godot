@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  progress_dialog.cpp                                                  */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "progress_dialog.h"
 
 #include "core/object/message_queue.h"
@@ -37,6 +68,7 @@
 #include "servers/display_server.h"
 
 void BackgroundProgress::_add_task(const String &p_task, const String &p_label, int p_steps) {
+	ZoneScoped;
 	_THREAD_SAFE_METHOD_
 	ERR_FAIL_COND_MSG(tasks.has(p_task), "Task '" + p_task + "' already exists.");
 	BackgroundProgress::Task t;
@@ -61,6 +93,7 @@ void BackgroundProgress::_add_task(const String &p_task, const String &p_label, 
 }
 
 void BackgroundProgress::_update() {
+	ZoneScoped;
 	_THREAD_SAFE_METHOD_
 
 	for (const KeyValue<String, int> &E : updates) {
@@ -73,6 +106,7 @@ void BackgroundProgress::_update() {
 }
 
 void BackgroundProgress::_task_step(const String &p_task, int p_step) {
+	ZoneScoped;
 	_THREAD_SAFE_METHOD_
 
 	ERR_FAIL_COND(!tasks.has(p_task));
@@ -86,6 +120,7 @@ void BackgroundProgress::_task_step(const String &p_task, int p_step) {
 }
 
 void BackgroundProgress::_end_task(const String &p_task) {
+	ZoneScoped;
 	_THREAD_SAFE_METHOD_
 
 	ERR_FAIL_COND(!tasks.has(p_task));
@@ -96,6 +131,7 @@ void BackgroundProgress::_end_task(const String &p_task) {
 }
 
 void BackgroundProgress::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method("_add_task", &BackgroundProgress::_add_task);
 	ClassDB::bind_method("_task_step", &BackgroundProgress::_task_step);
 	ClassDB::bind_method("_end_task", &BackgroundProgress::_end_task);
@@ -103,6 +139,7 @@ void BackgroundProgress::_bind_methods() {
 }
 
 void BackgroundProgress::add_task(const String &p_task, const String &p_label, int p_steps) {
+	ZoneScoped;
 	MessageQueue::get_singleton()->push_call(this, "_add_task", p_task, p_label, p_steps);
 }
 
@@ -125,6 +162,7 @@ void BackgroundProgress::task_step(const String &p_task, int p_step) {
 }
 
 void BackgroundProgress::end_task(const String &p_task) {
+	ZoneScoped;
 	MessageQueue::get_singleton()->push_call(this, "_end_task", p_task);
 }
 
@@ -136,6 +174,7 @@ void ProgressDialog::_notification(int p_what) {
 }
 
 void ProgressDialog::_popup() {
+	ZoneScoped;
 	Size2 ms = main->get_combined_minimum_size();
 	ms.width = MAX(500 * EDSCALE, ms.width);
 
@@ -151,6 +190,7 @@ void ProgressDialog::_popup() {
 }
 
 void ProgressDialog::add_task(const String &p_task, const String &p_label, int p_steps, bool p_can_cancel) {
+	ZoneScoped;
 	if (MessageQueue::get_singleton()->is_flushing()) {
 		ERR_PRINT("Do not use progress dialog (task) while flushing the message queue or using call_deferred()!");
 		return;
@@ -185,6 +225,7 @@ void ProgressDialog::add_task(const String &p_task, const String &p_label, int p
 }
 
 bool ProgressDialog::task_step(const String &p_task, const String &p_state, int p_step, bool p_force_redraw) {
+	ZoneScoped;
 	ERR_FAIL_COND_V(!tasks.has(p_task), cancelled);
 
 	if (!p_force_redraw) {
@@ -214,6 +255,7 @@ bool ProgressDialog::task_step(const String &p_task, const String &p_state, int 
 }
 
 void ProgressDialog::end_task(const String &p_task) {
+	ZoneScoped;
 	ERR_FAIL_COND(!tasks.has(p_task));
 	Task &t = tasks[p_task];
 
@@ -228,6 +270,7 @@ void ProgressDialog::end_task(const String &p_task) {
 }
 
 void ProgressDialog::_cancel_pressed() {
+	ZoneScoped;
 	cancelled = true;
 }
 
@@ -235,6 +278,7 @@ void ProgressDialog::_bind_methods() {
 }
 
 ProgressDialog::ProgressDialog() {
+	ZoneScoped;
 	main = memnew(VBoxContainer);
 	add_child(main);
 	main->set_anchors_and_offsets_preset(Control::PRESET_FULL_RECT);

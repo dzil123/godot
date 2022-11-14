@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_feature_profile.cpp                                           */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_feature_profile.h"
 
 #include "core/io/dir_access.h"
@@ -73,6 +104,7 @@ const char *EditorFeatureProfile::feature_identifiers[FEATURE_MAX] = {
 };
 
 void EditorFeatureProfile::set_disable_class(const StringName &p_class, bool p_disabled) {
+	ZoneScoped;
 	if (p_disabled) {
 		disabled_classes.insert(p_class);
 	} else {
@@ -81,6 +113,7 @@ void EditorFeatureProfile::set_disable_class(const StringName &p_class, bool p_d
 }
 
 bool EditorFeatureProfile::is_class_disabled(const StringName &p_class) const {
+	ZoneScoped;
 	if (p_class == StringName()) {
 		return false;
 	}
@@ -88,6 +121,7 @@ bool EditorFeatureProfile::is_class_disabled(const StringName &p_class) const {
 }
 
 void EditorFeatureProfile::set_disable_class_editor(const StringName &p_class, bool p_disabled) {
+	ZoneScoped;
 	if (p_disabled) {
 		disabled_editors.insert(p_class);
 	} else {
@@ -96,6 +130,7 @@ void EditorFeatureProfile::set_disable_class_editor(const StringName &p_class, b
 }
 
 bool EditorFeatureProfile::is_class_editor_disabled(const StringName &p_class) const {
+	ZoneScoped;
 	if (p_class == StringName()) {
 		return false;
 	}
@@ -103,6 +138,7 @@ bool EditorFeatureProfile::is_class_editor_disabled(const StringName &p_class) c
 }
 
 void EditorFeatureProfile::set_disable_class_property(const StringName &p_class, const StringName &p_property, bool p_disabled) {
+	ZoneScoped;
 	if (p_disabled) {
 		if (!disabled_properties.has(p_class)) {
 			disabled_properties[p_class] = HashSet<StringName>();
@@ -119,6 +155,7 @@ void EditorFeatureProfile::set_disable_class_property(const StringName &p_class,
 }
 
 bool EditorFeatureProfile::is_class_property_disabled(const StringName &p_class, const StringName &p_property) const {
+	ZoneScoped;
 	if (!disabled_properties.has(p_class)) {
 		return false;
 	}
@@ -131,10 +168,12 @@ bool EditorFeatureProfile::is_class_property_disabled(const StringName &p_class,
 }
 
 bool EditorFeatureProfile::has_class_properties_disabled(const StringName &p_class) const {
+	ZoneScoped;
 	return disabled_properties.has(p_class);
 }
 
 void EditorFeatureProfile::set_item_collapsed(const StringName &p_class, bool p_collapsed) {
+	ZoneScoped;
 	if (p_collapsed) {
 		collapsed_classes.insert(p_class);
 	} else {
@@ -143,30 +182,36 @@ void EditorFeatureProfile::set_item_collapsed(const StringName &p_class, bool p_
 }
 
 bool EditorFeatureProfile::is_item_collapsed(const StringName &p_class) const {
+	ZoneScoped;
 	return collapsed_classes.has(p_class);
 }
 
 void EditorFeatureProfile::set_disable_feature(Feature p_feature, bool p_disable) {
+	ZoneScoped;
 	ERR_FAIL_INDEX(p_feature, FEATURE_MAX);
 	features_disabled[p_feature] = p_disable;
 }
 
 bool EditorFeatureProfile::is_feature_disabled(Feature p_feature) const {
+	ZoneScoped;
 	ERR_FAIL_INDEX_V(p_feature, FEATURE_MAX, false);
 	return features_disabled[p_feature];
 }
 
 String EditorFeatureProfile::get_feature_name(Feature p_feature) {
+	ZoneScoped;
 	ERR_FAIL_INDEX_V(p_feature, FEATURE_MAX, String());
 	return feature_names[p_feature];
 }
 
 String EditorFeatureProfile::get_feature_description(Feature p_feature) {
+	ZoneScoped;
 	ERR_FAIL_INDEX_V(p_feature, FEATURE_MAX, String());
 	return feature_descriptions[p_feature];
 }
 
 Error EditorFeatureProfile::save_to_file(const String &p_path) {
+	ZoneScoped;
 	Dictionary data;
 	data["type"] = "feature_profile";
 	Array dis_classes;
@@ -212,6 +257,7 @@ Error EditorFeatureProfile::save_to_file(const String &p_path) {
 }
 
 Error EditorFeatureProfile::load_from_file(const String &p_path) {
+	ZoneScoped;
 	Error err;
 	String text = FileAccess::get_file_as_string(p_path, &err);
 	if (err != OK) {
@@ -281,6 +327,7 @@ Error EditorFeatureProfile::load_from_file(const String &p_path) {
 }
 
 void EditorFeatureProfile::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("set_disable_class", "class_name", "disable"), &EditorFeatureProfile::set_disable_class);
 	ClassDB::bind_method(D_METHOD("is_class_disabled", "class_name"), &EditorFeatureProfile::is_class_disabled);
 
@@ -314,6 +361,7 @@ EditorFeatureProfile::EditorFeatureProfile() {}
 //////////////////////////
 
 void EditorFeatureProfileManager::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_READY: {
 			current_profile = EDITOR_GET("_default_feature_profile");
@@ -337,6 +385,7 @@ void EditorFeatureProfileManager::_notification(int p_what) {
 }
 
 String EditorFeatureProfileManager::_get_selected_profile() {
+	ZoneScoped;
 	int idx = profile_list->get_selected();
 	if (idx < 0) {
 		return String();
@@ -346,6 +395,7 @@ String EditorFeatureProfileManager::_get_selected_profile() {
 }
 
 void EditorFeatureProfileManager::_update_profile_list(const String &p_select_profile) {
+	ZoneScoped;
 	String selected_profile;
 	if (p_select_profile.is_empty()) { //default, keep
 		if (profile_list->get_selected() >= 0) {
@@ -413,6 +463,7 @@ void EditorFeatureProfileManager::_update_profile_list(const String &p_select_pr
 }
 
 void EditorFeatureProfileManager::_profile_action(int p_action) {
+	ZoneScoped;
 	switch (p_action) {
 		case PROFILE_CLEAR: {
 			EditorSettings::get_singleton()->set("_default_feature_profile", "");
@@ -460,6 +511,7 @@ void EditorFeatureProfileManager::_profile_action(int p_action) {
 }
 
 void EditorFeatureProfileManager::_erase_selected_profile() {
+	ZoneScoped;
 	String selected = _get_selected_profile();
 	ERR_FAIL_COND(selected.is_empty());
 	Ref<DirAccess> da = DirAccess::open(EditorPaths::get_singleton()->get_feature_profiles_dir());
@@ -474,6 +526,7 @@ void EditorFeatureProfileManager::_erase_selected_profile() {
 }
 
 void EditorFeatureProfileManager::_create_new_profile() {
+	ZoneScoped;
 	String name = new_profile_name->get_text().strip_edges();
 	if (!name.is_valid_filename() || name.contains(".")) {
 		EditorNode::get_singleton()->show_warning(TTR("Profile must be a valid filename and must not contain '.'"));
@@ -497,10 +550,12 @@ void EditorFeatureProfileManager::_create_new_profile() {
 }
 
 void EditorFeatureProfileManager::_profile_selected(int p_what) {
+	ZoneScoped;
 	_update_selected_profile();
 }
 
 void EditorFeatureProfileManager::_fill_classes_from(TreeItem *p_parent, const String &p_class, const String &p_selected) {
+	ZoneScoped;
 	TreeItem *class_item = class_list->create_item(p_parent);
 	class_item->set_cell_mode(0, TreeItem::CELL_MODE_CHECK);
 	class_item->set_icon(0, EditorNode::get_singleton()->get_class_icon(p_class, "Node"));
@@ -549,6 +604,7 @@ void EditorFeatureProfileManager::_fill_classes_from(TreeItem *p_parent, const S
 }
 
 void EditorFeatureProfileManager::_class_list_item_selected() {
+	ZoneScoped;
 	if (updating_features) {
 		return;
 	}
@@ -645,6 +701,7 @@ void EditorFeatureProfileManager::_class_list_item_selected() {
 }
 
 void EditorFeatureProfileManager::_class_list_item_edited() {
+	ZoneScoped;
 	if (updating_features) {
 		return;
 	}
@@ -670,6 +727,7 @@ void EditorFeatureProfileManager::_class_list_item_edited() {
 }
 
 void EditorFeatureProfileManager::_class_list_item_collapsed(Object *p_item) {
+	ZoneScoped;
 	if (updating_features) {
 		return;
 	}
@@ -690,6 +748,7 @@ void EditorFeatureProfileManager::_class_list_item_collapsed(Object *p_item) {
 }
 
 void EditorFeatureProfileManager::_property_item_edited() {
+	ZoneScoped;
 	if (updating_features) {
 		return;
 	}
@@ -731,6 +790,7 @@ void EditorFeatureProfileManager::_property_item_edited() {
 }
 
 void EditorFeatureProfileManager::_update_selected_profile() {
+	ZoneScoped;
 	String class_selected;
 	int feature_selected = -1;
 
@@ -841,6 +901,7 @@ void EditorFeatureProfileManager::_import_profiles(const Vector<String> &p_paths
 }
 
 void EditorFeatureProfileManager::_export_profile(const String &p_path) {
+	ZoneScoped;
 	ERR_FAIL_COND(edited.is_null());
 	Error err = edited->save_to_file(p_path);
 	if (err != OK) {
@@ -849,6 +910,7 @@ void EditorFeatureProfileManager::_export_profile(const String &p_path) {
 }
 
 void EditorFeatureProfileManager::_save_and_update() {
+	ZoneScoped;
 	String edited_path = _get_selected_profile();
 	ERR_FAIL_COND(edited_path.is_empty());
 	ERR_FAIL_COND(edited.is_null());
@@ -861,26 +923,31 @@ void EditorFeatureProfileManager::_save_and_update() {
 }
 
 void EditorFeatureProfileManager::_emit_current_profile_changed() {
+	ZoneScoped;
 	emit_signal(SNAME("current_feature_profile_changed"));
 }
 
 void EditorFeatureProfileManager::notify_changed() {
+	ZoneScoped;
 	_emit_current_profile_changed();
 }
 
 Ref<EditorFeatureProfile> EditorFeatureProfileManager::get_current_profile() {
+	ZoneScoped;
 	return current;
 }
 
 EditorFeatureProfileManager *EditorFeatureProfileManager::singleton = nullptr;
 
 void EditorFeatureProfileManager::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method("_update_selected_profile", &EditorFeatureProfileManager::_update_selected_profile);
 
 	ADD_SIGNAL(MethodInfo("current_feature_profile_changed"));
 }
 
 EditorFeatureProfileManager::EditorFeatureProfileManager() {
+	ZoneScoped;
 	VBoxContainer *main_vbc = memnew(VBoxContainer);
 	add_child(main_vbc);
 

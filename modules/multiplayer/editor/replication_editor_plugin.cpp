@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  replication_editor_plugin.cpp                                        */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "replication_editor_plugin.h"
 
 #include "editor/editor_node.h"
@@ -43,6 +74,7 @@
 #include "scene/gui/tree.h"
 
 void ReplicationEditor::_pick_node_filter_text_changed(const String &p_newtext) {
+	ZoneScoped;
 	TreeItem *root_item = pick_node->get_scene_tree()->get_scene_tree()->get_root();
 
 	Vector<Node *> select_candidates;
@@ -71,6 +103,7 @@ void ReplicationEditor::_pick_node_filter_text_changed(const String &p_newtext) 
 }
 
 void ReplicationEditor::_pick_node_select_recursive(TreeItem *p_item, const String &p_filter, Vector<Node *> &p_select_candidates) {
+	ZoneScoped;
 	if (!p_item) {
 		return;
 	}
@@ -91,6 +124,7 @@ void ReplicationEditor::_pick_node_select_recursive(TreeItem *p_item, const Stri
 }
 
 void ReplicationEditor::_pick_node_filter_input(const Ref<InputEvent> &p_ie) {
+	ZoneScoped;
 	Ref<InputEventKey> k = p_ie;
 
 	if (k.is_valid()) {
@@ -109,6 +143,7 @@ void ReplicationEditor::_pick_node_filter_input(const Ref<InputEvent> &p_ie) {
 }
 
 void ReplicationEditor::_pick_node_selected(NodePath p_path) {
+	ZoneScoped;
 	Node *root = current->get_node(current->get_root_path());
 	ERR_FAIL_COND(!root);
 	Node *node = get_node(p_path);
@@ -119,6 +154,7 @@ void ReplicationEditor::_pick_node_selected(NodePath p_path) {
 }
 
 void ReplicationEditor::_pick_new_property() {
+	ZoneScoped;
 	if (current == nullptr) {
 		EditorNode::get_singleton()->show_warning(TTR("Select a replicator node in order to pick a property to add to it."));
 		return;
@@ -134,6 +170,7 @@ void ReplicationEditor::_pick_new_property() {
 }
 
 void ReplicationEditor::_add_sync_property(String p_path) {
+	ZoneScoped;
 	config = current->get_replication_config();
 
 	if (config.is_valid() && config->has_property(p_path)) {
@@ -160,6 +197,7 @@ void ReplicationEditor::_add_sync_property(String p_path) {
 }
 
 void ReplicationEditor::_pick_node_property_selected(String p_name) {
+	ZoneScoped;
 	String adding_prop_path = String(adding_node_path) + ":" + p_name;
 
 	_add_sync_property(adding_prop_path);
@@ -167,6 +205,7 @@ void ReplicationEditor::_pick_node_property_selected(String p_name) {
 
 /// ReplicationEditor
 ReplicationEditor::ReplicationEditor() {
+	ZoneScoped;
 	set_v_size_flags(SIZE_EXPAND_FILL);
 	set_custom_minimum_size(Size2(0, 200) * EDSCALE);
 
@@ -253,6 +292,7 @@ ReplicationEditor::ReplicationEditor() {
 }
 
 void ReplicationEditor::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("_update_config"), &ReplicationEditor::_update_config);
 	ClassDB::bind_method(D_METHOD("_update_checked", "property", "column", "checked"), &ReplicationEditor::_update_checked);
 	ClassDB::bind_method("_can_drop_data_fw", &ReplicationEditor::_can_drop_data_fw);
@@ -260,6 +300,7 @@ void ReplicationEditor::_bind_methods() {
 }
 
 bool ReplicationEditor::_can_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) const {
+	ZoneScoped;
 	Dictionary d = p_data;
 	if (!d.has("type")) {
 		return false;
@@ -281,6 +322,7 @@ bool ReplicationEditor::_can_drop_data_fw(const Point2 &p_point, const Variant &
 }
 
 void ReplicationEditor::_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) {
+	ZoneScoped;
 	if (current == nullptr) {
 		EditorNode::get_singleton()->show_warning(TTR("Select a replicator node in order to pick a property to add to it."));
 		return;
@@ -315,6 +357,7 @@ void ReplicationEditor::_drop_data_fw(const Point2 &p_point, const Variant &p_da
 }
 
 void ReplicationEditor::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
@@ -326,6 +369,7 @@ void ReplicationEditor::_notification(int p_what) {
 }
 
 void ReplicationEditor::_add_pressed() {
+	ZoneScoped;
 	if (!current) {
 		error_dialog->set_text(TTR("Please select a MultiplayerSynchronizer first."));
 		error_dialog->popup_centered();
@@ -349,6 +393,7 @@ void ReplicationEditor::_add_pressed() {
 }
 
 void ReplicationEditor::_tree_item_edited() {
+	ZoneScoped;
 	TreeItem *ti = tree->get_edited();
 	if (!ti || config.is_null()) {
 		return;
@@ -374,6 +419,7 @@ void ReplicationEditor::_tree_item_edited() {
 }
 
 void ReplicationEditor::_tree_button_pressed(Object *p_item, int p_column, int p_id, MouseButton p_button) {
+	ZoneScoped;
 	if (p_button != MouseButton::LEFT) {
 		return;
 	}
@@ -388,6 +434,7 @@ void ReplicationEditor::_tree_button_pressed(Object *p_item, int p_column, int p
 }
 
 void ReplicationEditor::_dialog_closed(bool p_confirmed) {
+	ZoneScoped;
 	if (deleting.is_empty() || config.is_null()) {
 		return;
 	}
@@ -410,6 +457,7 @@ void ReplicationEditor::_dialog_closed(bool p_confirmed) {
 }
 
 void ReplicationEditor::_update_checked(const NodePath &p_prop, int p_column, bool p_checked) {
+	ZoneScoped;
 	if (!tree->get_root()) {
 		return;
 	}
@@ -424,6 +472,7 @@ void ReplicationEditor::_update_checked(const NodePath &p_prop, int p_column, bo
 }
 
 void ReplicationEditor::_update_config() {
+	ZoneScoped;
 	deleting = NodePath();
 	tree->clear();
 	tree->create_item();
@@ -442,6 +491,7 @@ void ReplicationEditor::_update_config() {
 }
 
 void ReplicationEditor::edit(MultiplayerSynchronizer *p_sync) {
+	ZoneScoped;
 	if (current == p_sync) {
 		return;
 	}
@@ -455,6 +505,7 @@ void ReplicationEditor::edit(MultiplayerSynchronizer *p_sync) {
 }
 
 Ref<Texture2D> ReplicationEditor::_get_class_icon(const Node *p_node) {
+	ZoneScoped;
 	if (!p_node || !has_theme_icon(p_node->get_class(), "EditorIcons")) {
 		return get_theme_icon(SNAME("ImportFail"), SNAME("EditorIcons"));
 	}
@@ -462,6 +513,7 @@ Ref<Texture2D> ReplicationEditor::_get_class_icon(const Node *p_node) {
 }
 
 void ReplicationEditor::_add_property(const NodePath &p_property, bool p_spawn, bool p_sync) {
+	ZoneScoped;
 	String prop = String(p_property);
 	TreeItem *item = tree->create_item();
 	item->set_selectable(0, false);
@@ -496,6 +548,7 @@ void ReplicationEditor::_add_property(const NodePath &p_property, bool p_spawn, 
 
 /// ReplicationEditorPlugin
 ReplicationEditorPlugin::ReplicationEditorPlugin() {
+	ZoneScoped;
 	repl_editor = memnew(ReplicationEditor);
 	button = EditorNode::get_singleton()->add_bottom_panel_item(TTR("Replication"), repl_editor);
 	button->hide();
@@ -506,6 +559,7 @@ ReplicationEditorPlugin::~ReplicationEditorPlugin() {
 }
 
 void ReplicationEditorPlugin::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			get_tree()->connect("node_removed", callable_mp(this, &ReplicationEditorPlugin::_node_removed));
@@ -514,6 +568,7 @@ void ReplicationEditorPlugin::_notification(int p_what) {
 }
 
 void ReplicationEditorPlugin::_node_removed(Node *p_node) {
+	ZoneScoped;
 	if (p_node && p_node == repl_editor->get_current()) {
 		repl_editor->edit(nullptr);
 		if (repl_editor->is_visible_in_tree()) {
@@ -525,6 +580,7 @@ void ReplicationEditorPlugin::_node_removed(Node *p_node) {
 }
 
 void ReplicationEditorPlugin::_pinned() {
+	ZoneScoped;
 	if (!repl_editor->get_pin()->is_pressed()) {
 		if (repl_editor->is_visible_in_tree()) {
 			EditorNode::get_singleton()->hide_bottom_panel();
@@ -534,14 +590,17 @@ void ReplicationEditorPlugin::_pinned() {
 }
 
 void ReplicationEditorPlugin::edit(Object *p_object) {
+	ZoneScoped;
 	repl_editor->edit(Object::cast_to<MultiplayerSynchronizer>(p_object));
 }
 
 bool ReplicationEditorPlugin::handles(Object *p_object) const {
+	ZoneScoped;
 	return p_object->is_class("MultiplayerSynchronizer");
 }
 
 void ReplicationEditorPlugin::make_visible(bool p_visible) {
+	ZoneScoped;
 	if (p_visible) {
 		button->show();
 		EditorNode::get_singleton()->make_bottom_panel_item_visible(repl_editor);

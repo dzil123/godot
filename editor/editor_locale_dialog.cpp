@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_locale_dialog.cpp                                             */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_locale_dialog.h"
 
 #include "core/config/project_settings.h"
@@ -40,10 +71,12 @@
 #include "scene/gui/tree.h"
 
 void EditorLocaleDialog::_bind_methods() {
+	ZoneScoped;
 	ADD_SIGNAL(MethodInfo("locale_selected", PropertyInfo(Variant::STRING, "locale")));
 }
 
 void EditorLocaleDialog::ok_pressed() {
+	ZoneScoped;
 	if (edit_filters->is_pressed()) {
 		return; // Do not update, if in filter edit mode.
 	}
@@ -69,6 +102,7 @@ void EditorLocaleDialog::ok_pressed() {
 }
 
 void EditorLocaleDialog::_item_selected() {
+	ZoneScoped;
 	if (updating_lists) {
 		return;
 	}
@@ -94,6 +128,7 @@ void EditorLocaleDialog::_item_selected() {
 }
 
 void EditorLocaleDialog::_toggle_advanced(bool p_checked) {
+	ZoneScoped;
 	if (!p_checked) {
 		script_code->set_text("");
 		variant_code->set_text("");
@@ -102,6 +137,7 @@ void EditorLocaleDialog::_toggle_advanced(bool p_checked) {
 }
 
 void EditorLocaleDialog::_post_popup() {
+	ZoneScoped;
 	ConfirmationDialog::_post_popup();
 
 	if (!locale_set) {
@@ -115,6 +151,7 @@ void EditorLocaleDialog::_post_popup() {
 }
 
 void EditorLocaleDialog::_filter_lang_option_changed() {
+	ZoneScoped;
 	TreeItem *t = lang_list->get_edited();
 	String lang = t->get_metadata(0);
 	bool checked = t->is_checked(0);
@@ -149,6 +186,7 @@ void EditorLocaleDialog::_filter_lang_option_changed() {
 }
 
 void EditorLocaleDialog::_filter_script_option_changed() {
+	ZoneScoped;
 	TreeItem *t = script_list->get_edited();
 	String scr_code = t->get_metadata(0);
 	bool checked = t->is_checked(0);
@@ -183,6 +221,7 @@ void EditorLocaleDialog::_filter_script_option_changed() {
 }
 
 void EditorLocaleDialog::_filter_cnt_option_changed() {
+	ZoneScoped;
 	TreeItem *t = cnt_list->get_edited();
 	String cnt = t->get_metadata(0);
 	bool checked = t->is_checked(0);
@@ -217,6 +256,7 @@ void EditorLocaleDialog::_filter_cnt_option_changed() {
 }
 
 void EditorLocaleDialog::_filter_mode_changed(int p_mode) {
+	ZoneScoped;
 	int f_mode = filter_mode->get_selected_id();
 	Variant prev;
 
@@ -234,10 +274,12 @@ void EditorLocaleDialog::_filter_mode_changed(int p_mode) {
 }
 
 void EditorLocaleDialog::_edit_filters(bool p_checked) {
+	ZoneScoped;
 	_update_tree();
 }
 
 void EditorLocaleDialog::_update_tree() {
+	ZoneScoped;
 	updating_lists = true;
 
 	int filter = SHOW_ALL_LOCALES;
@@ -347,6 +389,7 @@ void EditorLocaleDialog::_update_tree() {
 }
 
 void EditorLocaleDialog::set_locale(const String &p_locale) {
+	ZoneScoped;
 	const String &locale = TranslationServer::get_singleton()->standardize_locale(p_locale);
 	if (locale.is_empty()) {
 		locale_set = false;
@@ -385,10 +428,12 @@ void EditorLocaleDialog::set_locale(const String &p_locale) {
 }
 
 void EditorLocaleDialog::popup_locale_dialog() {
+	ZoneScoped;
 	popup_centered_clamped(Size2(1050, 700) * EDSCALE, 0.8);
 }
 
 EditorLocaleDialog::EditorLocaleDialog() {
+	ZoneScoped;
 	set_title(TTR("Select a Locale"));
 
 	VBoxContainer *vb = memnew(VBoxContainer);

@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  shader_create_dialog.cpp                                             */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "shader_create_dialog.h"
 
 #include "core/config/project_settings.h"
@@ -45,6 +76,7 @@ enum ShaderType {
 };
 
 void ShaderCreateDialog::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			_update_theme();
@@ -73,6 +105,7 @@ void ShaderCreateDialog::_notification(int p_what) {
 }
 
 void ShaderCreateDialog::_update_theme() {
+	ZoneScoped;
 	Ref<Texture2D> shader_icon = gc->get_theme_icon(SNAME("Shader"), SNAME("EditorIcons"));
 	if (shader_icon.is_valid()) {
 		type_menu->set_item_icon(0, shader_icon);
@@ -93,6 +126,7 @@ void ShaderCreateDialog::_update_theme() {
 }
 
 void ShaderCreateDialog::_update_language_info() {
+	ZoneScoped;
 	type_data.clear();
 
 	for (int i = 0; i < SHADER_TYPE_MAX; i++) {
@@ -114,6 +148,7 @@ void ShaderCreateDialog::_update_language_info() {
 }
 
 void ShaderCreateDialog::_path_hbox_sorted() {
+	ZoneScoped;
 	if (is_visible()) {
 		int filename_start_pos = initial_base_path.rfind("/") + 1;
 		int filename_end_pos = initial_base_path.length();
@@ -130,16 +165,19 @@ void ShaderCreateDialog::_path_hbox_sorted() {
 }
 
 void ShaderCreateDialog::_mode_changed(int p_mode) {
+	ZoneScoped;
 	current_mode = p_mode;
 	EditorSettings::get_singleton()->set_project_metadata("shader_setup", "last_selected_mode", p_mode);
 }
 
 void ShaderCreateDialog::_template_changed(int p_template) {
+	ZoneScoped;
 	current_template = p_template;
 	EditorSettings::get_singleton()->set_project_metadata("shader_setup", "last_selected_template", p_template);
 }
 
 void ShaderCreateDialog::ok_pressed() {
+	ZoneScoped;
 	if (is_new_shader_created) {
 		_create_new();
 	} else {
@@ -151,6 +189,7 @@ void ShaderCreateDialog::ok_pressed() {
 }
 
 void ShaderCreateDialog::_create_new() {
+	ZoneScoped;
 	Ref<Resource> shader;
 	Ref<Resource> shader_inc;
 
@@ -247,6 +286,7 @@ void ShaderCreateDialog::_create_new() {
 }
 
 void ShaderCreateDialog::_load_exist() {
+	ZoneScoped;
 	String path = file_path->get_text();
 	Ref<Resource> p_shader = ResourceLoader::load(path, "Shader");
 	if (p_shader.is_null()) {
@@ -260,6 +300,7 @@ void ShaderCreateDialog::_load_exist() {
 }
 
 void ShaderCreateDialog::_type_changed(int p_language) {
+	ZoneScoped;
 	current_type = p_language;
 	ShaderTypeData shader_type_data = type_data[p_language];
 
@@ -304,6 +345,7 @@ void ShaderCreateDialog::_type_changed(int p_language) {
 }
 
 void ShaderCreateDialog::_built_in_toggled(bool p_enabled) {
+	ZoneScoped;
 	is_built_in = p_enabled;
 	if (p_enabled) {
 		is_new_shader_created = true;
@@ -314,6 +356,7 @@ void ShaderCreateDialog::_built_in_toggled(bool p_enabled) {
 }
 
 void ShaderCreateDialog::_browse_path() {
+	ZoneScoped;
 	file_browse->set_file_mode(EditorFileDialog::FILE_MODE_SAVE_FILE);
 	file_browse->set_title(TTR("Open Shader / Choose Location"));
 	file_browse->set_ok_button_text(TTR("Open"));
@@ -332,6 +375,7 @@ void ShaderCreateDialog::_browse_path() {
 }
 
 void ShaderCreateDialog::_file_selected(const String &p_file) {
+	ZoneScoped;
 	String p = ProjectSettings::get_singleton()->localize_path(p_file);
 	file_path->set_text(p);
 	_path_changed(p);
@@ -344,6 +388,7 @@ void ShaderCreateDialog::_file_selected(const String &p_file) {
 }
 
 void ShaderCreateDialog::_path_changed(const String &p_path) {
+	ZoneScoped;
 	if (is_built_in) {
 		return;
 	}
@@ -370,10 +415,12 @@ void ShaderCreateDialog::_path_changed(const String &p_path) {
 }
 
 void ShaderCreateDialog::_path_submitted(const String &p_path) {
+	ZoneScoped;
 	ok_pressed();
 }
 
 void ShaderCreateDialog::config(const String &p_base_path, bool p_built_in_enabled, bool p_load_enabled, int p_preferred_type, int p_preferred_mode) {
+	ZoneScoped;
 	if (!p_base_path.is_empty()) {
 		initial_base_path = p_base_path.get_basename();
 		file_path->set_text(initial_base_path + "." + type_data[type_menu->get_selected()].default_extension);
@@ -402,6 +449,7 @@ void ShaderCreateDialog::config(const String &p_base_path, bool p_built_in_enabl
 }
 
 String ShaderCreateDialog::_validate_path(const String &p_path) {
+	ZoneScoped;
 	String p = p_path.strip_edges();
 
 	if (p.is_empty()) {
@@ -464,6 +512,7 @@ String ShaderCreateDialog::_validate_path(const String &p_path) {
 }
 
 void ShaderCreateDialog::_msg_script_valid(bool valid, const String &p_msg) {
+	ZoneScoped;
 	error_label->set_text("- " + p_msg);
 	if (valid) {
 		error_label->add_theme_color_override("font_color", gc->get_theme_color(SNAME("success_color"), SNAME("Editor")));
@@ -473,6 +522,7 @@ void ShaderCreateDialog::_msg_script_valid(bool valid, const String &p_msg) {
 }
 
 void ShaderCreateDialog::_msg_path_valid(bool valid, const String &p_msg) {
+	ZoneScoped;
 	path_error_label->set_text("- " + p_msg);
 	if (valid) {
 		path_error_label->add_theme_color_override("font_color", gc->get_theme_color(SNAME("success_color"), SNAME("Editor")));
@@ -482,6 +532,7 @@ void ShaderCreateDialog::_msg_path_valid(bool valid, const String &p_msg) {
 }
 
 void ShaderCreateDialog::_update_dialog() {
+	ZoneScoped;
 	bool shader_ok = true;
 
 	if (!is_built_in && !is_path_valid) {
@@ -545,6 +596,7 @@ void ShaderCreateDialog::_update_dialog() {
 }
 
 void ShaderCreateDialog::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("config", "path", "built_in_enabled", "load_enabled"), &ShaderCreateDialog::config, DEFVAL(true), DEFVAL(true));
 
 	ADD_SIGNAL(MethodInfo("shader_created", PropertyInfo(Variant::OBJECT, "shader", PROPERTY_HINT_RESOURCE_TYPE, "Shader")));
@@ -552,6 +604,7 @@ void ShaderCreateDialog::_bind_methods() {
 }
 
 ShaderCreateDialog::ShaderCreateDialog() {
+	ZoneScoped;
 	_update_language_info();
 
 	// Main Controls.

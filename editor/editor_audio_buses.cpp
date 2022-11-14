@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_audio_buses.cpp                                               */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_audio_buses.h"
 
 #include "core/config/project_settings.h"
@@ -44,6 +75,7 @@
 #include "servers/audio_server.h"
 
 void EditorAudioBus::_update_visible_channels() {
+	ZoneScoped;
 	int i = 0;
 	for (; i < cc; i++) {
 		if (!channel[i].vu_l->is_visible()) {
@@ -65,6 +97,7 @@ void EditorAudioBus::_update_visible_channels() {
 }
 
 void EditorAudioBus::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -189,6 +222,7 @@ void EditorAudioBus::_notification(int p_what) {
 }
 
 void EditorAudioBus::update_send() {
+	ZoneScoped;
 	send->clear();
 	if (is_master) {
 		send->set_disabled(true);
@@ -211,6 +245,7 @@ void EditorAudioBus::update_send() {
 }
 
 void EditorAudioBus::update_bus() {
+	ZoneScoped;
 	if (updating_bus) {
 		return;
 	}
@@ -256,6 +291,7 @@ void EditorAudioBus::update_bus() {
 }
 
 void EditorAudioBus::_name_changed(const String &p_new_name) {
+	ZoneScoped;
 	if (p_new_name == AudioServer::get_singleton()->get_bus_name(get_index())) {
 		return;
 	}
@@ -308,6 +344,7 @@ void EditorAudioBus::_name_changed(const String &p_new_name) {
 }
 
 void EditorAudioBus::_volume_changed(float p_normalized) {
+	ZoneScoped;
 	if (updating_bus) {
 		return;
 	}
@@ -375,6 +412,7 @@ float EditorAudioBus::_scaled_db_to_normalized_volume(float db) {
 }
 
 void EditorAudioBus::_show_value(float slider_value) {
+	ZoneScoped;
 	float db;
 	if (Input::get_singleton()->is_key_pressed(Key::CTRL)) {
 		// Display the correct (snapped) value when holding Ctrl
@@ -410,10 +448,12 @@ void EditorAudioBus::_show_value(float slider_value) {
 }
 
 void EditorAudioBus::_hide_value_preview() {
+	ZoneScoped;
 	audio_value_preview_box->hide();
 }
 
 void EditorAudioBus::_solo_toggled() {
+	ZoneScoped;
 	updating_bus = true;
 
 	Ref<EditorUndoRedoManager> &ur = EditorNode::get_undo_redo();
@@ -428,6 +468,7 @@ void EditorAudioBus::_solo_toggled() {
 }
 
 void EditorAudioBus::_mute_toggled() {
+	ZoneScoped;
 	updating_bus = true;
 
 	Ref<EditorUndoRedoManager> &ur = EditorNode::get_undo_redo();
@@ -442,6 +483,7 @@ void EditorAudioBus::_mute_toggled() {
 }
 
 void EditorAudioBus::_bypass_toggled() {
+	ZoneScoped;
 	updating_bus = true;
 
 	Ref<EditorUndoRedoManager> &ur = EditorNode::get_undo_redo();
@@ -456,6 +498,7 @@ void EditorAudioBus::_bypass_toggled() {
 }
 
 void EditorAudioBus::_send_selected(int p_which) {
+	ZoneScoped;
 	updating_bus = true;
 
 	Ref<EditorUndoRedoManager> &ur = EditorNode::get_undo_redo();
@@ -470,6 +513,7 @@ void EditorAudioBus::_send_selected(int p_which) {
 }
 
 void EditorAudioBus::_effect_selected() {
+	ZoneScoped;
 	TreeItem *effect = effects->get_selected();
 	if (!effect) {
 		return;
@@ -488,6 +532,7 @@ void EditorAudioBus::_effect_selected() {
 }
 
 void EditorAudioBus::_effect_edited() {
+	ZoneScoped;
 	if (updating_bus) {
 		return;
 	}
@@ -521,6 +566,7 @@ void EditorAudioBus::_effect_edited() {
 }
 
 void EditorAudioBus::_effect_add(int p_which) {
+	ZoneScoped;
 	if (updating_bus) {
 		return;
 	}
@@ -545,6 +591,7 @@ void EditorAudioBus::_effect_add(int p_which) {
 }
 
 void EditorAudioBus::gui_input(const Ref<InputEvent> &p_event) {
+	ZoneScoped;
 	ERR_FAIL_COND(p_event.is_null());
 
 	Ref<InputEventMouseButton> mb = p_event;
@@ -556,6 +603,7 @@ void EditorAudioBus::gui_input(const Ref<InputEvent> &p_event) {
 }
 
 void EditorAudioBus::_effects_gui_input(Ref<InputEvent> p_event) {
+	ZoneScoped;
 	Ref<InputEventKey> k = p_event;
 	if (k.is_valid() && k->is_pressed() && !k->is_echo() && k->get_keycode() == Key::KEY_DELETE) {
 		TreeItem *current_effect = effects->get_selected();
@@ -567,6 +615,7 @@ void EditorAudioBus::_effects_gui_input(Ref<InputEvent> p_event) {
 }
 
 void EditorAudioBus::_bus_popup_pressed(int p_option) {
+	ZoneScoped;
 	if (p_option == 2) {
 		// Reset volume
 		emit_signal(SNAME("vol_reset_request"));
@@ -579,6 +628,7 @@ void EditorAudioBus::_bus_popup_pressed(int p_option) {
 }
 
 Variant EditorAudioBus::get_drag_data(const Point2 &p_point) {
+	ZoneScoped;
 	if (get_index() == 0) {
 		return Variant();
 	}
@@ -603,6 +653,7 @@ Variant EditorAudioBus::get_drag_data(const Point2 &p_point) {
 }
 
 bool EditorAudioBus::can_drop_data(const Point2 &p_point, const Variant &p_data) const {
+	ZoneScoped;
 	if (get_index() == 0) {
 		return false;
 	}
@@ -617,11 +668,13 @@ bool EditorAudioBus::can_drop_data(const Point2 &p_point, const Variant &p_data)
 }
 
 void EditorAudioBus::drop_data(const Point2 &p_point, const Variant &p_data) {
+	ZoneScoped;
 	Dictionary d = p_data;
 	emit_signal(SNAME("dropped"), d["index"], get_index());
 }
 
 Variant EditorAudioBus::get_drag_data_fw(const Point2 &p_point, Control *p_from) {
+	ZoneScoped;
 	TreeItem *item = effects->get_item_at_position(p_point);
 	if (!item) {
 		return Variant();
@@ -645,6 +698,7 @@ Variant EditorAudioBus::get_drag_data_fw(const Point2 &p_point, Control *p_from)
 }
 
 bool EditorAudioBus::can_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) const {
+	ZoneScoped;
 	Dictionary d = p_data;
 	if (!d.has("type") || String(d["type"]) != "audio_bus_effect") {
 		return false;
@@ -661,6 +715,7 @@ bool EditorAudioBus::can_drop_data_fw(const Point2 &p_point, const Variant &p_da
 }
 
 void EditorAudioBus::drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) {
+	ZoneScoped;
 	Dictionary d = p_data;
 
 	TreeItem *item = effects->get_item_at_position(p_point);
@@ -720,6 +775,7 @@ void EditorAudioBus::drop_data_fw(const Point2 &p_point, const Variant &p_data, 
 }
 
 void EditorAudioBus::_delete_effect_pressed(int p_option) {
+	ZoneScoped;
 	TreeItem *item = effects->get_selected();
 	if (!item) {
 		return;
@@ -742,6 +798,7 @@ void EditorAudioBus::_delete_effect_pressed(int p_option) {
 }
 
 void EditorAudioBus::_effect_rmb(const Vector2 &p_pos, MouseButton p_button) {
+	ZoneScoped;
 	if (p_button != MouseButton::RIGHT) {
 		return;
 	}
@@ -761,6 +818,7 @@ void EditorAudioBus::_effect_rmb(const Vector2 &p_pos, MouseButton p_button) {
 }
 
 void EditorAudioBus::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method("update_bus", &EditorAudioBus::update_bus);
 	ClassDB::bind_method("update_send", &EditorAudioBus::update_send);
 
@@ -776,6 +834,7 @@ void EditorAudioBus::_bind_methods() {
 }
 
 EditorAudioBus::EditorAudioBus(EditorAudioBuses *p_buses, bool p_is_master) {
+	ZoneScoped;
 	buses = p_buses;
 	is_master = p_is_master;
 
@@ -953,6 +1012,7 @@ EditorAudioBus::EditorAudioBus(EditorAudioBuses *p_buses, bool p_is_master) {
 }
 
 void EditorAudioBusDrop::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
 			draw_style_box(get_theme_stylebox(SNAME("normal"), SNAME("Button")), Rect2(Vector2(), get_size()));
@@ -982,16 +1042,19 @@ void EditorAudioBusDrop::_notification(int p_what) {
 }
 
 bool EditorAudioBusDrop::can_drop_data(const Point2 &p_point, const Variant &p_data) const {
+	ZoneScoped;
 	Dictionary d = p_data;
 	return (d.has("type") && String(d["type"]) == "move_audio_bus");
 }
 
 void EditorAudioBusDrop::drop_data(const Point2 &p_point, const Variant &p_data) {
+	ZoneScoped;
 	Dictionary d = p_data;
 	emit_signal(SNAME("dropped"), d["index"], AudioServer::get_singleton()->get_bus_count());
 }
 
 void EditorAudioBusDrop::_bind_methods() {
+	ZoneScoped;
 	ADD_SIGNAL(MethodInfo("dropped"));
 }
 
@@ -999,6 +1062,7 @@ EditorAudioBusDrop::EditorAudioBusDrop() {
 }
 
 void EditorAudioBuses::_update_buses() {
+	ZoneScoped;
 	while (bus_hb->get_child_count() > 0) {
 		memdelete(bus_hb->get_child(0));
 	}
@@ -1018,12 +1082,14 @@ void EditorAudioBuses::_update_buses() {
 }
 
 EditorAudioBuses *EditorAudioBuses::register_editor() {
+	ZoneScoped;
 	EditorAudioBuses *audio_buses = memnew(EditorAudioBuses);
 	EditorNode::get_singleton()->add_bottom_panel_item(TTR("Audio"), audio_buses);
 	return audio_buses;
 }
 
 void EditorAudioBuses::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -1064,6 +1130,7 @@ void EditorAudioBuses::_notification(int p_what) {
 }
 
 void EditorAudioBuses::_add_bus() {
+	ZoneScoped;
 	Ref<EditorUndoRedoManager> &ur = EditorNode::get_undo_redo();
 
 	ur->create_action(TTR("Add Audio Bus"));
@@ -1075,6 +1142,7 @@ void EditorAudioBuses::_add_bus() {
 }
 
 void EditorAudioBuses::_update_bus(int p_index) {
+	ZoneScoped;
 	if (p_index >= bus_hb->get_child_count()) {
 		return;
 	}
@@ -1083,12 +1151,14 @@ void EditorAudioBuses::_update_bus(int p_index) {
 }
 
 void EditorAudioBuses::_update_sends() {
+	ZoneScoped;
 	for (int i = 0; i < bus_hb->get_child_count(); i++) {
 		bus_hb->get_child(i)->call("update_send");
 	}
 }
 
 void EditorAudioBuses::_delete_bus(Object *p_which) {
+	ZoneScoped;
 	EditorAudioBus *bus = Object::cast_to<EditorAudioBus>(p_which);
 	int index = bus->get_index();
 	if (index == 0) {
@@ -1117,6 +1187,7 @@ void EditorAudioBuses::_delete_bus(Object *p_which) {
 }
 
 void EditorAudioBuses::_duplicate_bus(int p_which) {
+	ZoneScoped;
 	int add_at_pos = p_which + 1;
 	Ref<EditorUndoRedoManager> &ur = EditorNode::get_undo_redo();
 	ur->create_action(TTR("Duplicate Audio Bus"));
@@ -1138,6 +1209,7 @@ void EditorAudioBuses::_duplicate_bus(int p_which) {
 }
 
 void EditorAudioBuses::_reset_bus_volume(Object *p_which) {
+	ZoneScoped;
 	EditorAudioBus *bus = Object::cast_to<EditorAudioBus>(p_which);
 	int index = bus->get_index();
 
@@ -1151,6 +1223,7 @@ void EditorAudioBuses::_reset_bus_volume(Object *p_which) {
 }
 
 void EditorAudioBuses::_request_drop_end() {
+	ZoneScoped;
 	if (!drop_end && bus_hb->get_child_count()) {
 		drop_end = memnew(EditorAudioBusDrop);
 
@@ -1161,6 +1234,7 @@ void EditorAudioBuses::_request_drop_end() {
 }
 
 void EditorAudioBuses::_drop_at_index(int p_bus, int p_index) {
+	ZoneScoped;
 	Ref<EditorUndoRedoManager> &ur = EditorNode::get_undo_redo();
 	ur->create_action(TTR("Move Audio Bus"));
 
@@ -1175,15 +1249,18 @@ void EditorAudioBuses::_drop_at_index(int p_bus, int p_index) {
 }
 
 void EditorAudioBuses::_server_save() {
+	ZoneScoped;
 	Ref<AudioBusLayout> state = AudioServer::get_singleton()->generate_bus_layout();
 	ResourceSaver::save(state, edited_path);
 }
 
 void EditorAudioBuses::_select_layout() {
+	ZoneScoped;
 	FileSystemDock::get_singleton()->select_file(edited_path);
 }
 
 void EditorAudioBuses::_save_as_layout() {
+	ZoneScoped;
 	file_dialog->set_file_mode(EditorFileDialog::FILE_MODE_SAVE_FILE);
 	file_dialog->set_title(TTR("Save Audio Bus Layout As..."));
 	file_dialog->set_current_path(edited_path);
@@ -1192,6 +1269,7 @@ void EditorAudioBuses::_save_as_layout() {
 }
 
 void EditorAudioBuses::_new_layout() {
+	ZoneScoped;
 	file_dialog->set_file_mode(EditorFileDialog::FILE_MODE_SAVE_FILE);
 	file_dialog->set_title(TTR("Location for New Layout..."));
 	file_dialog->set_current_path(edited_path);
@@ -1200,6 +1278,7 @@ void EditorAudioBuses::_new_layout() {
 }
 
 void EditorAudioBuses::_load_layout() {
+	ZoneScoped;
 	file_dialog->set_file_mode(EditorFileDialog::FILE_MODE_OPEN_FILE);
 	file_dialog->set_title(TTR("Open Audio Bus Layout"));
 	file_dialog->set_current_path(edited_path);
@@ -1208,6 +1287,7 @@ void EditorAudioBuses::_load_layout() {
 }
 
 void EditorAudioBuses::_load_default_layout() {
+	ZoneScoped;
 	String layout_path = GLOBAL_GET("audio/buses/default_bus_layout");
 
 	Ref<AudioBusLayout> state = ResourceLoader::load(layout_path, "", ResourceFormatLoader::CACHE_MODE_IGNORE);
@@ -1225,6 +1305,7 @@ void EditorAudioBuses::_load_default_layout() {
 }
 
 void EditorAudioBuses::_file_dialog_callback(const String &p_string) {
+	ZoneScoped;
 	if (file_dialog->get_file_mode() == EditorFileDialog::FILE_MODE_OPEN_FILE) {
 		Ref<AudioBusLayout> state = ResourceLoader::load(p_string, "", ResourceFormatLoader::CACHE_MODE_IGNORE);
 		if (state.is_null()) {
@@ -1262,6 +1343,7 @@ void EditorAudioBuses::_file_dialog_callback(const String &p_string) {
 }
 
 void EditorAudioBuses::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method("_update_buses", &EditorAudioBuses::_update_buses);
 	ClassDB::bind_method("_update_bus", &EditorAudioBuses::_update_bus);
 	ClassDB::bind_method("_update_sends", &EditorAudioBuses::_update_sends);
@@ -1269,6 +1351,7 @@ void EditorAudioBuses::_bind_methods() {
 }
 
 EditorAudioBuses::EditorAudioBuses() {
+	ZoneScoped;
 	top_hb = memnew(HBoxContainer);
 	add_child(top_hb);
 
@@ -1343,6 +1426,7 @@ EditorAudioBuses::EditorAudioBuses() {
 }
 
 void EditorAudioBuses::open_layout(const String &p_path) {
+	ZoneScoped;
 	EditorNode::get_singleton()->make_bottom_panel_item_visible(this);
 
 	Ref<AudioBusLayout> state = ResourceLoader::load(p_path, "", ResourceFormatLoader::CACHE_MODE_IGNORE);
@@ -1360,6 +1444,7 @@ void EditorAudioBuses::open_layout(const String &p_path) {
 }
 
 void AudioBusesEditorPlugin::edit(Object *p_node) {
+	ZoneScoped;
 	if (Object::cast_to<AudioBusLayout>(p_node)) {
 		String path = Object::cast_to<AudioBusLayout>(p_node)->get_path();
 		if (path.is_resource_file()) {
@@ -1369,6 +1454,7 @@ void AudioBusesEditorPlugin::edit(Object *p_node) {
 }
 
 bool AudioBusesEditorPlugin::handles(Object *p_node) const {
+	ZoneScoped;
 	return (Object::cast_to<AudioBusLayout>(p_node) != nullptr);
 }
 
@@ -1376,6 +1462,7 @@ void AudioBusesEditorPlugin::make_visible(bool p_visible) {
 }
 
 AudioBusesEditorPlugin::AudioBusesEditorPlugin(EditorAudioBuses *p_node) {
+	ZoneScoped;
 	audio_bus_editor = p_node;
 }
 
@@ -1383,10 +1470,12 @@ AudioBusesEditorPlugin::~AudioBusesEditorPlugin() {
 }
 
 void EditorAudioMeterNotches::add_notch(float p_normalized_offset, float p_db_value, bool p_render_value) {
+	ZoneScoped;
 	notches.push_back(AudioNotch(p_normalized_offset, p_db_value, p_render_value));
 }
 
 Size2 EditorAudioMeterNotches::get_minimum_size() const {
+	ZoneScoped;
 	Ref<Font> font = get_theme_font(SNAME("font"), SNAME("Label"));
 	int font_size = get_theme_font_size(SNAME("font_size"), SNAME("Label"));
 	float font_height = font->get_height(font_size);
@@ -1406,11 +1495,13 @@ Size2 EditorAudioMeterNotches::get_minimum_size() const {
 }
 
 void EditorAudioMeterNotches::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method("add_notch", &EditorAudioMeterNotches::add_notch);
 	ClassDB::bind_method("_draw_audio_notches", &EditorAudioMeterNotches::_draw_audio_notches);
 }
 
 void EditorAudioMeterNotches::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			notch_color = get_theme_color(SNAME("font_color"), SNAME("Editor"));
@@ -1423,6 +1514,7 @@ void EditorAudioMeterNotches::_notification(int p_what) {
 }
 
 void EditorAudioMeterNotches::_draw_audio_notches() {
+	ZoneScoped;
 	Ref<Font> font = get_theme_font(SNAME("font"), SNAME("Label"));
 	int font_size = get_theme_font_size(SNAME("font_size"), SNAME("Label"));
 	float font_height = font->get_height(font_size);
@@ -1446,5 +1538,6 @@ void EditorAudioMeterNotches::_draw_audio_notches() {
 }
 
 EditorAudioMeterNotches::EditorAudioMeterNotches() {
+	ZoneScoped;
 	notch_color = get_theme_color(SNAME("font_color"), SNAME("Editor"));
 }

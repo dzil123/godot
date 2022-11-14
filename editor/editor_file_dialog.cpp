@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_file_dialog.cpp                                               */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_file_dialog.h"
 
 #include "core/config/project_settings.h"
@@ -53,11 +84,13 @@ EditorFileDialog::RegisterFunc EditorFileDialog::register_func = nullptr;
 EditorFileDialog::RegisterFunc EditorFileDialog::unregister_func = nullptr;
 
 void EditorFileDialog::popup_file_dialog() {
+	ZoneScoped;
 	popup_centered_clamped(Size2(1050, 700) * EDSCALE, 0.8);
 	_focus_file_text();
 }
 
 void EditorFileDialog::_focus_file_text() {
+	ZoneScoped;
 	int lp = file->get_text().rfind(".");
 	if (lp != -1) {
 		file->select(0, lp);
@@ -66,10 +99,12 @@ void EditorFileDialog::_focus_file_text() {
 }
 
 VBoxContainer *EditorFileDialog::get_vbox() {
+	ZoneScoped;
 	return vbox;
 }
 
 void EditorFileDialog::_update_theme_item_cache() {
+	ZoneScoped;
 	ConfirmationDialog::_update_theme_item_cache();
 
 	theme_cache.parent_folder = get_theme_icon(SNAME("ArrowUp"), SNAME("EditorIcons"));
@@ -106,6 +141,7 @@ void EditorFileDialog::_update_theme_item_cache() {
 }
 
 void EditorFileDialog::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_THEME_CHANGED:
 		case Control::NOTIFICATION_LAYOUT_DIRECTION_CHANGED:
@@ -166,6 +202,7 @@ void EditorFileDialog::_notification(int p_what) {
 }
 
 void EditorFileDialog::shortcut_input(const Ref<InputEvent> &p_event) {
+	ZoneScoped;
 	ERR_FAIL_COND(p_event.is_null());
 
 	Ref<InputEventKey> k = p_event;
@@ -235,10 +272,12 @@ void EditorFileDialog::shortcut_input(const Ref<InputEvent> &p_event) {
 }
 
 void EditorFileDialog::set_enable_multiple_selection(bool p_enable) {
+	ZoneScoped;
 	item_list->set_select_mode(p_enable ? ItemList::SELECT_MULTI : ItemList::SELECT_SINGLE);
 };
 
 Vector<String> EditorFileDialog::get_selected_files() const {
+	ZoneScoped;
 	Vector<String> list;
 	for (int i = 0; i < item_list->get_item_count(); i++) {
 		if (item_list->is_selected(i)) {
@@ -249,6 +288,7 @@ Vector<String> EditorFileDialog::get_selected_files() const {
 };
 
 void EditorFileDialog::update_dir() {
+	ZoneScoped;
 	if (drives->is_visible()) {
 		if (dir_access->get_current_dir().is_network_share_path()) {
 			_update_drives(false);
@@ -279,6 +319,7 @@ void EditorFileDialog::update_dir() {
 }
 
 void EditorFileDialog::_dir_submitted(String p_dir) {
+	ZoneScoped;
 	dir_access->change_dir(p_dir);
 	invalidate();
 	update_dir();
@@ -286,10 +327,12 @@ void EditorFileDialog::_dir_submitted(String p_dir) {
 }
 
 void EditorFileDialog::_file_submitted(const String &p_file) {
+	ZoneScoped;
 	_action_pressed();
 }
 
 void EditorFileDialog::_save_confirm_pressed() {
+	ZoneScoped;
 	String f = dir_access->get_current_dir().path_join(file->get_text());
 	_save_to_recent();
 	hide();
@@ -297,6 +340,7 @@ void EditorFileDialog::_save_confirm_pressed() {
 }
 
 void EditorFileDialog::_post_popup() {
+	ZoneScoped;
 	ConfirmationDialog::_post_popup();
 
 	// Check if the current path doesn't exist and correct it.
@@ -330,6 +374,7 @@ void EditorFileDialog::_post_popup() {
 }
 
 void EditorFileDialog::_thumbnail_result(const String &p_path, const Ref<Texture2D> &p_preview, const Ref<Texture2D> &p_small_preview, const Variant &p_udata) {
+	ZoneScoped;
 	if (display_mode == DISPLAY_LIST || p_preview.is_null()) {
 		return;
 	}
@@ -345,6 +390,7 @@ void EditorFileDialog::_thumbnail_result(const String &p_path, const Ref<Texture
 }
 
 void EditorFileDialog::_thumbnail_done(const String &p_path, const Ref<Texture2D> &p_preview, const Ref<Texture2D> &p_small_preview, const Variant &p_udata) {
+	ZoneScoped;
 	set_process(false);
 	preview_waiting = false;
 
@@ -363,6 +409,7 @@ void EditorFileDialog::_thumbnail_done(const String &p_path, const Ref<Texture2D
 }
 
 void EditorFileDialog::_request_single_thumbnail(const String &p_path) {
+	ZoneScoped;
 	if (!FileAccess::exists(p_path) || !previews_enabled) {
 		return;
 	}
@@ -374,6 +421,7 @@ void EditorFileDialog::_request_single_thumbnail(const String &p_path) {
 }
 
 void EditorFileDialog::_action_pressed() {
+	ZoneScoped;
 	if (mode == FILE_MODE_OPEN_FILES) {
 		String fbase = dir_access->get_current_dir();
 
@@ -489,12 +537,14 @@ void EditorFileDialog::_action_pressed() {
 }
 
 void EditorFileDialog::_cancel_pressed() {
+	ZoneScoped;
 	file->set_text("");
 	invalidate();
 	hide();
 }
 
 void EditorFileDialog::_item_selected(int p_item) {
+	ZoneScoped;
 	int current = p_item;
 	if (current < 0 || current >= item_list->get_item_count()) {
 		return;
@@ -513,6 +563,7 @@ void EditorFileDialog::_item_selected(int p_item) {
 }
 
 void EditorFileDialog::_multi_selected(int p_item, bool p_selected) {
+	ZoneScoped;
 	int current = p_item;
 	if (current < 0 || current >= item_list->get_item_count()) {
 		return;
@@ -529,6 +580,7 @@ void EditorFileDialog::_multi_selected(int p_item, bool p_selected) {
 }
 
 void EditorFileDialog::_items_clear_selection(const Vector2 &p_pos, MouseButton p_mouse_button_index) {
+	ZoneScoped;
 	if (p_mouse_button_index != MouseButton::LEFT) {
 		return;
 	}
@@ -556,6 +608,7 @@ void EditorFileDialog::_items_clear_selection(const Vector2 &p_pos, MouseButton 
 }
 
 void EditorFileDialog::_push_history() {
+	ZoneScoped;
 	local_history.resize(local_history_pos + 1);
 	String new_path = dir_access->get_current_dir();
 	if (local_history.size() == 0 || new_path != local_history[local_history_pos]) {
@@ -567,6 +620,7 @@ void EditorFileDialog::_push_history() {
 }
 
 void EditorFileDialog::_item_dc_selected(int p_item) {
+	ZoneScoped;
 	int current = p_item;
 	if (current < 0 || current >= item_list->get_item_count()) {
 		return;
@@ -587,6 +641,7 @@ void EditorFileDialog::_item_dc_selected(int p_item) {
 }
 
 void EditorFileDialog::_item_list_item_rmb_clicked(int p_item, const Vector2 &p_pos, MouseButton p_mouse_button_index) {
+	ZoneScoped;
 	if (p_mouse_button_index != MouseButton::RIGHT) {
 		return;
 	}
@@ -632,6 +687,7 @@ void EditorFileDialog::_item_list_item_rmb_clicked(int p_item, const Vector2 &p_
 }
 
 void EditorFileDialog::_item_list_empty_clicked(const Vector2 &p_pos, MouseButton p_mouse_button_index) {
+	ZoneScoped;
 	if (p_mouse_button_index != MouseButton::RIGHT && p_mouse_button_index != MouseButton::LEFT) {
 		return;
 	}
@@ -661,6 +717,7 @@ void EditorFileDialog::_item_list_empty_clicked(const Vector2 &p_pos, MouseButto
 }
 
 void EditorFileDialog::_item_menu_id_pressed(int p_option) {
+	ZoneScoped;
 	switch (p_option) {
 		case ITEM_MENU_COPY_PATH: {
 			Dictionary item_meta = item_list->get_item_metadata(item_list->get_current());
@@ -699,6 +756,7 @@ void EditorFileDialog::_item_menu_id_pressed(int p_option) {
 }
 
 bool EditorFileDialog::_is_open_should_be_disabled() {
+	ZoneScoped;
 	if (mode == FILE_MODE_OPEN_ANY || mode == FILE_MODE_SAVE_FILE) {
 		return false;
 	}
@@ -720,6 +778,7 @@ bool EditorFileDialog::_is_open_should_be_disabled() {
 }
 
 void EditorFileDialog::update_file_name() {
+	ZoneScoped;
 	int idx = filter->get_selected() - 1;
 	if ((idx == -1 && filter->get_item_count() == 2) || (filter->get_item_count() > 2 && idx >= 0 && idx < filter->get_item_count() - 2)) {
 		if (idx == -1) {
@@ -740,6 +799,7 @@ void EditorFileDialog::update_file_name() {
 
 // DO NOT USE THIS FUNCTION UNLESS NEEDED, CALL INVALIDATE() INSTEAD.
 void EditorFileDialog::update_file_list() {
+	ZoneScoped;
 	int thumbnail_size = EDITOR_GET("filesystem/file_dialog/thumbnail_size");
 	thumbnail_size *= EDSCALE;
 	Ref<Texture2D> folder_thumbnail;
@@ -928,11 +988,13 @@ void EditorFileDialog::update_file_list() {
 }
 
 void EditorFileDialog::_filter_selected(int) {
+	ZoneScoped;
 	update_file_name();
 	update_file_list();
 }
 
 void EditorFileDialog::update_filters() {
+	ZoneScoped;
 	filter->clear();
 
 	if (filters.size() > 1) {
@@ -968,12 +1030,14 @@ void EditorFileDialog::update_filters() {
 }
 
 void EditorFileDialog::clear_filters() {
+	ZoneScoped;
 	filters.clear();
 	update_filters();
 	invalidate();
 }
 
 void EditorFileDialog::add_filter(const String &p_filter, const String &p_description) {
+	ZoneScoped;
 	if (p_description.is_empty()) {
 		filters.push_back(p_filter);
 	} else {
@@ -984,18 +1048,22 @@ void EditorFileDialog::add_filter(const String &p_filter, const String &p_descri
 }
 
 String EditorFileDialog::get_current_dir() const {
+	ZoneScoped;
 	return dir_access->get_current_dir();
 }
 
 String EditorFileDialog::get_current_file() const {
+	ZoneScoped;
 	return file->get_text();
 }
 
 String EditorFileDialog::get_current_path() const {
+	ZoneScoped;
 	return dir_access->get_current_dir().path_join(file->get_text());
 }
 
 void EditorFileDialog::set_current_dir(const String &p_dir) {
+	ZoneScoped;
 	if (p_dir.is_relative_path()) {
 		dir_access->change_dir(OS::get_singleton()->get_resource_dir());
 	}
@@ -1005,6 +1073,7 @@ void EditorFileDialog::set_current_dir(const String &p_dir) {
 }
 
 void EditorFileDialog::set_current_file(const String &p_file) {
+	ZoneScoped;
 	file->set_text(p_file);
 	update_dir();
 	invalidate();
@@ -1016,6 +1085,7 @@ void EditorFileDialog::set_current_file(const String &p_file) {
 }
 
 void EditorFileDialog::set_current_path(const String &p_path) {
+	ZoneScoped;
 	if (!p_path.size()) {
 		return;
 	}
@@ -1031,6 +1101,7 @@ void EditorFileDialog::set_current_path(const String &p_path) {
 }
 
 void EditorFileDialog::set_file_mode(FileMode p_mode) {
+	ZoneScoped;
 	mode = p_mode;
 	switch (mode) {
 		case FILE_MODE_OPEN_FILE:
@@ -1074,10 +1145,12 @@ void EditorFileDialog::set_file_mode(FileMode p_mode) {
 }
 
 EditorFileDialog::FileMode EditorFileDialog::get_file_mode() const {
+	ZoneScoped;
 	return mode;
 }
 
 void EditorFileDialog::set_access(Access p_access) {
+	ZoneScoped;
 	ERR_FAIL_INDEX(p_access, 3);
 	if (access == p_access) {
 		return;
@@ -1101,6 +1174,7 @@ void EditorFileDialog::set_access(Access p_access) {
 }
 
 void EditorFileDialog::invalidate() {
+	ZoneScoped;
 	if (is_visible()) {
 		update_file_list();
 		_update_favorites();
@@ -1112,10 +1186,12 @@ void EditorFileDialog::invalidate() {
 }
 
 EditorFileDialog::Access EditorFileDialog::get_access() const {
+	ZoneScoped;
 	return access;
 }
 
 void EditorFileDialog::_make_dir_confirm() {
+	ZoneScoped;
 	const String stripped_dirname = makedirname->get_text().strip_edges();
 
 	if (dir_access->dir_exists(stripped_dirname)) {
@@ -1143,6 +1219,7 @@ void EditorFileDialog::_make_dir_confirm() {
 }
 
 void EditorFileDialog::_make_dir() {
+	ZoneScoped;
 	makedialog->popup_centered(Size2(250, 80) * EDSCALE);
 	makedirname->grab_focus();
 }
@@ -1186,6 +1263,7 @@ void EditorFileDialog::_delete_files_global() {
 }
 
 void EditorFileDialog::_select_drive(int p_idx) {
+	ZoneScoped;
 	String d = drives->get_item_text(p_idx);
 	dir_access->change_dir(d);
 	file->set_text("");
@@ -1195,6 +1273,7 @@ void EditorFileDialog::_select_drive(int p_idx) {
 }
 
 void EditorFileDialog::_update_drives(bool p_select) {
+	ZoneScoped;
 	int dc = dir_access->get_drive_count();
 	if (dc == 0 || access != ACCESS_FILESYSTEM) {
 		drives->hide();
@@ -1242,6 +1321,7 @@ void EditorFileDialog::_update_icons() {
 }
 
 void EditorFileDialog::_favorite_selected(int p_idx) {
+	ZoneScoped;
 	Error change_dir_result = dir_access->change_dir(favorites->get_item_metadata(p_idx));
 	if (change_dir_result != OK) {
 		error_dialog->set_text(TTR("Favorited folder does not exist anymore and will be removed."));
@@ -1278,6 +1358,7 @@ void EditorFileDialog::_favorite_selected(int p_idx) {
 }
 
 void EditorFileDialog::_favorite_move_up() {
+	ZoneScoped;
 	int current = favorites->get_current();
 
 	if (current > 0 && current < favorites->get_item_count()) {
@@ -1299,6 +1380,7 @@ void EditorFileDialog::_favorite_move_up() {
 }
 
 void EditorFileDialog::_favorite_move_down() {
+	ZoneScoped;
 	int current = favorites->get_current();
 
 	if (current >= 0 && current < favorites->get_item_count() - 1) {
@@ -1320,6 +1402,7 @@ void EditorFileDialog::_favorite_move_down() {
 }
 
 void EditorFileDialog::_update_favorites() {
+	ZoneScoped;
 	bool res = (access == ACCESS_RESOURCES);
 
 	String current = get_current_dir();
@@ -1388,6 +1471,7 @@ void EditorFileDialog::_update_favorites() {
 }
 
 void EditorFileDialog::_favorite_pressed() {
+	ZoneScoped;
 	bool res = (access == ACCESS_RESOURCES);
 
 	String cd = get_current_dir();
@@ -1422,6 +1506,7 @@ void EditorFileDialog::_favorite_pressed() {
 }
 
 void EditorFileDialog::_update_recent() {
+	ZoneScoped;
 	recent->clear();
 
 	bool res = (access == ACCESS_RESOURCES);
@@ -1466,6 +1551,7 @@ void EditorFileDialog::_update_recent() {
 }
 
 void EditorFileDialog::_recent_selected(int p_idx) {
+	ZoneScoped;
 	Vector<String> recentd = EditorSettings::get_singleton()->get_recent_dirs();
 	ERR_FAIL_INDEX(p_idx, recentd.size());
 
@@ -1476,6 +1562,7 @@ void EditorFileDialog::_recent_selected(int p_idx) {
 }
 
 void EditorFileDialog::_go_up() {
+	ZoneScoped;
 	dir_access->change_dir(get_current_dir().get_base_dir());
 	update_file_list();
 	update_dir();
@@ -1483,6 +1570,7 @@ void EditorFileDialog::_go_up() {
 }
 
 void EditorFileDialog::_go_back() {
+	ZoneScoped;
 	if (local_history_pos <= 0) {
 		return;
 	}
@@ -1497,6 +1585,7 @@ void EditorFileDialog::_go_back() {
 }
 
 void EditorFileDialog::_go_forward() {
+	ZoneScoped;
 	if (local_history_pos == local_history.size() - 1) {
 		return;
 	}
@@ -1515,6 +1604,7 @@ bool EditorFileDialog::default_show_hidden_files = false;
 EditorFileDialog::DisplayMode EditorFileDialog::default_display_mode = DISPLAY_THUMBNAILS;
 
 void EditorFileDialog::set_display_mode(DisplayMode p_mode) {
+	ZoneScoped;
 	if (display_mode == p_mode) {
 		return;
 	}
@@ -1530,10 +1620,12 @@ void EditorFileDialog::set_display_mode(DisplayMode p_mode) {
 }
 
 EditorFileDialog::DisplayMode EditorFileDialog::get_display_mode() const {
+	ZoneScoped;
 	return display_mode;
 }
 
 void EditorFileDialog::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("_cancel_pressed"), &EditorFileDialog::_cancel_pressed);
 
 	ClassDB::bind_method(D_METHOD("clear_filters"), &EditorFileDialog::clear_filters);
@@ -1591,6 +1683,7 @@ void EditorFileDialog::_bind_methods() {
 }
 
 void EditorFileDialog::set_show_hidden_files(bool p_show) {
+	ZoneScoped;
 	if (p_show == show_hidden_files) {
 		return;
 	}
@@ -1602,18 +1695,22 @@ void EditorFileDialog::set_show_hidden_files(bool p_show) {
 }
 
 bool EditorFileDialog::is_showing_hidden_files() const {
+	ZoneScoped;
 	return show_hidden_files;
 }
 
 void EditorFileDialog::set_default_show_hidden_files(bool p_show) {
+	ZoneScoped;
 	default_show_hidden_files = p_show;
 }
 
 void EditorFileDialog::set_default_display_mode(DisplayMode p_mode) {
+	ZoneScoped;
 	default_display_mode = p_mode;
 }
 
 void EditorFileDialog::_save_to_recent() {
+	ZoneScoped;
 	String cur_dir = get_current_dir();
 	Vector<String> recent_new = EditorSettings::get_singleton()->get_recent_dirs();
 
@@ -1637,22 +1734,27 @@ void EditorFileDialog::_save_to_recent() {
 }
 
 void EditorFileDialog::set_disable_overwrite_warning(bool p_disable) {
+	ZoneScoped;
 	disable_overwrite_warning = p_disable;
 }
 
 bool EditorFileDialog::is_overwrite_warning_disabled() const {
+	ZoneScoped;
 	return disable_overwrite_warning;
 }
 
 void EditorFileDialog::set_previews_enabled(bool p_enabled) {
+	ZoneScoped;
 	previews_enabled = p_enabled;
 }
 
 bool EditorFileDialog::are_previews_enabled() {
+	ZoneScoped;
 	return previews_enabled;
 }
 
 EditorFileDialog::EditorFileDialog() {
+	ZoneScoped;
 	show_hidden_files = default_show_hidden_files;
 	display_mode = default_display_mode;
 	VBoxContainer *vbc = memnew(VBoxContainer);
@@ -1914,6 +2016,7 @@ EditorFileDialog::EditorFileDialog() {
 }
 
 EditorFileDialog::~EditorFileDialog() {
+	ZoneScoped;
 	if (unregister_func) {
 		unregister_func(this);
 	}

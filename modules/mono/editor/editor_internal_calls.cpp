@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_internal_calls.cpp                                            */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_internal_calls.h"
 
 #ifdef UNIX_ENABLED
@@ -57,10 +88,12 @@ extern "C" {
 #endif
 
 void godot_icall_GodotSharpDirs_ResMetadataDir(godot_string *r_dest) {
+	ZoneScoped;
 	memnew_placement(r_dest, String(GodotSharpDirs::get_res_metadata_dir()));
 }
 
 void godot_icall_GodotSharpDirs_MonoUserDir(godot_string *r_dest) {
+	ZoneScoped;
 	memnew_placement(r_dest, String(GodotSharpDirs::get_mono_user_dir()));
 }
 
@@ -81,23 +114,27 @@ void godot_icall_GodotSharpDirs_DataEditorToolsDir(godot_string *r_dest) {
 }
 
 void godot_icall_EditorProgress_Create(const godot_string *p_task, const godot_string *p_label, int32_t p_amount, bool p_can_cancel) {
+	ZoneScoped;
 	String task = *reinterpret_cast<const String *>(p_task);
 	String label = *reinterpret_cast<const String *>(p_label);
 	EditorNode::progress_add_task(task, label, p_amount, (bool)p_can_cancel);
 }
 
 void godot_icall_EditorProgress_Dispose(const godot_string *p_task) {
+	ZoneScoped;
 	String task = *reinterpret_cast<const String *>(p_task);
 	EditorNode::progress_end_task(task);
 }
 
 bool godot_icall_EditorProgress_Step(const godot_string *p_task, const godot_string *p_state, int32_t p_step, bool p_force_refresh) {
+	ZoneScoped;
 	String task = *reinterpret_cast<const String *>(p_task);
 	String state = *reinterpret_cast<const String *>(p_state);
 	return EditorNode::progress_task_step(task, state, p_step, (bool)p_force_refresh);
 }
 
 void godot_icall_Internal_FullExportTemplatesDir(godot_string *r_dest) {
+	ZoneScoped;
 	String full_templates_dir = EditorPaths::get_singleton()->get_export_templates_dir().path_join(VERSION_FULL_CONFIG);
 	memnew_placement(r_dest, String(full_templates_dir));
 }
@@ -113,6 +150,7 @@ bool godot_icall_Internal_IsMacOSAppBundleInstalled(const godot_string *p_bundle
 }
 
 bool godot_icall_Internal_GodotIs32Bits() {
+	ZoneScoped;
 	return sizeof(void *) == 4;
 }
 
@@ -125,6 +163,7 @@ bool godot_icall_Internal_GodotIsRealTDouble() {
 }
 
 void godot_icall_Internal_GodotMainIteration() {
+	ZoneScoped;
 	Main::iteration();
 }
 
@@ -143,27 +182,33 @@ void godot_icall_Internal_ReloadAssemblies(bool p_soft_reload) {
 }
 
 void godot_icall_Internal_EditorDebuggerNodeReloadScripts() {
+	ZoneScoped;
 	EditorDebuggerNode::get_singleton()->reload_scripts();
 }
 
 bool godot_icall_Internal_ScriptEditorEdit(Resource *p_resource, int32_t p_line, int32_t p_col, bool p_grab_focus) {
+	ZoneScoped;
 	Ref<Resource> resource = p_resource;
 	return (bool)ScriptEditor::get_singleton()->edit(resource, p_line, p_col, (bool)p_grab_focus);
 }
 
 void godot_icall_Internal_EditorNodeShowScriptScreen() {
+	ZoneScoped;
 	EditorNode::get_singleton()->editor_select(EditorNode::EDITOR_SCRIPT);
 }
 
 void godot_icall_Internal_EditorRunPlay() {
+	ZoneScoped;
 	EditorNode::get_singleton()->run_play();
 }
 
 void godot_icall_Internal_EditorRunStop() {
+	ZoneScoped;
 	EditorNode::get_singleton()->run_stop();
 }
 
 void godot_icall_Internal_ScriptEditorDebugger_ReloadScripts() {
+	ZoneScoped;
 	EditorDebuggerNode *ed = EditorDebuggerNode::get_singleton();
 	if (ed) {
 		ed->reload_scripts();
@@ -171,16 +216,19 @@ void godot_icall_Internal_ScriptEditorDebugger_ReloadScripts() {
 }
 
 void godot_icall_Internal_CodeCompletionRequest(int32_t p_kind, const godot_string *p_script_file, godot_packed_array *r_ret) {
+	ZoneScoped;
 	String script_file = *reinterpret_cast<const String *>(p_script_file);
 	PackedStringArray suggestions = gdmono::get_code_completion((gdmono::CompletionKind)p_kind, script_file);
 	memnew_placement(r_ret, PackedStringArray(suggestions));
 }
 
 float godot_icall_Globals_EditorScale() {
+	ZoneScoped;
 	return EDSCALE;
 }
 
 void godot_icall_Globals_GlobalDef(const godot_string *p_setting, const godot_variant *p_default_value, bool p_restart_if_changed, godot_variant *r_result) {
+	ZoneScoped;
 	String setting = *reinterpret_cast<const String *>(p_setting);
 	Variant default_value = *reinterpret_cast<const Variant *>(p_default_value);
 	Variant result = _GLOBAL_DEF(setting, default_value, (bool)p_restart_if_changed);
@@ -188,6 +236,7 @@ void godot_icall_Globals_GlobalDef(const godot_string *p_setting, const godot_va
 }
 
 void godot_icall_Globals_EditorDef(const godot_string *p_setting, const godot_variant *p_default_value, bool p_restart_if_changed, godot_variant *r_result) {
+	ZoneScoped;
 	String setting = *reinterpret_cast<const String *>(p_setting);
 	Variant default_value = *reinterpret_cast<const Variant *>(p_default_value);
 	Variant result = _EDITOR_DEF(setting, default_value, (bool)p_restart_if_changed);
@@ -195,17 +244,20 @@ void godot_icall_Globals_EditorDef(const godot_string *p_setting, const godot_va
 }
 
 void godot_icall_Globals_EditorShortcut(const godot_string *p_setting, godot_variant *r_result) {
+	ZoneScoped;
 	String setting = *reinterpret_cast<const String *>(p_setting);
 	Ref<Shortcut> result = ED_GET_SHORTCUT(setting);
 	memnew_placement(r_result, Variant(result));
 }
 
 void godot_icall_Globals_TTR(const godot_string *p_text, godot_string *r_dest) {
+	ZoneScoped;
 	String text = *reinterpret_cast<const String *>(p_text);
 	memnew_placement(r_dest, String(TTR(text)));
 }
 
 void godot_icall_Utils_OS_GetPlatformName(godot_string *r_dest) {
+	ZoneScoped;
 	String os_name = OS::get_singleton()->get_name();
 	memnew_placement(r_dest, String(os_name));
 }
@@ -257,6 +309,7 @@ static const void *unmanaged_callbacks[]{
 };
 
 const void **godotsharp::get_editor_interop_funcs(int32_t &r_size) {
+	ZoneScoped;
 	r_size = sizeof(unmanaged_callbacks);
 	return unmanaged_callbacks;
 }

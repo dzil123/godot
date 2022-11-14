@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  groups_editor.cpp                                                    */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "groups_editor.h"
 
 #include "editor/editor_node.h"
@@ -40,6 +71,7 @@
 #include "scene/resources/packed_scene.h"
 
 static bool can_edit(Node *p_node, String p_group) {
+	ZoneScoped;
 	Node *n = p_node;
 	bool can_edit = true;
 	while (n) {
@@ -58,6 +90,7 @@ static bool can_edit(Node *p_node, String p_group) {
 }
 
 void GroupDialog::_group_selected() {
+	ZoneScoped;
 	nodes_to_add->clear();
 	add_node_root = nodes_to_add->create_item();
 
@@ -76,6 +109,7 @@ void GroupDialog::_group_selected() {
 }
 
 void GroupDialog::_load_nodes(Node *p_current) {
+	ZoneScoped;
 	String item_name = p_current->get_name();
 	if (p_current != scene_tree->get_edited_scene_root()) {
 		item_name = String(p_current->get_parent()->get_name()) + "/" + item_name;
@@ -124,6 +158,7 @@ void GroupDialog::_load_nodes(Node *p_current) {
 }
 
 void GroupDialog::_add_pressed() {
+	ZoneScoped;
 	TreeItem *selected = nodes_to_add->get_next_selected(nullptr);
 
 	if (!selected) {
@@ -154,6 +189,7 @@ void GroupDialog::_add_pressed() {
 }
 
 void GroupDialog::_removed_pressed() {
+	ZoneScoped;
 	TreeItem *selected = nodes_to_remove->get_next_selected(nullptr);
 
 	if (!selected) {
@@ -184,19 +220,23 @@ void GroupDialog::_removed_pressed() {
 }
 
 void GroupDialog::_remove_filter_changed(const String &p_filter) {
+	ZoneScoped;
 	_group_selected();
 }
 
 void GroupDialog::_add_filter_changed(const String &p_filter) {
+	ZoneScoped;
 	_group_selected();
 }
 
 void GroupDialog::_add_group_pressed(const String &p_name) {
+	ZoneScoped;
 	_add_group(add_group_text->get_text());
 	add_group_text->clear();
 }
 
 void GroupDialog::_add_group(String p_name) {
+	ZoneScoped;
 	if (!is_visible()) {
 		return; // No need to edit the dialog if it's not being used.
 	}
@@ -216,10 +256,12 @@ void GroupDialog::_add_group(String p_name) {
 }
 
 void GroupDialog::_add_group_text_changed(const String &p_new_text) {
+	ZoneScoped;
 	add_group_button->set_disabled(p_new_text.strip_edges().is_empty());
 }
 
 void GroupDialog::_group_renamed() {
+	ZoneScoped;
 	TreeItem *renamed_group = groups->get_selected();
 	if (!renamed_group) {
 		return;
@@ -281,6 +323,7 @@ void GroupDialog::_group_renamed() {
 }
 
 void GroupDialog::_rename_group_item(const String &p_old_name, const String &p_new_name) {
+	ZoneScoped;
 	if (!is_visible()) {
 		return; // No need to edit the dialog if it's not being used.
 	}
@@ -296,6 +339,7 @@ void GroupDialog::_rename_group_item(const String &p_old_name, const String &p_n
 }
 
 void GroupDialog::_load_groups(Node *p_current) {
+	ZoneScoped;
 	List<Node::GroupInfo> gi;
 	p_current->get_groups(&gi);
 
@@ -312,6 +356,7 @@ void GroupDialog::_load_groups(Node *p_current) {
 }
 
 void GroupDialog::_modify_group_pressed(Object *p_item, int p_column, int p_id, MouseButton p_button) {
+	ZoneScoped;
 	if (p_button != MouseButton::LEFT) {
 		return;
 	}
@@ -363,6 +408,7 @@ void GroupDialog::_modify_group_pressed(Object *p_item, int p_column, int p_id, 
 }
 
 void GroupDialog::_delete_group_item(const String &p_name) {
+	ZoneScoped;
 	if (!is_visible()) {
 		return; // No need to edit the dialog if it's not being used.
 	}
@@ -385,6 +431,7 @@ void GroupDialog::_delete_group_item(const String &p_name) {
 }
 
 void GroupDialog::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_TRANSLATION_CHANGED:
 		case Control::NOTIFICATION_LAYOUT_DIRECTION_CHANGED:
@@ -407,6 +454,7 @@ void GroupDialog::_notification(int p_what) {
 }
 
 void GroupDialog::edit() {
+	ZoneScoped;
 	popup_centered();
 
 	groups->clear();
@@ -423,6 +471,7 @@ void GroupDialog::edit() {
 }
 
 void GroupDialog::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method("_delete_group_item", &GroupDialog::_delete_group_item);
 
 	ClassDB::bind_method("_add_group", &GroupDialog::_add_group);
@@ -435,6 +484,7 @@ void GroupDialog::_bind_methods() {
 }
 
 GroupDialog::GroupDialog() {
+	ZoneScoped;
 	set_min_size(Size2(600, 400) * EDSCALE);
 
 	scene_tree = SceneTree::get_singleton();
@@ -585,6 +635,7 @@ GroupDialog::GroupDialog() {
 ////////////////////////////////////////////////////////////////////////////////
 
 void GroupsEditor::_add_group(const String &p_group) {
+	ZoneScoped;
 	if (!node) {
 		return;
 	}
@@ -613,6 +664,7 @@ void GroupsEditor::_add_group(const String &p_group) {
 }
 
 void GroupsEditor::_group_selected() {
+	ZoneScoped;
 	if (!tree->is_anything_selected()) {
 		return;
 	}
@@ -620,6 +672,7 @@ void GroupsEditor::_group_selected() {
 }
 
 void GroupsEditor::_group_renamed() {
+	ZoneScoped;
 	if (!node || !can_edit(node, selected_group)) {
 		return;
 	}
@@ -673,6 +726,7 @@ void GroupsEditor::_group_renamed() {
 }
 
 void GroupsEditor::_modify_group(Object *p_item, int p_column, int p_id, MouseButton p_button) {
+	ZoneScoped;
 	if (p_button != MouseButton::LEFT) {
 		return;
 	}
@@ -709,6 +763,7 @@ void GroupsEditor::_modify_group(Object *p_item, int p_column, int p_id, MouseBu
 }
 
 void GroupsEditor::_group_name_changed(const String &p_new_text) {
+	ZoneScoped;
 	add->set_disabled(p_new_text.strip_edges().is_empty());
 }
 
@@ -719,6 +774,7 @@ struct _GroupInfoComparator {
 };
 
 void GroupsEditor::update_tree() {
+	ZoneScoped;
 	tree->clear();
 
 	if (!node) {
@@ -768,20 +824,24 @@ void GroupsEditor::update_tree() {
 }
 
 void GroupsEditor::set_current(Node *p_node) {
+	ZoneScoped;
 	node = p_node;
 	update_tree();
 }
 
 void GroupsEditor::_show_group_dialog() {
+	ZoneScoped;
 	group_dialog->edit();
 }
 
 void GroupsEditor::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method("update_tree", &GroupsEditor::update_tree);
 	ClassDB::bind_method("_group_selected", &GroupsEditor::_group_selected);
 }
 
 GroupsEditor::GroupsEditor() {
+	ZoneScoped;
 	node = nullptr;
 
 	VBoxContainer *vbc = this;

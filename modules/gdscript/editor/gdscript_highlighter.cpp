@@ -28,13 +28,45 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "gdscript_highlighter.h"
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  gdscript_highlighter.cpp                                             */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "../gdscript.h"
 #include "../gdscript_tokenizer.h"
 #include "core/config/project_settings.h"
 #include "editor/editor_settings.h"
+#include "gdscript_highlighter.h"
 
 Dictionary GDScriptSyntaxHighlighter::_get_line_syntax_highlighting_impl(int p_line) {
+	ZoneScoped;
 	Dictionary color_map;
 
 	Type next_type = NONE;
@@ -555,16 +587,19 @@ Dictionary GDScriptSyntaxHighlighter::_get_line_syntax_highlighting_impl(int p_l
 }
 
 String GDScriptSyntaxHighlighter::_get_name() const {
+	ZoneScoped;
 	return "GDScript";
 }
 
 PackedStringArray GDScriptSyntaxHighlighter::_get_supported_languages() const {
+	ZoneScoped;
 	PackedStringArray languages;
 	languages.push_back("GDScript");
 	return languages;
 }
 
 void GDScriptSyntaxHighlighter::_update_cache() {
+	ZoneScoped;
 	class_names.clear();
 	reserved_keywords.clear();
 	member_keywords.clear();
@@ -745,6 +780,7 @@ void GDScriptSyntaxHighlighter::_update_cache() {
 }
 
 void GDScriptSyntaxHighlighter::add_color_region(const String &p_start_key, const String &p_end_key, const Color &p_color, bool p_line_only) {
+	ZoneScoped;
 	for (int i = 0; i < p_start_key.length(); i++) {
 		ERR_FAIL_COND_MSG(!is_symbol(p_start_key[i]), "color regions must start with a symbol");
 	}
@@ -773,6 +809,7 @@ void GDScriptSyntaxHighlighter::add_color_region(const String &p_start_key, cons
 }
 
 Ref<EditorSyntaxHighlighter> GDScriptSyntaxHighlighter::_create() const {
+	ZoneScoped;
 	Ref<GDScriptSyntaxHighlighter> syntax_highlighter;
 	syntax_highlighter.instantiate();
 	return syntax_highlighter;

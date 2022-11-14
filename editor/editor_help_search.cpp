@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_help_search.cpp                                               */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_help_search.h"
 
 #include "core/os/keyboard.h"
@@ -37,6 +68,7 @@
 #include "editor/editor_settings.h"
 
 void EditorHelpSearch::_update_icons() {
+	ZoneScoped;
 	search_box->set_right_icon(results_tree->get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
 	search_box->set_clear_button_enabled(true);
 	search_box->add_theme_icon_override("right_icon", results_tree->get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
@@ -49,6 +81,7 @@ void EditorHelpSearch::_update_icons() {
 }
 
 void EditorHelpSearch::_update_results() {
+	ZoneScoped;
 	String term = search_box->get_text();
 
 	int search_flags = filter_combo->get_selected_id();
@@ -82,14 +115,17 @@ void EditorHelpSearch::_search_box_gui_input(const Ref<InputEvent> &p_event) {
 }
 
 void EditorHelpSearch::_search_box_text_changed(const String &p_text) {
+	ZoneScoped;
 	_update_results();
 }
 
 void EditorHelpSearch::_filter_combo_item_selected(int p_option) {
+	ZoneScoped;
 	_update_results();
 }
 
 void EditorHelpSearch::_confirmed() {
+	ZoneScoped;
 	TreeItem *item = results_tree->get_selected();
 	if (!item) {
 		return;
@@ -104,6 +140,7 @@ void EditorHelpSearch::_confirmed() {
 }
 
 void EditorHelpSearch::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_VISIBILITY_CHANGED: {
 			if (!is_visible()) {
@@ -148,10 +185,12 @@ void EditorHelpSearch::_notification(int p_what) {
 }
 
 void EditorHelpSearch::_bind_methods() {
+	ZoneScoped;
 	ADD_SIGNAL(MethodInfo("go_to_help"));
 }
 
 void EditorHelpSearch::popup_dialog() {
+	ZoneScoped;
 	popup_dialog(search_box->get_text());
 }
 
@@ -181,6 +220,7 @@ void EditorHelpSearch::popup_dialog(const String &p_term) {
 }
 
 EditorHelpSearch::EditorHelpSearch() {
+	ZoneScoped;
 	set_hide_on_ok(false);
 
 	set_title(TTR("Search Help"));
@@ -257,6 +297,7 @@ EditorHelpSearch::EditorHelpSearch() {
 }
 
 bool EditorHelpSearch::Runner::_is_class_disabled_by_feature_profile(const StringName &p_class) {
+	ZoneScoped;
 	Ref<EditorFeatureProfile> profile = EditorFeatureProfileManager::get_singleton()->get_current_profile();
 	if (profile.is_null()) {
 		return false;
@@ -278,6 +319,7 @@ bool EditorHelpSearch::Runner::_is_class_disabled_by_feature_profile(const Strin
 }
 
 bool EditorHelpSearch::Runner::_slice() {
+	ZoneScoped;
 	bool phase_done = false;
 	switch (phase) {
 		case PHASE_MATCH_CLASSES_INIT:
@@ -315,6 +357,7 @@ bool EditorHelpSearch::Runner::_slice() {
 }
 
 bool EditorHelpSearch::Runner::_phase_match_classes_init() {
+	ZoneScoped;
 	iterator_doc = EditorHelp::get_doc_data()->class_list.begin();
 	matches.clear();
 	matched_item = nullptr;
@@ -329,6 +372,7 @@ bool EditorHelpSearch::Runner::_phase_match_classes_init() {
 }
 
 bool EditorHelpSearch::Runner::_phase_match_classes() {
+	ZoneScoped;
 	if (!iterator_doc) {
 		return true;
 	}
@@ -407,6 +451,7 @@ bool EditorHelpSearch::Runner::_phase_match_classes() {
 }
 
 bool EditorHelpSearch::Runner::_phase_class_items_init() {
+	ZoneScoped;
 	iterator_match = matches.begin();
 
 	results_tree->clear();
@@ -417,6 +462,7 @@ bool EditorHelpSearch::Runner::_phase_class_items_init() {
 }
 
 bool EditorHelpSearch::Runner::_phase_class_items() {
+	ZoneScoped;
 	if (!iterator_match) {
 		return true;
 	}
@@ -437,12 +483,14 @@ bool EditorHelpSearch::Runner::_phase_class_items() {
 }
 
 bool EditorHelpSearch::Runner::_phase_member_items_init() {
+	ZoneScoped;
 	iterator_match = matches.begin();
 
 	return true;
 }
 
 bool EditorHelpSearch::Runner::_phase_member_items() {
+	ZoneScoped;
 	ClassMatch &match = iterator_match->value;
 
 	if (!match.doc || match.doc->name.is_empty()) {
@@ -488,6 +536,7 @@ bool EditorHelpSearch::Runner::_phase_member_items() {
 }
 
 bool EditorHelpSearch::Runner::_phase_select_match() {
+	ZoneScoped;
 	if (matched_item) {
 		matched_item->select(0);
 	}
@@ -508,6 +557,7 @@ void EditorHelpSearch::Runner::_match_method_name_and_push_back(Vector<DocData::
 }
 
 bool EditorHelpSearch::Runner::_all_terms_in_name(String name) {
+	ZoneScoped;
 	for (int i = 0; i < terms.size(); i++) {
 		if (!_match_string(terms[i], name)) {
 			return false;
@@ -517,6 +567,7 @@ bool EditorHelpSearch::Runner::_all_terms_in_name(String name) {
 }
 
 bool EditorHelpSearch::Runner::_match_string(const String &p_term, const String &p_string) const {
+	ZoneScoped;
 	if (search_flags & SEARCH_CASE_SENSITIVE) {
 		return p_string.find(p_term) > -1;
 	} else {
@@ -525,6 +576,7 @@ bool EditorHelpSearch::Runner::_match_string(const String &p_term, const String 
 }
 
 void EditorHelpSearch::Runner::_match_item(TreeItem *p_item, const String &p_text) {
+	ZoneScoped;
 	float inverse_length = 1.f / float(p_text.length());
 
 	// Favor types where search term is a substring close to the start of the type.
@@ -543,6 +595,7 @@ void EditorHelpSearch::Runner::_match_item(TreeItem *p_item, const String &p_tex
 }
 
 String EditorHelpSearch::Runner::_build_method_tooltip(const DocData::ClassDoc *p_class_doc, const DocData::MethodDoc *p_doc) const {
+	ZoneScoped;
 	String tooltip = p_doc->return_type + " " + p_class_doc->name + "." + p_doc->name + "(";
 	for (int i = 0; i < p_doc->arguments.size(); i++) {
 		const DocData::ArgumentDoc &arg = p_doc->arguments[i];
@@ -559,6 +612,7 @@ String EditorHelpSearch::Runner::_build_method_tooltip(const DocData::ClassDoc *
 }
 
 TreeItem *EditorHelpSearch::Runner::_create_class_hierarchy(const ClassMatch &p_match) {
+	ZoneScoped;
 	if (p_match.doc->name.is_empty()) {
 		return nullptr;
 	}
@@ -585,6 +639,7 @@ TreeItem *EditorHelpSearch::Runner::_create_class_hierarchy(const ClassMatch &p_
 }
 
 TreeItem *EditorHelpSearch::Runner::_create_class_item(TreeItem *p_parent, const DocData::ClassDoc *p_doc, bool p_gray) {
+	ZoneScoped;
 	Ref<Texture2D> icon = empty_icon;
 	if (ui_service->has_theme_icon(p_doc->name, SNAME("EditorIcons"))) {
 		icon = ui_service->get_theme_icon(p_doc->name, SNAME("EditorIcons"));
@@ -619,26 +674,31 @@ TreeItem *EditorHelpSearch::Runner::_create_class_item(TreeItem *p_parent, const
 }
 
 TreeItem *EditorHelpSearch::Runner::_create_method_item(TreeItem *p_parent, const DocData::ClassDoc *p_class_doc, const String &p_text, const DocData::MethodDoc *p_doc) {
+	ZoneScoped;
 	String tooltip = _build_method_tooltip(p_class_doc, p_doc);
 	return _create_member_item(p_parent, p_class_doc->name, "MemberMethod", p_doc->name, p_text, TTRC("Method"), "method", tooltip, p_doc->is_deprecated, p_doc->is_experimental);
 }
 
 TreeItem *EditorHelpSearch::Runner::_create_signal_item(TreeItem *p_parent, const DocData::ClassDoc *p_class_doc, const DocData::MethodDoc *p_doc) {
+	ZoneScoped;
 	String tooltip = _build_method_tooltip(p_class_doc, p_doc);
 	return _create_member_item(p_parent, p_class_doc->name, "MemberSignal", p_doc->name, p_doc->name, TTRC("Signal"), "signal", tooltip, p_doc->is_deprecated, p_doc->is_experimental);
 }
 
 TreeItem *EditorHelpSearch::Runner::_create_annotation_item(TreeItem *p_parent, const DocData::ClassDoc *p_class_doc, const String &p_text, const DocData::MethodDoc *p_doc) {
+	ZoneScoped;
 	String tooltip = _build_method_tooltip(p_class_doc, p_doc);
 	return _create_member_item(p_parent, p_class_doc->name, "MemberAnnotation", p_doc->name, p_text, TTRC("Annotation"), "annotation", tooltip, p_doc->is_deprecated, p_doc->is_experimental);
 }
 
 TreeItem *EditorHelpSearch::Runner::_create_constant_item(TreeItem *p_parent, const DocData::ClassDoc *p_class_doc, const DocData::ConstantDoc *p_doc) {
+	ZoneScoped;
 	String tooltip = p_class_doc->name + "." + p_doc->name;
 	return _create_member_item(p_parent, p_class_doc->name, "MemberConstant", p_doc->name, p_doc->name, TTRC("Constant"), "constant", tooltip, p_doc->is_deprecated, p_doc->is_experimental);
 }
 
 TreeItem *EditorHelpSearch::Runner::_create_property_item(TreeItem *p_parent, const DocData::ClassDoc *p_class_doc, const DocData::PropertyDoc *p_doc) {
+	ZoneScoped;
 	String tooltip = p_doc->type + " " + p_class_doc->name + "." + p_doc->name;
 	tooltip += "\n    " + p_class_doc->name + "." + p_doc->setter + "(value) setter";
 	tooltip += "\n    " + p_class_doc->name + "." + p_doc->getter + "() getter";
@@ -646,11 +706,13 @@ TreeItem *EditorHelpSearch::Runner::_create_property_item(TreeItem *p_parent, co
 }
 
 TreeItem *EditorHelpSearch::Runner::_create_theme_property_item(TreeItem *p_parent, const DocData::ClassDoc *p_class_doc, const DocData::ThemeItemDoc *p_doc) {
+	ZoneScoped;
 	String tooltip = p_doc->type + " " + p_class_doc->name + "." + p_doc->name;
 	return _create_member_item(p_parent, p_class_doc->name, "MemberTheme", p_doc->name, p_doc->name, TTRC("Theme Property"), "theme_item", tooltip, false, false);
 }
 
 TreeItem *EditorHelpSearch::Runner::_create_member_item(TreeItem *p_parent, const String &p_class_name, const String &p_icon, const String &p_name, const String &p_text, const String &p_type, const String &p_metatype, const String &p_tooltip, bool is_deprecated, bool is_experimental) {
+	ZoneScoped;
 	Ref<Texture2D> icon;
 	String text;
 	if (search_flags & SEARCH_SHOW_HIERARCHY) {

@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_spin_slider.cpp                                               */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_spin_slider.h"
 
 #include "core/input/input.h"
@@ -36,6 +67,7 @@
 #include "editor/editor_scale.h"
 
 String EditorSpinSlider::get_tooltip(const Point2 &p_pos) const {
+	ZoneScoped;
 	if (grabber->is_visible()) {
 #ifdef MACOS_ENABLED
 		Key key = Key::META;
@@ -48,10 +80,12 @@ String EditorSpinSlider::get_tooltip(const Point2 &p_pos) const {
 }
 
 String EditorSpinSlider::get_text_value() const {
+	ZoneScoped;
 	return TS->format_number(String::num(get_value(), Math::range_step_decimals(get_step())));
 }
 
 void EditorSpinSlider::gui_input(const Ref<InputEvent> &p_event) {
+	ZoneScoped;
 	ERR_FAIL_COND(p_event.is_null());
 
 	if (read_only) {
@@ -149,6 +183,7 @@ void EditorSpinSlider::gui_input(const Ref<InputEvent> &p_event) {
 }
 
 void EditorSpinSlider::_grabber_gui_input(const Ref<InputEvent> &p_event) {
+	ZoneScoped;
 	if (read_only) {
 		return;
 	}
@@ -199,6 +234,7 @@ void EditorSpinSlider::_grabber_gui_input(const Ref<InputEvent> &p_event) {
 }
 
 void EditorSpinSlider::_value_input_gui_input(const Ref<InputEvent> &p_event) {
+	ZoneScoped;
 	Ref<InputEventKey> k = p_event;
 	if (k.is_valid() && k->is_pressed() && !is_read_only()) {
 		double step = get_step();
@@ -256,6 +292,7 @@ void EditorSpinSlider::_value_input_gui_input(const Ref<InputEvent> &p_event) {
 }
 
 void EditorSpinSlider::_update_value_input_stylebox() {
+	ZoneScoped;
 	if (!value_input) {
 		return;
 	}
@@ -279,6 +316,7 @@ void EditorSpinSlider::_update_value_input_stylebox() {
 }
 
 void EditorSpinSlider::_draw_spin_slider() {
+	ZoneScoped;
 	updown_offset = -1;
 
 	RID ci = get_canvas_item();
@@ -434,6 +472,7 @@ void EditorSpinSlider::_draw_spin_slider() {
 }
 
 void EditorSpinSlider::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -485,11 +524,13 @@ void EditorSpinSlider::_notification(int p_what) {
 }
 
 LineEdit *EditorSpinSlider::get_line_edit() {
+	ZoneScoped;
 	_ensure_input_popup();
 	return value_input;
 }
 
 Size2 EditorSpinSlider::get_minimum_size() const {
+	ZoneScoped;
 	Ref<StyleBox> sb = get_theme_stylebox(SNAME("normal"), SNAME("LineEdit"));
 	Ref<Font> font = get_theme_font(SNAME("font"), SNAME("LineEdit"));
 	int font_size = get_theme_font_size(SNAME("font_size"), SNAME("LineEdit"));
@@ -501,29 +542,35 @@ Size2 EditorSpinSlider::get_minimum_size() const {
 }
 
 void EditorSpinSlider::set_hide_slider(bool p_hide) {
+	ZoneScoped;
 	hide_slider = p_hide;
 	queue_redraw();
 }
 
 bool EditorSpinSlider::is_hiding_slider() const {
+	ZoneScoped;
 	return hide_slider;
 }
 
 void EditorSpinSlider::set_label(const String &p_label) {
+	ZoneScoped;
 	label = p_label;
 	queue_redraw();
 }
 
 String EditorSpinSlider::get_label() const {
+	ZoneScoped;
 	return label;
 }
 
 void EditorSpinSlider::set_suffix(const String &p_suffix) {
+	ZoneScoped;
 	suffix = p_suffix;
 	queue_redraw();
 }
 
 String EditorSpinSlider::get_suffix() const {
+	ZoneScoped;
 	return suffix;
 }
 
@@ -550,6 +597,7 @@ void EditorSpinSlider::_evaluate_input_text() {
 
 //text_submitted signal
 void EditorSpinSlider::_value_input_submitted(const String &p_text) {
+	ZoneScoped;
 	value_input_just_closed = true;
 	if (value_input_popup) {
 		value_input_popup->hide();
@@ -558,6 +606,7 @@ void EditorSpinSlider::_value_input_submitted(const String &p_text) {
 
 //modal_closed signal
 void EditorSpinSlider::_value_input_closed() {
+	ZoneScoped;
 	_evaluate_input_text();
 	value_input_just_closed = true;
 }
@@ -586,38 +635,46 @@ void EditorSpinSlider::_value_focus_exited() {
 }
 
 void EditorSpinSlider::_grabber_mouse_entered() {
+	ZoneScoped;
 	mouse_over_grabber = true;
 	queue_redraw();
 }
 
 void EditorSpinSlider::_grabber_mouse_exited() {
+	ZoneScoped;
 	mouse_over_grabber = false;
 	queue_redraw();
 }
 
 void EditorSpinSlider::set_read_only(bool p_enable) {
+	ZoneScoped;
 	read_only = p_enable;
 	queue_redraw();
 }
 
 bool EditorSpinSlider::is_read_only() const {
+	ZoneScoped;
 	return read_only;
 }
 
 void EditorSpinSlider::set_flat(bool p_enable) {
+	ZoneScoped;
 	flat = p_enable;
 	queue_redraw();
 }
 
 bool EditorSpinSlider::is_flat() const {
+	ZoneScoped;
 	return flat;
 }
 
 bool EditorSpinSlider::is_grabbing() const {
+	ZoneScoped;
 	return grabbing_grabber || grabbing_spinner;
 }
 
 void EditorSpinSlider::_focus_entered() {
+	ZoneScoped;
 	_ensure_input_popup();
 	Rect2 gr = get_screen_rect();
 	value_input->set_text(get_text_value());
@@ -631,6 +688,7 @@ void EditorSpinSlider::_focus_entered() {
 }
 
 void EditorSpinSlider::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("set_label", "label"), &EditorSpinSlider::set_label);
 	ClassDB::bind_method(D_METHOD("get_label"), &EditorSpinSlider::get_label);
 
@@ -654,6 +712,7 @@ void EditorSpinSlider::_bind_methods() {
 }
 
 void EditorSpinSlider::_ensure_input_popup() {
+	ZoneScoped;
 	if (value_input_popup) {
 		return;
 	}
@@ -676,6 +735,7 @@ void EditorSpinSlider::_ensure_input_popup() {
 }
 
 EditorSpinSlider::EditorSpinSlider() {
+	ZoneScoped;
 	set_focus_mode(FOCUS_ALL);
 	grabber = memnew(TextureRect);
 	add_child(grabber);

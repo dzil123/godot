@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  code_completion.cpp                                                  */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "code_completion.h"
 
 #include "core/config/project_settings.h"
@@ -42,10 +73,12 @@ namespace gdmono {
 // Almost everything here is taken from functions used by GDScript for code completion, adapted for C#.
 
 _FORCE_INLINE_ String quoted(const String &p_str) {
+	ZoneScoped;
 	return "\"" + p_str + "\"";
 }
 
 void _add_nodes_suggestions(const Node *p_base, const Node *p_node, PackedStringArray &r_suggestions) {
+	ZoneScoped;
 	if (p_node != p_base && !p_node->get_owner()) {
 		return;
 	}
@@ -60,6 +93,7 @@ void _add_nodes_suggestions(const Node *p_base, const Node *p_node, PackedString
 }
 
 Node *_find_node_for_script(Node *p_base, Node *p_current, const Ref<Script> &p_script) {
+	ZoneScoped;
 	if (p_current->get_owner() != p_base && p_base != p_current) {
 		return nullptr;
 	}
@@ -81,6 +115,7 @@ Node *_find_node_for_script(Node *p_base, Node *p_current, const Ref<Script> &p_
 }
 
 void _get_directory_contents(EditorFileSystemDirectory *p_dir, PackedStringArray &r_suggestions) {
+	ZoneScoped;
 	for (int i = 0; i < p_dir->get_file_count(); i++) {
 		r_suggestions.push_back(quoted(p_dir->get_file_path(i)));
 	}
@@ -91,6 +126,7 @@ void _get_directory_contents(EditorFileSystemDirectory *p_dir, PackedStringArray
 }
 
 Node *_try_find_owner_node_in_tree(const Ref<Script> p_script) {
+	ZoneScoped;
 	SceneTree *tree = SceneTree::get_singleton();
 	if (!tree) {
 		return nullptr;
@@ -103,6 +139,7 @@ Node *_try_find_owner_node_in_tree(const Ref<Script> p_script) {
 }
 
 PackedStringArray get_code_completion(CompletionKind p_kind, const String &p_script_file) {
+	ZoneScoped;
 	PackedStringArray suggestions;
 
 	switch (p_kind) {

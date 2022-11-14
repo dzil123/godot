@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_log.cpp                                                       */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_log.h"
 
 #include "core/object/undo_redo.h"
@@ -42,6 +73,7 @@
 #include "scene/resources/font.h"
 
 void EditorLog::_error_handler(void *p_self, const char *p_func, const char *p_file, int p_line, const char *p_error, const char *p_errorexp, bool p_editor_notify, ErrorHandlerType p_type) {
+	ZoneScoped;
 	EditorLog *self = static_cast<EditorLog *>(p_self);
 	if (self->current != Thread::get_caller_id()) {
 		return;
@@ -66,6 +98,7 @@ void EditorLog::_error_handler(void *p_self, const char *p_func, const char *p_f
 }
 
 void EditorLog::_update_theme() {
+	ZoneScoped;
 	const Ref<Font> normal_font = get_theme_font(SNAME("output_source"), SNAME("EditorFonts"));
 	if (normal_font.is_valid()) {
 		log->add_theme_font_override("normal_font", normal_font);
@@ -118,6 +151,7 @@ void EditorLog::_update_theme() {
 }
 
 void EditorLog::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			_update_theme();
@@ -132,18 +166,21 @@ void EditorLog::_notification(int p_what) {
 }
 
 void EditorLog::_set_collapse(bool p_collapse) {
+	ZoneScoped;
 	collapse = p_collapse;
 	_start_state_save_timer();
 	_rebuild_log();
 }
 
 void EditorLog::_start_state_save_timer() {
+	ZoneScoped;
 	if (!is_loading_state) {
 		save_state_timer->start();
 	}
 }
 
 void EditorLog::_save_state() {
+	ZoneScoped;
 	Ref<ConfigFile> config;
 	config.instantiate();
 	// Load and amend existing config if it exists.
@@ -161,6 +198,7 @@ void EditorLog::_save_state() {
 }
 
 void EditorLog::_load_state() {
+	ZoneScoped;
 	is_loading_state = true;
 
 	Ref<ConfigFile> config;
@@ -183,6 +221,7 @@ void EditorLog::_load_state() {
 }
 
 void EditorLog::_clear_request() {
+	ZoneScoped;
 	log->clear();
 	messages.clear();
 	_reset_message_counts();
@@ -190,6 +229,7 @@ void EditorLog::_clear_request() {
 }
 
 void EditorLog::_copy_request() {
+	ZoneScoped;
 	String text = log->get_selected_text();
 
 	if (text.is_empty()) {
@@ -202,10 +242,12 @@ void EditorLog::_copy_request() {
 }
 
 void EditorLog::clear() {
+	ZoneScoped;
 	_clear_request();
 }
 
 void EditorLog::_process_message(const String &p_msg, MessageType p_type) {
+	ZoneScoped;
 	if (messages.size() > 0 && messages[messages.size() - 1].text == p_msg && messages[messages.size() - 1].type == p_type) {
 		// If previous message is the same as the new one, increase previous count rather than adding another
 		// instance to the messages list.
@@ -237,19 +279,23 @@ void EditorLog::add_message(const String &p_msg, MessageType p_type) {
 }
 
 void EditorLog::set_tool_button(Button *p_tool_button) {
+	ZoneScoped;
 	tool_button = p_tool_button;
 }
 
 void EditorLog::register_undo_redo(UndoRedo *p_undo_redo) {
+	ZoneScoped;
 	p_undo_redo->set_commit_notify_callback(_undo_redo_cbk, this);
 }
 
 void EditorLog::_undo_redo_cbk(void *p_self, const String &p_name) {
+	ZoneScoped;
 	EditorLog *self = static_cast<EditorLog *>(p_self);
 	self->add_message(p_name, EditorLog::MSG_TYPE_EDITOR);
 }
 
 void EditorLog::_rebuild_log() {
+	ZoneScoped;
 	log->clear();
 
 	for (int msg_idx = 0; msg_idx < messages.size(); msg_idx++) {
@@ -268,6 +314,7 @@ void EditorLog::_rebuild_log() {
 }
 
 void EditorLog::_add_log_line(LogMessage &p_message, bool p_replace_previous) {
+	ZoneScoped;
 	if (!is_inside_tree()) {
 		// The log will be built all at once when it enters the tree and has its theme items.
 		return;
@@ -337,12 +384,14 @@ void EditorLog::_add_log_line(LogMessage &p_message, bool p_replace_previous) {
 }
 
 void EditorLog::_set_filter_active(bool p_active, MessageType p_message_type) {
+	ZoneScoped;
 	type_filter_map[p_message_type]->set_active(p_active);
 	_start_state_save_timer();
 	_rebuild_log();
 }
 
 void EditorLog::_set_search_visible(bool p_visible) {
+	ZoneScoped;
 	search_box->set_visible(p_visible);
 	if (p_visible) {
 		search_box->grab_focus();
@@ -351,21 +400,25 @@ void EditorLog::_set_search_visible(bool p_visible) {
 }
 
 void EditorLog::_search_changed(const String &p_text) {
+	ZoneScoped;
 	_rebuild_log();
 }
 
 void EditorLog::_reset_message_counts() {
+	ZoneScoped;
 	for (const KeyValue<MessageType, LogFilter *> &E : type_filter_map) {
 		E.value->set_message_count(0);
 	}
 }
 
 void EditorLog::_bind_methods() {
+	ZoneScoped;
 	ADD_SIGNAL(MethodInfo("clear_request"));
 	ADD_SIGNAL(MethodInfo("copy_request"));
 }
 
 EditorLog::EditorLog() {
+	ZoneScoped;
 	save_state_timer = memnew(Timer);
 	save_state_timer->set_wait_time(2);
 	save_state_timer->set_one_shot(true);
@@ -486,10 +539,12 @@ EditorLog::EditorLog() {
 }
 
 void EditorLog::deinit() {
+	ZoneScoped;
 	remove_error_handler(&eh);
 }
 
 EditorLog::~EditorLog() {
+	ZoneScoped;
 	for (const KeyValue<MessageType, LogFilter *> &E : type_filter_map) {
 		// MSG_TYPE_STD_RICH is connected to the std_filter button, so we do this
 		// to avoid it from being deleted twice, causing a crash on closing.

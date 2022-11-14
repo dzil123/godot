@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  filesystem_dock.cpp                                                  */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "filesystem_dock.h"
 
 #include "core/config/project_settings.h"
@@ -55,6 +86,7 @@
 FileSystemDock *FileSystemDock::singleton = nullptr;
 
 Ref<Texture2D> FileSystemDock::_get_tree_item_icon(bool p_is_valid, String p_file_type) {
+	ZoneScoped;
 	Ref<Texture2D> file_icon;
 	if (!p_is_valid) {
 		file_icon = get_theme_icon(SNAME("ImportFail"), SNAME("EditorIcons"));
@@ -65,6 +97,7 @@ Ref<Texture2D> FileSystemDock::_get_tree_item_icon(bool p_is_valid, String p_fil
 }
 
 bool FileSystemDock::_create_tree(TreeItem *p_parent, EditorFileSystemDirectory *p_dir, Vector<String> &uncollapsed_paths, bool p_select_in_favorites, bool p_unfold_path) {
+	ZoneScoped;
 	bool parent_should_expand = false;
 
 	// Create a tree item for the subdirectory.
@@ -305,6 +338,7 @@ void FileSystemDock::_update_tree(const Vector<String> &p_uncollapsed_paths, boo
 }
 
 void FileSystemDock::set_display_mode(DisplayMode p_display_mode) {
+	ZoneScoped;
 	display_mode = p_display_mode;
 	_update_display_mode(false);
 }
@@ -343,6 +377,7 @@ void FileSystemDock::_update_display_mode(bool p_force) {
 }
 
 void FileSystemDock::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_TRANSLATION_CHANGED:
 		case NOTIFICATION_LAYOUT_DIRECTION_CHANGED:
@@ -513,6 +548,7 @@ void FileSystemDock::_tree_multi_selected(Object *p_item, int p_column, bool p_s
 }
 
 String FileSystemDock::get_selected_path() const {
+	ZoneScoped;
 	if (path.ends_with("/")) {
 		return path;
 	} else {
@@ -521,10 +557,12 @@ String FileSystemDock::get_selected_path() const {
 }
 
 String FileSystemDock::get_current_path() const {
+	ZoneScoped;
 	return path;
 }
 
 void FileSystemDock::_set_current_path_text(const String &p_path) {
+	ZoneScoped;
 	if (p_path == "Favorites") {
 		current_path->set_text(TTR("Favorites"));
 	} else {
@@ -533,6 +571,7 @@ void FileSystemDock::_set_current_path_text(const String &p_path) {
 }
 
 void FileSystemDock::_navigate_to_path(const String &p_path, bool p_select_in_favorites) {
+	ZoneScoped;
 	if (p_path == "Favorites") {
 		path = p_path;
 	} else {
@@ -573,11 +612,13 @@ void FileSystemDock::_navigate_to_path(const String &p_path, bool p_select_in_fa
 }
 
 void FileSystemDock::navigate_to_path(const String &p_path) {
+	ZoneScoped;
 	file_list_search_box->clear();
 	_navigate_to_path(p_path);
 }
 
 void FileSystemDock::_file_list_thumbnail_done(const String &p_path, const Ref<Texture2D> &p_preview, const Ref<Texture2D> &p_small_preview, const Variant &p_udata) {
+	ZoneScoped;
 	if ((file_list_vb->is_visible_in_tree() || path == p_path.get_base_dir()) && p_preview.is_valid()) {
 		Array uarr = p_udata;
 		int idx = uarr[0];
@@ -595,6 +636,7 @@ void FileSystemDock::_file_list_thumbnail_done(const String &p_path, const Ref<T
 }
 
 void FileSystemDock::_tree_thumbnail_done(const String &p_path, const Ref<Texture2D> &p_preview, const Ref<Texture2D> &p_small_preview, const Variant &p_udata) {
+	ZoneScoped;
 	if (p_small_preview.is_valid()) {
 		Array uarr = p_udata;
 		if (tree_update_id == (int)uarr[0]) {
@@ -607,11 +649,13 @@ void FileSystemDock::_tree_thumbnail_done(const String &p_path, const Ref<Textur
 }
 
 void FileSystemDock::_toggle_file_display() {
+	ZoneScoped;
 	_set_file_display(file_list_display_mode != FILE_LIST_DISPLAY_LIST);
 	emit_signal(SNAME("display_mode_changed"));
 }
 
 void FileSystemDock::_set_file_display(bool p_active) {
+	ZoneScoped;
 	if (p_active) {
 		file_list_display_mode = FILE_LIST_DISPLAY_LIST;
 		button_file_list_display_mode->set_icon(get_theme_icon(SNAME("FileThumbnail"), SNAME("EditorIcons")));
@@ -626,6 +670,7 @@ void FileSystemDock::_set_file_display(bool p_active) {
 }
 
 bool FileSystemDock::_is_file_type_disabled_by_feature_profile(const StringName &p_class) {
+	ZoneScoped;
 	Ref<EditorFeatureProfile> profile = EditorFeatureProfileManager::get_singleton()->get_current_profile();
 	if (profile.is_null()) {
 		return false;
@@ -644,6 +689,7 @@ bool FileSystemDock::_is_file_type_disabled_by_feature_profile(const StringName 
 }
 
 void FileSystemDock::_search(EditorFileSystemDirectory *p_path, List<FileInfo> *matches, int p_max_items) {
+	ZoneScoped;
 	if (matches->size() > p_max_items) {
 		return;
 	}
@@ -964,6 +1010,7 @@ void FileSystemDock::_update_file_list(bool p_keep_selection) {
 }
 
 void FileSystemDock::_select_file(const String &p_path, bool p_select_in_favorites) {
+	ZoneScoped;
 	String fpath = p_path;
 	if (fpath.ends_with("/")) {
 		if (fpath != "res://") {
@@ -1054,6 +1101,7 @@ void FileSystemDock::_select_file(const String &p_path, bool p_select_in_favorit
 }
 
 void FileSystemDock::_tree_activate_file() {
+	ZoneScoped;
 	TreeItem *selected = tree->get_selected();
 	if (selected) {
 		String file_path = selected->get_metadata(0);
@@ -1070,10 +1118,12 @@ void FileSystemDock::_tree_activate_file() {
 }
 
 void FileSystemDock::_file_list_activate_file(int p_idx) {
+	ZoneScoped;
 	_select_file(files->get_item_metadata(p_idx));
 }
 
 void FileSystemDock::_preview_invalidated(const String &p_path) {
+	ZoneScoped;
 	if (file_list_display_mode == FILE_LIST_DISPLAY_THUMBNAILS && p_path.get_base_dir() == path && searched_string.length() == 0 && file_list_vb->is_visible_in_tree()) {
 		for (int i = 0; i < files->get_item_count(); i++) {
 			if (files->get_item_metadata(i) == p_path) {
@@ -1090,6 +1140,7 @@ void FileSystemDock::_preview_invalidated(const String &p_path) {
 }
 
 void FileSystemDock::_fs_changed() {
+	ZoneScoped;
 	button_hist_prev->set_disabled(history_pos == 0);
 	button_hist_next->set_disabled(history_pos == history.size() - 1);
 	scanning_vb->hide();
@@ -1107,6 +1158,7 @@ void FileSystemDock::_fs_changed() {
 }
 
 void FileSystemDock::_set_scanning_mode() {
+	ZoneScoped;
 	button_hist_prev->set_disabled(true);
 	button_hist_next->set_disabled(true);
 	split_box->hide();
@@ -1120,6 +1172,7 @@ void FileSystemDock::_set_scanning_mode() {
 }
 
 void FileSystemDock::_fw_history() {
+	ZoneScoped;
 	if (history_pos < history.size() - 1) {
 		history_pos++;
 	}
@@ -1128,6 +1181,7 @@ void FileSystemDock::_fw_history() {
 }
 
 void FileSystemDock::_bw_history() {
+	ZoneScoped;
 	if (history_pos > 0) {
 		history_pos--;
 	}
@@ -1136,6 +1190,7 @@ void FileSystemDock::_bw_history() {
 }
 
 void FileSystemDock::_update_history() {
+	ZoneScoped;
 	path = history[history_pos];
 	_set_current_path_text(path);
 
@@ -1154,6 +1209,7 @@ void FileSystemDock::_update_history() {
 }
 
 void FileSystemDock::_push_to_history() {
+	ZoneScoped;
 	if (history[history_pos] != path) {
 		history.resize(history_pos + 1);
 		history.push_back(path);
@@ -1170,6 +1226,7 @@ void FileSystemDock::_push_to_history() {
 }
 
 void FileSystemDock::_get_all_items_in_dir(EditorFileSystemDirectory *p_efsd, Vector<String> &r_files, Vector<String> &r_folders) const {
+	ZoneScoped;
 	if (p_efsd == nullptr) {
 		return;
 	}
@@ -1184,6 +1241,7 @@ void FileSystemDock::_get_all_items_in_dir(EditorFileSystemDirectory *p_efsd, Ve
 }
 
 void FileSystemDock::_find_remaps(EditorFileSystemDirectory *p_efsd, const HashMap<String, String> &r_renames, Vector<String> &r_to_remaps) const {
+	ZoneScoped;
 	for (int i = 0; i < p_efsd->get_subdir_count(); i++) {
 		_find_remaps(p_efsd->get_subdir(i), r_renames, r_to_remaps);
 	}
@@ -1450,6 +1508,7 @@ void FileSystemDock::_update_project_settings_after_move(const HashMap<String, S
 }
 
 void FileSystemDock::_update_favorites_list_after_move(const HashMap<String, String> &p_files_renames, const HashMap<String, String> &p_folders_renames) const {
+	ZoneScoped;
 	Vector<String> favorites_list = EditorSettings::get_singleton()->get_favorites();
 	Vector<String> new_favorites;
 
@@ -1467,6 +1526,7 @@ void FileSystemDock::_update_favorites_list_after_move(const HashMap<String, Str
 }
 
 void FileSystemDock::_save_scenes_after_move(const HashMap<String, String> &p_renames) const {
+	ZoneScoped;
 	Vector<String> remaps;
 	_find_remaps(EditorFileSystem::get_singleton()->get_filesystem(), p_renames, remaps);
 	Vector<String> new_filenames;
@@ -1482,6 +1542,7 @@ void FileSystemDock::_save_scenes_after_move(const HashMap<String, String> &p_re
 }
 
 void FileSystemDock::_make_dir_confirm() {
+	ZoneScoped;
 	String dir_name = make_dir_dialog_text->get_text().strip_edges();
 
 	if (dir_name.length() == 0) {
@@ -1519,6 +1580,7 @@ void FileSystemDock::_make_dir_confirm() {
 }
 
 void FileSystemDock::_make_scene_confirm() {
+	ZoneScoped;
 	const String scene_path = make_scene_dialog->get_scene_path();
 
 	int idx = EditorNode::get_singleton()->new_scene();
@@ -1528,6 +1590,7 @@ void FileSystemDock::_make_scene_confirm() {
 }
 
 void FileSystemDock::_file_removed(String p_file) {
+	ZoneScoped;
 	emit_signal(SNAME("file_removed"), p_file);
 
 	// Find the closest parent directory available, in case multiple items were deleted along the same path.
@@ -1541,6 +1604,7 @@ void FileSystemDock::_file_removed(String p_file) {
 }
 
 void FileSystemDock::_folder_removed(String p_folder) {
+	ZoneScoped;
 	emit_signal(SNAME("folder_removed"), p_folder);
 
 	// Find the closest parent directory available, in case multiple items were deleted along the same path.
@@ -1558,6 +1622,7 @@ void FileSystemDock::_folder_removed(String p_folder) {
 }
 
 void FileSystemDock::_rename_operation_confirm() {
+	ZoneScoped;
 	String new_name = rename_dialog_text->get_text().strip_edges();
 	if (new_name.length() == 0) {
 		EditorNode::get_singleton()->show_warning(TTR("No name provided."));
@@ -1618,6 +1683,7 @@ void FileSystemDock::_rename_operation_confirm() {
 }
 
 void FileSystemDock::_duplicate_operation_confirm() {
+	ZoneScoped;
 	String new_name = duplicate_dialog_text->get_text().strip_edges();
 	if (new_name.length() == 0) {
 		EditorNode::get_singleton()->show_warning(TTR("No name provided."));
@@ -1650,10 +1716,12 @@ void FileSystemDock::_duplicate_operation_confirm() {
 }
 
 void FileSystemDock::_move_with_overwrite() {
+	ZoneScoped;
 	_move_operation_confirm(to_move_path, true);
 }
 
 Vector<String> FileSystemDock::_check_existing() {
+	ZoneScoped;
 	Vector<String> conflicting_items;
 	String &p_to_path = to_move_path;
 	for (int i = 0; i < to_move.size(); i++) {
@@ -1673,6 +1741,7 @@ Vector<String> FileSystemDock::_check_existing() {
 }
 
 void FileSystemDock::_move_operation_confirm(const String &p_to_path, bool p_overwrite) {
+	ZoneScoped;
 	if (!p_overwrite) {
 		to_move_path = p_to_path;
 		Vector<String> conflicting_items = _check_existing();
@@ -1771,6 +1840,7 @@ Vector<String> FileSystemDock::_remove_self_included_paths(Vector<String> select
 }
 
 void FileSystemDock::_tree_rmb_option(int p_option) {
+	ZoneScoped;
 	Vector<String> selected_strings = _tree_get_selected(false);
 
 	// Execute the current option.
@@ -1789,6 +1859,7 @@ void FileSystemDock::_tree_rmb_option(int p_option) {
 }
 
 void FileSystemDock::_file_list_rmb_option(int p_option) {
+	ZoneScoped;
 	Vector<int> selected_id = files->get_selected_items();
 	Vector<String> selected;
 	for (int i = 0; i < selected_id.size(); i++) {
@@ -2053,6 +2124,7 @@ void FileSystemDock::_file_option(int p_option, const Vector<String> &p_selected
 }
 
 void FileSystemDock::_resource_created() {
+	ZoneScoped;
 	String fpath = path;
 	if (!fpath.ends_with("/")) {
 		fpath = fpath.get_base_dir();
@@ -2092,6 +2164,7 @@ void FileSystemDock::_resource_created() {
 }
 
 void FileSystemDock::_search_changed(const String &p_text, const Control *p_from) {
+	ZoneScoped;
 	if (searched_string.length() == 0) {
 		// Register the uncollapsed paths before they change.
 		uncollapsed_paths_before_search = _compute_uncollapsed_paths();
@@ -2118,20 +2191,24 @@ void FileSystemDock::_search_changed(const String &p_text, const Control *p_from
 }
 
 void FileSystemDock::_rescan() {
+	ZoneScoped;
 	_set_scanning_mode();
 	EditorFileSystem::get_singleton()->scan();
 }
 
 void FileSystemDock::_toggle_split_mode(bool p_active) {
+	ZoneScoped;
 	set_display_mode(p_active ? DISPLAY_MODE_SPLIT : DISPLAY_MODE_TREE_ONLY);
 	emit_signal(SNAME("display_mode_changed"));
 }
 
 void FileSystemDock::fix_dependencies(const String &p_for_file) {
+	ZoneScoped;
 	deps_editor->edit(p_for_file);
 }
 
 void FileSystemDock::focus_on_filter() {
+	ZoneScoped;
 	LineEdit *current_search_box = nullptr;
 	if (display_mode == DISPLAY_MODE_TREE_ONLY) {
 		current_search_box = tree_search_box;
@@ -2146,10 +2223,12 @@ void FileSystemDock::focus_on_filter() {
 }
 
 ScriptCreateDialog *FileSystemDock::get_script_create_dialog() const {
+	ZoneScoped;
 	return make_script_dialog;
 }
 
 void FileSystemDock::set_file_list_display_mode(FileListDisplayMode p_mode) {
+	ZoneScoped;
 	if (p_mode == file_list_display_mode) {
 		return;
 	}
@@ -2158,6 +2237,7 @@ void FileSystemDock::set_file_list_display_mode(FileListDisplayMode p_mode) {
 }
 
 Variant FileSystemDock::get_drag_data_fw(const Point2 &p_point, Control *p_from) {
+	ZoneScoped;
 	bool all_favorites = true;
 	bool all_not_favorites = true;
 
@@ -2205,6 +2285,7 @@ Variant FileSystemDock::get_drag_data_fw(const Point2 &p_point, Control *p_from)
 }
 
 bool FileSystemDock::can_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) const {
+	ZoneScoped;
 	Dictionary drag_data = p_data;
 
 	if (drag_data.has("favorite")) {
@@ -2283,6 +2364,7 @@ bool FileSystemDock::can_drop_data_fw(const Point2 &p_point, const Variant &p_da
 }
 
 void FileSystemDock::drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) {
+	ZoneScoped;
 	if (!can_drop_data_fw(p_point, p_data, p_from)) {
 		return;
 	}
@@ -2427,6 +2509,7 @@ void FileSystemDock::drop_data_fw(const Point2 &p_point, const Variant &p_data, 
 }
 
 void FileSystemDock::_get_drag_target_folder(String &target, bool &target_favorites, const Point2 &p_point, Control *p_from) const {
+	ZoneScoped;
 	target = String();
 	target_favorites = false;
 
@@ -2601,6 +2684,7 @@ void FileSystemDock::_file_and_folders_fill_popup(PopupMenu *p_popup, Vector<Str
 }
 
 void FileSystemDock::_tree_rmb_select(const Vector2 &p_pos, MouseButton p_button) {
+	ZoneScoped;
 	if (p_button != MouseButton::RIGHT) {
 		return;
 	}
@@ -2627,6 +2711,7 @@ void FileSystemDock::_tree_rmb_select(const Vector2 &p_pos, MouseButton p_button
 }
 
 void FileSystemDock::_tree_empty_click(const Vector2 &p_pos, MouseButton p_button) {
+	ZoneScoped;
 	if (p_button != MouseButton::RIGHT) {
 		return;
 	}
@@ -2648,10 +2733,12 @@ void FileSystemDock::_tree_empty_click(const Vector2 &p_pos, MouseButton p_butto
 }
 
 void FileSystemDock::_tree_empty_selected() {
+	ZoneScoped;
 	tree->deselect_all();
 }
 
 void FileSystemDock::_file_list_item_clicked(int p_item, const Vector2 &p_pos, MouseButton p_mouse_button_index) {
+	ZoneScoped;
 	if (p_mouse_button_index != MouseButton::RIGHT) {
 		return;
 	}
@@ -2680,6 +2767,7 @@ void FileSystemDock::_file_list_item_clicked(int p_item, const Vector2 &p_pos, M
 }
 
 void FileSystemDock::_file_list_empty_clicked(const Vector2 &p_pos, MouseButton p_mouse_button_index) {
+	ZoneScoped;
 	if (p_mouse_button_index != MouseButton::RIGHT) {
 		return;
 	}
@@ -2707,6 +2795,7 @@ void FileSystemDock::_file_list_empty_clicked(const Vector2 &p_pos, MouseButton 
 }
 
 void FileSystemDock::select_file(const String &p_file) {
+	ZoneScoped;
 	_navigate_to_path(p_file);
 }
 
@@ -2729,12 +2818,14 @@ void FileSystemDock::_file_multi_selected(int p_index, bool p_selected) {
 }
 
 void FileSystemDock::_tree_mouse_exited() {
+	ZoneScoped;
 	if (holding_branch) {
 		_reselect_items_selected_on_drag_begin();
 	}
 }
 
 void FileSystemDock::_reselect_items_selected_on_drag_begin(bool reset) {
+	ZoneScoped;
 	TreeItem *selected_item = tree->get_next_selected(tree->get_root());
 	if (selected_item) {
 		selected_item->deselect(0);
@@ -2771,6 +2862,7 @@ void FileSystemDock::_reselect_items_selected_on_drag_begin(bool reset) {
 }
 
 void FileSystemDock::_tree_gui_input(Ref<InputEvent> p_event) {
+	ZoneScoped;
 	Ref<InputEventKey> key = p_event;
 
 	Ref<InputEventMouseMotion> mm = p_event;
@@ -2823,6 +2915,7 @@ void FileSystemDock::_tree_gui_input(Ref<InputEvent> p_event) {
 }
 
 void FileSystemDock::_file_list_gui_input(Ref<InputEvent> p_event) {
+	ZoneScoped;
 	Ref<InputEventMouseMotion> mm = p_event;
 	if (mm.is_valid() && holding_branch) {
 		const int item_idx = files->get_item_at_position(mm->get_position());
@@ -2881,6 +2974,7 @@ void FileSystemDock::_file_list_gui_input(Ref<InputEvent> p_event) {
 }
 
 void FileSystemDock::_get_imported_files(const String &p_path, Vector<String> &r_files) const {
+	ZoneScoped;
 	if (!p_path.ends_with("/")) {
 		if (FileAccess::exists(p_path + ".import")) {
 			r_files.push_back(p_path);
@@ -2902,6 +2996,7 @@ void FileSystemDock::_get_imported_files(const String &p_path, Vector<String> &r
 }
 
 void FileSystemDock::_update_import_dock() {
+	ZoneScoped;
 	if (!import_dock_needs_update) {
 		return;
 	}
@@ -2968,10 +3063,12 @@ void FileSystemDock::_update_import_dock() {
 }
 
 void FileSystemDock::_feature_profile_changed() {
+	ZoneScoped;
 	_update_display_mode(true);
 }
 
 void FileSystemDock::set_file_sort(FileSortOption p_file_sort) {
+	ZoneScoped;
 	for (int i = 0; i != FILE_SORT_MAX; i++) {
 		tree_button_sort->get_popup()->set_item_checked(i, (i == (int)p_file_sort));
 		file_list_button_sort->get_popup()->set_item_checked(i, (i == (int)p_file_sort));
@@ -2984,10 +3081,12 @@ void FileSystemDock::set_file_sort(FileSortOption p_file_sort) {
 }
 
 void FileSystemDock::_file_sort_popup(int p_id) {
+	ZoneScoped;
 	set_file_sort((FileSortOption)p_id);
 }
 
 MenuButton *FileSystemDock::_create_file_menu_button() {
+	ZoneScoped;
 	MenuButton *button = memnew(MenuButton);
 	button->set_flat(true);
 	button->set_tooltip_text(TTR("Sort files"));
@@ -3005,6 +3104,7 @@ MenuButton *FileSystemDock::_create_file_menu_button() {
 }
 
 void FileSystemDock::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("_update_tree"), &FileSystemDock::_update_tree);
 
 	ClassDB::bind_method(D_METHOD("_file_list_thumbnail_done"), &FileSystemDock::_file_list_thumbnail_done);
@@ -3030,6 +3130,7 @@ void FileSystemDock::_bind_methods() {
 }
 
 FileSystemDock::FileSystemDock() {
+	ZoneScoped;
 	singleton = this;
 	set_name("FileSystem");
 	path = "res://";
@@ -3255,5 +3356,6 @@ FileSystemDock::FileSystemDock() {
 }
 
 FileSystemDock::~FileSystemDock() {
+	ZoneScoped;
 	singleton = nullptr;
 }

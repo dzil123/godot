@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_resource_preview.cpp                                          */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_resource_preview.h"
 
 #include "core/config/project_settings.h"
@@ -41,6 +72,7 @@
 #include "editor/editor_settings.h"
 
 bool EditorResourcePreviewGenerator::handles(const String &p_type) const {
+	ZoneScoped;
 	bool success = false;
 	if (GDVIRTUAL_CALL(_handles, p_type, success)) {
 		return success;
@@ -49,6 +81,7 @@ bool EditorResourcePreviewGenerator::handles(const String &p_type) const {
 }
 
 Ref<Texture2D> EditorResourcePreviewGenerator::generate(const Ref<Resource> &p_from, const Size2 &p_size) const {
+	ZoneScoped;
 	Ref<Texture2D> preview;
 	if (GDVIRTUAL_CALL(_generate, p_from, p_size, preview)) {
 		return preview;
@@ -57,6 +90,7 @@ Ref<Texture2D> EditorResourcePreviewGenerator::generate(const Ref<Resource> &p_f
 }
 
 Ref<Texture2D> EditorResourcePreviewGenerator::generate_from_path(const String &p_path, const Size2 &p_size) const {
+	ZoneScoped;
 	Ref<Texture2D> preview;
 	if (GDVIRTUAL_CALL(_generate_from_path, p_path, p_size, preview)) {
 		return preview;
@@ -70,18 +104,21 @@ Ref<Texture2D> EditorResourcePreviewGenerator::generate_from_path(const String &
 }
 
 bool EditorResourcePreviewGenerator::generate_small_preview_automatically() const {
+	ZoneScoped;
 	bool success = false;
 	GDVIRTUAL_CALL(_generate_small_preview_automatically, success);
 	return success;
 }
 
 bool EditorResourcePreviewGenerator::can_generate_small_preview() const {
+	ZoneScoped;
 	bool success = false;
 	GDVIRTUAL_CALL(_can_generate_small_preview, success);
 	return success;
 }
 
 void EditorResourcePreviewGenerator::_bind_methods() {
+	ZoneScoped;
 	GDVIRTUAL_BIND(_handles, "type");
 	GDVIRTUAL_BIND(_generate, "resource", "size");
 	GDVIRTUAL_BIND(_generate_from_path, "path", "size");
@@ -95,11 +132,13 @@ EditorResourcePreviewGenerator::EditorResourcePreviewGenerator() {
 EditorResourcePreview *EditorResourcePreview::singleton = nullptr;
 
 void EditorResourcePreview::_thread_func(void *ud) {
+	ZoneScoped;
 	EditorResourcePreview *erp = (EditorResourcePreview *)ud;
 	erp->_thread();
 }
 
 void EditorResourcePreview::_preview_ready(const String &p_str, const Ref<Texture2D> &p_texture, const Ref<Texture2D> &p_small_texture, ObjectID id, const StringName &p_func, const Variant &p_ud) {
+	ZoneScoped;
 	String path = p_str;
 	{
 		MutexLock lock(preview_mutex);
@@ -128,6 +167,7 @@ void EditorResourcePreview::_preview_ready(const String &p_str, const Ref<Textur
 }
 
 void EditorResourcePreview::_generate_preview(Ref<ImageTexture> &r_texture, Ref<ImageTexture> &r_small_texture, const QueueItem &p_item, const String &cache_base) {
+	ZoneScoped;
 	String type;
 
 	if (p_item.resource.is_valid()) {
@@ -204,6 +244,7 @@ void EditorResourcePreview::_generate_preview(Ref<ImageTexture> &r_texture, Ref<
 }
 
 void EditorResourcePreview::_iterate() {
+	ZoneScoped;
 	preview_mutex.lock();
 
 	if (queue.size()) {
@@ -321,6 +362,7 @@ void EditorResourcePreview::_iterate() {
 }
 
 void EditorResourcePreview::_thread() {
+	ZoneScoped;
 	exited.clear();
 	while (!exit.is_set()) {
 		preview_sem.wait();
@@ -330,6 +372,7 @@ void EditorResourcePreview::_thread() {
 }
 
 void EditorResourcePreview::queue_edited_resource_preview(const Ref<Resource> &p_res, Object *p_receiver, const StringName &p_receiver_func, const Variant &p_userdata) {
+	ZoneScoped;
 	ERR_FAIL_NULL(p_receiver);
 	ERR_FAIL_COND(!p_res.is_valid());
 
@@ -359,6 +402,7 @@ void EditorResourcePreview::queue_edited_resource_preview(const Ref<Resource> &p
 }
 
 void EditorResourcePreview::queue_resource_preview(const String &p_path, Object *p_receiver, const StringName &p_receiver_func, const Variant &p_userdata) {
+	ZoneScoped;
 	ERR_FAIL_NULL(p_receiver);
 	{
 		MutexLock lock(preview_mutex);
@@ -381,18 +425,22 @@ void EditorResourcePreview::queue_resource_preview(const String &p_path, Object 
 }
 
 void EditorResourcePreview::add_preview_generator(const Ref<EditorResourcePreviewGenerator> &p_generator) {
+	ZoneScoped;
 	preview_generators.push_back(p_generator);
 }
 
 void EditorResourcePreview::remove_preview_generator(const Ref<EditorResourcePreviewGenerator> &p_generator) {
+	ZoneScoped;
 	preview_generators.erase(p_generator);
 }
 
 EditorResourcePreview *EditorResourcePreview::get_singleton() {
+	ZoneScoped;
 	return singleton;
 }
 
 void EditorResourcePreview::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method("_preview_ready", &EditorResourcePreview::_preview_ready);
 
 	ClassDB::bind_method(D_METHOD("queue_resource_preview", "path", "receiver", "receiver_func", "userdata"), &EditorResourcePreview::queue_resource_preview);
@@ -405,6 +453,7 @@ void EditorResourcePreview::_bind_methods() {
 }
 
 void EditorResourcePreview::check_for_invalidation(const String &p_path) {
+	ZoneScoped;
 	bool call_invalidated = false;
 	{
 		MutexLock lock(preview_mutex);
@@ -424,11 +473,13 @@ void EditorResourcePreview::check_for_invalidation(const String &p_path) {
 }
 
 void EditorResourcePreview::start() {
+	ZoneScoped;
 	ERR_FAIL_COND_MSG(thread.is_started(), "Thread already started.");
 	thread.start(_thread_func, this);
 }
 
 void EditorResourcePreview::stop() {
+	ZoneScoped;
 	if (thread.is_started()) {
 		exit.set();
 		preview_sem.post();
@@ -441,10 +492,12 @@ void EditorResourcePreview::stop() {
 }
 
 EditorResourcePreview::EditorResourcePreview() {
+	ZoneScoped;
 	singleton = this;
 	order = 0;
 }
 
 EditorResourcePreview::~EditorResourcePreview() {
+	ZoneScoped;
 	stop();
 }

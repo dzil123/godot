@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_settings.cpp                                                  */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_settings.h"
 
 #include "core/config/project_settings.h"
@@ -59,6 +90,7 @@ Ref<EditorSettings> EditorSettings::singleton = nullptr;
 // Properties
 
 bool EditorSettings::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScoped;
 	_THREAD_SAFE_METHOD_
 
 	bool changed = _set_only(p_name, p_value);
@@ -70,6 +102,7 @@ bool EditorSettings::_set(const StringName &p_name, const Variant &p_value) {
 }
 
 bool EditorSettings::_set_only(const StringName &p_name, const Variant &p_value) {
+	ZoneScoped;
 	_THREAD_SAFE_METHOD_
 
 	if (p_name == "shortcuts") {
@@ -137,6 +170,7 @@ bool EditorSettings::_set_only(const StringName &p_name, const Variant &p_value)
 }
 
 bool EditorSettings::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScoped;
 	_THREAD_SAFE_METHOD_
 
 	if (p_name == "shortcuts") {
@@ -226,6 +260,7 @@ bool EditorSettings::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void EditorSettings::_initial_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScoped;
 	set(p_name, p_value);
 	props[p_name].initial = p_value;
 	props[p_name].has_default_value = true;
@@ -242,6 +277,7 @@ struct _EVCSort {
 };
 
 void EditorSettings::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScoped;
 	_THREAD_SAFE_METHOD_
 
 	RBSet<_EVCSort> vclist;
@@ -298,6 +334,7 @@ void EditorSettings::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 void EditorSettings::_add_property_info_bind(const Dictionary &p_info) {
+	ZoneScoped;
 	ERR_FAIL_COND(!p_info.has("name"));
 	ERR_FAIL_COND(!p_info.has("type"));
 
@@ -319,6 +356,7 @@ void EditorSettings::_add_property_info_bind(const Dictionary &p_info) {
 
 // Default configs
 bool EditorSettings::has_default_value(const String &p_setting) const {
+	ZoneScoped;
 	_THREAD_SAFE_METHOD_
 
 	if (!props.has(p_setting)) {
@@ -328,6 +366,7 @@ bool EditorSettings::has_default_value(const String &p_setting) const {
 }
 
 void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
+	ZoneScoped;
 	_THREAD_SAFE_METHOD_
 // Sets up the editor setting with a default value and hint PropertyInfo.
 #define EDITOR_SETTING(m_type, m_property_hint, m_name, m_default_value, m_hint_string) \
@@ -796,6 +835,7 @@ void EditorSettings::_load_godot2_text_editor_theme() {
 }
 
 bool EditorSettings::_save_text_editor_theme(String p_file) {
+	ZoneScoped;
 	String theme_section = "color_theme";
 	Ref<ConfigFile> cf = memnew(ConfigFile); // hex is better?
 
@@ -819,12 +859,14 @@ bool EditorSettings::_save_text_editor_theme(String p_file) {
 }
 
 bool EditorSettings::_is_default_text_editor_theme(String p_theme_name) {
+	ZoneScoped;
 	return p_theme_name == "default" || p_theme_name == "godot 2" || p_theme_name == "custom";
 }
 
 // PUBLIC METHODS
 
 EditorSettings *EditorSettings::get_singleton() {
+	ZoneScoped;
 	return singleton.ptr();
 }
 
@@ -905,6 +947,7 @@ fail:
 }
 
 void EditorSettings::setup_language() {
+	ZoneScoped;
 	TranslationServer::get_singleton()->set_editor_pseudolocalization(get("interface/editor/debug/enable_pseudolocalization"));
 	String lang = get("interface/editor/editor_language");
 	if (lang == "en") {
@@ -918,6 +961,7 @@ void EditorSettings::setup_language() {
 }
 
 void EditorSettings::setup_network() {
+	ZoneScoped;
 	List<IPAddress> local_ip;
 	IP::get_singleton()->get_local_addresses(&local_ip);
 	String hint;
@@ -968,6 +1012,7 @@ void EditorSettings::save() {
 }
 
 PackedStringArray EditorSettings::get_changed_settings() const {
+	ZoneScoped;
 	PackedStringArray arr;
 	for (const String &setting : changed_settings) {
 		arr.push_back(setting);
@@ -977,6 +1022,7 @@ PackedStringArray EditorSettings::get_changed_settings() const {
 }
 
 bool EditorSettings::check_changed_settings_in_group(const String &p_setting_prefix) const {
+	ZoneScoped;
 	for (const String &setting : changed_settings) {
 		if (setting.begins_with(p_setting_prefix)) {
 			return true;
@@ -987,10 +1033,12 @@ bool EditorSettings::check_changed_settings_in_group(const String &p_setting_pre
 }
 
 void EditorSettings::mark_setting_changed(const String &p_setting) {
+	ZoneScoped;
 	changed_settings.insert(p_setting);
 }
 
 void EditorSettings::destroy() {
+	ZoneScoped;
 	if (!singleton.ptr()) {
 		return;
 	}
@@ -999,34 +1047,40 @@ void EditorSettings::destroy() {
 }
 
 void EditorSettings::set_optimize_save(bool p_optimize) {
+	ZoneScoped;
 	optimize_save = p_optimize;
 }
 
 // Properties
 
 void EditorSettings::set_setting(const String &p_setting, const Variant &p_value) {
+	ZoneScoped;
 	_THREAD_SAFE_METHOD_
 	set(p_setting, p_value);
 }
 
 Variant EditorSettings::get_setting(const String &p_setting) const {
+	ZoneScoped;
 	_THREAD_SAFE_METHOD_
 	return get(p_setting);
 }
 
 bool EditorSettings::has_setting(const String &p_setting) const {
+	ZoneScoped;
 	_THREAD_SAFE_METHOD_
 
 	return props.has(p_setting);
 }
 
 void EditorSettings::erase(const String &p_setting) {
+	ZoneScoped;
 	_THREAD_SAFE_METHOD_
 
 	props.erase(p_setting);
 }
 
 void EditorSettings::raise_order(const String &p_setting) {
+	ZoneScoped;
 	_THREAD_SAFE_METHOD_
 
 	ERR_FAIL_COND(!props.has(p_setting));
@@ -1034,6 +1088,7 @@ void EditorSettings::raise_order(const String &p_setting) {
 }
 
 void EditorSettings::set_restart_if_changed(const StringName &p_setting, bool p_restart) {
+	ZoneScoped;
 	_THREAD_SAFE_METHOD_
 
 	if (!props.has(p_setting)) {
@@ -1043,6 +1098,7 @@ void EditorSettings::set_restart_if_changed(const StringName &p_setting, bool p_
 }
 
 void EditorSettings::set_initial_value(const StringName &p_setting, const Variant &p_value, bool p_update_current) {
+	ZoneScoped;
 	_THREAD_SAFE_METHOD_
 
 	if (!props.has(p_setting)) {
@@ -1056,6 +1112,7 @@ void EditorSettings::set_initial_value(const StringName &p_setting, const Varian
 }
 
 Variant _EDITOR_DEF(const String &p_setting, const Variant &p_default, bool p_restart_if_changed) {
+	ZoneScoped;
 	ERR_FAIL_NULL_V_MSG(EditorSettings::get_singleton(), p_default, "EditorSettings not instantiated yet.");
 
 	Variant ret = p_default;
@@ -1074,11 +1131,13 @@ Variant _EDITOR_DEF(const String &p_setting, const Variant &p_default, bool p_re
 }
 
 Variant _EDITOR_GET(const String &p_setting) {
+	ZoneScoped;
 	ERR_FAIL_COND_V(!EditorSettings::get_singleton() || !EditorSettings::get_singleton()->has_setting(p_setting), Variant());
 	return EditorSettings::get_singleton()->get(p_setting);
 }
 
 bool EditorSettings::_property_can_revert(const StringName &p_name) const {
+	ZoneScoped;
 	if (!props.has(p_name)) {
 		return false;
 	}
@@ -1091,6 +1150,7 @@ bool EditorSettings::_property_can_revert(const StringName &p_name) const {
 }
 
 bool EditorSettings::_property_get_revert(const StringName &p_name, Variant &r_property) const {
+	ZoneScoped;
 	if (!props.has(p_name) || !props[p_name].has_default_value) {
 		return false;
 	}
@@ -1100,6 +1160,7 @@ bool EditorSettings::_property_get_revert(const StringName &p_name, Variant &r_p
 }
 
 void EditorSettings::add_property_hint(const PropertyInfo &p_hint) {
+	ZoneScoped;
 	_THREAD_SAFE_METHOD_
 
 	hints[p_hint.name] = p_hint;
@@ -1108,6 +1169,7 @@ void EditorSettings::add_property_hint(const PropertyInfo &p_hint) {
 // Metadata
 
 void EditorSettings::set_project_metadata(const String &p_section, const String &p_key, Variant p_data) {
+	ZoneScoped;
 	Ref<ConfigFile> cf = memnew(ConfigFile);
 	String path = EditorPaths::get_singleton()->get_project_settings_dir().path_join("project_metadata.cfg");
 	Error err;
@@ -1119,6 +1181,7 @@ void EditorSettings::set_project_metadata(const String &p_section, const String 
 }
 
 Variant EditorSettings::get_project_metadata(const String &p_section, const String &p_key, Variant p_default) const {
+	ZoneScoped;
 	Ref<ConfigFile> cf = memnew(ConfigFile);
 	String path = EditorPaths::get_singleton()->get_project_settings_dir().path_join("project_metadata.cfg");
 	Error err = cf->load(path);
@@ -1129,6 +1192,7 @@ Variant EditorSettings::get_project_metadata(const String &p_section, const Stri
 }
 
 void EditorSettings::set_favorites(const Vector<String> &p_favorites) {
+	ZoneScoped;
 	favorites = p_favorites;
 	String favorites_file;
 	if (Engine::get_singleton()->is_project_manager_hint()) {
@@ -1145,10 +1209,12 @@ void EditorSettings::set_favorites(const Vector<String> &p_favorites) {
 }
 
 Vector<String> EditorSettings::get_favorites() const {
+	ZoneScoped;
 	return favorites;
 }
 
 void EditorSettings::set_recent_dirs(const Vector<String> &p_recent_dirs) {
+	ZoneScoped;
 	recent_dirs = p_recent_dirs;
 	String recent_dirs_file;
 	if (Engine::get_singleton()->is_project_manager_hint()) {
@@ -1165,10 +1231,12 @@ void EditorSettings::set_recent_dirs(const Vector<String> &p_recent_dirs) {
 }
 
 Vector<String> EditorSettings::get_recent_dirs() const {
+	ZoneScoped;
 	return recent_dirs;
 }
 
 void EditorSettings::load_favorites_and_recent_dirs() {
+	ZoneScoped;
 	String favorites_file;
 	String recent_dirs_file;
 	if (Engine::get_singleton()->is_project_manager_hint()) {
@@ -1198,6 +1266,7 @@ void EditorSettings::load_favorites_and_recent_dirs() {
 }
 
 bool EditorSettings::is_dark_theme() {
+	ZoneScoped;
 	int AUTO_COLOR = 0;
 	int LIGHT_COLOR = 2;
 	Color base_color = get("interface/theme/base_color");
@@ -1206,6 +1275,7 @@ bool EditorSettings::is_dark_theme() {
 }
 
 void EditorSettings::list_text_editor_themes() {
+	ZoneScoped;
 	String themes = "Default,Godot 2,Custom";
 
 	Ref<DirAccess> d = DirAccess::open(EditorPaths::get_singleton()->get_text_editor_themes_dir());
@@ -1230,6 +1300,7 @@ void EditorSettings::list_text_editor_themes() {
 }
 
 void EditorSettings::load_text_editor_theme() {
+	ZoneScoped;
 	String p_file = get("text_editor/theme/color_theme");
 
 	if (_is_default_text_editor_theme(p_file.get_file().to_lower())) {
@@ -1267,6 +1338,7 @@ void EditorSettings::load_text_editor_theme() {
 }
 
 bool EditorSettings::import_text_editor_theme(String p_file) {
+	ZoneScoped;
 	if (!p_file.ends_with(".tet")) {
 		return false;
 	} else {
@@ -1284,6 +1356,7 @@ bool EditorSettings::import_text_editor_theme(String p_file) {
 }
 
 bool EditorSettings::save_text_editor_theme() {
+	ZoneScoped;
 	String p_file = get("text_editor/theme/color_theme");
 
 	if (_is_default_text_editor_theme(p_file.get_file().to_lower())) {
@@ -1294,6 +1367,7 @@ bool EditorSettings::save_text_editor_theme() {
 }
 
 bool EditorSettings::save_text_editor_theme_as(String p_file) {
+	ZoneScoped;
 	if (!p_file.ends_with(".tet")) {
 		p_file += ".tet";
 	}
@@ -1316,11 +1390,13 @@ bool EditorSettings::save_text_editor_theme_as(String p_file) {
 }
 
 bool EditorSettings::is_default_text_editor_theme() {
+	ZoneScoped;
 	String p_file = get("text_editor/theme/color_theme");
 	return _is_default_text_editor_theme(p_file.get_file().to_lower());
 }
 
 Vector<String> EditorSettings::get_script_templates(const String &p_extension, const String &p_custom_path) {
+	ZoneScoped;
 	Vector<String> templates;
 	String template_dir = EditorPaths::get_singleton()->get_script_templates_dir();
 	if (!p_custom_path.is_empty()) {
@@ -1342,6 +1418,7 @@ Vector<String> EditorSettings::get_script_templates(const String &p_extension, c
 }
 
 String EditorSettings::get_editor_layouts_config() const {
+	ZoneScoped;
 	return EditorPaths::get_singleton()->get_config_dir().path_join("editor_layouts.cfg");
 }
 
@@ -1377,10 +1454,12 @@ float EditorSettings::get_auto_display_scale() const {
 // Shortcuts
 
 void EditorSettings::add_shortcut(const String &p_name, const Ref<Shortcut> &p_shortcut) {
+	ZoneScoped;
 	shortcuts[p_name] = p_shortcut;
 }
 
 bool EditorSettings::is_shortcut(const String &p_name, const Ref<InputEvent> &p_event) const {
+	ZoneScoped;
 	HashMap<String, Ref<Shortcut>>::ConstIterator E = shortcuts.find(p_name);
 	ERR_FAIL_COND_V_MSG(!E, false, "Unknown Shortcut: " + p_name + ".");
 
@@ -1388,6 +1467,7 @@ bool EditorSettings::is_shortcut(const String &p_name, const Ref<InputEvent> &p_
 }
 
 Ref<Shortcut> EditorSettings::get_shortcut(const String &p_name) const {
+	ZoneScoped;
 	HashMap<String, Ref<Shortcut>>::ConstIterator SC = shortcuts.find(p_name);
 	if (SC) {
 		return SC->value;
@@ -1424,12 +1504,14 @@ Ref<Shortcut> EditorSettings::get_shortcut(const String &p_name) const {
 }
 
 void EditorSettings::get_shortcut_list(List<String> *r_shortcuts) {
+	ZoneScoped;
 	for (const KeyValue<String, Ref<Shortcut>> &E : shortcuts) {
 		r_shortcuts->push_back(E.key);
 	}
 }
 
 Ref<Shortcut> ED_GET_SHORTCUT(const String &p_path) {
+	ZoneScoped;
 	ERR_FAIL_NULL_V_MSG(EditorSettings::get_singleton(), nullptr, "EditorSettings not instantiated yet.");
 
 	Ref<Shortcut> sc = EditorSettings::get_singleton()->get_shortcut(p_path);
@@ -1440,6 +1522,7 @@ Ref<Shortcut> ED_GET_SHORTCUT(const String &p_path) {
 }
 
 void ED_SHORTCUT_OVERRIDE(const String &p_path, const String &p_feature, Key p_keycode) {
+	ZoneScoped;
 	ERR_FAIL_NULL_MSG(EditorSettings::get_singleton(), "EditorSettings not instantiated yet.");
 
 	Ref<Shortcut> sc = EditorSettings::get_singleton()->get_shortcut(p_path);
@@ -1452,6 +1535,7 @@ void ED_SHORTCUT_OVERRIDE(const String &p_path, const String &p_feature, Key p_k
 }
 
 void ED_SHORTCUT_OVERRIDE_ARRAY(const String &p_path, const String &p_feature, const PackedInt32Array &p_keycodes) {
+	ZoneScoped;
 	ERR_FAIL_NULL_MSG(EditorSettings::get_singleton(), "EditorSettings not instantiated yet.");
 
 	Ref<Shortcut> sc = EditorSettings::get_singleton()->get_shortcut(p_path);
@@ -1490,12 +1574,14 @@ void ED_SHORTCUT_OVERRIDE_ARRAY(const String &p_path, const String &p_feature, c
 }
 
 Ref<Shortcut> ED_SHORTCUT(const String &p_path, const String &p_name, Key p_keycode) {
+	ZoneScoped;
 	PackedInt32Array arr;
 	arr.push_back((int32_t)p_keycode);
 	return ED_SHORTCUT_ARRAY(p_path, p_name, arr);
 }
 
 Ref<Shortcut> ED_SHORTCUT_ARRAY(const String &p_path, const String &p_name, const PackedInt32Array &p_keycodes) {
+	ZoneScoped;
 	Array events;
 
 	for (int i = 0; i < p_keycodes.size(); i++) {
@@ -1541,6 +1627,7 @@ Ref<Shortcut> ED_SHORTCUT_ARRAY(const String &p_path, const String &p_name, cons
 }
 
 void EditorSettings::set_builtin_action_override(const String &p_name, const TypedArray<InputEvent> &p_events) {
+	ZoneScoped;
 	List<Ref<InputEvent>> event_list;
 
 	// Override the whole list, since events may have their order changed or be added, removed or edited.
@@ -1594,6 +1681,7 @@ void EditorSettings::set_builtin_action_override(const String &p_name, const Typ
 }
 
 const Array EditorSettings::get_builtin_action_overrides(const String &p_name) const {
+	ZoneScoped;
 	HashMap<String, List<Ref<InputEvent>>>::ConstIterator AO = builtin_action_overrides.find(p_name);
 	if (AO) {
 		Array event_array;
@@ -1609,6 +1697,7 @@ const Array EditorSettings::get_builtin_action_overrides(const String &p_name) c
 }
 
 void EditorSettings::notify_changes() {
+	ZoneScoped;
 	_THREAD_SAFE_METHOD_
 
 	SceneTree *sml = Object::cast_to<SceneTree>(OS::get_singleton()->get_main_loop());
@@ -1626,6 +1715,7 @@ void EditorSettings::notify_changes() {
 }
 
 void EditorSettings::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("has_setting", "name"), &EditorSettings::has_setting);
 	ClassDB::bind_method(D_METHOD("set_setting", "name", "value"), &EditorSettings::set_setting);
 	ClassDB::bind_method(D_METHOD("get_setting", "name"), &EditorSettings::get_setting);
@@ -1653,6 +1743,7 @@ void EditorSettings::_bind_methods() {
 }
 
 EditorSettings::EditorSettings() {
+	ZoneScoped;
 	last_order = 0;
 
 	_load_defaults();

@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  find_in_files.cpp                                                    */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "find_in_files.h"
 
 #include "core/config/project_settings.h"
@@ -51,10 +82,12 @@ const char *FindInFiles::SIGNAL_FINISHED = "finished";
 // TODO: Would be nice in Vector and Vectors.
 template <typename T>
 inline void pop_back(T &container) {
+	ZoneScoped;
 	container.resize(container.size() - 1);
 }
 
 static bool find_next(const String &line, String pattern, int from, bool match_case, bool whole_words, int &out_begin, int &out_end) {
+	ZoneScoped;
 	int end = from;
 
 	while (true) {
@@ -84,26 +117,32 @@ static bool find_next(const String &line, String pattern, int from, bool match_c
 //--------------------------------------------------------------------------------
 
 void FindInFiles::set_search_text(String p_pattern) {
+	ZoneScoped;
 	_pattern = p_pattern;
 }
 
 void FindInFiles::set_whole_words(bool p_whole_word) {
+	ZoneScoped;
 	_whole_words = p_whole_word;
 }
 
 void FindInFiles::set_match_case(bool p_match_case) {
+	ZoneScoped;
 	_match_case = p_match_case;
 }
 
 void FindInFiles::set_folder(String folder) {
+	ZoneScoped;
 	_root_dir = folder;
 }
 
 void FindInFiles::set_filter(const HashSet<String> &exts) {
+	ZoneScoped;
 	_extension_filter = exts;
 }
 
 void FindInFiles::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_PROCESS: {
 			_process();
@@ -112,6 +151,7 @@ void FindInFiles::_notification(int p_what) {
 }
 
 void FindInFiles::start() {
+	ZoneScoped;
 	if (_pattern.is_empty()) {
 		print_verbose("Nothing to search, pattern is empty");
 		emit_signal(SNAME(SIGNAL_FINISHED));
@@ -137,6 +177,7 @@ void FindInFiles::start() {
 }
 
 void FindInFiles::stop() {
+	ZoneScoped;
 	_searching = false;
 	_current_dir = "";
 	set_process(false);
@@ -157,6 +198,7 @@ void FindInFiles::_process() {
 }
 
 void FindInFiles::_iterate() {
+	ZoneScoped;
 	if (_folders_stack.size() != 0) {
 		// Scan folders first so we can build a list of files and have progress info later.
 
@@ -204,6 +246,7 @@ void FindInFiles::_iterate() {
 }
 
 float FindInFiles::get_progress() const {
+	ZoneScoped;
 	if (_initial_files_count != 0) {
 		return static_cast<float>(_initial_files_count - _files_to_scan.size()) / static_cast<float>(_initial_files_count);
 	}
@@ -211,6 +254,7 @@ float FindInFiles::get_progress() const {
 }
 
 void FindInFiles::_scan_dir(String path, PackedStringArray &out_folders) {
+	ZoneScoped;
 	Ref<DirAccess> dir = DirAccess::open(path);
 	if (dir.is_null()) {
 		print_verbose("Cannot open directory! " + path);
@@ -253,6 +297,7 @@ void FindInFiles::_scan_dir(String path, PackedStringArray &out_folders) {
 }
 
 void FindInFiles::_scan_file(String fpath) {
+	ZoneScoped;
 	Ref<FileAccess> f = FileAccess::open(fpath, FileAccess::READ);
 	if (f.is_null()) {
 		print_verbose(String("Cannot open file ") + fpath);
@@ -277,6 +322,7 @@ void FindInFiles::_scan_file(String fpath) {
 }
 
 void FindInFiles::_bind_methods() {
+	ZoneScoped;
 	ADD_SIGNAL(MethodInfo(SIGNAL_RESULT_FOUND,
 			PropertyInfo(Variant::STRING, "path"),
 			PropertyInfo(Variant::INT, "line_number"),
@@ -292,6 +338,7 @@ const char *FindInFilesDialog::SIGNAL_FIND_REQUESTED = "find_requested";
 const char *FindInFilesDialog::SIGNAL_REPLACE_REQUESTED = "replace_requested";
 
 FindInFilesDialog::FindInFilesDialog() {
+	ZoneScoped;
 	set_min_size(Size2(500 * EDSCALE, 0));
 	set_title(TTR("Find in Files"));
 
@@ -392,15 +439,18 @@ FindInFilesDialog::FindInFilesDialog() {
 }
 
 void FindInFilesDialog::set_search_text(String text) {
+	ZoneScoped;
 	_search_text_line_edit->set_text(text);
 	_on_search_text_modified(text);
 }
 
 void FindInFilesDialog::set_replace_text(String text) {
+	ZoneScoped;
 	_replace_text_line_edit->set_text(text);
 }
 
 void FindInFilesDialog::set_find_in_files_mode(FindInFilesMode p_mode) {
+	ZoneScoped;
 	if (_mode == p_mode) {
 		return;
 	}
@@ -422,22 +472,27 @@ void FindInFilesDialog::set_find_in_files_mode(FindInFilesMode p_mode) {
 }
 
 String FindInFilesDialog::get_search_text() const {
+	ZoneScoped;
 	return _search_text_line_edit->get_text();
 }
 
 String FindInFilesDialog::get_replace_text() const {
+	ZoneScoped;
 	return _replace_text_line_edit->get_text();
 }
 
 bool FindInFilesDialog::is_match_case() const {
+	ZoneScoped;
 	return _match_case_checkbox->is_pressed();
 }
 
 bool FindInFilesDialog::is_whole_words() const {
+	ZoneScoped;
 	return _whole_words_checkbox->is_pressed();
 }
 
 String FindInFilesDialog::get_folder() const {
+	ZoneScoped;
 	String text = _folder_line_edit->get_text();
 	return text.strip_edges();
 }
@@ -455,6 +510,7 @@ HashSet<String> FindInFilesDialog::get_filter() const {
 }
 
 void FindInFilesDialog::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_VISIBILITY_CHANGED: {
 			if (is_visible()) {
@@ -481,10 +537,12 @@ void FindInFilesDialog::_notification(int p_what) {
 }
 
 void FindInFilesDialog::_on_folder_button_pressed() {
+	ZoneScoped;
 	_folder_dialog->popup_file_dialog();
 }
 
 void FindInFilesDialog::custom_action(const String &p_action) {
+	ZoneScoped;
 	for (int i = 0; i < _filters_container->get_child_count(); ++i) {
 		CheckBox *cb = static_cast<CheckBox *>(_filters_container->get_child(i));
 		_filters_preferences[cb->get_text()] = cb->is_pressed();
@@ -500,6 +558,7 @@ void FindInFilesDialog::custom_action(const String &p_action) {
 }
 
 void FindInFilesDialog::_on_search_text_modified(String text) {
+	ZoneScoped;
 	ERR_FAIL_COND(!_find_button);
 	ERR_FAIL_COND(!_replace_button);
 
@@ -532,6 +591,7 @@ void FindInFilesDialog::_on_replace_text_submitted(String text) {
 }
 
 void FindInFilesDialog::_on_folder_selected(String path) {
+	ZoneScoped;
 	int i = path.find("://");
 	if (i != -1) {
 		path = path.substr(i + 3);
@@ -540,6 +600,7 @@ void FindInFilesDialog::_on_folder_selected(String path) {
 }
 
 void FindInFilesDialog::_bind_methods() {
+	ZoneScoped;
 	ADD_SIGNAL(MethodInfo(SIGNAL_FIND_REQUESTED));
 	ADD_SIGNAL(MethodInfo(SIGNAL_REPLACE_REQUESTED));
 }
@@ -549,6 +610,7 @@ const char *FindInFilesPanel::SIGNAL_RESULT_SELECTED = "result_selected";
 const char *FindInFilesPanel::SIGNAL_FILES_MODIFIED = "files_modified";
 
 FindInFilesPanel::FindInFilesPanel() {
+	ZoneScoped;
 	_finder = memnew(FindInFiles);
 	_finder->connect(FindInFiles::SIGNAL_RESULT_FOUND, callable_mp(this, &FindInFilesPanel::_on_result_found));
 	_finder->connect(FindInFiles::SIGNAL_FINISHED, callable_mp(this, &FindInFilesPanel::_on_finished));
@@ -633,6 +695,7 @@ FindInFilesPanel::FindInFilesPanel() {
 }
 
 void FindInFilesPanel::set_with_replace(bool with_replace) {
+	ZoneScoped;
 	_with_replace = with_replace;
 	_replace_container->set_visible(with_replace);
 
@@ -649,10 +712,12 @@ void FindInFilesPanel::set_with_replace(bool with_replace) {
 }
 
 void FindInFilesPanel::set_replace_text(String text) {
+	ZoneScoped;
 	_replace_line_edit->set_text(text);
 }
 
 void FindInFilesPanel::clear() {
+	ZoneScoped;
 	_file_items.clear();
 	_result_items.clear();
 	_results_display->clear();
@@ -660,6 +725,7 @@ void FindInFilesPanel::clear() {
 }
 
 void FindInFilesPanel::start_search() {
+	ZoneScoped;
 	clear();
 
 	_status_label->set_text(TTR("Searching..."));
@@ -676,6 +742,7 @@ void FindInFilesPanel::start_search() {
 }
 
 void FindInFilesPanel::stop_search() {
+	ZoneScoped;
 	_finder->stop();
 
 	_status_label->set_text("");
@@ -686,6 +753,7 @@ void FindInFilesPanel::stop_search() {
 }
 
 void FindInFilesPanel::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_PROCESS: {
 			_progress_bar->set_as_ratio(_finder->get_progress());
@@ -699,6 +767,7 @@ void FindInFilesPanel::_notification(int p_what) {
 }
 
 void FindInFilesPanel::_on_result_found(String fpath, int line_number, int begin, int end, String text) {
+	ZoneScoped;
 	TreeItem *file_item;
 	HashMap<String, TreeItem *>::Iterator E = _file_items.find(fpath);
 
@@ -748,6 +817,7 @@ void FindInFilesPanel::_on_result_found(String fpath, int line_number, int begin
 }
 
 void FindInFilesPanel::draw_result_text(Object *item_obj, Rect2 rect) {
+	ZoneScoped;
 	TreeItem *item = Object::cast_to<TreeItem>(item_obj);
 	if (!item) {
 		return;
@@ -775,6 +845,7 @@ void FindInFilesPanel::draw_result_text(Object *item_obj, Rect2 rect) {
 }
 
 void FindInFilesPanel::_on_item_edited() {
+	ZoneScoped;
 	TreeItem *item = _results_display->get_selected();
 
 	if (item->is_checked(0)) {
@@ -788,6 +859,7 @@ void FindInFilesPanel::_on_item_edited() {
 }
 
 void FindInFilesPanel::_on_finished() {
+	ZoneScoped;
 	String results_text;
 	int result_count = _result_items.size();
 	int file_count = _file_items.size();
@@ -808,14 +880,17 @@ void FindInFilesPanel::_on_finished() {
 }
 
 void FindInFilesPanel::_on_refresh_button_clicked() {
+	ZoneScoped;
 	start_search();
 }
 
 void FindInFilesPanel::_on_cancel_button_clicked() {
+	ZoneScoped;
 	stop_search();
 }
 
 void FindInFilesPanel::_on_result_selected() {
+	ZoneScoped;
 	TreeItem *item = _results_display->get_selected();
 	HashMap<TreeItem *, Result>::Iterator E = _result_items.find(item);
 
@@ -831,10 +906,12 @@ void FindInFilesPanel::_on_result_selected() {
 }
 
 void FindInFilesPanel::_on_replace_text_changed(String text) {
+	ZoneScoped;
 	update_replace_buttons();
 }
 
 void FindInFilesPanel::_on_replace_all_clicked() {
+	ZoneScoped;
 	String replace_text = get_replace_text();
 
 	PackedStringArray modified_files;
@@ -958,20 +1035,24 @@ void FindInFilesPanel::apply_replaces_in_file(String fpath, const Vector<Result>
 }
 
 String FindInFilesPanel::get_replace_text() {
+	ZoneScoped;
 	return _replace_line_edit->get_text();
 }
 
 void FindInFilesPanel::update_replace_buttons() {
+	ZoneScoped;
 	bool disabled = _finder->is_searching();
 
 	_replace_all_button->set_disabled(disabled);
 }
 
 void FindInFilesPanel::set_progress_visible(bool p_visible) {
+	ZoneScoped;
 	_progress_bar->set_self_modulate(Color(1, 1, 1, p_visible ? 1 : 0));
 }
 
 void FindInFilesPanel::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method("_on_result_found", &FindInFilesPanel::_on_result_found);
 	ClassDB::bind_method("_on_finished", &FindInFilesPanel::_on_finished);
 	ClassDB::bind_method("_draw_result_text", &FindInFilesPanel::draw_result_text);

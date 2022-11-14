@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_help.cpp                                                      */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_help.h"
 
 #include "core/core_constants.h"
@@ -45,6 +76,7 @@
 DocTools *EditorHelp::doc = nullptr;
 
 void EditorHelp::_update_theme() {
+	ZoneScoped;
 	text_color = get_theme_color(SNAME("text_color"), SNAME("EditorHelp"));
 	title_color = get_theme_color(SNAME("title_color"), SNAME("EditorHelp"));
 	headline_color = get_theme_color(SNAME("headline_color"), SNAME("EditorHelp"));
@@ -68,6 +100,7 @@ void EditorHelp::_update_theme() {
 }
 
 void EditorHelp::_search(bool p_search_previous) {
+	ZoneScoped;
 	if (p_search_previous) {
 		find_bar->search_prev();
 	} else {
@@ -76,6 +109,7 @@ void EditorHelp::_search(bool p_search_previous) {
 }
 
 void EditorHelp::_class_desc_finished() {
+	ZoneScoped;
 	if (scroll_to >= 0) {
 		class_desc->scroll_to_paragraph(scroll_to);
 	}
@@ -83,10 +117,12 @@ void EditorHelp::_class_desc_finished() {
 }
 
 void EditorHelp::_class_list_select(const String &p_select) {
+	ZoneScoped;
 	_goto_desc(p_select);
 }
 
 void EditorHelp::_class_desc_select(const String &p_select) {
+	ZoneScoped;
 	if (p_select.begins_with("$")) { //enum
 		String select = p_select.substr(1, p_select.length());
 		String class_name;
@@ -199,6 +235,7 @@ void EditorHelp::_class_desc_resized(bool p_force_update_theme) {
 }
 
 void EditorHelp::_add_type(const String &p_type, const String &p_enum) {
+	ZoneScoped;
 	String t = p_type;
 	if (t.is_empty()) {
 		t = "void";
@@ -240,6 +277,7 @@ void EditorHelp::_add_type(const String &p_type, const String &p_enum) {
 }
 
 void EditorHelp::_add_type_icon(const String &p_type, int p_size) {
+	ZoneScoped;
 	Ref<Texture2D> icon;
 	if (has_theme_icon(p_type, SNAME("EditorIcons"))) {
 		icon = get_theme_icon(p_type, SNAME("EditorIcons"));
@@ -261,6 +299,7 @@ void EditorHelp::_add_type_icon(const String &p_type, int p_size) {
 }
 
 String EditorHelp::_fix_constant(const String &p_constant) const {
+	ZoneScoped;
 	if (p_constant.strip_edges() == "4294967295") {
 		return "0xFFFFFFFF";
 	}
@@ -294,6 +333,7 @@ String EditorHelp::_fix_constant(const String &p_constant) const {
 	class_desc->pop();
 
 void EditorHelp::_add_method(const DocData::MethodDoc &p_method, bool p_overview) {
+	ZoneScoped;
 	method_line[p_method.name] = class_desc->get_paragraph_count() - 2; //gets overridden if description
 
 	const bool is_vararg = p_method.qualifiers.contains("vararg");
@@ -408,11 +448,13 @@ void EditorHelp::_add_method(const DocData::MethodDoc &p_method, bool p_overview
 }
 
 void EditorHelp::_add_bulletpoint() {
+	ZoneScoped;
 	static const char32_t prefix[3] = { 0x25CF /* filled circle */, ' ', 0 };
 	class_desc->add_text(String(prefix));
 }
 
 Error EditorHelp::_goto_desc(const String &p_class, int p_vscr) {
+	ZoneScoped;
 	if (!doc->class_list.has(p_class)) {
 		return ERR_DOES_NOT_EXIST;
 	}
@@ -433,6 +475,7 @@ Error EditorHelp::_goto_desc(const String &p_class, int p_vscr) {
 }
 
 void EditorHelp::_update_method_list(const Vector<DocData::MethodDoc> p_methods, bool &r_method_descrpitons) {
+	ZoneScoped;
 	Ref<Font> font = get_theme_font(SNAME("doc_source"), SNAME("EditorFonts"));
 	class_desc->pop(); // title font size
 	class_desc->pop(); // title font
@@ -500,6 +543,7 @@ void EditorHelp::_update_method_list(const Vector<DocData::MethodDoc> p_methods,
 }
 
 void EditorHelp::_update_method_descriptions(const DocData::ClassDoc p_classdoc, const Vector<DocData::MethodDoc> p_methods, const String &p_method_type) {
+	ZoneScoped;
 	Ref<Font> font = get_theme_font(SNAME("doc"), SNAME("EditorFonts"));
 	Ref<Font> code_font = get_theme_font(SNAME("doc_source"), SNAME("EditorFonts"));
 	String link_color_text = title_color.to_html(false);
@@ -581,6 +625,7 @@ void EditorHelp::_update_method_descriptions(const DocData::ClassDoc p_classdoc,
 }
 
 void EditorHelp::_update_doc() {
+	ZoneScoped;
 	if (!doc->class_list.has(edited_class)) {
 		return;
 	}
@@ -1700,6 +1745,7 @@ void EditorHelp::_update_doc() {
 }
 
 void EditorHelp::_request_help(const String &p_string) {
+	ZoneScoped;
 	Error err = _goto_desc(p_string);
 	if (err == OK) {
 		EditorNode::get_singleton()->set_visible_editor(EditorNode::EDITOR_SCRIPT);
@@ -1708,6 +1754,7 @@ void EditorHelp::_request_help(const String &p_string) {
 }
 
 void EditorHelp::_help_callback(const String &p_topic) {
+	ZoneScoped;
 	String what = p_topic.get_slice(":", 0);
 	String clss = p_topic.get_slice(":", 1);
 	String name;
@@ -1777,6 +1824,7 @@ void EditorHelp::_help_callback(const String &p_topic) {
 }
 
 static void _add_text_to_rt(const String &p_bbcode, RichTextLabel *p_rt, Control *p_owner_node) {
+	ZoneScoped;
 	DocTools *doc = EditorHelp::get_doc_data();
 	String base_path;
 
@@ -2080,18 +2128,21 @@ static void _add_text_to_rt(const String &p_bbcode, RichTextLabel *p_rt, Control
 }
 
 void EditorHelp::_add_text(const String &p_bbcode) {
+	ZoneScoped;
 	_add_text_to_rt(p_bbcode, class_desc, this);
 }
 
 Thread EditorHelp::thread;
 
 void EditorHelp::_wait_for_thread() {
+	ZoneScoped;
 	if (thread.is_started()) {
 		thread.wait_to_finish();
 	}
 }
 
 void EditorHelp::_gen_doc_thread(void *p_udata) {
+	ZoneScoped;
 	DocTools compdoc;
 	compdoc.load_compressed(_doc_data_compressed, _doc_data_compressed_size, _doc_data_uncompressed_size);
 	doc->merge_from(compdoc); // Ensure all is up to date.
@@ -2100,6 +2151,7 @@ void EditorHelp::_gen_doc_thread(void *p_udata) {
 static bool doc_gen_use_threads = true;
 
 void EditorHelp::generate_doc() {
+	ZoneScoped;
 	doc = memnew(DocTools);
 	// Not doable on threads unfortunately, since it instantiates all sorts of classes to get default values.
 	doc->generate(true);
@@ -2112,11 +2164,13 @@ void EditorHelp::generate_doc() {
 }
 
 void EditorHelp::_toggle_scripts_pressed() {
+	ZoneScoped;
 	ScriptEditor::get_singleton()->toggle_scripts_panel();
 	update_toggle_scripts_button();
 }
 
 void EditorHelp::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_READY:
 		case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
@@ -2138,16 +2192,19 @@ void EditorHelp::_notification(int p_what) {
 }
 
 void EditorHelp::go_to_help(const String &p_help) {
+	ZoneScoped;
 	_wait_for_thread();
 	_help_callback(p_help);
 }
 
 void EditorHelp::go_to_class(const String &p_class, int p_scroll) {
+	ZoneScoped;
 	_wait_for_thread();
 	_goto_desc(p_class, p_scroll);
 }
 
 void EditorHelp::update_doc() {
+	ZoneScoped;
 	_wait_for_thread();
 	ERR_FAIL_COND(!doc->class_list.has(edited_class));
 	ERR_FAIL_COND(!doc->class_list[edited_class].is_script_doc);
@@ -2155,6 +2212,7 @@ void EditorHelp::update_doc() {
 }
 
 void EditorHelp::cleanup_doc() {
+	ZoneScoped;
 	_wait_for_thread();
 	if (doc_gen_use_threads) {
 		thread.wait_to_finish();
@@ -2163,6 +2221,7 @@ void EditorHelp::cleanup_doc() {
 }
 
 Vector<Pair<String, int>> EditorHelp::get_sections() {
+	ZoneScoped;
 	_wait_for_thread();
 	Vector<Pair<String, int>> sections;
 
@@ -2173,6 +2232,7 @@ Vector<Pair<String, int>> EditorHelp::get_sections() {
 }
 
 void EditorHelp::scroll_to_section(int p_section_index) {
+	ZoneScoped;
 	_wait_for_thread();
 	int line = section_line[p_section_index].second;
 	if (class_desc->is_ready()) {
@@ -2183,27 +2243,33 @@ void EditorHelp::scroll_to_section(int p_section_index) {
 }
 
 void EditorHelp::popup_search() {
+	ZoneScoped;
 	_wait_for_thread();
 	find_bar->popup_search();
 }
 
 String EditorHelp::get_class() {
+	ZoneScoped;
 	return edited_class;
 }
 
 void EditorHelp::search_again(bool p_search_previous) {
+	ZoneScoped;
 	_search(p_search_previous);
 }
 
 int EditorHelp::get_scroll() const {
+	ZoneScoped;
 	return class_desc->get_v_scroll_bar()->get_value();
 }
 
 void EditorHelp::set_scroll(int p_scroll) {
+	ZoneScoped;
 	class_desc->get_v_scroll_bar()->set_value(p_scroll);
 }
 
 void EditorHelp::update_toggle_scripts_button() {
+	ZoneScoped;
 	if (is_layout_rtl()) {
 		toggle_scripts_button->set_icon(get_theme_icon(ScriptEditor::get_singleton()->is_scripts_panel_toggled() ? SNAME("Forward") : SNAME("Back"), SNAME("EditorIcons")));
 	} else {
@@ -2213,6 +2279,7 @@ void EditorHelp::update_toggle_scripts_button() {
 }
 
 void EditorHelp::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method("_class_list_select", &EditorHelp::_class_list_select);
 	ClassDB::bind_method("_request_help", &EditorHelp::_request_help);
 	ClassDB::bind_method("_search", &EditorHelp::_search);
@@ -2222,6 +2289,7 @@ void EditorHelp::_bind_methods() {
 }
 
 EditorHelp::EditorHelp() {
+	ZoneScoped;
 	set_custom_minimum_size(Size2(150 * EDSCALE, 0));
 
 	EDITOR_DEF("text_editor/help/sort_functions_alphabetically", true);
@@ -2263,6 +2331,7 @@ EditorHelp::~EditorHelp() {
 }
 
 DocTools *EditorHelp::get_doc_data() {
+	ZoneScoped;
 	_wait_for_thread();
 	return doc;
 }
@@ -2270,12 +2339,14 @@ DocTools *EditorHelp::get_doc_data() {
 //// EditorHelpBit ///
 
 void EditorHelpBit::_go_to_help(String p_what) {
+	ZoneScoped;
 	EditorNode::get_singleton()->set_visible_editor(EditorNode::EDITOR_SCRIPT);
 	ScriptEditor::get_singleton()->goto_help(p_what);
 	emit_signal(SNAME("request_hide"));
 }
 
 void EditorHelpBit::_meta_clicked(String p_select) {
+	ZoneScoped;
 	if (p_select.begins_with("$")) { //enum
 
 		String select = p_select.substr(1, p_select.length());
@@ -2300,11 +2371,13 @@ void EditorHelpBit::_meta_clicked(String p_select) {
 }
 
 void EditorHelpBit::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("set_text", "text"), &EditorHelpBit::set_text);
 	ADD_SIGNAL(MethodInfo("request_hide"));
 }
 
 void EditorHelpBit::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			rich_text->add_theme_color_override("selection_color", get_theme_color(SNAME("selection_color"), SNAME("EditorHelp")));
@@ -2316,12 +2389,14 @@ void EditorHelpBit::_notification(int p_what) {
 }
 
 void EditorHelpBit::set_text(const String &p_text) {
+	ZoneScoped;
 	text = p_text;
 	rich_text->clear();
 	_add_text_to_rt(text, rich_text, this);
 }
 
 EditorHelpBit::EditorHelpBit() {
+	ZoneScoped;
 	rich_text = memnew(RichTextLabel);
 	add_child(rich_text);
 	rich_text->connect("meta_clicked", callable_mp(this, &EditorHelpBit::_meta_clicked));
@@ -2332,6 +2407,7 @@ EditorHelpBit::EditorHelpBit() {
 //// FindBar ///
 
 FindBar::FindBar() {
+	ZoneScoped;
 	search_text = memnew(LineEdit);
 	add_child(search_text);
 	search_text->set_custom_minimum_size(Size2(100 * EDSCALE, 0));
@@ -2368,6 +2444,7 @@ FindBar::FindBar() {
 }
 
 void FindBar::popup_search() {
+	ZoneScoped;
 	show();
 	bool grabbed_focus = false;
 	if (!search_text->has_focus()) {
@@ -2385,6 +2462,7 @@ void FindBar::popup_search() {
 }
 
 void FindBar::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -2404,22 +2482,27 @@ void FindBar::_notification(int p_what) {
 }
 
 void FindBar::_bind_methods() {
+	ZoneScoped;
 	ADD_SIGNAL(MethodInfo("search"));
 }
 
 void FindBar::set_rich_text_label(RichTextLabel *p_rich_text_label) {
+	ZoneScoped;
 	rich_text_label = p_rich_text_label;
 }
 
 bool FindBar::search_next() {
+	ZoneScoped;
 	return _search();
 }
 
 bool FindBar::search_prev() {
+	ZoneScoped;
 	return _search(true);
 }
 
 bool FindBar::_search(bool p_search_previous) {
+	ZoneScoped;
 	String stext = search_text->get_text();
 	bool keep = prev_search == stext;
 
@@ -2438,6 +2521,7 @@ bool FindBar::_search(bool p_search_previous) {
 }
 
 void FindBar::_update_results_count() {
+	ZoneScoped;
 	results_count = 0;
 
 	String searched = search_text->get_text();
@@ -2461,6 +2545,7 @@ void FindBar::_update_results_count() {
 }
 
 void FindBar::_update_matches_label() {
+	ZoneScoped;
 	if (search_text->get_text().is_empty() || results_count == -1) {
 		matches_label->hide();
 	} else {
@@ -2472,6 +2557,7 @@ void FindBar::_update_matches_label() {
 }
 
 void FindBar::_hide_bar() {
+	ZoneScoped;
 	if (search_text->has_focus()) {
 		rich_text_label->grab_focus();
 	}
@@ -2480,6 +2566,7 @@ void FindBar::_hide_bar() {
 }
 
 void FindBar::unhandled_input(const Ref<InputEvent> &p_event) {
+	ZoneScoped;
 	ERR_FAIL_COND(p_event.is_null());
 
 	Ref<InputEventKey> k = p_event;
@@ -2504,10 +2591,12 @@ void FindBar::unhandled_input(const Ref<InputEvent> &p_event) {
 }
 
 void FindBar::_search_text_changed(const String &p_text) {
+	ZoneScoped;
 	search_next();
 }
 
 void FindBar::_search_text_submitted(const String &p_text) {
+	ZoneScoped;
 	if (Input::get_singleton()->is_key_pressed(Key::SHIFT)) {
 		search_prev();
 	} else {

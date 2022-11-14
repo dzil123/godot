@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_autoload_settings.cpp                                         */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_autoload_settings.h"
 
 #include "core/config/project_settings.h"
@@ -44,6 +75,7 @@
 #define PREVIEW_LIST_MAX_SIZE 10
 
 void EditorAutoloadSettings::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			List<String> afn;
@@ -91,6 +123,7 @@ void EditorAutoloadSettings::_notification(int p_what) {
 }
 
 bool EditorAutoloadSettings::_autoload_name_is_valid(const String &p_name, String *r_error) {
+	ZoneScoped;
 	if (!p_name.is_valid_identifier()) {
 		if (r_error) {
 			*r_error = TTR("Invalid name.") + " ";
@@ -158,6 +191,7 @@ bool EditorAutoloadSettings::_autoload_name_is_valid(const String &p_name, Strin
 }
 
 void EditorAutoloadSettings::_autoload_add() {
+	ZoneScoped;
 	if (autoload_add_path->get_text().is_empty()) {
 		ScriptCreateDialog *dialog = FileSystemDock::get_singleton()->get_script_create_dialog();
 		String fpath = path;
@@ -177,6 +211,7 @@ void EditorAutoloadSettings::_autoload_add() {
 }
 
 void EditorAutoloadSettings::_autoload_selected() {
+	ZoneScoped;
 	TreeItem *ti = tree->get_selected();
 
 	if (!ti) {
@@ -187,6 +222,7 @@ void EditorAutoloadSettings::_autoload_selected() {
 }
 
 void EditorAutoloadSettings::_autoload_edited() {
+	ZoneScoped;
 	if (updating_autoload) {
 		return;
 	}
@@ -282,6 +318,7 @@ void EditorAutoloadSettings::_autoload_edited() {
 }
 
 void EditorAutoloadSettings::_autoload_button_pressed(Object *p_item, int p_column, int p_button, MouseButton p_mouse_button) {
+	ZoneScoped;
 	if (p_mouse_button != MouseButton::LEFT) {
 		return;
 	}
@@ -353,6 +390,7 @@ void EditorAutoloadSettings::_autoload_button_pressed(Object *p_item, int p_colu
 }
 
 void EditorAutoloadSettings::_autoload_activated() {
+	ZoneScoped;
 	TreeItem *ti = tree->get_selected();
 	if (!ti) {
 		return;
@@ -361,6 +399,7 @@ void EditorAutoloadSettings::_autoload_activated() {
 }
 
 void EditorAutoloadSettings::_autoload_open(const String &fpath) {
+	ZoneScoped;
 	if (ResourceLoader::get_resource_type(fpath) == "PackedScene") {
 		EditorNode::get_singleton()->open_request(fpath);
 	} else {
@@ -382,16 +421,19 @@ void EditorAutoloadSettings::_autoload_file_callback(const String &p_path) {
 }
 
 void EditorAutoloadSettings::_autoload_text_submitted(const String p_name) {
+	ZoneScoped;
 	if (!autoload_add_path->get_text().is_empty() && _autoload_name_is_valid(p_name, nullptr)) {
 		_autoload_add();
 	}
 }
 
 void EditorAutoloadSettings::_autoload_path_text_changed(const String p_path) {
+	ZoneScoped;
 	add_autoload->set_disabled(!_autoload_name_is_valid(autoload_add_name->get_text(), nullptr));
 }
 
 void EditorAutoloadSettings::_autoload_text_changed(const String p_name) {
+	ZoneScoped;
 	String error_string;
 	bool is_name_valid = _autoload_name_is_valid(p_name, &error_string);
 	add_autoload->set_disabled(!is_name_valid);
@@ -400,6 +442,7 @@ void EditorAutoloadSettings::_autoload_text_changed(const String p_name) {
 }
 
 Node *EditorAutoloadSettings::_create_autoload(const String &p_path) {
+	ZoneScoped;
 	Ref<Resource> res = ResourceLoader::load(p_path);
 	ERR_FAIL_COND_V_MSG(res.is_null(), nullptr, "Can't autoload: " + p_path + ".");
 	Node *n = nullptr;
@@ -426,6 +469,7 @@ Node *EditorAutoloadSettings::_create_autoload(const String &p_path) {
 }
 
 void EditorAutoloadSettings::update_autoload() {
+	ZoneScoped;
 	if (updating_autoload) {
 		return;
 	}
@@ -577,6 +621,7 @@ void EditorAutoloadSettings::update_autoload() {
 }
 
 void EditorAutoloadSettings::_script_created(Ref<Script> p_script) {
+	ZoneScoped;
 	FileSystemDock::get_singleton()->get_script_create_dialog()->hide();
 	path = p_script->get_path().get_base_dir();
 	autoload_add_path->set_text(p_script->get_path());
@@ -585,6 +630,7 @@ void EditorAutoloadSettings::_script_created(Ref<Script> p_script) {
 }
 
 Variant EditorAutoloadSettings::get_drag_data_fw(const Point2 &p_point, Control *p_control) {
+	ZoneScoped;
 	if (autoload_cache.size() <= 1) {
 		return false;
 	}
@@ -624,6 +670,7 @@ Variant EditorAutoloadSettings::get_drag_data_fw(const Point2 &p_point, Control 
 }
 
 bool EditorAutoloadSettings::can_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_control) const {
+	ZoneScoped;
 	if (updating_autoload) {
 		return false;
 	}
@@ -650,6 +697,7 @@ bool EditorAutoloadSettings::can_drop_data_fw(const Point2 &p_point, const Varia
 }
 
 void EditorAutoloadSettings::drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_control) {
+	ZoneScoped;
 	TreeItem *ti = tree->get_item_at_position(p_point);
 
 	if (!ti) {
@@ -737,6 +785,7 @@ void EditorAutoloadSettings::drop_data_fw(const Point2 &p_point, const Variant &
 }
 
 bool EditorAutoloadSettings::autoload_add(const String &p_name, const String &p_path) {
+	ZoneScoped;
 	String name = p_name;
 
 	String error;
@@ -781,6 +830,7 @@ bool EditorAutoloadSettings::autoload_add(const String &p_name, const String &p_
 }
 
 void EditorAutoloadSettings::autoload_remove(const String &p_name) {
+	ZoneScoped;
 	String name = "autoload/" + p_name;
 
 	Ref<EditorUndoRedoManager> &undo_redo = EditorNode::get_undo_redo();
@@ -805,6 +855,7 @@ void EditorAutoloadSettings::autoload_remove(const String &p_name) {
 }
 
 void EditorAutoloadSettings::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method("_autoload_open", &EditorAutoloadSettings::_autoload_open);
 
 	ClassDB::bind_method("_get_drag_data_fw", &EditorAutoloadSettings::get_drag_data_fw);
@@ -961,6 +1012,7 @@ EditorAutoloadSettings::EditorAutoloadSettings() {
 }
 
 EditorAutoloadSettings::~EditorAutoloadSettings() {
+	ZoneScoped;
 	for (const AutoloadInfo &info : autoload_cache) {
 		if (info.node && !info.in_editor) {
 			memdelete(info.node);
@@ -969,10 +1021,12 @@ EditorAutoloadSettings::~EditorAutoloadSettings() {
 }
 
 void EditorAutoloadSettings::_set_autoload_add_path(const String &p_text) {
+	ZoneScoped;
 	autoload_add_path->set_text(p_text);
 	autoload_add_path->emit_signal(SNAME("text_submitted"), p_text);
 }
 
 void EditorAutoloadSettings::_browse_autoload_add_path() {
+	ZoneScoped;
 	file_dialog->popup_file_dialog();
 }

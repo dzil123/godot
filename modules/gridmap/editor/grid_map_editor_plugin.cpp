@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  grid_map_editor_plugin.cpp                                           */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "grid_map_editor_plugin.h"
 
 #ifdef TOOLS_ENABLED
@@ -43,12 +74,14 @@
 #include "scene/main/window.h"
 
 void GridMapEditor::_node_removed(Node *p_node) {
+	ZoneScoped;
 	if (p_node == node) {
 		node = nullptr;
 	}
 }
 
 void GridMapEditor::_configure() {
+	ZoneScoped;
 	if (!node) {
 		return;
 	}
@@ -57,6 +90,7 @@ void GridMapEditor::_configure() {
 }
 
 void GridMapEditor::_menu_option(int p_option) {
+	ZoneScoped;
 	switch (p_option) {
 		case MENU_OPTION_PREV_LEVEL: {
 			floor->set_value(floor->get_value() - 1);
@@ -241,6 +275,7 @@ void GridMapEditor::_menu_option(int p_option) {
 }
 
 void GridMapEditor::_update_cursor_transform() {
+	ZoneScoped;
 	cursor_transform = Transform3D();
 	cursor_transform.origin = cursor_origin;
 	cursor_transform.basis = node->get_basis_with_orthogonal_index(cursor_rot);
@@ -260,6 +295,7 @@ void GridMapEditor::_update_cursor_transform() {
 }
 
 void GridMapEditor::_update_selection_transform() {
+	ZoneScoped;
 	Transform3D xf_zero;
 	xf_zero.basis.set_zero();
 
@@ -299,6 +335,7 @@ void GridMapEditor::_update_selection_transform() {
 }
 
 void GridMapEditor::_validate_selection() {
+	ZoneScoped;
 	if (!selection.active) {
 		return;
 	}
@@ -319,6 +356,7 @@ void GridMapEditor::_validate_selection() {
 }
 
 void GridMapEditor::_set_selection(bool p_active, const Vector3 &p_begin, const Vector3 &p_end) {
+	ZoneScoped;
 	selection.active = p_active;
 	selection.begin = p_begin;
 	selection.end = p_end;
@@ -336,6 +374,7 @@ void GridMapEditor::_set_selection(bool p_active, const Vector3 &p_begin, const 
 }
 
 bool GridMapEditor::do_input_action(Camera3D *p_camera, const Point2 &p_point, bool p_click) {
+	ZoneScoped;
 	if (!spatial_editor) {
 		return false;
 	}
@@ -455,6 +494,7 @@ bool GridMapEditor::do_input_action(Camera3D *p_camera, const Point2 &p_point, b
 }
 
 void GridMapEditor::_delete_selection() {
+	ZoneScoped;
 	if (!selection.active) {
 		return;
 	}
@@ -475,6 +515,7 @@ void GridMapEditor::_delete_selection() {
 }
 
 void GridMapEditor::_fill_selection() {
+	ZoneScoped;
 	if (!selection.active) {
 		return;
 	}
@@ -495,6 +536,7 @@ void GridMapEditor::_fill_selection() {
 }
 
 void GridMapEditor::_clear_clipboard_data() {
+	ZoneScoped;
 	for (const ClipboardItem &E : clipboard_items) {
 		RenderingServer::get_singleton()->free(E.instance);
 	}
@@ -503,6 +545,7 @@ void GridMapEditor::_clear_clipboard_data() {
 }
 
 void GridMapEditor::_set_clipboard_data() {
+	ZoneScoped;
 	_clear_clipboard_data();
 
 	Ref<MeshLibrary> meshLibrary = node->get_mesh_library();
@@ -531,6 +574,7 @@ void GridMapEditor::_set_clipboard_data() {
 }
 
 void GridMapEditor::_update_paste_indicator() {
+	ZoneScoped;
 	if (input_action != INPUT_PASTE) {
 		Transform3D xf;
 		xf.basis.set_zero();
@@ -565,6 +609,7 @@ void GridMapEditor::_update_paste_indicator() {
 }
 
 void GridMapEditor::_do_paste() {
+	ZoneScoped;
 	int idx = options->get_popup()->get_item_index(MENU_OPTION_PASTE_SELECTS);
 	bool reselect = options->get_popup()->is_item_checked(idx);
 
@@ -596,6 +641,7 @@ void GridMapEditor::_do_paste() {
 }
 
 EditorPlugin::AfterGUIInput GridMapEditor::forward_spatial_input_event(Camera3D *p_camera, const Ref<InputEvent> &p_event) {
+	ZoneScoped;
 	if (!node) {
 		return EditorPlugin::AFTER_GUI_INPUT_PASS;
 	}
@@ -772,6 +818,7 @@ struct _CGMEItemSort {
 };
 
 void GridMapEditor::_set_display_mode(int p_mode) {
+	ZoneScoped;
 	if (display_mode == p_mode) {
 		return;
 	}
@@ -790,10 +837,12 @@ void GridMapEditor::_set_display_mode(int p_mode) {
 }
 
 void GridMapEditor::_text_changed(const String &p_text) {
+	ZoneScoped;
 	update_palette();
 }
 
 void GridMapEditor::_sbox_input(const Ref<InputEvent> &p_ie) {
+	ZoneScoped;
 	const Ref<InputEventKey> k = p_ie;
 
 	if (k.is_valid() && (k->get_keycode() == Key::UP || k->get_keycode() == Key::DOWN || k->get_keycode() == Key::PAGEUP || k->get_keycode() == Key::PAGEDOWN)) {
@@ -804,6 +853,7 @@ void GridMapEditor::_sbox_input(const Ref<InputEvent> &p_ie) {
 }
 
 void GridMapEditor::_mesh_library_palette_input(const Ref<InputEvent> &p_ie) {
+	ZoneScoped;
 	const Ref<InputEventMouseButton> mb = p_ie;
 
 	// Zoom in/out using Ctrl + mouse wheel
@@ -819,11 +869,13 @@ void GridMapEditor::_mesh_library_palette_input(const Ref<InputEvent> &p_ie) {
 }
 
 void GridMapEditor::_icon_size_changed(float p_value) {
+	ZoneScoped;
 	mesh_library_palette->set_icon_scale(p_value);
 	update_palette();
 }
 
 void GridMapEditor::update_palette() {
+	ZoneScoped;
 	int selected = mesh_library_palette->get_current();
 
 	float min_size = EDITOR_GET("editors/grid_map/preview_size");
@@ -906,6 +958,7 @@ void GridMapEditor::update_palette() {
 }
 
 void GridMapEditor::edit(GridMap *p_gridmap) {
+	ZoneScoped;
 	if (!p_gridmap && node) {
 		node->disconnect("cell_size_changed", callable_mp(this, &GridMapEditor::_draw_grids));
 	}
@@ -944,6 +997,7 @@ void GridMapEditor::edit(GridMap *p_gridmap) {
 }
 
 void GridMapEditor::update_grid() {
+	ZoneScoped;
 	grid_xform.origin.x -= 1; // Force update in hackish way.
 
 	grid_ofs[edit_axis] = edit_floor[edit_axis] * node->get_cell_size()[edit_axis];
@@ -961,6 +1015,7 @@ void GridMapEditor::update_grid() {
 }
 
 void GridMapEditor::_draw_grids(const Vector3 &cell_size) {
+	ZoneScoped;
 	Vector3 edited_floor = node->get_meta("_editor_floor_", Vector3());
 
 	for (int i = 0; i < 3; i++) {
@@ -1012,6 +1067,7 @@ void GridMapEditor::_draw_grids(const Vector3 &cell_size) {
 }
 
 void GridMapEditor::_update_theme() {
+	ZoneScoped;
 	options->set_icon(get_theme_icon(SNAME("GridMap"), SNAME("EditorIcons")));
 	search_box->set_right_icon(get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
 	mode_thumbnail->set_icon(get_theme_icon(SNAME("FileThumbnail"), SNAME("EditorIcons")));
@@ -1019,6 +1075,7 @@ void GridMapEditor::_update_theme() {
 }
 
 void GridMapEditor::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			get_tree()->connect("node_removed", callable_mp(this, &GridMapEditor::_node_removed));
@@ -1095,6 +1152,7 @@ void GridMapEditor::_notification(int p_what) {
 }
 
 void GridMapEditor::_update_cursor_instance() {
+	ZoneScoped;
 	if (!node) {
 		return;
 	}
@@ -1116,12 +1174,14 @@ void GridMapEditor::_update_cursor_instance() {
 }
 
 void GridMapEditor::_item_selected_cbk(int idx) {
+	ZoneScoped;
 	selected_palette = mesh_library_palette->get_item_metadata(idx);
 
 	_update_cursor_instance();
 }
 
 void GridMapEditor::_floor_changed(float p_value) {
+	ZoneScoped;
 	if (updating) {
 		return;
 	}
@@ -1133,15 +1193,18 @@ void GridMapEditor::_floor_changed(float p_value) {
 }
 
 void GridMapEditor::_floor_mouse_exited() {
+	ZoneScoped;
 	floor->get_line_edit()->release_focus();
 }
 
 void GridMapEditor::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method("_configure", &GridMapEditor::_configure);
 	ClassDB::bind_method("_set_selection", &GridMapEditor::_set_selection);
 }
 
 GridMapEditor::GridMapEditor() {
+	ZoneScoped;
 	undo_redo = EditorNode::get_singleton()->get_undo_redo();
 
 	int mw = EDITOR_DEF("editors/grid_map/palette_min_width", 230);
@@ -1400,6 +1463,7 @@ GridMapEditor::GridMapEditor() {
 }
 
 GridMapEditor::~GridMapEditor() {
+	ZoneScoped;
 	_clear_clipboard_data();
 
 	for (int i = 0; i < 3; i++) {
@@ -1432,6 +1496,7 @@ GridMapEditor::~GridMapEditor() {
 }
 
 void GridMapEditorPlugin::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
 			switch ((int)EDITOR_GET("editors/grid_map/editor_side")) {
@@ -1447,14 +1512,17 @@ void GridMapEditorPlugin::_notification(int p_what) {
 }
 
 void GridMapEditorPlugin::edit(Object *p_object) {
+	ZoneScoped;
 	grid_map_editor->edit(Object::cast_to<GridMap>(p_object));
 }
 
 bool GridMapEditorPlugin::handles(Object *p_object) const {
+	ZoneScoped;
 	return p_object->is_class("GridMap");
 }
 
 void GridMapEditorPlugin::make_visible(bool p_visible) {
+	ZoneScoped;
 	if (p_visible) {
 		grid_map_editor->show();
 		grid_map_editor->spatial_editor_hb->show();
@@ -1468,6 +1536,7 @@ void GridMapEditorPlugin::make_visible(bool p_visible) {
 }
 
 GridMapEditorPlugin::GridMapEditorPlugin() {
+	ZoneScoped;
 	EDITOR_DEF("editors/grid_map/editor_side", 1);
 	EditorSettings::get_singleton()->add_property_hint(PropertyInfo(Variant::INT, "editors/grid_map/editor_side", PROPERTY_HINT_ENUM, "Left,Right"));
 

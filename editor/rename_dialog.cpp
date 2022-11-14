@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  rename_dialog.cpp                                                    */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "rename_dialog.h"
 
 #include "modules/modules_enabled.gen.h" // For regex.
@@ -47,6 +78,7 @@
 #include "scene/gui/tab_container.h"
 
 RenameDialog::RenameDialog(SceneTreeEditor *p_scene_tree_editor, Ref<EditorUndoRedoManager> p_undo_redo) {
+	ZoneScoped;
 	scene_tree_editor = p_scene_tree_editor;
 	undo_redo = p_undo_redo;
 	preview_node = nullptr;
@@ -334,10 +366,12 @@ RenameDialog::RenameDialog(SceneTreeEditor *p_scene_tree_editor, Ref<EditorUndoR
 }
 
 void RenameDialog::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method("rename", &RenameDialog::rename);
 }
 
 void RenameDialog::_update_substitute() {
+	ZoneScoped;
 	LineEdit *focus_owner_line_edit = Object::cast_to<LineEdit>(scene_tree_editor->get_viewport()->gui_get_focus_owner());
 	bool is_main_field = _is_main_field(focus_owner_line_edit);
 
@@ -358,6 +392,7 @@ void RenameDialog::_update_substitute() {
 }
 
 void RenameDialog::_post_popup() {
+	ZoneScoped;
 	ConfirmationDialog::_post_popup();
 
 	EditorSelection *editor_selection = EditorNode::get_singleton()->get_editor_selection();
@@ -373,10 +408,12 @@ void RenameDialog::_post_popup() {
 }
 
 void RenameDialog::_update_preview_int(int new_value) {
+	ZoneScoped;
 	_update_preview();
 }
 
 void RenameDialog::_update_preview(String new_text) {
+	ZoneScoped;
 	if (lock_preview_update || preview_node == nullptr) {
 		return;
 	}
@@ -404,6 +441,7 @@ void RenameDialog::_update_preview(String new_text) {
 }
 
 String RenameDialog::_apply_rename(const Node *node, int count) {
+	ZoneScoped;
 	String search = lne_search->get_text();
 	String replace = lne_replace->get_text();
 	String prefix = lne_prefix->get_text();
@@ -433,6 +471,7 @@ String RenameDialog::_apply_rename(const Node *node, int count) {
 }
 
 String RenameDialog::_substitute(const String &subject, const Node *node, int count) {
+	ZoneScoped;
 	String result = subject.replace("${COUNTER}", vformat("%0" + itos(spn_count_padding->get_value()) + "d", count));
 
 	if (node) {
@@ -465,6 +504,7 @@ String RenameDialog::_substitute(const String &subject, const Node *node, int co
 }
 
 void RenameDialog::_error_handler(void *p_self, const char *p_func, const char *p_file, int p_line, const char *p_error, const char *p_errorexp, bool p_editor_notify, ErrorHandlerType p_type) {
+	ZoneScoped;
 	RenameDialog *self = (RenameDialog *)p_self;
 	String source_file = String::utf8(p_file);
 
@@ -487,12 +527,14 @@ void RenameDialog::_error_handler(void *p_self, const char *p_func, const char *
 }
 
 String RenameDialog::_regex(const String &pattern, const String &subject, const String &replacement) {
+	ZoneScoped;
 	RegEx regex(pattern);
 
 	return regex.sub(subject, replacement, true);
 }
 
 String RenameDialog::_postprocess(const String &subject) {
+	ZoneScoped;
 	int style_id = opt_style->get_selected();
 
 	String result = subject;
@@ -539,6 +581,7 @@ String RenameDialog::_postprocess(const String &subject) {
 }
 
 void RenameDialog::_iterate_scene(const Node *node, const Array &selection, int *counter) {
+	ZoneScoped;
 	if (!node) {
 		return;
 	}
@@ -605,6 +648,7 @@ void RenameDialog::rename() {
 }
 
 void RenameDialog::reset() {
+	ZoneScoped;
 	lock_preview_update = true;
 
 	lne_prefix->clear();
@@ -630,11 +674,13 @@ void RenameDialog::reset() {
 }
 
 bool RenameDialog::_is_main_field(LineEdit *line_edit) {
+	ZoneScoped;
 	return line_edit &&
 			(line_edit == lne_search || line_edit == lne_replace || line_edit == lne_prefix || line_edit == lne_suffix);
 }
 
 void RenameDialog::_insert_text(String text) {
+	ZoneScoped;
 	LineEdit *focus_owner = Object::cast_to<LineEdit>(scene_tree_editor->get_viewport()->gui_get_focus_owner());
 
 	if (_is_main_field(focus_owner)) {
@@ -645,6 +691,7 @@ void RenameDialog::_insert_text(String text) {
 }
 
 void RenameDialog::_features_toggled(bool pressed) {
+	ZoneScoped;
 	if (pressed) {
 		tabc_features->show();
 	} else {

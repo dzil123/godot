@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  script_create_dialog.cpp                                             */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "script_create_dialog.h"
 
 #include "core/config/project_settings.h"
@@ -43,6 +74,7 @@
 #include "editor/editor_settings.h"
 
 static String _get_parent_class_of_script(String p_path) {
+	ZoneScoped;
 	if (!ResourceLoader::exists(p_path, "Script")) {
 		return "Object"; // A script eventually inherits from Object.
 	}
@@ -70,6 +102,7 @@ static String _get_parent_class_of_script(String p_path) {
 }
 
 static Vector<String> _get_hierarchy(String p_class_name) {
+	ZoneScoped;
 	Vector<String> hierarchy;
 
 	String class_name = p_class_name;
@@ -106,6 +139,7 @@ static Vector<String> _get_hierarchy(String p_class_name) {
 }
 
 void ScriptCreateDialog::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			String last_language = EditorSettings::get_singleton()->get_project_metadata("script_setup", "last_selected_language", "");
@@ -140,6 +174,7 @@ void ScriptCreateDialog::_notification(int p_what) {
 }
 
 void ScriptCreateDialog::_path_hbox_sorted() {
+	ZoneScoped;
 	if (is_visible()) {
 		int filename_start_pos = initial_bp.rfind("/") + 1;
 		int filename_end_pos = initial_bp.length();
@@ -158,10 +193,12 @@ void ScriptCreateDialog::_path_hbox_sorted() {
 }
 
 bool ScriptCreateDialog::_can_be_built_in() {
+	ZoneScoped;
 	return (supports_built_in && built_in_enabled);
 }
 
 void ScriptCreateDialog::config(const String &p_base_name, const String &p_base_path, bool p_built_in_enabled, bool p_load_enabled) {
+	ZoneScoped;
 	class_name->set_text("");
 	class_name->deselect();
 	parent_name->set_text(p_base_name);
@@ -187,10 +224,12 @@ void ScriptCreateDialog::config(const String &p_base_name, const String &p_base_
 }
 
 void ScriptCreateDialog::set_inheritance_base_type(const String &p_base) {
+	ZoneScoped;
 	base_type = p_base;
 }
 
 bool ScriptCreateDialog::_validate_parent(const String &p_string) {
+	ZoneScoped;
 	if (p_string.length() == 0) {
 		return false;
 	}
@@ -206,6 +245,7 @@ bool ScriptCreateDialog::_validate_parent(const String &p_string) {
 }
 
 bool ScriptCreateDialog::_validate_class(const String &p_string) {
+	ZoneScoped;
 	if (p_string.length() == 0) {
 		return false;
 	}
@@ -229,6 +269,7 @@ bool ScriptCreateDialog::_validate_class(const String &p_string) {
 }
 
 String ScriptCreateDialog::_validate_path(const String &p_path, bool p_file_must_exist) {
+	ZoneScoped;
 	String p = p_path.strip_edges();
 
 	if (p.is_empty()) {
@@ -303,6 +344,7 @@ String ScriptCreateDialog::_validate_path(const String &p_path, bool p_file_must
 }
 
 String ScriptCreateDialog::_get_class_name() const {
+	ZoneScoped;
 	if (has_named_classes) {
 		return class_name->get_text();
 	} else {
@@ -311,16 +353,19 @@ String ScriptCreateDialog::_get_class_name() const {
 }
 
 void ScriptCreateDialog::_class_name_changed(const String &p_name) {
+	ZoneScoped;
 	is_class_name_valid = _validate_class(class_name->get_text());
 	_update_dialog();
 }
 
 void ScriptCreateDialog::_parent_name_changed(const String &p_parent) {
+	ZoneScoped;
 	is_parent_name_valid = _validate_parent(parent_name->get_text());
 	_update_dialog();
 }
 
 void ScriptCreateDialog::_template_changed(int p_template) {
+	ZoneScoped;
 	const ScriptLanguage::ScriptTemplate &sinfo = _get_current_template();
 	// Update last used dictionaries
 	if (is_using_templates && !parent_name->get_text().begins_with("\"res:")) {
@@ -352,6 +397,7 @@ void ScriptCreateDialog::_template_changed(int p_template) {
 }
 
 void ScriptCreateDialog::ok_pressed() {
+	ZoneScoped;
 	if (is_new_script_created) {
 		_create_new();
 	} else {
@@ -364,6 +410,7 @@ void ScriptCreateDialog::ok_pressed() {
 }
 
 void ScriptCreateDialog::_create_new() {
+	ZoneScoped;
 	String cname_param = _get_class_name();
 
 	Ref<Script> scr;
@@ -405,6 +452,7 @@ void ScriptCreateDialog::_create_new() {
 }
 
 void ScriptCreateDialog::_load_exist() {
+	ZoneScoped;
 	String path = file_path->get_text();
 	Ref<Resource> p_script = ResourceLoader::load(path, "Script");
 	if (p_script.is_null()) {
@@ -418,6 +466,7 @@ void ScriptCreateDialog::_load_exist() {
 }
 
 void ScriptCreateDialog::_language_changed(int l) {
+	ZoneScoped;
 	language = ScriptServer::get_language(l);
 
 	has_named_classes = language->has_named_classes();
@@ -468,6 +517,7 @@ void ScriptCreateDialog::_language_changed(int l) {
 }
 
 void ScriptCreateDialog::_built_in_pressed() {
+	ZoneScoped;
 	if (internal->is_pressed()) {
 		is_built_in = true;
 		is_new_script_created = true;
@@ -479,11 +529,13 @@ void ScriptCreateDialog::_built_in_pressed() {
 }
 
 void ScriptCreateDialog::_use_template_pressed() {
+	ZoneScoped;
 	is_using_templates = use_templates->is_pressed();
 	_update_dialog();
 }
 
 void ScriptCreateDialog::_browse_path(bool browse_parent, bool p_save) {
+	ZoneScoped;
 	is_browsing_parent = browse_parent;
 
 	if (p_save) {
@@ -511,6 +563,7 @@ void ScriptCreateDialog::_browse_path(bool browse_parent, bool p_save) {
 }
 
 void ScriptCreateDialog::_file_selected(const String &p_file) {
+	ZoneScoped;
 	String path = ProjectSettings::get_singleton()->localize_path(p_file);
 	if (is_browsing_parent) {
 		parent_name->set_text("\"" + path + "\"");
@@ -528,11 +581,13 @@ void ScriptCreateDialog::_file_selected(const String &p_file) {
 }
 
 void ScriptCreateDialog::_create() {
+	ZoneScoped;
 	parent_name->set_text(select_class->get_selected_type().split(" ")[0]);
 	_parent_name_changed(parent_name->get_text());
 }
 
 void ScriptCreateDialog::_browse_class_in_tree() {
+	ZoneScoped;
 	select_class->set_base_type(base_type);
 	select_class->popup_create(true);
 	select_class->set_title(vformat(TTR("Inherit %s"), base_type));
@@ -540,6 +595,7 @@ void ScriptCreateDialog::_browse_class_in_tree() {
 }
 
 void ScriptCreateDialog::_path_changed(const String &p_path) {
+	ZoneScoped;
 	if (is_built_in) {
 		return;
 	}
@@ -567,10 +623,12 @@ void ScriptCreateDialog::_path_changed(const String &p_path) {
 }
 
 void ScriptCreateDialog::_path_submitted(const String &p_path) {
+	ZoneScoped;
 	ok_pressed();
 }
 
 void ScriptCreateDialog::_msg_script_valid(bool valid, const String &p_msg) {
+	ZoneScoped;
 	error_label->set_text(String::utf8("•  ") + p_msg);
 	if (valid) {
 		error_label->add_theme_color_override("font_color", get_theme_color(SNAME("success_color"), SNAME("Editor")));
@@ -580,6 +638,7 @@ void ScriptCreateDialog::_msg_script_valid(bool valid, const String &p_msg) {
 }
 
 void ScriptCreateDialog::_msg_path_valid(bool valid, const String &p_msg) {
+	ZoneScoped;
 	path_error_label->set_text(String::utf8("•  ") + p_msg);
 	if (valid) {
 		path_error_label->add_theme_color_override("font_color", get_theme_color(SNAME("success_color"), SNAME("Editor")));
@@ -589,6 +648,7 @@ void ScriptCreateDialog::_msg_path_valid(bool valid, const String &p_msg) {
 }
 
 void ScriptCreateDialog::_update_template_menu() {
+	ZoneScoped;
 	bool is_language_using_templates = language->is_using_templates();
 	template_menu->set_disabled(false);
 	template_menu->clear();
@@ -810,6 +870,7 @@ void ScriptCreateDialog::_update_dialog() {
 }
 
 ScriptLanguage::ScriptTemplate ScriptCreateDialog::_get_current_template() const {
+	ZoneScoped;
 	int selected_index = template_menu->get_selected();
 	for (const ScriptLanguage::ScriptTemplate &t : template_list) {
 		if (is_using_templates) {
@@ -827,6 +888,7 @@ ScriptLanguage::ScriptTemplate ScriptCreateDialog::_get_current_template() const
 }
 
 Vector<ScriptLanguage::ScriptTemplate> ScriptCreateDialog::_get_user_templates(const ScriptLanguage *p_language, const StringName &p_object, const String &p_dir, const ScriptLanguage::TemplateLocation &p_origin) const {
+	ZoneScoped;
 	Vector<ScriptLanguage::ScriptTemplate> user_templates;
 	String extension = p_language->get_extension();
 
@@ -848,6 +910,7 @@ Vector<ScriptLanguage::ScriptTemplate> ScriptCreateDialog::_get_user_templates(c
 }
 
 ScriptLanguage::ScriptTemplate ScriptCreateDialog::_parse_template(const ScriptLanguage *p_language, const String &p_path, const String &p_filename, const ScriptLanguage::TemplateLocation &p_origin, const String &p_inherits) const {
+	ZoneScoped;
 	ScriptLanguage::ScriptTemplate script_template = ScriptLanguage::ScriptTemplate();
 	script_template.origin = p_origin;
 	script_template.inherit = p_inherits;
@@ -911,6 +974,7 @@ ScriptLanguage::ScriptTemplate ScriptCreateDialog::_parse_template(const ScriptL
 }
 
 String ScriptCreateDialog::_get_script_origin_label(const ScriptLanguage::TemplateLocation &p_origin) const {
+	ZoneScoped;
 	switch (p_origin) {
 		case ScriptLanguage::TEMPLATE_BUILT_IN:
 			return TTR("Built-in");
@@ -923,6 +987,7 @@ String ScriptCreateDialog::_get_script_origin_label(const ScriptLanguage::Templa
 }
 
 void ScriptCreateDialog::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("config", "inherits", "path", "built_in_enabled", "load_enabled"), &ScriptCreateDialog::config, DEFVAL(true), DEFVAL(true));
 
 	ADD_SIGNAL(MethodInfo("script_created", PropertyInfo(Variant::OBJECT, "script", PROPERTY_HINT_RESOURCE_TYPE, "Script")));

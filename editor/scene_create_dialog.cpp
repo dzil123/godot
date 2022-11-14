@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  scene_create_dialog.cpp                                              */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "scene_create_dialog.h"
 
 #include "core/io/dir_access.h"
@@ -45,6 +76,7 @@
 #include "scene/resources/packed_scene.h"
 
 void SceneCreateDialog::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -59,6 +91,7 @@ void SceneCreateDialog::_notification(int p_what) {
 }
 
 void SceneCreateDialog::config(const String &p_dir) {
+	ZoneScoped;
 	directory = p_dir;
 	root_name_edit->set_text("");
 	scene_name_edit->set_text("");
@@ -67,6 +100,7 @@ void SceneCreateDialog::config(const String &p_dir) {
 }
 
 void SceneCreateDialog::accept_create() {
+	ZoneScoped;
 	if (!get_ok_button()->is_disabled()) {
 		hide();
 		emit_signal(SNAME("confirmed"));
@@ -74,12 +108,14 @@ void SceneCreateDialog::accept_create() {
 }
 
 void SceneCreateDialog::browse_types() {
+	ZoneScoped;
 	select_node_dialog->popup_create(true);
 	select_node_dialog->set_title(TTR("Pick Root Node Type"));
 	select_node_dialog->set_ok_button_text(TTR("Pick"));
 }
 
 void SceneCreateDialog::on_type_picked() {
+	ZoneScoped;
 	other_type_display->set_text(select_node_dialog->get_selected_type().get_slice(" ", 0));
 	if (node_type_other->is_pressed()) {
 		update_dialog();
@@ -89,6 +125,7 @@ void SceneCreateDialog::on_type_picked() {
 }
 
 void SceneCreateDialog::update_dialog() {
+	ZoneScoped;
 	scene_name = scene_name_edit->get_text().strip_edges();
 	update_error(file_error_label, MSG_OK, TTR("Scene name is valid."));
 
@@ -142,6 +179,7 @@ void SceneCreateDialog::update_dialog() {
 }
 
 void SceneCreateDialog::update_error(Label *p_label, MsgType p_type, const String &p_msg) {
+	ZoneScoped;
 	p_label->set_text(String::utf8("•  ") + p_msg);
 	switch (p_type) {
 		case MSG_OK:
@@ -154,10 +192,12 @@ void SceneCreateDialog::update_error(Label *p_label, MsgType p_type, const Strin
 }
 
 String SceneCreateDialog::get_scene_path() const {
+	ZoneScoped;
 	return scene_name;
 }
 
 Node *SceneCreateDialog::create_scene_root() {
+	ZoneScoped;
 	ERR_FAIL_NULL_V(node_type_group->get_pressed_button(), nullptr);
 	RootType type = (RootType)node_type_group->get_pressed_button()->get_meta(type_meta).operator int();
 
@@ -185,6 +225,7 @@ Node *SceneCreateDialog::create_scene_root() {
 }
 
 SceneCreateDialog::SceneCreateDialog() {
+	ZoneScoped;
 	select_node_dialog = memnew(CreateDialog);
 	add_child(select_node_dialog);
 	select_node_dialog->set_base_type("Node");

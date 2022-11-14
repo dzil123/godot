@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_themes.cpp                                                    */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_themes.h"
 
 #include "core/error/error_macros.h"
@@ -46,10 +77,12 @@ HashMap<Color, Color> EditorColorMap::color_conversion_map;
 HashSet<StringName> EditorColorMap::color_conversion_exceptions;
 
 void EditorColorMap::add_conversion_color_pair(const String p_from_color, const String p_to_color) {
+	ZoneScoped;
 	color_conversion_map[Color::html(p_from_color)] = Color::html(p_to_color);
 }
 
 void EditorColorMap::add_conversion_exception(const StringName p_icon_name) {
+	ZoneScoped;
 	color_conversion_exceptions.insert(p_icon_name);
 }
 
@@ -194,6 +227,7 @@ void EditorColorMap::create() {
 }
 
 static Ref<StyleBoxTexture> make_stylebox(Ref<Texture2D> p_texture, float p_left, float p_top, float p_right, float p_bottom, float p_margin_left = -1, float p_margin_top = -1, float p_margin_right = -1, float p_margin_bottom = -1, bool p_draw_center = true) {
+	ZoneScoped;
 	Ref<StyleBoxTexture> style(memnew(StyleBoxTexture));
 	style->set_texture(p_texture);
 	style->set_margin_size_individual(p_left * EDSCALE, p_top * EDSCALE, p_right * EDSCALE, p_bottom * EDSCALE);
@@ -203,12 +237,14 @@ static Ref<StyleBoxTexture> make_stylebox(Ref<Texture2D> p_texture, float p_left
 }
 
 static Ref<StyleBoxEmpty> make_empty_stylebox(float p_margin_left = -1, float p_margin_top = -1, float p_margin_right = -1, float p_margin_bottom = -1) {
+	ZoneScoped;
 	Ref<StyleBoxEmpty> style(memnew(StyleBoxEmpty));
 	style->set_default_margin_individual(p_margin_left * EDSCALE, p_margin_top * EDSCALE, p_margin_right * EDSCALE, p_margin_bottom * EDSCALE);
 	return style;
 }
 
 static Ref<StyleBoxFlat> make_flat_stylebox(Color p_color, float p_margin_left = -1, float p_margin_top = -1, float p_margin_right = -1, float p_margin_bottom = -1, int p_corner_width = 0) {
+	ZoneScoped;
 	Ref<StyleBoxFlat> style(memnew(StyleBoxFlat));
 	style->set_bg_color(p_color);
 	// Adjust level of detail based on the corners' effective sizes.
@@ -221,6 +257,7 @@ static Ref<StyleBoxFlat> make_flat_stylebox(Color p_color, float p_margin_left =
 }
 
 static Ref<StyleBoxLine> make_line_stylebox(Color p_color, int p_thickness = 1, float p_grow_begin = 1, float p_grow_end = 1, bool p_vertical = false) {
+	ZoneScoped;
 	Ref<StyleBoxLine> style(memnew(StyleBoxLine));
 	style->set_color(p_color);
 	style->set_grow_begin(p_grow_begin);
@@ -233,6 +270,7 @@ static Ref<StyleBoxLine> make_line_stylebox(Color p_color, int p_thickness = 1, 
 #ifdef MODULE_SVG_ENABLED
 // See also `generate_icon()` in `scene/resources/default_theme.cpp`.
 static Ref<ImageTexture> editor_generate_icon(int p_index, float p_scale, float p_saturation, const HashMap<Color, Color> &p_convert_colors = HashMap<Color, Color>()) {
+	ZoneScoped;
 	Ref<Image> img = memnew(Image);
 
 	// Upsample icon generation only if the editor scale isn't an integer multiplier.
@@ -383,6 +421,7 @@ void editor_register_and_generate_icons(Ref<Theme> p_theme, bool p_dark_theme, f
 }
 
 Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
+	ZoneScoped;
 	Ref<Theme> theme = Ref<Theme>(memnew(Theme));
 
 	// Controls may rely on the scale for their internal drawing logic.
@@ -1905,6 +1944,7 @@ Ref<Theme> create_editor_theme(const Ref<Theme> p_theme) {
 }
 
 Ref<Theme> create_custom_theme(const Ref<Theme> p_theme) {
+	ZoneScoped;
 	Ref<Theme> theme = create_editor_theme(p_theme);
 
 	const String custom_theme_path = EDITOR_GET("interface/theme/custom_theme");
@@ -1922,6 +1962,7 @@ Ref<Theme> create_custom_theme(const Ref<Theme> p_theme) {
  * Returns the SVG code for the default project icon.
  */
 String get_default_project_icon() {
+	ZoneScoped;
 	for (int i = 0; i < editor_icons_count; i++) {
 		if (strcmp(editor_icons_names[i], "DefaultProjectIcon") == 0) {
 			return String(editor_icons_sources[i]);

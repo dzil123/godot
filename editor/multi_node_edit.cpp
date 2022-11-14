@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  multi_node_edit.cpp                                                  */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "multi_node_edit.h"
 
 #include "core/math/math_fieldwise.h"
@@ -35,10 +66,12 @@
 #include "editor/editor_undo_redo_manager.h"
 
 bool MultiNodeEdit::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScoped;
 	return _set_impl(p_name, p_value, "");
 }
 
 bool MultiNodeEdit::_set_impl(const StringName &p_name, const Variant &p_value, const String &p_field) {
+	ZoneScoped;
 	Node *es = EditorNode::get_singleton()->get_edited_scene();
 	if (!es) {
 		return false;
@@ -90,6 +123,7 @@ bool MultiNodeEdit::_set_impl(const StringName &p_name, const Variant &p_value, 
 }
 
 bool MultiNodeEdit::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScoped;
 	Node *es = EditorNode::get_singleton()->get_edited_scene();
 	if (!es) {
 		return false;
@@ -117,6 +151,7 @@ bool MultiNodeEdit::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void MultiNodeEdit::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScoped;
 	HashMap<String, PLData> usage;
 
 	Node *es = EditorNode::get_singleton()->get_edited_scene();
@@ -168,10 +203,12 @@ void MultiNodeEdit::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 String MultiNodeEdit::_get_editor_name() const {
+	ZoneScoped;
 	return vformat(TTR("%s (%d Selected)"), get_edited_class_name(), get_node_count());
 }
 
 bool MultiNodeEdit::_property_can_revert(const StringName &p_name) const {
+	ZoneScoped;
 	Node *es = EditorNode::get_singleton()->get_edited_scene();
 	if (!es) {
 		return false;
@@ -209,6 +246,7 @@ bool MultiNodeEdit::_property_can_revert(const StringName &p_name) const {
 }
 
 bool MultiNodeEdit::_property_get_revert(const StringName &p_name, Variant &r_property) const {
+	ZoneScoped;
 	Node *es = EditorNode::get_singleton()->get_edited_scene();
 	if (!es) {
 		return false;
@@ -228,19 +266,23 @@ bool MultiNodeEdit::_property_get_revert(const StringName &p_name, Variant &r_pr
 }
 
 void MultiNodeEdit::add_node(const NodePath &p_node) {
+	ZoneScoped;
 	nodes.push_back(p_node);
 }
 
 int MultiNodeEdit::get_node_count() const {
+	ZoneScoped;
 	return nodes.size();
 }
 
 NodePath MultiNodeEdit::get_node(int p_index) const {
+	ZoneScoped;
 	ERR_FAIL_INDEX_V(p_index, nodes.size(), NodePath());
 	return nodes[p_index];
 }
 
 StringName MultiNodeEdit::get_edited_class_name() const {
+	ZoneScoped;
 	Node *es = EditorNode::get_singleton()->get_edited_scene();
 	if (!es) {
 		return SNAME("Node");
@@ -295,10 +337,12 @@ StringName MultiNodeEdit::get_edited_class_name() const {
 }
 
 void MultiNodeEdit::set_property_field(const StringName &p_property, const Variant &p_value, const String &p_field) {
+	ZoneScoped;
 	_set_impl(p_property, p_value, p_field);
 }
 
 void MultiNodeEdit::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method("_hide_script_from_inspector", &MultiNodeEdit::_hide_script_from_inspector);
 	ClassDB::bind_method("_hide_metadata_from_inspector", &MultiNodeEdit::_hide_metadata_from_inspector);
 	ClassDB::bind_method("_get_editor_name", &MultiNodeEdit::_get_editor_name);

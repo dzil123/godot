@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_properties.cpp                                                */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_properties.h"
 
 #include "core/config/project_settings.h"
@@ -52,6 +83,7 @@ void EditorPropertyNil::update_property() {
 }
 
 EditorPropertyNil::EditorPropertyNil() {
+	ZoneScoped;
 	Label *prop_label = memnew(Label);
 	prop_label->set_text("<null>");
 	add_child(prop_label);
@@ -60,10 +92,12 @@ EditorPropertyNil::EditorPropertyNil() {
 ///////////////////// TEXT /////////////////////////
 
 void EditorPropertyText::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	text->set_editable(!p_read_only);
 };
 
 void EditorPropertyText::_text_submitted(const String &p_string) {
+	ZoneScoped;
 	if (updating) {
 		return;
 	}
@@ -75,6 +109,7 @@ void EditorPropertyText::_text_submitted(const String &p_string) {
 }
 
 void EditorPropertyText::_text_changed(const String &p_string) {
+	ZoneScoped;
 	if (updating) {
 		return;
 	}
@@ -87,6 +122,7 @@ void EditorPropertyText::_text_changed(const String &p_string) {
 }
 
 void EditorPropertyText::update_property() {
+	ZoneScoped;
 	String s = get_edited_object()->get(get_edited_property());
 	updating = true;
 	if (text->get_text() != s) {
@@ -99,14 +135,17 @@ void EditorPropertyText::update_property() {
 }
 
 void EditorPropertyText::set_string_name(bool p_enabled) {
+	ZoneScoped;
 	string_name = p_enabled;
 }
 
 void EditorPropertyText::set_secret(bool p_enabled) {
+	ZoneScoped;
 	text->set_secret(p_enabled);
 }
 
 void EditorPropertyText::set_placeholder(const String &p_string) {
+	ZoneScoped;
 	text->set_placeholder(p_string);
 }
 
@@ -114,6 +153,7 @@ void EditorPropertyText::_bind_methods() {
 }
 
 EditorPropertyText::EditorPropertyText() {
+	ZoneScoped;
 	text = memnew(LineEdit);
 	add_child(text);
 	add_focusable(text);
@@ -124,20 +164,24 @@ EditorPropertyText::EditorPropertyText() {
 ///////////////////// MULTILINE TEXT /////////////////////////
 
 void EditorPropertyMultilineText::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	text->set_editable(!p_read_only);
 	open_big_text->set_disabled(p_read_only);
 };
 
 void EditorPropertyMultilineText::_big_text_changed() {
+	ZoneScoped;
 	text->set_text(big_text->get_text());
 	emit_changed(get_edited_property(), big_text->get_text(), "", true);
 }
 
 void EditorPropertyMultilineText::_text_changed() {
+	ZoneScoped;
 	emit_changed(get_edited_property(), text->get_text(), "", true);
 }
 
 void EditorPropertyMultilineText::_open_big_text() {
+	ZoneScoped;
 	if (!big_text_dialog) {
 		big_text = memnew(TextEdit);
 		if (expression) {
@@ -159,6 +203,7 @@ void EditorPropertyMultilineText::_open_big_text() {
 }
 
 void EditorPropertyMultilineText::update_property() {
+	ZoneScoped;
 	String t = get_edited_object()->get(get_edited_property());
 	if (text->get_text() != t) {
 		text->set_text(t);
@@ -169,6 +214,7 @@ void EditorPropertyMultilineText::update_property() {
 }
 
 void EditorPropertyMultilineText::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_THEME_CHANGED:
 		case NOTIFICATION_ENTER_TREE: {
@@ -200,6 +246,7 @@ void EditorPropertyMultilineText::_bind_methods() {
 }
 
 EditorPropertyMultilineText::EditorPropertyMultilineText(bool p_expression) {
+	ZoneScoped;
 	HBoxContainer *hb = memnew(HBoxContainer);
 	hb->add_theme_constant_override("separation", 0);
 	add_child(hb);
@@ -227,11 +274,13 @@ EditorPropertyMultilineText::EditorPropertyMultilineText(bool p_expression) {
 ///////////////////// TEXT ENUM /////////////////////////
 
 void EditorPropertyTextEnum::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	option_button->set_disabled(p_read_only);
 	edit_button->set_disabled(p_read_only);
 };
 
 void EditorPropertyTextEnum::_emit_changed_value(String p_string) {
+	ZoneScoped;
 	if (string_name) {
 		emit_changed(get_edited_property(), StringName(p_string));
 	} else {
@@ -240,16 +289,19 @@ void EditorPropertyTextEnum::_emit_changed_value(String p_string) {
 }
 
 void EditorPropertyTextEnum::_option_selected(int p_which) {
+	ZoneScoped;
 	_emit_changed_value(option_button->get_item_text(p_which));
 }
 
 void EditorPropertyTextEnum::_edit_custom_value() {
+	ZoneScoped;
 	default_layout->hide();
 	edit_custom_layout->show();
 	custom_value_edit->grab_focus();
 }
 
 void EditorPropertyTextEnum::_custom_value_submitted(String p_value) {
+	ZoneScoped;
 	edit_custom_layout->hide();
 	default_layout->show();
 
@@ -257,11 +309,13 @@ void EditorPropertyTextEnum::_custom_value_submitted(String p_value) {
 }
 
 void EditorPropertyTextEnum::_custom_value_accepted() {
+	ZoneScoped;
 	String new_value = custom_value_edit->get_text().strip_edges();
 	_custom_value_submitted(new_value);
 }
 
 void EditorPropertyTextEnum::_custom_value_cancelled() {
+	ZoneScoped;
 	custom_value_edit->set_text(get_edited_object()->get(get_edited_property()));
 
 	edit_custom_layout->hide();
@@ -269,6 +323,7 @@ void EditorPropertyTextEnum::_custom_value_cancelled() {
 }
 
 void EditorPropertyTextEnum::update_property() {
+	ZoneScoped;
 	String current_value = get_edited_object()->get(get_edited_property());
 	int default_option = options.find(current_value);
 
@@ -300,6 +355,7 @@ void EditorPropertyTextEnum::update_property() {
 }
 
 void EditorPropertyTextEnum::setup(const Vector<String> &p_options, bool p_string_name, bool p_loose_mode) {
+	ZoneScoped;
 	string_name = p_string_name;
 	loose_mode = p_loose_mode;
 
@@ -324,6 +380,7 @@ void EditorPropertyTextEnum::_bind_methods() {
 }
 
 void EditorPropertyTextEnum::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -335,6 +392,7 @@ void EditorPropertyTextEnum::_notification(int p_what) {
 }
 
 EditorPropertyTextEnum::EditorPropertyTextEnum() {
+	ZoneScoped;
 	default_layout = memnew(HBoxContainer);
 	add_child(default_layout);
 
@@ -380,11 +438,13 @@ EditorPropertyTextEnum::EditorPropertyTextEnum() {
 //////////////////// LOCALE ////////////////////////
 
 void EditorPropertyLocale::_locale_selected(const String &p_locale) {
+	ZoneScoped;
 	emit_changed(get_edited_property(), p_locale);
 	update_property();
 }
 
 void EditorPropertyLocale::_locale_pressed() {
+	ZoneScoped;
 	if (!dialog) {
 		dialog = memnew(EditorLocaleDialog);
 		dialog->connect("locale_selected", callable_mp(this, &EditorPropertyLocale::_locale_selected));
@@ -397,6 +457,7 @@ void EditorPropertyLocale::_locale_pressed() {
 }
 
 void EditorPropertyLocale::update_property() {
+	ZoneScoped;
 	String locale_code = get_edited_object()->get(get_edited_property());
 	locale->set_text(locale_code);
 	locale->set_tooltip_text(locale_code);
@@ -406,6 +467,7 @@ void EditorPropertyLocale::setup(const String &p_hint_text) {
 }
 
 void EditorPropertyLocale::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -415,6 +477,7 @@ void EditorPropertyLocale::_notification(int p_what) {
 }
 
 void EditorPropertyLocale::_locale_focus_exited() {
+	ZoneScoped;
 	_locale_selected(locale->get_text());
 }
 
@@ -422,6 +485,7 @@ void EditorPropertyLocale::_bind_methods() {
 }
 
 EditorPropertyLocale::EditorPropertyLocale() {
+	ZoneScoped;
 	HBoxContainer *locale_hb = memnew(HBoxContainer);
 	add_child(locale_hb);
 	locale = memnew(LineEdit);
@@ -441,16 +505,19 @@ EditorPropertyLocale::EditorPropertyLocale() {
 ///////////////////// PATH /////////////////////////
 
 void EditorPropertyPath::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	path->set_editable(!p_read_only);
 	path_edit->set_disabled(p_read_only);
 };
 
 void EditorPropertyPath::_path_selected(const String &p_path) {
+	ZoneScoped;
 	emit_changed(get_edited_property(), p_path);
 	update_property();
 }
 
 void EditorPropertyPath::_path_pressed() {
+	ZoneScoped;
 	if (!dialog) {
 		dialog = memnew(EditorFileDialog);
 		dialog->connect("file_selected", callable_mp(this, &EditorPropertyPath::_path_selected));
@@ -486,22 +553,26 @@ void EditorPropertyPath::_path_pressed() {
 }
 
 void EditorPropertyPath::update_property() {
+	ZoneScoped;
 	String full_path = get_edited_object()->get(get_edited_property());
 	path->set_text(full_path);
 	path->set_tooltip_text(full_path);
 }
 
 void EditorPropertyPath::setup(const Vector<String> &p_extensions, bool p_folder, bool p_global) {
+	ZoneScoped;
 	extensions = p_extensions;
 	folder = p_folder;
 	global = p_global;
 }
 
 void EditorPropertyPath::set_save_mode() {
+	ZoneScoped;
 	save_mode = true;
 }
 
 void EditorPropertyPath::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -511,10 +582,12 @@ void EditorPropertyPath::_notification(int p_what) {
 }
 
 void EditorPropertyPath::_path_focus_exited() {
+	ZoneScoped;
 	_path_selected(path->get_text());
 }
 
 void EditorPropertyPath::_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) {
+	ZoneScoped;
 	const Dictionary drag_data = p_data;
 	if (!drag_data.has("type")) {
 		return;
@@ -532,6 +605,7 @@ void EditorPropertyPath::_drop_data_fw(const Point2 &p_point, const Variant &p_d
 }
 
 bool EditorPropertyPath::_can_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) const {
+	ZoneScoped;
 	const Dictionary drag_data = p_data;
 	if (!drag_data.has("type")) {
 		return false;
@@ -554,11 +628,13 @@ bool EditorPropertyPath::_can_drop_data_fw(const Point2 &p_point, const Variant 
 }
 
 void EditorPropertyPath::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("_can_drop_data_fw", "position", "data", "from"), &EditorPropertyPath::_can_drop_data_fw);
 	ClassDB::bind_method(D_METHOD("_drop_data_fw", "position", "data", "from"), &EditorPropertyPath::_drop_data_fw);
 }
 
 EditorPropertyPath::EditorPropertyPath() {
+	ZoneScoped;
 	HBoxContainer *path_hb = memnew(HBoxContainer);
 	add_child(path_hb);
 	path = memnew(LineEdit);
@@ -580,10 +656,12 @@ EditorPropertyPath::EditorPropertyPath() {
 ///////////////////// CLASS NAME /////////////////////////
 
 void EditorPropertyClassName::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	property->set_disabled(p_read_only);
 };
 
 void EditorPropertyClassName::setup(const String &p_base_type, const String &p_selected_type) {
+	ZoneScoped;
 	base_type = p_base_type;
 	dialog->set_base_type(base_type);
 	selected_type = p_selected_type;
@@ -591,16 +669,19 @@ void EditorPropertyClassName::setup(const String &p_base_type, const String &p_s
 }
 
 void EditorPropertyClassName::update_property() {
+	ZoneScoped;
 	String s = get_edited_object()->get(get_edited_property());
 	property->set_text(s);
 	selected_type = s;
 }
 
 void EditorPropertyClassName::_property_selected() {
+	ZoneScoped;
 	dialog->popup_create(true);
 }
 
 void EditorPropertyClassName::_dialog_created() {
+	ZoneScoped;
 	selected_type = dialog->get_selected_type();
 	emit_changed(get_edited_property(), selected_type);
 	update_property();
@@ -610,6 +691,7 @@ void EditorPropertyClassName::_bind_methods() {
 }
 
 EditorPropertyClassName::EditorPropertyClassName() {
+	ZoneScoped;
 	property = memnew(Button);
 	property->set_clip_text(true);
 	add_child(property);
@@ -625,15 +707,18 @@ EditorPropertyClassName::EditorPropertyClassName() {
 ///////////////////// MEMBER /////////////////////////
 
 void EditorPropertyMember::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	property->set_disabled(p_read_only);
 };
 
 void EditorPropertyMember::_property_selected(const String &p_selected) {
+	ZoneScoped;
 	emit_changed(get_edited_property(), p_selected);
 	update_property();
 }
 
 void EditorPropertyMember::_property_select() {
+	ZoneScoped;
 	if (!selector) {
 		selector = memnew(PropertySelector);
 		selector->connect("selected", callable_mp(this, &EditorPropertyMember::_property_selected));
@@ -702,11 +787,13 @@ void EditorPropertyMember::_property_select() {
 }
 
 void EditorPropertyMember::setup(Type p_hint, const String &p_hint_text) {
+	ZoneScoped;
 	hint = p_hint;
 	hint_text = p_hint_text;
 }
 
 void EditorPropertyMember::update_property() {
+	ZoneScoped;
 	String full_path = get_edited_object()->get(get_edited_property());
 	property->set_text(full_path);
 }
@@ -715,6 +802,7 @@ void EditorPropertyMember::_bind_methods() {
 }
 
 EditorPropertyMember::EditorPropertyMember() {
+	ZoneScoped;
 	selector = nullptr;
 	property = memnew(Button);
 	property->set_clip_text(true);
@@ -726,14 +814,17 @@ EditorPropertyMember::EditorPropertyMember() {
 ///////////////////// CHECK /////////////////////////
 
 void EditorPropertyCheck::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	checkbox->set_disabled(p_read_only);
 };
 
 void EditorPropertyCheck::_checkbox_pressed() {
+	ZoneScoped;
 	emit_changed(get_edited_property(), checkbox->is_pressed());
 }
 
 void EditorPropertyCheck::update_property() {
+	ZoneScoped;
 	bool c = get_edited_object()->get(get_edited_property());
 	checkbox->set_pressed(c);
 	checkbox->set_disabled(is_read_only());
@@ -743,6 +834,7 @@ void EditorPropertyCheck::_bind_methods() {
 }
 
 EditorPropertyCheck::EditorPropertyCheck() {
+	ZoneScoped;
 	checkbox = memnew(CheckBox);
 	checkbox->set_text(TTR("On"));
 	add_child(checkbox);
@@ -753,15 +845,18 @@ EditorPropertyCheck::EditorPropertyCheck() {
 ///////////////////// ENUM /////////////////////////
 
 void EditorPropertyEnum::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	options->set_disabled(p_read_only);
 };
 
 void EditorPropertyEnum::_option_selected(int p_which) {
+	ZoneScoped;
 	int64_t val = options->get_item_metadata(p_which);
 	emit_changed(get_edited_property(), val);
 }
 
 void EditorPropertyEnum::update_property() {
+	ZoneScoped;
 	Variant current = get_edited_object()->get(get_edited_property());
 	if (current.get_type() == Variant::NIL) {
 		options->select(-1);
@@ -778,6 +873,7 @@ void EditorPropertyEnum::update_property() {
 }
 
 void EditorPropertyEnum::setup(const Vector<String> &p_options) {
+	ZoneScoped;
 	options->clear();
 	int64_t current_val = 0;
 	for (int i = 0; i < p_options.size(); i++) {
@@ -792,6 +888,7 @@ void EditorPropertyEnum::setup(const Vector<String> &p_options) {
 }
 
 void EditorPropertyEnum::set_option_button_clip(bool p_enable) {
+	ZoneScoped;
 	options->set_clip_text(p_enable);
 }
 
@@ -799,6 +896,7 @@ void EditorPropertyEnum::_bind_methods() {
 }
 
 EditorPropertyEnum::EditorPropertyEnum() {
+	ZoneScoped;
 	options = memnew(OptionButton);
 	options->set_clip_text(true);
 	options->set_flat(true);
@@ -810,12 +908,14 @@ EditorPropertyEnum::EditorPropertyEnum() {
 ///////////////////// FLAGS /////////////////////////
 
 void EditorPropertyFlags::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	for (CheckBox *check : flags) {
 		check->set_disabled(p_read_only);
 	}
 };
 
 void EditorPropertyFlags::_flag_toggled(int p_index) {
+	ZoneScoped;
 	uint32_t value = get_edited_object()->get(get_edited_property());
 	if (flags[p_index]->is_pressed()) {
 		value |= flag_values[p_index];
@@ -827,6 +927,7 @@ void EditorPropertyFlags::_flag_toggled(int p_index) {
 }
 
 void EditorPropertyFlags::update_property() {
+	ZoneScoped;
 	uint32_t value = get_edited_object()->get(get_edited_property());
 
 	for (int i = 0; i < flags.size(); i++) {
@@ -835,6 +936,7 @@ void EditorPropertyFlags::update_property() {
 }
 
 void EditorPropertyFlags::setup(const Vector<String> &p_options) {
+	ZoneScoped;
 	ERR_FAIL_COND(flags.size());
 
 	bool first = true;
@@ -877,6 +979,7 @@ void EditorPropertyFlags::_bind_methods() {
 }
 
 EditorPropertyFlags::EditorPropertyFlags() {
+	ZoneScoped;
 	vbox = memnew(VBoxContainer);
 	add_child(vbox);
 }
@@ -897,6 +1000,7 @@ void EditorPropertyLayersGrid::_rename_pressed(int p_menu) {
 }
 
 void EditorPropertyLayersGrid::_rename_operation_confirm() {
+	ZoneScoped;
 	String new_name = rename_dialog_text->get_text().strip_edges();
 	if (new_name.length() == 0) {
 		EditorNode::get_singleton()->show_warning(TTR("No name provided."));
@@ -911,6 +1015,7 @@ void EditorPropertyLayersGrid::_rename_operation_confirm() {
 }
 
 EditorPropertyLayersGrid::EditorPropertyLayersGrid() {
+	ZoneScoped;
 	rename_dialog = memnew(ConfirmationDialog);
 	VBoxContainer *rename_dialog_vb = memnew(VBoxContainer);
 	rename_dialog->add_child(rename_dialog_vb);
@@ -927,16 +1032,19 @@ EditorPropertyLayersGrid::EditorPropertyLayersGrid() {
 }
 
 Size2 EditorPropertyLayersGrid::get_grid_size() const {
+	ZoneScoped;
 	Ref<Font> font = get_theme_font(SNAME("font"), SNAME("Label"));
 	int font_size = get_theme_font_size(SNAME("font_size"), SNAME("Label"));
 	return Vector2(0, font->get_height(font_size) * 3);
 }
 
 void EditorPropertyLayersGrid::set_read_only(bool p_read_only) {
+	ZoneScoped;
 	read_only = p_read_only;
 }
 
 Size2 EditorPropertyLayersGrid::get_minimum_size() const {
+	ZoneScoped;
 	Size2 min_size = get_grid_size();
 
 	// Add extra rows when expanded.
@@ -951,6 +1059,7 @@ Size2 EditorPropertyLayersGrid::get_minimum_size() const {
 }
 
 String EditorPropertyLayersGrid::get_tooltip(const Point2 &p_pos) const {
+	ZoneScoped;
 	for (int i = 0; i < flag_rects.size(); i++) {
 		if (i < tooltips.size() && flag_rects[i].has_point(p_pos)) {
 			return tooltips[i];
@@ -960,6 +1069,7 @@ String EditorPropertyLayersGrid::get_tooltip(const Point2 &p_pos) const {
 }
 
 void EditorPropertyLayersGrid::gui_input(const Ref<InputEvent> &p_ev) {
+	ZoneScoped;
 	if (read_only) {
 		return;
 	}
@@ -1021,6 +1131,7 @@ void EditorPropertyLayersGrid::gui_input(const Ref<InputEvent> &p_ev) {
 }
 
 void EditorPropertyLayersGrid::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
 			Size2 grid_size = get_grid_size();
@@ -1156,16 +1267,19 @@ void EditorPropertyLayersGrid::_notification(int p_what) {
 }
 
 void EditorPropertyLayersGrid::set_flag(uint32_t p_flag) {
+	ZoneScoped;
 	value = p_flag;
 	queue_redraw();
 }
 
 void EditorPropertyLayersGrid::_bind_methods() {
+	ZoneScoped;
 	ADD_SIGNAL(MethodInfo("flag_changed", PropertyInfo(Variant::INT, "flag")));
 	ADD_SIGNAL(MethodInfo("rename_confirmed", PropertyInfo(Variant::INT, "layer_id"), PropertyInfo(Variant::STRING, "new_name")));
 }
 
 void EditorPropertyLayers::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -1177,21 +1291,25 @@ void EditorPropertyLayers::_notification(int p_what) {
 }
 
 void EditorPropertyLayers::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	button->set_disabled(p_read_only);
 	grid->set_read_only(p_read_only);
 };
 
 void EditorPropertyLayers::_grid_changed(uint32_t p_grid) {
+	ZoneScoped;
 	emit_changed(get_edited_property(), p_grid);
 }
 
 void EditorPropertyLayers::update_property() {
+	ZoneScoped;
 	uint32_t value = get_edited_object()->get(get_edited_property());
 
 	grid->set_flag(value);
 }
 
 void EditorPropertyLayers::setup(LayerType p_layer_type) {
+	ZoneScoped;
 	layer_type = p_layer_type;
 	int layer_group_size = 0;
 	int layer_count = 0;
@@ -1257,6 +1375,7 @@ void EditorPropertyLayers::setup(LayerType p_layer_type) {
 }
 
 void EditorPropertyLayers::set_layer_name(int p_index, const String &p_name) {
+	ZoneScoped;
 	const String property_name = basename + vformat("/layer_%d", p_index + 1);
 	if (ProjectSettings::get_singleton()->has_setting(property_name)) {
 		ProjectSettings::get_singleton()->set(property_name, p_name);
@@ -1265,6 +1384,7 @@ void EditorPropertyLayers::set_layer_name(int p_index, const String &p_name) {
 }
 
 String EditorPropertyLayers::get_layer_name(int p_index) const {
+	ZoneScoped;
 	const String property_name = basename + vformat("/layer_%d", p_index + 1);
 	if (ProjectSettings::get_singleton()->has_setting(property_name)) {
 		return GLOBAL_GET(property_name);
@@ -1273,6 +1393,7 @@ String EditorPropertyLayers::get_layer_name(int p_index) const {
 }
 
 void EditorPropertyLayers::_button_pressed() {
+	ZoneScoped;
 	int layer_count = grid->layer_count;
 	layers->clear();
 	for (int i = 0; i < layer_count; i++) {
@@ -1300,6 +1421,7 @@ void EditorPropertyLayers::_button_pressed() {
 }
 
 void EditorPropertyLayers::_menu_pressed(int p_menu) {
+	ZoneScoped;
 	if (p_menu == grid->layer_count) {
 		ProjectSettingsEditor::get_singleton()->popup_project_settings();
 		ProjectSettingsEditor::get_singleton()->set_general_page(basename);
@@ -1316,6 +1438,7 @@ void EditorPropertyLayers::_menu_pressed(int p_menu) {
 }
 
 void EditorPropertyLayers::_refresh_names() {
+	ZoneScoped;
 	setup(layer_type);
 }
 
@@ -1323,6 +1446,7 @@ void EditorPropertyLayers::_bind_methods() {
 }
 
 EditorPropertyLayers::EditorPropertyLayers() {
+	ZoneScoped;
 	HBoxContainer *hb = memnew(HBoxContainer);
 	hb->set_clip_contents(true);
 	add_child(hb);
@@ -1351,10 +1475,12 @@ EditorPropertyLayers::EditorPropertyLayers() {
 ///////////////////// INT /////////////////////////
 
 void EditorPropertyInteger::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	spin->set_read_only(p_read_only);
 };
 
 void EditorPropertyInteger::_value_changed(int64_t val) {
+	ZoneScoped;
 	if (setting) {
 		return;
 	}
@@ -1362,6 +1488,7 @@ void EditorPropertyInteger::_value_changed(int64_t val) {
 }
 
 void EditorPropertyInteger::update_property() {
+	ZoneScoped;
 	int64_t val = get_edited_object()->get(get_edited_property());
 	setting = true;
 	spin->set_value(val);
@@ -1378,6 +1505,7 @@ void EditorPropertyInteger::_bind_methods() {
 }
 
 void EditorPropertyInteger::setup(int64_t p_min, int64_t p_max, int64_t p_step, bool p_allow_greater, bool p_allow_lesser, const String &p_suffix) {
+	ZoneScoped;
 	spin->set_min(p_min);
 	spin->set_max(p_max);
 	spin->set_step(p_step);
@@ -1387,6 +1515,7 @@ void EditorPropertyInteger::setup(int64_t p_min, int64_t p_max, int64_t p_step, 
 }
 
 EditorPropertyInteger::EditorPropertyInteger() {
+	ZoneScoped;
 	spin = memnew(EditorSpinSlider);
 	spin->set_flat(true);
 	add_child(spin);
@@ -1397,14 +1526,17 @@ EditorPropertyInteger::EditorPropertyInteger() {
 ///////////////////// OBJECT ID /////////////////////////
 
 void EditorPropertyObjectID::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	edit->set_disabled(p_read_only);
 };
 
 void EditorPropertyObjectID::_edit_pressed() {
+	ZoneScoped;
 	emit_signal(SNAME("object_id_selected"), get_edited_property(), get_edited_object()->get(get_edited_property()));
 }
 
 void EditorPropertyObjectID::update_property() {
+	ZoneScoped;
 	String type = base_type;
 	if (type.is_empty()) {
 		type = "Object";
@@ -1423,6 +1555,7 @@ void EditorPropertyObjectID::update_property() {
 }
 
 void EditorPropertyObjectID::setup(const String &p_base_type) {
+	ZoneScoped;
 	base_type = p_base_type;
 }
 
@@ -1430,6 +1563,7 @@ void EditorPropertyObjectID::_bind_methods() {
 }
 
 EditorPropertyObjectID::EditorPropertyObjectID() {
+	ZoneScoped;
 	edit = memnew(Button);
 	add_child(edit);
 	add_focusable(edit);
@@ -1439,11 +1573,13 @@ EditorPropertyObjectID::EditorPropertyObjectID() {
 ///////////////////// SIGNAL /////////////////////////
 
 void EditorPropertySignal::_edit_pressed() {
+	ZoneScoped;
 	Signal signal = get_edited_object()->get(get_edited_property());
 	emit_signal(SNAME("object_id_selected"), get_edited_property(), signal.get_object_id());
 }
 
 void EditorPropertySignal::update_property() {
+	ZoneScoped;
 	String type = base_type;
 
 	Signal signal = get_edited_object()->get(get_edited_property());
@@ -1457,6 +1593,7 @@ void EditorPropertySignal::_bind_methods() {
 }
 
 EditorPropertySignal::EditorPropertySignal() {
+	ZoneScoped;
 	edit = memnew(Button);
 	add_child(edit);
 	add_focusable(edit);
@@ -1466,6 +1603,7 @@ EditorPropertySignal::EditorPropertySignal() {
 ///////////////////// CALLABLE /////////////////////////
 
 void EditorPropertyCallable::update_property() {
+	ZoneScoped;
 	String type = base_type;
 
 	Callable callable = get_edited_object()->get(get_edited_property());
@@ -1479,6 +1617,7 @@ void EditorPropertyCallable::_bind_methods() {
 }
 
 EditorPropertyCallable::EditorPropertyCallable() {
+	ZoneScoped;
 	edit = memnew(Button);
 	add_child(edit);
 	add_focusable(edit);
@@ -1487,10 +1626,12 @@ EditorPropertyCallable::EditorPropertyCallable() {
 ///////////////////// FLOAT /////////////////////////
 
 void EditorPropertyFloat::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	spin->set_read_only(p_read_only);
 };
 
 void EditorPropertyFloat::_value_changed(double val) {
+	ZoneScoped;
 	if (setting) {
 		return;
 	}
@@ -1502,6 +1643,7 @@ void EditorPropertyFloat::_value_changed(double val) {
 }
 
 void EditorPropertyFloat::update_property() {
+	ZoneScoped;
 	double val = get_edited_object()->get(get_edited_property());
 	if (angle_in_radians) {
 		val = Math::rad_to_deg(val);
@@ -1515,6 +1657,7 @@ void EditorPropertyFloat::_bind_methods() {
 }
 
 void EditorPropertyFloat::setup(double p_min, double p_max, double p_step, bool p_hide_slider, bool p_exp_range, bool p_greater, bool p_lesser, const String &p_suffix, bool p_angle_in_radians) {
+	ZoneScoped;
 	angle_in_radians = p_angle_in_radians;
 	spin->set_min(p_min);
 	spin->set_max(p_max);
@@ -1527,6 +1670,7 @@ void EditorPropertyFloat::setup(double p_min, double p_max, double p_step, bool 
 }
 
 EditorPropertyFloat::EditorPropertyFloat() {
+	ZoneScoped;
 	spin = memnew(EditorSpinSlider);
 	spin->set_flat(true);
 	add_child(spin);
@@ -1537,10 +1681,12 @@ EditorPropertyFloat::EditorPropertyFloat() {
 ///////////////////// EASING /////////////////////////
 
 void EditorPropertyEasing::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	spin->set_read_only(p_read_only);
 };
 
 void EditorPropertyEasing::_drag_easing(const Ref<InputEvent> &p_ev) {
+	ZoneScoped;
 	if (is_read_only()) {
 		return;
 	}
@@ -1608,6 +1754,7 @@ void EditorPropertyEasing::_drag_easing(const Ref<InputEvent> &p_ev) {
 }
 
 void EditorPropertyEasing::_draw_easing() {
+	ZoneScoped;
 	RID ci = easing_draw->get_canvas_item();
 
 	Size2 s = easing_draw->get_size();
@@ -1655,10 +1802,12 @@ void EditorPropertyEasing::_draw_easing() {
 }
 
 void EditorPropertyEasing::update_property() {
+	ZoneScoped;
 	easing_draw->queue_redraw();
 }
 
 void EditorPropertyEasing::_set_preset(int p_preset) {
+	ZoneScoped;
 	static const float preset_value[EASING_MAX] = { 0.0, 1.0, 2.0, 0.5, -2.0, -0.5 };
 
 	emit_changed(get_edited_property(), preset_value[p_preset]);
@@ -1666,6 +1815,7 @@ void EditorPropertyEasing::_set_preset(int p_preset) {
 }
 
 void EditorPropertyEasing::_setup_spin() {
+	ZoneScoped;
 	setting = true;
 	spin->setup_and_show();
 	spin->get_line_edit()->set_text(TS->format_number(rtos(get_edited_object()->get(get_edited_property()))));
@@ -1674,6 +1824,7 @@ void EditorPropertyEasing::_setup_spin() {
 }
 
 void EditorPropertyEasing::_spin_value_changed(double p_value) {
+	ZoneScoped;
 	if (setting) {
 		return;
 	}
@@ -1698,6 +1849,7 @@ void EditorPropertyEasing::_spin_value_changed(double p_value) {
 }
 
 void EditorPropertyEasing::_spin_focus_exited() {
+	ZoneScoped;
 	spin->hide();
 	// Ensure the easing doesn't appear as being dragged
 	dragging = false;
@@ -1705,11 +1857,13 @@ void EditorPropertyEasing::_spin_focus_exited() {
 }
 
 void EditorPropertyEasing::setup(bool p_positive_only, bool p_flip) {
+	ZoneScoped;
 	flip = p_flip;
 	positive_only = p_positive_only;
 }
 
 void EditorPropertyEasing::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_THEME_CHANGED:
 		case NOTIFICATION_ENTER_TREE: {
@@ -1731,6 +1885,7 @@ void EditorPropertyEasing::_bind_methods() {
 }
 
 EditorPropertyEasing::EditorPropertyEasing() {
+	ZoneScoped;
 	easing_draw = memnew(Control);
 	easing_draw->connect("draw", callable_mp(this, &EditorPropertyEasing::_draw_easing));
 	easing_draw->connect("gui_input", callable_mp(this, &EditorPropertyEasing::_drag_easing));
@@ -1758,12 +1913,14 @@ EditorPropertyEasing::EditorPropertyEasing() {
 ///////////////////// VECTOR2 /////////////////////////
 
 void EditorPropertyVector2::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	for (int i = 0; i < 2; i++) {
 		spin[i]->set_read_only(p_read_only);
 	}
 };
 
 void EditorPropertyVector2::_value_changed(double val, const String &p_name) {
+	ZoneScoped;
 	if (setting) {
 		return;
 	}
@@ -1787,6 +1944,7 @@ void EditorPropertyVector2::_value_changed(double val, const String &p_name) {
 }
 
 void EditorPropertyVector2::update_property() {
+	ZoneScoped;
 	Vector2 val = get_edited_object()->get(get_edited_property());
 	setting = true;
 	spin[0]->set_value(val.x);
@@ -1796,6 +1954,7 @@ void EditorPropertyVector2::update_property() {
 }
 
 void EditorPropertyVector2::_update_ratio() {
+	ZoneScoped;
 	linked->set_modulate(Color(1, 1, 1, linked->is_pressed() ? 1.0 : 0.5));
 
 	if (spin[0]->get_value() != 0 && spin[1]->get_value() != 0) {
@@ -1808,6 +1967,7 @@ void EditorPropertyVector2::_update_ratio() {
 }
 
 void EditorPropertyVector2::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -1823,6 +1983,7 @@ void EditorPropertyVector2::_notification(int p_what) {
 }
 
 void EditorPropertyVector2::setup(double p_min, double p_max, double p_step, bool p_hide_slider, bool p_link, const String &p_suffix) {
+	ZoneScoped;
 	for (int i = 0; i < 2; i++) {
 		spin[i]->set_min(p_min);
 		spin[i]->set_max(p_max);
@@ -1841,6 +2002,7 @@ void EditorPropertyVector2::setup(double p_min, double p_max, double p_step, boo
 }
 
 EditorPropertyVector2::EditorPropertyVector2(bool p_force_wide) {
+	ZoneScoped;
 	bool horizontal = p_force_wide || bool(EDITOR_GET("interface/inspector/horizontal_vector2_editing"));
 
 	HBoxContainer *hb = memnew(HBoxContainer);
@@ -1889,12 +2051,14 @@ EditorPropertyVector2::EditorPropertyVector2(bool p_force_wide) {
 ///////////////////// RECT2 /////////////////////////
 
 void EditorPropertyRect2::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	for (int i = 0; i < 4; i++) {
 		spin[i]->set_read_only(p_read_only);
 	}
 };
 
 void EditorPropertyRect2::_value_changed(double val, const String &p_name) {
+	ZoneScoped;
 	if (setting) {
 		return;
 	}
@@ -1908,6 +2072,7 @@ void EditorPropertyRect2::_value_changed(double val, const String &p_name) {
 }
 
 void EditorPropertyRect2::update_property() {
+	ZoneScoped;
 	Rect2 val = get_edited_object()->get(get_edited_property());
 	setting = true;
 	spin[0]->set_value(val.position.x);
@@ -1918,6 +2083,7 @@ void EditorPropertyRect2::update_property() {
 }
 
 void EditorPropertyRect2::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -1933,6 +2099,7 @@ void EditorPropertyRect2::_bind_methods() {
 }
 
 void EditorPropertyRect2::setup(double p_min, double p_max, double p_step, bool p_hide_slider, const String &p_suffix) {
+	ZoneScoped;
 	for (int i = 0; i < 4; i++) {
 		spin[i]->set_min(p_min);
 		spin[i]->set_max(p_max);
@@ -1945,6 +2112,7 @@ void EditorPropertyRect2::setup(double p_min, double p_max, double p_step, bool 
 }
 
 EditorPropertyRect2::EditorPropertyRect2(bool p_force_wide) {
+	ZoneScoped;
 	bool horizontal = p_force_wide || bool(EDITOR_GET("interface/inspector/horizontal_vector_types_editing"));
 	bool grid = false;
 	BoxContainer *bc;
@@ -1992,12 +2160,14 @@ EditorPropertyRect2::EditorPropertyRect2(bool p_force_wide) {
 ///////////////////// VECTOR3 /////////////////////////
 
 void EditorPropertyVector3::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	for (int i = 0; i < 3; i++) {
 		spin[i]->set_read_only(p_read_only);
 	}
 };
 
 void EditorPropertyVector3::_value_changed(double val, const String &p_name) {
+	ZoneScoped;
 	if (setting) {
 		return;
 	}
@@ -2034,11 +2204,13 @@ void EditorPropertyVector3::_value_changed(double val, const String &p_name) {
 }
 
 void EditorPropertyVector3::update_property() {
+	ZoneScoped;
 	update_using_vector(get_edited_object()->get(get_edited_property()));
 	_update_ratio();
 }
 
 void EditorPropertyVector3::_update_ratio() {
+	ZoneScoped;
 	linked->set_modulate(Color(1, 1, 1, linked->is_pressed() ? 1.0 : 0.5));
 
 	if (spin[0]->get_value() != 0 && spin[1]->get_value() != 0) {
@@ -2059,6 +2231,7 @@ void EditorPropertyVector3::_update_ratio() {
 }
 
 void EditorPropertyVector3::update_using_vector(Vector3 p_vector) {
+	ZoneScoped;
 	if (angle_in_radians) {
 		p_vector.x = Math::rad_to_deg(p_vector.x);
 		p_vector.y = Math::rad_to_deg(p_vector.y);
@@ -2072,6 +2245,7 @@ void EditorPropertyVector3::update_using_vector(Vector3 p_vector) {
 }
 
 Vector3 EditorPropertyVector3::get_vector() {
+	ZoneScoped;
 	Vector3 v3;
 	v3.x = spin[0]->get_value();
 	v3.y = spin[1]->get_value();
@@ -2086,6 +2260,7 @@ Vector3 EditorPropertyVector3::get_vector() {
 }
 
 void EditorPropertyVector3::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -2104,6 +2279,7 @@ void EditorPropertyVector3::_bind_methods() {
 }
 
 void EditorPropertyVector3::setup(double p_min, double p_max, double p_step, bool p_hide_slider, bool p_link, const String &p_suffix, bool p_angle_in_radians) {
+	ZoneScoped;
 	angle_in_radians = p_angle_in_radians;
 	for (int i = 0; i < 3; i++) {
 		spin[i]->set_min(p_min);
@@ -2123,6 +2299,7 @@ void EditorPropertyVector3::setup(double p_min, double p_max, double p_step, boo
 }
 
 EditorPropertyVector3::EditorPropertyVector3(bool p_force_wide) {
+	ZoneScoped;
 	bool horizontal = p_force_wide || bool(EDITOR_GET("interface/inspector/horizontal_vector_types_editing"));
 
 	HBoxContainer *hb = memnew(HBoxContainer);
@@ -2171,12 +2348,14 @@ EditorPropertyVector3::EditorPropertyVector3(bool p_force_wide) {
 ///////////////////// VECTOR2i /////////////////////////
 
 void EditorPropertyVector2i::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	for (int i = 0; i < 2; i++) {
 		spin[i]->set_read_only(p_read_only);
 	}
 };
 
 void EditorPropertyVector2i::_value_changed(double val, const String &p_name) {
+	ZoneScoped;
 	if (setting) {
 		return;
 	}
@@ -2200,6 +2379,7 @@ void EditorPropertyVector2i::_value_changed(double val, const String &p_name) {
 }
 
 void EditorPropertyVector2i::update_property() {
+	ZoneScoped;
 	Vector2i val = get_edited_object()->get(get_edited_property());
 	setting = true;
 	spin[0]->set_value(val.x);
@@ -2209,6 +2389,7 @@ void EditorPropertyVector2i::update_property() {
 }
 
 void EditorPropertyVector2i::_update_ratio() {
+	ZoneScoped;
 	linked->set_modulate(Color(1, 1, 1, linked->is_pressed() ? 1.0 : 0.5));
 
 	if (spin[0]->get_value() != 0 && spin[1]->get_value() != 0) {
@@ -2221,6 +2402,7 @@ void EditorPropertyVector2i::_update_ratio() {
 }
 
 void EditorPropertyVector2i::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -2236,6 +2418,7 @@ void EditorPropertyVector2i::_notification(int p_what) {
 }
 
 void EditorPropertyVector2i::setup(int p_min, int p_max, bool p_hide_slider, bool p_link, const String &p_suffix) {
+	ZoneScoped;
 	for (int i = 0; i < 2; i++) {
 		spin[i]->set_min(p_min);
 		spin[i]->set_max(p_max);
@@ -2254,6 +2437,7 @@ void EditorPropertyVector2i::setup(int p_min, int p_max, bool p_hide_slider, boo
 }
 
 EditorPropertyVector2i::EditorPropertyVector2i(bool p_force_wide) {
+	ZoneScoped;
 	bool horizontal = p_force_wide || bool(EDITOR_GET("interface/inspector/horizontal_vector2_editing"));
 
 	HBoxContainer *hb = memnew(HBoxContainer);
@@ -2302,12 +2486,14 @@ EditorPropertyVector2i::EditorPropertyVector2i(bool p_force_wide) {
 ///////////////////// RECT2i /////////////////////////
 
 void EditorPropertyRect2i::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	for (int i = 0; i < 4; i++) {
 		spin[i]->set_read_only(p_read_only);
 	}
 };
 
 void EditorPropertyRect2i::_value_changed(double val, const String &p_name) {
+	ZoneScoped;
 	if (setting) {
 		return;
 	}
@@ -2321,6 +2507,7 @@ void EditorPropertyRect2i::_value_changed(double val, const String &p_name) {
 }
 
 void EditorPropertyRect2i::update_property() {
+	ZoneScoped;
 	Rect2i val = get_edited_object()->get(get_edited_property());
 	setting = true;
 	spin[0]->set_value(val.position.x);
@@ -2331,6 +2518,7 @@ void EditorPropertyRect2i::update_property() {
 }
 
 void EditorPropertyRect2i::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -2346,6 +2534,7 @@ void EditorPropertyRect2i::_bind_methods() {
 }
 
 void EditorPropertyRect2i::setup(int p_min, int p_max, bool p_hide_slider, const String &p_suffix) {
+	ZoneScoped;
 	for (int i = 0; i < 4; i++) {
 		spin[i]->set_min(p_min);
 		spin[i]->set_max(p_max);
@@ -2358,6 +2547,7 @@ void EditorPropertyRect2i::setup(int p_min, int p_max, bool p_hide_slider, const
 }
 
 EditorPropertyRect2i::EditorPropertyRect2i(bool p_force_wide) {
+	ZoneScoped;
 	bool horizontal = p_force_wide || bool(EDITOR_GET("interface/inspector/horizontal_vector_types_editing"));
 	bool grid = false;
 	BoxContainer *bc;
@@ -2405,12 +2595,14 @@ EditorPropertyRect2i::EditorPropertyRect2i(bool p_force_wide) {
 ///////////////////// VECTOR3I /////////////////////////
 
 void EditorPropertyVector3i::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	for (int i = 0; i < 3; i++) {
 		spin[i]->set_read_only(p_read_only);
 	}
 };
 
 void EditorPropertyVector3i::_value_changed(double val, const String &p_name) {
+	ZoneScoped;
 	if (setting) {
 		return;
 	}
@@ -2442,6 +2634,7 @@ void EditorPropertyVector3i::_value_changed(double val, const String &p_name) {
 }
 
 void EditorPropertyVector3i::update_property() {
+	ZoneScoped;
 	Vector3i val = get_edited_object()->get(get_edited_property());
 	setting = true;
 	spin[0]->set_value(val.x);
@@ -2452,6 +2645,7 @@ void EditorPropertyVector3i::update_property() {
 }
 
 void EditorPropertyVector3i::_update_ratio() {
+	ZoneScoped;
 	linked->set_modulate(Color(1, 1, 1, linked->is_pressed() ? 1.0 : 0.5));
 
 	if (spin[0]->get_value() != 0 && spin[1]->get_value() != 0) {
@@ -2472,6 +2666,7 @@ void EditorPropertyVector3i::_update_ratio() {
 }
 
 void EditorPropertyVector3i::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -2490,6 +2685,7 @@ void EditorPropertyVector3i::_bind_methods() {
 }
 
 void EditorPropertyVector3i::setup(int p_min, int p_max, bool p_hide_slider, bool p_link, const String &p_suffix) {
+	ZoneScoped;
 	for (int i = 0; i < 3; i++) {
 		spin[i]->set_min(p_min);
 		spin[i]->set_max(p_max);
@@ -2508,6 +2704,7 @@ void EditorPropertyVector3i::setup(int p_min, int p_max, bool p_hide_slider, boo
 }
 
 EditorPropertyVector3i::EditorPropertyVector3i(bool p_force_wide) {
+	ZoneScoped;
 	bool horizontal = p_force_wide || bool(EDITOR_GET("interface/inspector/horizontal_vector_types_editing"));
 
 	HBoxContainer *hb = memnew(HBoxContainer);
@@ -2555,12 +2752,14 @@ EditorPropertyVector3i::EditorPropertyVector3i(bool p_force_wide) {
 ///////////////////// PLANE /////////////////////////
 
 void EditorPropertyPlane::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	for (int i = 0; i < 4; i++) {
 		spin[i]->set_read_only(p_read_only);
 	}
 };
 
 void EditorPropertyPlane::_value_changed(double val, const String &p_name) {
+	ZoneScoped;
 	if (setting) {
 		return;
 	}
@@ -2574,6 +2773,7 @@ void EditorPropertyPlane::_value_changed(double val, const String &p_name) {
 }
 
 void EditorPropertyPlane::update_property() {
+	ZoneScoped;
 	Plane val = get_edited_object()->get(get_edited_property());
 	setting = true;
 	spin[0]->set_value(val.normal.x);
@@ -2584,6 +2784,7 @@ void EditorPropertyPlane::update_property() {
 }
 
 void EditorPropertyPlane::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -2599,6 +2800,7 @@ void EditorPropertyPlane::_bind_methods() {
 }
 
 void EditorPropertyPlane::setup(double p_min, double p_max, double p_step, bool p_hide_slider, const String &p_suffix) {
+	ZoneScoped;
 	for (int i = 0; i < 4; i++) {
 		spin[i]->set_min(p_min);
 		spin[i]->set_max(p_max);
@@ -2611,6 +2813,7 @@ void EditorPropertyPlane::setup(double p_min, double p_max, double p_step, bool 
 }
 
 EditorPropertyPlane::EditorPropertyPlane(bool p_force_wide) {
+	ZoneScoped;
 	bool horizontal = p_force_wide || bool(EDITOR_GET("interface/inspector/horizontal_vector_types_editing"));
 
 	BoxContainer *bc;
@@ -2648,6 +2851,7 @@ EditorPropertyPlane::EditorPropertyPlane(bool p_force_wide) {
 ///////////////////// QUATERNION /////////////////////////
 
 void EditorPropertyQuaternion::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	for (int i = 0; i < 4; i++) {
 		spin[i]->set_read_only(p_read_only);
 	}
@@ -2657,6 +2861,7 @@ void EditorPropertyQuaternion::_set_read_only(bool p_read_only) {
 };
 
 void EditorPropertyQuaternion::_edit_custom_value() {
+	ZoneScoped;
 	if (edit_button->is_pressed()) {
 		edit_custom_bc->show();
 		for (int i = 0; i < 3; i++) {
@@ -2672,6 +2877,7 @@ void EditorPropertyQuaternion::_edit_custom_value() {
 }
 
 void EditorPropertyQuaternion::_custom_value_changed(double val) {
+	ZoneScoped;
 	if (setting) {
 		return;
 	}
@@ -2693,6 +2899,7 @@ void EditorPropertyQuaternion::_custom_value_changed(double val) {
 }
 
 void EditorPropertyQuaternion::_value_changed(double val, const String &p_name) {
+	ZoneScoped;
 	if (setting) {
 		return;
 	}
@@ -2707,6 +2914,7 @@ void EditorPropertyQuaternion::_value_changed(double val, const String &p_name) 
 }
 
 bool EditorPropertyQuaternion::is_grabbing_euler() {
+	ZoneScoped;
 	bool is_grabbing = false;
 	for (int i = 0; i < 3; i++) {
 		is_grabbing |= euler[i]->is_grabbing();
@@ -2715,6 +2923,7 @@ bool EditorPropertyQuaternion::is_grabbing_euler() {
 }
 
 void EditorPropertyQuaternion::update_property() {
+	ZoneScoped;
 	Quaternion val = get_edited_object()->get(get_edited_property());
 	setting = true;
 	spin[0]->set_value(val.x);
@@ -2734,10 +2943,12 @@ void EditorPropertyQuaternion::update_property() {
 }
 
 void EditorPropertyQuaternion::_warning_pressed() {
+	ZoneScoped;
 	warning_dialog->popup_centered();
 }
 
 void EditorPropertyQuaternion::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -2760,6 +2971,7 @@ void EditorPropertyQuaternion::_bind_methods() {
 }
 
 void EditorPropertyQuaternion::setup(double p_min, double p_max, double p_step, bool p_hide_slider, const String &p_suffix, bool p_hide_editor) {
+	ZoneScoped;
 	for (int i = 0; i < 4; i++) {
 		spin[i]->set_min(p_min);
 		spin[i]->set_max(p_max);
@@ -2788,6 +3000,7 @@ void EditorPropertyQuaternion::setup(double p_min, double p_max, double p_step, 
 }
 
 EditorPropertyQuaternion::EditorPropertyQuaternion() {
+	ZoneScoped;
 	bool horizontal = EDITOR_GET("interface/inspector/horizontal_vector_types_editing");
 
 	VBoxContainer *bc = memnew(VBoxContainer);
@@ -2864,12 +3077,14 @@ EditorPropertyQuaternion::EditorPropertyQuaternion() {
 ///////////////////// VECTOR4 /////////////////////////
 
 void EditorPropertyVector4::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	for (int i = 0; i < 4; i++) {
 		spin[i]->set_read_only(p_read_only);
 	}
 };
 
 void EditorPropertyVector4::_value_changed(double val, const String &p_name) {
+	ZoneScoped;
 	if (setting) {
 		return;
 	}
@@ -2883,6 +3098,7 @@ void EditorPropertyVector4::_value_changed(double val, const String &p_name) {
 }
 
 void EditorPropertyVector4::update_property() {
+	ZoneScoped;
 	Vector4 val = get_edited_object()->get(get_edited_property());
 	setting = true;
 	spin[0]->set_value(val.x);
@@ -2893,6 +3109,7 @@ void EditorPropertyVector4::update_property() {
 }
 
 void EditorPropertyVector4::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -2908,6 +3125,7 @@ void EditorPropertyVector4::_bind_methods() {
 }
 
 void EditorPropertyVector4::setup(double p_min, double p_max, double p_step, bool p_hide_slider, const String &p_suffix) {
+	ZoneScoped;
 	for (int i = 0; i < 4; i++) {
 		spin[i]->set_min(p_min);
 		spin[i]->set_max(p_max);
@@ -2920,6 +3138,7 @@ void EditorPropertyVector4::setup(double p_min, double p_max, double p_step, boo
 }
 
 EditorPropertyVector4::EditorPropertyVector4() {
+	ZoneScoped;
 	bool horizontal = EDITOR_GET("interface/inspector/horizontal_vector_types_editing");
 
 	BoxContainer *bc;
@@ -2954,12 +3173,14 @@ EditorPropertyVector4::EditorPropertyVector4() {
 ///////////////////// VECTOR4I /////////////////////////
 
 void EditorPropertyVector4i::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	for (int i = 0; i < 4; i++) {
 		spin[i]->set_read_only(p_read_only);
 	}
 };
 
 void EditorPropertyVector4i::_value_changed(double val, const String &p_name) {
+	ZoneScoped;
 	if (setting) {
 		return;
 	}
@@ -2973,6 +3194,7 @@ void EditorPropertyVector4i::_value_changed(double val, const String &p_name) {
 }
 
 void EditorPropertyVector4i::update_property() {
+	ZoneScoped;
 	Vector4i val = get_edited_object()->get(get_edited_property());
 	setting = true;
 	spin[0]->set_value(val.x);
@@ -2983,6 +3205,7 @@ void EditorPropertyVector4i::update_property() {
 }
 
 void EditorPropertyVector4i::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -2998,6 +3221,7 @@ void EditorPropertyVector4i::_bind_methods() {
 }
 
 void EditorPropertyVector4i::setup(double p_min, double p_max, bool p_hide_slider, const String &p_suffix) {
+	ZoneScoped;
 	for (int i = 0; i < 4; i++) {
 		spin[i]->set_min(p_min);
 		spin[i]->set_max(p_max);
@@ -3009,6 +3233,7 @@ void EditorPropertyVector4i::setup(double p_min, double p_max, bool p_hide_slide
 }
 
 EditorPropertyVector4i::EditorPropertyVector4i() {
+	ZoneScoped;
 	bool horizontal = EDITOR_GET("interface/inspector/horizontal_vector_types_editing");
 
 	BoxContainer *bc;
@@ -3043,12 +3268,14 @@ EditorPropertyVector4i::EditorPropertyVector4i() {
 ///////////////////// AABB /////////////////////////
 
 void EditorPropertyAABB::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	for (int i = 0; i < 6; i++) {
 		spin[i]->set_read_only(p_read_only);
 	}
 };
 
 void EditorPropertyAABB::_value_changed(double val, const String &p_name) {
+	ZoneScoped;
 	if (setting) {
 		return;
 	}
@@ -3065,6 +3292,7 @@ void EditorPropertyAABB::_value_changed(double val, const String &p_name) {
 }
 
 void EditorPropertyAABB::update_property() {
+	ZoneScoped;
 	AABB val = get_edited_object()->get(get_edited_property());
 	setting = true;
 	spin[0]->set_value(val.position.x);
@@ -3078,6 +3306,7 @@ void EditorPropertyAABB::update_property() {
 }
 
 void EditorPropertyAABB::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -3093,6 +3322,7 @@ void EditorPropertyAABB::_bind_methods() {
 }
 
 void EditorPropertyAABB::setup(double p_min, double p_max, double p_step, bool p_hide_slider, const String &p_suffix) {
+	ZoneScoped;
 	for (int i = 0; i < 6; i++) {
 		spin[i]->set_min(p_min);
 		spin[i]->set_max(p_max);
@@ -3105,6 +3335,7 @@ void EditorPropertyAABB::setup(double p_min, double p_max, double p_step, bool p
 }
 
 EditorPropertyAABB::EditorPropertyAABB() {
+	ZoneScoped;
 	GridContainer *g = memnew(GridContainer);
 	g->set_columns(3);
 	add_child(g);
@@ -3126,12 +3357,14 @@ EditorPropertyAABB::EditorPropertyAABB() {
 ///////////////////// TRANSFORM2D /////////////////////////
 
 void EditorPropertyTransform2D::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	for (int i = 0; i < 6; i++) {
 		spin[i]->set_read_only(p_read_only);
 	}
 };
 
 void EditorPropertyTransform2D::_value_changed(double val, const String &p_name) {
+	ZoneScoped;
 	if (setting) {
 		return;
 	}
@@ -3148,6 +3381,7 @@ void EditorPropertyTransform2D::_value_changed(double val, const String &p_name)
 }
 
 void EditorPropertyTransform2D::update_property() {
+	ZoneScoped;
 	Transform2D val = get_edited_object()->get(get_edited_property());
 	setting = true;
 	spin[0]->set_value(val[0][0]);
@@ -3161,6 +3395,7 @@ void EditorPropertyTransform2D::update_property() {
 }
 
 void EditorPropertyTransform2D::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -3181,6 +3416,7 @@ void EditorPropertyTransform2D::_bind_methods() {
 }
 
 void EditorPropertyTransform2D::setup(double p_min, double p_max, double p_step, bool p_hide_slider, const String &p_suffix) {
+	ZoneScoped;
 	for (int i = 0; i < 6; i++) {
 		spin[i]->set_min(p_min);
 		spin[i]->set_max(p_max);
@@ -3195,6 +3431,7 @@ void EditorPropertyTransform2D::setup(double p_min, double p_max, double p_step,
 }
 
 EditorPropertyTransform2D::EditorPropertyTransform2D(bool p_include_origin) {
+	ZoneScoped;
 	GridContainer *g = memnew(GridContainer);
 	g->set_columns(p_include_origin ? 3 : 2);
 	add_child(g);
@@ -3217,12 +3454,14 @@ EditorPropertyTransform2D::EditorPropertyTransform2D(bool p_include_origin) {
 ///////////////////// BASIS /////////////////////////
 
 void EditorPropertyBasis::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	for (int i = 0; i < 9; i++) {
 		spin[i]->set_read_only(p_read_only);
 	}
 };
 
 void EditorPropertyBasis::_value_changed(double val, const String &p_name) {
+	ZoneScoped;
 	if (setting) {
 		return;
 	}
@@ -3242,6 +3481,7 @@ void EditorPropertyBasis::_value_changed(double val, const String &p_name) {
 }
 
 void EditorPropertyBasis::update_property() {
+	ZoneScoped;
 	Basis val = get_edited_object()->get(get_edited_property());
 	setting = true;
 	spin[0]->set_value(val[0][0]);
@@ -3258,6 +3498,7 @@ void EditorPropertyBasis::update_property() {
 }
 
 void EditorPropertyBasis::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -3273,6 +3514,7 @@ void EditorPropertyBasis::_bind_methods() {
 }
 
 void EditorPropertyBasis::setup(double p_min, double p_max, double p_step, bool p_hide_slider, const String &p_suffix) {
+	ZoneScoped;
 	for (int i = 0; i < 9; i++) {
 		spin[i]->set_min(p_min);
 		spin[i]->set_max(p_max);
@@ -3287,6 +3529,7 @@ void EditorPropertyBasis::setup(double p_min, double p_max, double p_step, bool 
 }
 
 EditorPropertyBasis::EditorPropertyBasis() {
+	ZoneScoped;
 	GridContainer *g = memnew(GridContainer);
 	g->set_columns(3);
 	add_child(g);
@@ -3307,12 +3550,14 @@ EditorPropertyBasis::EditorPropertyBasis() {
 ///////////////////// TRANSFORM3D /////////////////////////
 
 void EditorPropertyTransform3D::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	for (int i = 0; i < 12; i++) {
 		spin[i]->set_read_only(p_read_only);
 	}
 };
 
 void EditorPropertyTransform3D::_value_changed(double val, const String &p_name) {
+	ZoneScoped;
 	if (setting) {
 		return;
 	}
@@ -3335,10 +3580,12 @@ void EditorPropertyTransform3D::_value_changed(double val, const String &p_name)
 }
 
 void EditorPropertyTransform3D::update_property() {
+	ZoneScoped;
 	update_using_transform(get_edited_object()->get(get_edited_property()));
 }
 
 void EditorPropertyTransform3D::update_using_transform(Transform3D p_transform) {
+	ZoneScoped;
 	setting = true;
 	spin[0]->set_value(p_transform.basis[0][0]);
 	spin[1]->set_value(p_transform.basis[0][1]);
@@ -3356,6 +3603,7 @@ void EditorPropertyTransform3D::update_using_transform(Transform3D p_transform) 
 }
 
 void EditorPropertyTransform3D::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -3371,6 +3619,7 @@ void EditorPropertyTransform3D::_bind_methods() {
 }
 
 void EditorPropertyTransform3D::setup(double p_min, double p_max, double p_step, bool p_hide_slider, const String &p_suffix) {
+	ZoneScoped;
 	for (int i = 0; i < 12; i++) {
 		spin[i]->set_min(p_min);
 		spin[i]->set_max(p_max);
@@ -3385,6 +3634,7 @@ void EditorPropertyTransform3D::setup(double p_min, double p_max, double p_step,
 }
 
 EditorPropertyTransform3D::EditorPropertyTransform3D() {
+	ZoneScoped;
 	GridContainer *g = memnew(GridContainer);
 	g->set_columns(4);
 	add_child(g);
@@ -3405,12 +3655,14 @@ EditorPropertyTransform3D::EditorPropertyTransform3D() {
 ///////////////////// PROJECTION /////////////////////////
 
 void EditorPropertyProjection::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	for (int i = 0; i < 12; i++) {
 		spin[i]->set_read_only(p_read_only);
 	}
 };
 
 void EditorPropertyProjection::_value_changed(double val, const String &p_name) {
+	ZoneScoped;
 	if (setting) {
 		return;
 	}
@@ -3437,10 +3689,12 @@ void EditorPropertyProjection::_value_changed(double val, const String &p_name) 
 }
 
 void EditorPropertyProjection::update_property() {
+	ZoneScoped;
 	update_using_transform(get_edited_object()->get(get_edited_property()));
 }
 
 void EditorPropertyProjection::update_using_transform(Projection p_transform) {
+	ZoneScoped;
 	setting = true;
 	spin[0]->set_value(p_transform.columns[0][0]);
 	spin[1]->set_value(p_transform.columns[0][1]);
@@ -3462,6 +3716,7 @@ void EditorPropertyProjection::update_using_transform(Projection p_transform) {
 }
 
 void EditorPropertyProjection::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -3477,6 +3732,7 @@ void EditorPropertyProjection::_bind_methods() {
 }
 
 void EditorPropertyProjection::setup(double p_min, double p_max, double p_step, bool p_hide_slider, const String &p_suffix) {
+	ZoneScoped;
 	for (int i = 0; i < 16; i++) {
 		spin[i]->set_min(p_min);
 		spin[i]->set_max(p_max);
@@ -3491,6 +3747,7 @@ void EditorPropertyProjection::setup(double p_min, double p_max, double p_step, 
 }
 
 EditorPropertyProjection::EditorPropertyProjection() {
+	ZoneScoped;
 	GridContainer *g = memnew(GridContainer);
 	g->set_columns(4);
 	add_child(g);
@@ -3510,6 +3767,7 @@ EditorPropertyProjection::EditorPropertyProjection() {
 ////////////// COLOR PICKER //////////////////////
 
 void EditorPropertyColor::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	picker->set_disabled(p_read_only);
 };
 
@@ -3523,16 +3781,19 @@ void EditorPropertyColor::_color_changed(const Color &p_color) {
 }
 
 void EditorPropertyColor::_popup_closed() {
+	ZoneScoped;
 	if (picker->get_pick_color() != last_color) {
 		emit_changed(get_edited_property(), picker->get_pick_color(), "", false);
 	}
 }
 
 void EditorPropertyColor::_picker_opening() {
+	ZoneScoped;
 	last_color = picker->get_pick_color();
 }
 
 void EditorPropertyColor::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -3542,6 +3803,7 @@ void EditorPropertyColor::_notification(int p_what) {
 }
 
 void EditorPropertyColor::update_property() {
+	ZoneScoped;
 	picker->set_pick_color(get_edited_object()->get(get_edited_property()));
 	const Color color = picker->get_pick_color();
 
@@ -3563,10 +3825,12 @@ void EditorPropertyColor::update_property() {
 }
 
 void EditorPropertyColor::setup(bool p_show_alpha) {
+	ZoneScoped;
 	picker->set_edit_alpha(p_show_alpha);
 }
 
 EditorPropertyColor::EditorPropertyColor() {
+	ZoneScoped;
 	picker = memnew(ColorPickerButton);
 	add_child(picker);
 	picker->set_flat(true);
@@ -3579,16 +3843,19 @@ EditorPropertyColor::EditorPropertyColor() {
 ////////////// NODE PATH //////////////////////
 
 void EditorPropertyNodePath::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	assign->set_disabled(p_read_only);
 	clear->set_disabled(p_read_only);
 };
 
 String EditorPropertyNodePath::_get_meta_pointer_property() const {
+	ZoneScoped;
 	ERR_FAIL_COND_V(!pointer_mode, String());
 	return SceneState::get_meta_pointer_property(get_edited_property());
 }
 
 Variant EditorPropertyNodePath::_get_cache_value(const StringName &p_prop, bool &r_valid) const {
+	ZoneScoped;
 	if (p_prop == get_edited_property()) {
 		r_valid = true;
 		return const_cast<EditorPropertyNodePath *>(this)->get_edited_object()->get(pointer_mode ? StringName(_get_meta_pointer_property()) : get_edited_property(), &r_valid);
@@ -3597,6 +3864,7 @@ Variant EditorPropertyNodePath::_get_cache_value(const StringName &p_prop, bool 
 }
 
 StringName EditorPropertyNodePath::_get_revert_property() const {
+	ZoneScoped;
 	if (pointer_mode) {
 		return _get_meta_pointer_property();
 	} else {
@@ -3605,6 +3873,7 @@ StringName EditorPropertyNodePath::_get_revert_property() const {
 }
 
 void EditorPropertyNodePath::_node_selected(const NodePath &p_path) {
+	ZoneScoped;
 	NodePath path = p_path;
 	Node *base_node = nullptr;
 
@@ -3644,6 +3913,7 @@ void EditorPropertyNodePath::_node_selected(const NodePath &p_path) {
 }
 
 void EditorPropertyNodePath::_node_assign() {
+	ZoneScoped;
 	if (!scene_tree) {
 		scene_tree = memnew(SceneTreeDialog);
 		scene_tree->get_scene_tree()->set_show_enabled_subscene(true);
@@ -3655,6 +3925,7 @@ void EditorPropertyNodePath::_node_assign() {
 }
 
 void EditorPropertyNodePath::_node_clear() {
+	ZoneScoped;
 	if (pointer_mode) {
 		emit_changed(_get_meta_pointer_property(), NodePath());
 	} else {
@@ -3664,10 +3935,12 @@ void EditorPropertyNodePath::_node_clear() {
 }
 
 bool EditorPropertyNodePath::can_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) const {
+	ZoneScoped;
 	return !is_read_only() && is_drop_valid(p_data);
 }
 
 void EditorPropertyNodePath::drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) {
+	ZoneScoped;
 	ERR_FAIL_COND(!is_drop_valid(p_data));
 	Dictionary data_dict = p_data;
 	Array nodes = data_dict["nodes"];
@@ -3679,6 +3952,7 @@ void EditorPropertyNodePath::drop_data_fw(const Point2 &p_point, const Variant &
 }
 
 bool EditorPropertyNodePath::is_drop_valid(const Dictionary &p_drag_data) const {
+	ZoneScoped;
 	if (p_drag_data["type"] != "nodes") {
 		return false;
 	}
@@ -3706,6 +3980,7 @@ bool EditorPropertyNodePath::is_drop_valid(const Dictionary &p_drag_data) const 
 }
 
 void EditorPropertyNodePath::update_property() {
+	ZoneScoped;
 	NodePath p;
 	if (pointer_mode) {
 		p = get_edited_object()->get(_get_meta_pointer_property());
@@ -3751,6 +4026,7 @@ void EditorPropertyNodePath::update_property() {
 }
 
 void EditorPropertyNodePath::setup(const NodePath &p_base_hint, Vector<StringName> p_valid_types, bool p_use_path_from_scene_root, bool p_pointer_mode) {
+	ZoneScoped;
 	pointer_mode = p_pointer_mode;
 	base_hint = p_base_hint;
 	valid_types = p_valid_types;
@@ -3758,6 +4034,7 @@ void EditorPropertyNodePath::setup(const NodePath &p_base_hint, Vector<StringNam
 }
 
 void EditorPropertyNodePath::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -3768,11 +4045,13 @@ void EditorPropertyNodePath::_notification(int p_what) {
 }
 
 void EditorPropertyNodePath::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("_can_drop_data_fw", "position", "data", "from"), &EditorPropertyNodePath::can_drop_data_fw);
 	ClassDB::bind_method(D_METHOD("_drop_data_fw", "position", "data", "from"), &EditorPropertyNodePath::drop_data_fw);
 }
 
 EditorPropertyNodePath::EditorPropertyNodePath() {
+	ZoneScoped;
 	HBoxContainer *hbc = memnew(HBoxContainer);
 	hbc->add_theme_constant_override("separation", 0);
 	add_child(hbc);
@@ -3795,6 +4074,7 @@ EditorPropertyNodePath::EditorPropertyNodePath() {
 ///////////////////// RID /////////////////////////
 
 void EditorPropertyRID::update_property() {
+	ZoneScoped;
 	RID rid = get_edited_object()->get(get_edited_property());
 	if (rid.is_valid()) {
 		uint64_t id = rid.get_id();
@@ -3805,6 +4085,7 @@ void EditorPropertyRID::update_property() {
 }
 
 EditorPropertyRID::EditorPropertyRID() {
+	ZoneScoped;
 	label = memnew(Label);
 	add_child(label);
 }
@@ -3812,10 +4093,12 @@ EditorPropertyRID::EditorPropertyRID() {
 ////////////// RESOURCE //////////////////////
 
 void EditorPropertyResource::_set_read_only(bool p_read_only) {
+	ZoneScoped;
 	resource_picker->set_editable(!p_read_only);
 };
 
 void EditorPropertyResource::_resource_selected(const Ref<Resource> &p_resource, bool p_inspect) {
+	ZoneScoped;
 	if (p_resource->is_built_in() && !p_resource->get_path().is_empty()) {
 		String parent = p_resource->get_path().get_slice("::", 0);
 		List<String> extensions;
@@ -3905,14 +4188,17 @@ void EditorPropertyResource::_sub_inspector_property_keyed(const String &p_prope
 }
 
 void EditorPropertyResource::_sub_inspector_resource_selected(const Ref<Resource> &p_resource, const String &p_property) {
+	ZoneScoped;
 	emit_signal(SNAME("resource_selected"), String(get_edited_property()) + ":" + p_property, p_resource);
 }
 
 void EditorPropertyResource::_sub_inspector_object_id_selected(int p_id) {
+	ZoneScoped;
 	emit_signal(SNAME("object_id_selected"), get_edited_property(), p_id);
 }
 
 void EditorPropertyResource::_open_editor_pressed() {
+	ZoneScoped;
 	Ref<Resource> res = get_edited_object()->get(get_edited_property());
 	if (res.is_valid()) {
 		// May clear the editor so do it deferred.
@@ -3921,6 +4207,7 @@ void EditorPropertyResource::_open_editor_pressed() {
 }
 
 void EditorPropertyResource::_fold_other_editors(Object *p_self) {
+	ZoneScoped;
 	if (this == p_self) {
 		return;
 	}
@@ -3954,6 +4241,7 @@ void EditorPropertyResource::_fold_other_editors(Object *p_self) {
 }
 
 void EditorPropertyResource::_update_property_bg() {
+	ZoneScoped;
 	if (!is_inside_tree()) {
 		return;
 	}
@@ -3989,6 +4277,7 @@ void EditorPropertyResource::_update_property_bg() {
 }
 
 void EditorPropertyResource::_update_preferred_shader() {
+	ZoneScoped;
 	Node *parent = get_parent();
 	EditorProperty *parent_property = nullptr;
 
@@ -4018,6 +4307,7 @@ void EditorPropertyResource::_update_preferred_shader() {
 }
 
 void EditorPropertyResource::_viewport_selected(const NodePath &p_path) {
+	ZoneScoped;
 	Node *to_node = get_node(p_path);
 	if (!Object::cast_to<Viewport>(to_node)) {
 		EditorNode::get_singleton()->show_warning(TTR("Selected node is not a Viewport!"));
@@ -4034,6 +4324,7 @@ void EditorPropertyResource::_viewport_selected(const NodePath &p_path) {
 }
 
 void EditorPropertyResource::setup(Object *p_object, const String &p_path, const String &p_base_type) {
+	ZoneScoped;
 	if (resource_picker) {
 		memdelete(resource_picker);
 		resource_picker = nullptr;
@@ -4072,6 +4363,7 @@ void EditorPropertyResource::setup(Object *p_object, const String &p_path, const
 }
 
 void EditorPropertyResource::update_property() {
+	ZoneScoped;
 	Ref<Resource> res = get_edited_object()->get(get_edited_property());
 
 	if (use_sub_inspector) {
@@ -4147,28 +4439,33 @@ void EditorPropertyResource::update_property() {
 }
 
 void EditorPropertyResource::collapse_all_folding() {
+	ZoneScoped;
 	if (sub_inspector) {
 		sub_inspector->collapse_all_folding();
 	}
 }
 
 void EditorPropertyResource::expand_all_folding() {
+	ZoneScoped;
 	if (sub_inspector) {
 		sub_inspector->expand_all_folding();
 	}
 }
 
 void EditorPropertyResource::expand_revertable() {
+	ZoneScoped;
 	if (sub_inspector) {
 		sub_inspector->expand_revertable();
 	}
 }
 
 void EditorPropertyResource::set_use_sub_inspector(bool p_enable) {
+	ZoneScoped;
 	use_sub_inspector = p_enable;
 }
 
 void EditorPropertyResource::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -4180,11 +4477,13 @@ void EditorPropertyResource::_notification(int p_what) {
 }
 
 void EditorPropertyResource::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("_open_editor_pressed"), &EditorPropertyResource::_open_editor_pressed);
 	ClassDB::bind_method(D_METHOD("_fold_other_editors"), &EditorPropertyResource::_fold_other_editors);
 }
 
 EditorPropertyResource::EditorPropertyResource() {
+	ZoneScoped;
 	use_sub_inspector = bool(EDITOR_GET("interface/inspector/open_resources_in_current_inspector"));
 
 	add_to_group("_editor_resource_properties");
@@ -4193,10 +4492,12 @@ EditorPropertyResource::EditorPropertyResource() {
 ////////////// DEFAULT PLUGIN //////////////////////
 
 bool EditorInspectorDefaultPlugin::can_handle(Object *p_object) {
+	ZoneScoped;
 	return true; // Can handle everything.
 }
 
 bool EditorInspectorDefaultPlugin::parse_property(Object *p_object, const Variant::Type p_type, const String &p_path, const PropertyHint p_hint, const String &p_hint_text, const uint32_t p_usage, const bool p_wide) {
+	ZoneScoped;
 	Control *editor = EditorInspectorDefaultPlugin::get_editor_for_property(p_object, p_type, p_path, p_hint, p_hint_text, p_usage, p_wide);
 	if (editor) {
 		add_property_editor(p_path, editor);
@@ -4217,6 +4518,7 @@ struct EditorPropertyRangeHint {
 };
 
 static EditorPropertyRangeHint _parse_range_hint(PropertyHint p_hint, const String &p_hint_text, double p_default_step) {
+	ZoneScoped;
 	EditorPropertyRangeHint hint;
 	hint.step = p_default_step;
 	Vector<String> slices = p_hint_text.split(",");
@@ -4271,6 +4573,7 @@ static EditorPropertyRangeHint _parse_range_hint(PropertyHint p_hint, const Stri
 }
 
 EditorProperty *EditorInspectorDefaultPlugin::get_editor_for_property(Object *p_object, const Variant::Type p_type, const String &p_path, const PropertyHint p_hint, const String &p_hint_text, const uint32_t p_usage, const bool p_wide) {
+	ZoneScoped;
 	double default_float_step = EDITOR_GET("interface/inspector/default_float_step");
 
 	switch (p_type) {

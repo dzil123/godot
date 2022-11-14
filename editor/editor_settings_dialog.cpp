@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_settings_dialog.cpp                                           */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_settings_dialog.h"
 
 #include "core/config/project_settings.h"
@@ -46,6 +77,7 @@
 #include "scene/gui/margin_container.h"
 
 void EditorSettingsDialog::ok_pressed() {
+	ZoneScoped;
 	if (!EditorSettings::get_singleton()) {
 		return;
 	}
@@ -55,10 +87,12 @@ void EditorSettingsDialog::ok_pressed() {
 }
 
 void EditorSettingsDialog::_settings_changed() {
+	ZoneScoped;
 	timer->start();
 }
 
 void EditorSettingsDialog::_settings_property_edited(const String &p_name) {
+	ZoneScoped;
 	String full_name = inspector->get_full_item_path(p_name);
 
 	if (full_name == "interface/theme/accent_color" || full_name == "interface/theme/base_color" || full_name == "interface/theme/contrast") {
@@ -69,11 +103,13 @@ void EditorSettingsDialog::_settings_property_edited(const String &p_name) {
 }
 
 void EditorSettingsDialog::_settings_save() {
+	ZoneScoped;
 	EditorSettings::get_singleton()->notify_changes();
 	EditorSettings::get_singleton()->save();
 }
 
 void EditorSettingsDialog::cancel_pressed() {
+	ZoneScoped;
 	if (!EditorSettings::get_singleton()) {
 		return;
 	}
@@ -82,6 +118,7 @@ void EditorSettingsDialog::cancel_pressed() {
 }
 
 void EditorSettingsDialog::popup_edit_settings() {
+	ZoneScoped;
 	if (!EditorSettings::get_singleton()) {
 		return;
 	}
@@ -109,20 +146,24 @@ void EditorSettingsDialog::popup_edit_settings() {
 }
 
 void EditorSettingsDialog::_filter_shortcuts(const String &) {
+	ZoneScoped;
 	_update_shortcuts();
 }
 
 void EditorSettingsDialog::_filter_shortcuts_by_event(const Ref<InputEvent> &p_event) {
+	ZoneScoped;
 	if (p_event.is_null() || (p_event->is_pressed() && !p_event->is_echo())) {
 		_update_shortcuts();
 	}
 }
 
 void EditorSettingsDialog::_undo_redo_callback(void *p_self, const String &p_name) {
+	ZoneScoped;
 	EditorNode::get_log()->add_message(p_name, EditorLog::MSG_TYPE_EDITOR);
 }
 
 void EditorSettingsDialog::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_VISIBILITY_CHANGED: {
 			if (!is_visible()) {
@@ -158,6 +199,7 @@ void EditorSettingsDialog::_notification(int p_what) {
 }
 
 void EditorSettingsDialog::shortcut_input(const Ref<InputEvent> &p_event) {
+	ZoneScoped;
 	ERR_FAIL_COND(p_event.is_null());
 	Ref<EditorUndoRedoManager> &undo_redo = EditorNode::get_undo_redo();
 
@@ -195,6 +237,7 @@ void EditorSettingsDialog::shortcut_input(const Ref<InputEvent> &p_event) {
 }
 
 void EditorSettingsDialog::_update_icons() {
+	ZoneScoped;
 	search_box->set_right_icon(shortcuts->get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
 	search_box->set_clear_button_enabled(true);
 	shortcut_search_box->set_right_icon(shortcuts->get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
@@ -207,6 +250,7 @@ void EditorSettingsDialog::_update_icons() {
 }
 
 void EditorSettingsDialog::_event_config_confirmed() {
+	ZoneScoped;
 	Ref<InputEventKey> k = shortcut_editor->get_event();
 	if (k.is_null()) {
 		return;
@@ -228,6 +272,7 @@ void EditorSettingsDialog::_event_config_confirmed() {
 }
 
 void EditorSettingsDialog::_update_builtin_action(const String &p_name, const Array &p_events) {
+	ZoneScoped;
 	Array old_input_array = EditorSettings::get_singleton()->get_builtin_action_overrides(p_name);
 
 	Ref<EditorUndoRedoManager> &undo_redo = EditorNode::get_undo_redo();
@@ -244,6 +289,7 @@ void EditorSettingsDialog::_update_builtin_action(const String &p_name, const Ar
 }
 
 void EditorSettingsDialog::_update_shortcut_events(const String &p_path, const Array &p_events) {
+	ZoneScoped;
 	Ref<Shortcut> current_sc = EditorSettings::get_singleton()->get_shortcut(p_path);
 
 	Ref<EditorUndoRedoManager> &undo_redo = EditorNode::get_undo_redo();
@@ -260,6 +306,7 @@ void EditorSettingsDialog::_update_shortcut_events(const String &p_path, const A
 }
 
 Array EditorSettingsDialog::_event_list_to_array_helper(const List<Ref<InputEvent>> &p_events) {
+	ZoneScoped;
 	Array events;
 
 	// Convert the list to an array, and only keep key events as this is for the editor.
@@ -274,6 +321,7 @@ Array EditorSettingsDialog::_event_list_to_array_helper(const List<Ref<InputEven
 }
 
 void EditorSettingsDialog::_create_shortcut_treeitem(TreeItem *p_parent, const String &p_shortcut_identifier, const String &p_display, Array &p_events, bool p_allow_revert, bool p_is_action, bool p_is_collapsed) {
+	ZoneScoped;
 	TreeItem *shortcut_item = shortcuts->create_item(p_parent);
 	shortcut_item->set_collapsed(p_is_collapsed);
 	shortcut_item->set_text(0, p_display);
@@ -337,6 +385,7 @@ void EditorSettingsDialog::_create_shortcut_treeitem(TreeItem *p_parent, const S
 }
 
 bool EditorSettingsDialog::_should_display_shortcut(const String &p_name, const Array &p_events) const {
+	ZoneScoped;
 	const Ref<InputEvent> search_ev = shortcut_search_by_event->get_event();
 	bool event_match = true;
 	if (search_ev.is_valid()) {
@@ -493,6 +542,7 @@ void EditorSettingsDialog::_update_shortcuts() {
 }
 
 void EditorSettingsDialog::_shortcut_button_pressed(Object *p_item, int p_column, int p_idx, MouseButton p_button) {
+	ZoneScoped;
 	if (p_button != MouseButton::LEFT) {
 		return;
 	}
@@ -596,6 +646,7 @@ void EditorSettingsDialog::_shortcut_cell_double_clicked() {
 }
 
 Variant EditorSettingsDialog::get_drag_data_fw(const Point2 &p_point, Control *p_from) {
+	ZoneScoped;
 	TreeItem *selected = shortcuts->get_selected();
 
 	// Only allow drag for events
@@ -614,6 +665,7 @@ Variant EditorSettingsDialog::get_drag_data_fw(const Point2 &p_point, Control *p
 }
 
 bool EditorSettingsDialog::can_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) const {
+	ZoneScoped;
 	TreeItem *selected = shortcuts->get_selected();
 	TreeItem *item = shortcuts->get_item_at_position(p_point);
 	if (!selected || !item || item == selected || (String)item->get_meta("type", "") != "event") {
@@ -629,6 +681,7 @@ bool EditorSettingsDialog::can_drop_data_fw(const Point2 &p_point, const Variant
 }
 
 void EditorSettingsDialog::drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) {
+	ZoneScoped;
 	if (!can_drop_data_fw(p_point, p_data, p_from)) {
 		return;
 	}
@@ -658,10 +711,12 @@ void EditorSettingsDialog::drop_data_fw(const Point2 &p_point, const Variant &p_
 }
 
 void EditorSettingsDialog::_tabs_tab_changed(int p_tab) {
+	ZoneScoped;
 	_focus_current_search_box();
 }
 
 void EditorSettingsDialog::_focus_current_search_box() {
+	ZoneScoped;
 	Control *tab = tabs->get_current_tab_control();
 	LineEdit *current_search_box = nullptr;
 	if (tab == tab_general) {
@@ -677,19 +732,23 @@ void EditorSettingsDialog::_focus_current_search_box() {
 }
 
 void EditorSettingsDialog::_editor_restart() {
+	ZoneScoped;
 	EditorNode::get_singleton()->save_all_scenes();
 	EditorNode::get_singleton()->restart_editor();
 }
 
 void EditorSettingsDialog::_editor_restart_request() {
+	ZoneScoped;
 	restart_container->show();
 }
 
 void EditorSettingsDialog::_editor_restart_close() {
+	ZoneScoped;
 	restart_container->hide();
 }
 
 void EditorSettingsDialog::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("_update_shortcuts"), &EditorSettingsDialog::_update_shortcuts);
 	ClassDB::bind_method(D_METHOD("_settings_changed"), &EditorSettingsDialog::_settings_changed);
 
@@ -699,6 +758,7 @@ void EditorSettingsDialog::_bind_methods() {
 }
 
 EditorSettingsDialog::EditorSettingsDialog() {
+	ZoneScoped;
 	set_title(TTR("Editor Settings"));
 
 	tabs = memnew(TabContainer);

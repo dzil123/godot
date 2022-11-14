@@ -28,8 +28,39 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "editor/editor_command_palette.h"
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_command_palette.cpp                                           */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "core/os/keyboard.h"
+#include "editor/editor_command_palette.h"
 #include "editor/editor_node.h"
 #include "editor/editor_scale.h"
 #include "editor/editor_settings.h"
@@ -39,6 +70,7 @@
 EditorCommandPalette *EditorCommandPalette::singleton = nullptr;
 
 float EditorCommandPalette::_score_path(const String &p_search, const String &p_path) {
+	ZoneScoped;
 	float score = 0.9f + .1f * (p_search.length() / (float)p_path.length());
 
 	// Positive bias for matches close to the beginning of the file name.
@@ -58,6 +90,7 @@ float EditorCommandPalette::_score_path(const String &p_search, const String &p_
 }
 
 void EditorCommandPalette::_update_command_search(const String &search_text) {
+	ZoneScoped;
 	ERR_FAIL_COND(commands.size() == 0);
 
 	HashMap<String, TreeItem *> sections;
@@ -141,11 +174,13 @@ void EditorCommandPalette::_update_command_search(const String &search_text) {
 }
 
 void EditorCommandPalette::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("add_command", "command_name", "key_name", "binded_callable", "shortcut_text"), &EditorCommandPalette::_add_command, DEFVAL("None"));
 	ClassDB::bind_method(D_METHOD("remove_command", "key_name"), &EditorCommandPalette::remove_command);
 }
 
 void EditorCommandPalette::_sbox_input(const Ref<InputEvent> &p_ie) {
+	ZoneScoped;
 	Ref<InputEventKey> k = p_ie;
 	if (k.is_valid()) {
 		switch (k->get_keycode()) {
@@ -162,6 +197,7 @@ void EditorCommandPalette::_sbox_input(const Ref<InputEvent> &p_ie) {
 }
 
 void EditorCommandPalette::_confirmed() {
+	ZoneScoped;
 	TreeItem *selected_option = search_options->get_selected();
 	String command_key = selected_option != nullptr ? selected_option->get_metadata(0) : "";
 	if (!command_key.is_empty()) {
@@ -171,6 +207,7 @@ void EditorCommandPalette::_confirmed() {
 }
 
 void EditorCommandPalette::open_popup() {
+	ZoneScoped;
 	popup_centered_clamped(Size2i(600, 440), 0.8f);
 
 	command_search_box->clear();
@@ -180,18 +217,21 @@ void EditorCommandPalette::open_popup() {
 }
 
 void EditorCommandPalette::get_actions_list(List<String> *p_list) const {
+	ZoneScoped;
 	for (const KeyValue<String, Command> &E : commands) {
 		p_list->push_back(E.key);
 	}
 }
 
 void EditorCommandPalette::remove_command(String p_key_name) {
+	ZoneScoped;
 	ERR_FAIL_COND_MSG(!commands.has(p_key_name), "The Command '" + String(p_key_name) + "' doesn't exists. Unable to remove it.");
 
 	commands.erase(p_key_name);
 }
 
 void EditorCommandPalette::add_command(String p_command_name, String p_key_name, Callable p_action, Vector<Variant> arguments, String p_shortcut_text) {
+	ZoneScoped;
 	ERR_FAIL_COND_MSG(commands.has(p_key_name), "The Command '" + String(p_command_name) + "' already exists. Unable to add it.");
 
 	const Variant **argptrs = (const Variant **)alloca(sizeof(Variant *) * arguments.size());
@@ -207,6 +247,7 @@ void EditorCommandPalette::add_command(String p_command_name, String p_key_name,
 }
 
 void EditorCommandPalette::_add_command(String p_command_name, String p_key_name, Callable p_binded_action, String p_shortcut_text) {
+	ZoneScoped;
 	ERR_FAIL_COND_MSG(commands.has(p_key_name), "The Command '" + String(p_command_name) + "' already exists. Unable to add it.");
 
 	Command command;
@@ -224,6 +265,7 @@ void EditorCommandPalette::_add_command(String p_command_name, String p_key_name
 }
 
 void EditorCommandPalette::execute_command(String &p_command_key) {
+	ZoneScoped;
 	ERR_FAIL_COND_MSG(!commands.has(p_command_key), p_command_key + " not found.");
 	commands[p_command_key].last_used = OS::get_singleton()->get_unix_time();
 	commands[p_command_key].callable.call_deferred();
@@ -231,6 +273,7 @@ void EditorCommandPalette::execute_command(String &p_command_key) {
 }
 
 void EditorCommandPalette::register_shortcuts_as_command() {
+	ZoneScoped;
 	for (const KeyValue<String, Pair<String, Ref<Shortcut>>> &E : unregistered_shortcuts) {
 		String command_name = E.value.first;
 		Ref<Shortcut> shortcut = E.value.second;
@@ -254,6 +297,7 @@ void EditorCommandPalette::register_shortcuts_as_command() {
 }
 
 Ref<Shortcut> EditorCommandPalette::add_shortcut_command(const String &p_command, const String &p_key, Ref<Shortcut> p_shortcut) {
+	ZoneScoped;
 	if (is_inside_tree()) {
 		Ref<InputEventShortcut> ev;
 		ev.instantiate();
@@ -270,10 +314,12 @@ Ref<Shortcut> EditorCommandPalette::add_shortcut_command(const String &p_command
 }
 
 void EditorCommandPalette::_theme_changed() {
+	ZoneScoped;
 	command_search_box->set_right_icon(search_options->get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
 }
 
 void EditorCommandPalette::_save_history() const {
+	ZoneScoped;
 	Dictionary command_history;
 
 	for (const KeyValue<String, Command> &E : commands) {
@@ -285,6 +331,7 @@ void EditorCommandPalette::_save_history() const {
 }
 
 EditorCommandPalette *EditorCommandPalette::get_singleton() {
+	ZoneScoped;
 	if (singleton == nullptr) {
 		singleton = memnew(EditorCommandPalette);
 	}
@@ -292,6 +339,7 @@ EditorCommandPalette *EditorCommandPalette::get_singleton() {
 }
 
 EditorCommandPalette::EditorCommandPalette() {
+	ZoneScoped;
 	set_hide_on_ok(false);
 	connect("confirmed", callable_mp(this, &EditorCommandPalette::_confirmed));
 
@@ -324,6 +372,7 @@ EditorCommandPalette::EditorCommandPalette() {
 }
 
 Ref<Shortcut> ED_SHORTCUT_AND_COMMAND(const String &p_path, const String &p_name, Key p_keycode, String p_command_name) {
+	ZoneScoped;
 	if (p_command_name.is_empty()) {
 		p_command_name = p_name;
 	}

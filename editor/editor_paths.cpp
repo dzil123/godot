@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_paths.cpp                                                     */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_paths.h"
 
 #include "core/config/engine.h"
@@ -39,68 +70,84 @@
 EditorPaths *EditorPaths::singleton = nullptr;
 
 bool EditorPaths::are_paths_valid() const {
+	ZoneScoped;
 	return paths_valid;
 }
 
 String EditorPaths::get_data_dir() const {
+	ZoneScoped;
 	return data_dir;
 }
 
 String EditorPaths::get_config_dir() const {
+	ZoneScoped;
 	return config_dir;
 }
 
 String EditorPaths::get_cache_dir() const {
+	ZoneScoped;
 	return cache_dir;
 }
 
 String EditorPaths::get_project_data_dir() const {
+	ZoneScoped;
 	return project_data_dir;
 }
 
 bool EditorPaths::is_self_contained() const {
+	ZoneScoped;
 	return self_contained;
 }
 
 String EditorPaths::get_self_contained_file() const {
+	ZoneScoped;
 	return self_contained_file;
 }
 
 String EditorPaths::get_export_templates_dir() const {
+	ZoneScoped;
 	return get_data_dir().path_join(export_templates_folder);
 }
 
 String EditorPaths::get_project_settings_dir() const {
+	ZoneScoped;
 	return get_project_data_dir().path_join("editor");
 }
 
 String EditorPaths::get_text_editor_themes_dir() const {
+	ZoneScoped;
 	return get_config_dir().path_join(text_editor_themes_folder);
 }
 
 String EditorPaths::get_script_templates_dir() const {
+	ZoneScoped;
 	return get_config_dir().path_join(script_templates_folder);
 }
 
 String EditorPaths::get_project_script_templates_dir() const {
+	ZoneScoped;
 	return GLOBAL_GET("editor/script/templates_search_path");
 }
 
 String EditorPaths::get_feature_profiles_dir() const {
+	ZoneScoped;
 	return get_config_dir().path_join(feature_profiles_folder);
 }
 
 void EditorPaths::create() {
+	ZoneScoped;
 	ERR_FAIL_COND(singleton != nullptr);
 	memnew(EditorPaths());
 }
 
 void EditorPaths::free() {
+	ZoneScoped;
 	ERR_FAIL_COND(singleton == nullptr);
 	memdelete(singleton);
 }
 
 void EditorPaths::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("get_data_dir"), &EditorPaths::get_data_dir);
 	ClassDB::bind_method(D_METHOD("get_config_dir"), &EditorPaths::get_config_dir);
 	ClassDB::bind_method(D_METHOD("get_cache_dir"), &EditorPaths::get_cache_dir);
@@ -111,6 +158,7 @@ void EditorPaths::_bind_methods() {
 }
 
 EditorPaths::EditorPaths() {
+	ZoneScoped;
 	singleton = this;
 
 	project_data_dir = ProjectSettings::get_singleton()->get_project_data_path();

@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  project_manager.cpp                                                  */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "project_manager.h"
 
 #include "core/config/project_settings.h"
@@ -1127,6 +1158,7 @@ struct ProjectListComparator {
 };
 
 ProjectList::ProjectList() {
+	ZoneScoped;
 	_order_option = FilterOption::EDIT_DATE;
 	_scroll_children = memnew(VBoxContainer);
 	_scroll_children->set_h_size_flags(Control::SIZE_EXPAND_FILL);
@@ -1141,11 +1173,13 @@ ProjectList::~ProjectList() {
 }
 
 void ProjectList::update_icons_async() {
+	ZoneScoped;
 	_icon_load_index = 0;
 	set_process(true);
 }
 
 void ProjectList::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_PROCESS: {
 			// Load icons as a coroutine to speed up launch when you have hundreds of projects
@@ -1164,6 +1198,7 @@ void ProjectList::_notification(int p_what) {
 }
 
 void ProjectList::load_project_icon(int p_index) {
+	ZoneScoped;
 	Item &item = _projects.write[p_index];
 
 	Ref<Texture2D> default_icon = get_theme_icon(SNAME("DefaultProjectIcon"), SNAME("EditorIcons"));
@@ -1193,6 +1228,7 @@ void ProjectList::load_project_icon(int p_index) {
 
 // Load project data from p_property_key and return it in a ProjectList::Item. p_favorite is passed directly into the Item.
 ProjectList::Item ProjectList::load_project_data(const String &p_path, bool p_favorite) {
+	ZoneScoped;
 	String conf = p_path.path_join("project.godot");
 	bool grayed = false;
 	bool missing = false;
@@ -1312,6 +1348,7 @@ void ProjectList::load_projects() {
 }
 
 void ProjectList::update_dock_menu() {
+	ZoneScoped;
 	if (!DisplayServer::get_singleton()->has_feature(DisplayServer::FEATURE_GLOBAL_MENU)) {
 		return;
 	}
@@ -1340,12 +1377,14 @@ void ProjectList::update_dock_menu() {
 }
 
 void ProjectList::_global_menu_new_window(const Variant &p_tag) {
+	ZoneScoped;
 	List<String> args;
 	args.push_back("-p");
 	OS::get_singleton()->create_instance(args);
 }
 
 void ProjectList::_global_menu_open_project(const Variant &p_tag) {
+	ZoneScoped;
 	int idx = (int)p_tag;
 
 	if (idx >= 0 && idx < _projects.size()) {
@@ -1472,10 +1511,12 @@ void ProjectList::create_project_item_control(int p_index) {
 }
 
 void ProjectList::set_search_term(String p_search_term) {
+	ZoneScoped;
 	_search_term = p_search_term;
 }
 
 void ProjectList::set_order_option(int p_option) {
+	ZoneScoped;
 	FilterOption selected = (FilterOption)p_option;
 	EditorSettings::get_singleton()->set("project_manager/sorting_order", p_option);
 	EditorSettings::get_singleton()->save();
@@ -1485,6 +1526,7 @@ void ProjectList::set_order_option(int p_option) {
 }
 
 void ProjectList::sort_projects() {
+	ZoneScoped;
 	SortArray<Item, ProjectListComparator> sorter;
 	sorter.compare.order_option = _order_option;
 	sorter.sort(_projects.ptrw(), _projects.size());
@@ -1527,6 +1569,7 @@ const HashSet<String> &ProjectList::get_selected_project_keys() const {
 }
 
 Vector<ProjectList::Item> ProjectList::get_selected_projects() const {
+	ZoneScoped;
 	Vector<Item> items;
 	if (_selected_project_paths.size() == 0) {
 		return items;
@@ -1544,11 +1587,13 @@ Vector<ProjectList::Item> ProjectList::get_selected_projects() const {
 }
 
 void ProjectList::ensure_project_visible(int p_index) {
+	ZoneScoped;
 	const Item &item = _projects[p_index];
 	ensure_control_visible(item.control);
 }
 
 int ProjectList::get_single_selected_index() const {
+	ZoneScoped;
 	if (_selected_project_paths.size() == 0) {
 		// Default selection
 		return 0;
@@ -1570,6 +1615,7 @@ int ProjectList::get_single_selected_index() const {
 }
 
 void ProjectList::remove_project(int p_index, bool p_update_config) {
+	ZoneScoped;
 	const Item item = _projects[p_index]; // Take a copy
 
 	_selected_project_paths.erase(item.path);
@@ -1590,6 +1636,7 @@ void ProjectList::remove_project(int p_index, bool p_update_config) {
 }
 
 bool ProjectList::is_any_project_missing() const {
+	ZoneScoped;
 	for (int i = 0; i < _projects.size(); ++i) {
 		if (_projects[i].missing) {
 			return true;
@@ -1599,6 +1646,7 @@ bool ProjectList::is_any_project_missing() const {
 }
 
 void ProjectList::erase_missing_projects() {
+	ZoneScoped;
 	if (_projects.is_empty()) {
 		return;
 	}
@@ -1672,16 +1720,19 @@ int ProjectList::refresh_project(const String &dir_path) {
 }
 
 void ProjectList::add_project(const String &dir_path, bool favorite) {
+	ZoneScoped;
 	if (!_config.has_section(dir_path)) {
 		_config.set_value(dir_path, "favorite", favorite);
 	}
 }
 
 void ProjectList::save_config() {
+	ZoneScoped;
 	_config.save(_config_path);
 }
 
 void ProjectList::set_project_version(const String &p_project_path, int p_version) {
+	ZoneScoped;
 	for (ProjectList::Item &E : _projects) {
 		if (E.path == p_project_path) {
 			E.version = p_version;
@@ -1691,10 +1742,12 @@ void ProjectList::set_project_version(const String &p_project_path, int p_versio
 }
 
 int ProjectList::get_project_count() const {
+	ZoneScoped;
 	return _projects.size();
 }
 
 void ProjectList::select_project(int p_index) {
+	ZoneScoped;
 	Vector<Item> previous_selected_items = get_selected_projects();
 	_selected_project_paths.clear();
 
@@ -1706,6 +1759,7 @@ void ProjectList::select_project(int p_index) {
 }
 
 void ProjectList::select_first_visible_project() {
+	ZoneScoped;
 	bool found = false;
 
 	for (int i = 0; i < _projects.size(); i++) {
@@ -1723,6 +1777,7 @@ void ProjectList::select_first_visible_project() {
 }
 
 inline void sort(int &a, int &b) {
+	ZoneScoped;
 	if (a > b) {
 		int temp = a;
 		a = b;
@@ -1731,6 +1786,7 @@ inline void sort(int &a, int &b) {
 }
 
 void ProjectList::select_range(int p_begin, int p_end) {
+	ZoneScoped;
 	sort(p_begin, p_end);
 	select_project(p_begin);
 	for (int i = p_begin + 1; i <= p_end; ++i) {
@@ -1739,6 +1795,7 @@ void ProjectList::select_range(int p_begin, int p_end) {
 }
 
 void ProjectList::toggle_select(int p_index) {
+	ZoneScoped;
 	Item &item = _projects.write[p_index];
 	if (_selected_project_paths.has(item.path)) {
 		_selected_project_paths.erase(item.path);
@@ -1749,6 +1806,7 @@ void ProjectList::toggle_select(int p_index) {
 }
 
 void ProjectList::erase_selected_projects(bool p_delete_project_contents) {
+	ZoneScoped;
 	if (_selected_project_paths.size() == 0) {
 		return;
 	}
@@ -1777,6 +1835,7 @@ void ProjectList::erase_selected_projects(bool p_delete_project_contents) {
 
 // Draws selected project highlight
 void ProjectList::_panel_draw(Node *p_hb) {
+	ZoneScoped;
 	Control *hb = Object::cast_to<Control>(p_hb);
 
 	if (is_layout_rtl() && get_v_scroll_bar()->is_visible_in_tree()) {
@@ -1794,6 +1853,7 @@ void ProjectList::_panel_draw(Node *p_hb) {
 
 // Input for each item in the list
 void ProjectList::_panel_input(const Ref<InputEvent> &p_ev, Node *p_hb) {
+	ZoneScoped;
 	Ref<InputEventMouseButton> mb = p_ev;
 	int clicked_index = p_hb->get_index();
 	const Item &clicked_project = _projects[clicked_index];
@@ -1830,6 +1890,7 @@ void ProjectList::_panel_input(const Ref<InputEvent> &p_ev, Node *p_hb) {
 }
 
 void ProjectList::_favorite_pressed(Node *p_hb) {
+	ZoneScoped;
 	ProjectListItemControl *control = Object::cast_to<ProjectListItemControl>(p_hb);
 
 	int index = control->get_index();
@@ -1859,6 +1920,7 @@ void ProjectList::_favorite_pressed(Node *p_hb) {
 }
 
 void ProjectList::_show_project(const String &p_path) {
+	ZoneScoped;
 	OS::get_singleton()->shell_open(String("file://") + p_path);
 }
 
@@ -1866,6 +1928,7 @@ const char *ProjectList::SIGNAL_SELECTION_CHANGED = "selection_changed";
 const char *ProjectList::SIGNAL_PROJECT_ASK_OPEN = "project_ask_open";
 
 void ProjectList::_bind_methods() {
+	ZoneScoped;
 	ADD_SIGNAL(MethodInfo(SIGNAL_SELECTION_CHANGED));
 	ADD_SIGNAL(MethodInfo(SIGNAL_PROJECT_ASK_OPEN));
 }
@@ -1873,6 +1936,7 @@ void ProjectList::_bind_methods() {
 ProjectManager *ProjectManager::singleton = nullptr;
 
 void ProjectManager::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_TRANSLATION_CHANGED:
 		case NOTIFICATION_LAYOUT_DIRECTION_CHANGED: {
@@ -1951,10 +2015,12 @@ void ProjectManager::_notification(int p_what) {
 }
 
 Ref<Texture2D> ProjectManager::_file_dialog_get_icon(const String &p_path) {
+	ZoneScoped;
 	return singleton->icon_type_cache["ObjectHR"];
 }
 
 void ProjectManager::_build_icon_type_cache(Ref<Theme> p_theme) {
+	ZoneScoped;
 	List<StringName> tl;
 	p_theme->get_icon_list(SNAME("EditorIcons"), &tl);
 	for (List<StringName>::Element *E = tl.front(); E; E = E->next()) {
@@ -1977,6 +2043,7 @@ void ProjectManager::_dim_window() {
 }
 
 void ProjectManager::_update_project_buttons() {
+	ZoneScoped;
 	Vector<ProjectList::Item> selected_projects = _project_list->get_selected_projects();
 	bool empty_selection = selected_projects.is_empty();
 
@@ -1997,6 +2064,7 @@ void ProjectManager::_update_project_buttons() {
 }
 
 void ProjectManager::shortcut_input(const Ref<InputEvent> &p_ev) {
+	ZoneScoped;
 	ERR_FAIL_COND(p_ev.is_null());
 
 	Ref<InputEventKey> k = p_ev;
@@ -2086,6 +2154,7 @@ void ProjectManager::shortcut_input(const Ref<InputEvent> &p_ev) {
 }
 
 void ProjectManager::_load_recent_projects() {
+	ZoneScoped;
 	_project_list->set_search_term(search_box->get_text().strip_edges());
 	_project_list->load_projects();
 
@@ -2095,6 +2164,7 @@ void ProjectManager::_load_recent_projects() {
 }
 
 void ProjectManager::_on_projects_updated() {
+	ZoneScoped;
 	Vector<ProjectList::Item> selected_projects = _project_list->get_selected_projects();
 	int index = 0;
 	for (int i = 0; i < selected_projects.size(); ++i) {
@@ -2108,6 +2178,7 @@ void ProjectManager::_on_projects_updated() {
 }
 
 void ProjectManager::_on_project_created(const String &dir) {
+	ZoneScoped;
 	_project_list->add_project(dir, false);
 	_project_list->save_config();
 	search_box->clear();
@@ -2120,6 +2191,7 @@ void ProjectManager::_on_project_created(const String &dir) {
 }
 
 void ProjectManager::_confirm_update_settings() {
+	ZoneScoped;
 	_open_selected_projects();
 }
 
@@ -2163,6 +2235,7 @@ void ProjectManager::_open_selected_projects() {
 }
 
 void ProjectManager::_open_selected_projects_ask() {
+	ZoneScoped;
 	const HashSet<String> &selected_list = _project_list->get_selected_project_keys();
 
 	if (selected_list.size() < 1) {
@@ -2253,12 +2326,14 @@ void ProjectManager::_open_selected_projects_ask() {
 }
 
 void ProjectManager::_full_convert_button_pressed() {
+	ZoneScoped;
 	ask_update_settings->hide();
 	ask_full_convert_dialog->popup_centered(Size2i(600.0 * EDSCALE, 0));
 	ask_full_convert_dialog->get_cancel_button()->grab_focus();
 }
 
 void ProjectManager::_perform_full_project_conversion() {
+	ZoneScoped;
 	Vector<ProjectList::Item> selected_list = _project_list->get_selected_projects();
 	if (selected_list.is_empty()) {
 		return;
@@ -2285,6 +2360,7 @@ void ProjectManager::_perform_full_project_conversion() {
 }
 
 void ProjectManager::_run_project_confirm() {
+	ZoneScoped;
 	Vector<ProjectList::Item> selected_list = _project_list->get_selected_projects();
 
 	for (int i = 0; i < selected_list.size(); ++i) {
@@ -2321,6 +2397,7 @@ void ProjectManager::_run_project_confirm() {
 }
 
 void ProjectManager::_run_project() {
+	ZoneScoped;
 	const HashSet<String> &selected_list = _project_list->get_selected_project_keys();
 
 	if (selected_list.size() < 1) {
@@ -2336,6 +2413,7 @@ void ProjectManager::_run_project() {
 }
 
 void ProjectManager::_scan_dir(const String &path) {
+	ZoneScoped;
 	Ref<DirAccess> da = DirAccess::create(DirAccess::ACCESS_FILESYSTEM);
 	Error error = da->change_dir(path);
 	ERR_FAIL_COND_MSG(error != OK, "Could not scan directory at: " + path);
@@ -2352,6 +2430,7 @@ void ProjectManager::_scan_dir(const String &path) {
 	da->list_dir_end();
 }
 void ProjectManager::_scan_begin(const String &p_base) {
+	ZoneScoped;
 	print_line("Scanning projects at: " + p_base);
 	_scan_dir(p_base);
 	_project_list->save_config();
@@ -2359,20 +2438,24 @@ void ProjectManager::_scan_begin(const String &p_base) {
 }
 
 void ProjectManager::_scan_projects() {
+	ZoneScoped;
 	scan_dir->popup_file_dialog();
 }
 
 void ProjectManager::_new_project() {
+	ZoneScoped;
 	npdialog->set_mode(ProjectDialog::MODE_NEW);
 	npdialog->show_dialog();
 }
 
 void ProjectManager::_import_project() {
+	ZoneScoped;
 	npdialog->set_mode(ProjectDialog::MODE_IMPORT);
 	npdialog->show_dialog();
 }
 
 void ProjectManager::_rename_project() {
+	ZoneScoped;
 	const HashSet<String> &selected_list = _project_list->get_selected_project_keys();
 
 	if (selected_list.size() == 0) {
@@ -2387,16 +2470,19 @@ void ProjectManager::_rename_project() {
 }
 
 void ProjectManager::_erase_project_confirm() {
+	ZoneScoped;
 	_project_list->erase_selected_projects(delete_project_contents->is_pressed());
 	_update_project_buttons();
 }
 
 void ProjectManager::_erase_missing_projects_confirm() {
+	ZoneScoped;
 	_project_list->erase_missing_projects();
 	_update_project_buttons();
 }
 
 void ProjectManager::_erase_project() {
+	ZoneScoped;
 	const HashSet<String> &selected_list = _project_list->get_selected_project_keys();
 
 	if (selected_list.size() == 0) {
@@ -2416,15 +2502,18 @@ void ProjectManager::_erase_project() {
 }
 
 void ProjectManager::_erase_missing_projects() {
+	ZoneScoped;
 	erase_missing_ask->set_text(TTR("Remove all missing projects from the list?\nThe project folders' contents won't be modified."));
 	erase_missing_ask->popup_centered();
 }
 
 void ProjectManager::_show_about() {
+	ZoneScoped;
 	about->popup_centered(Size2(780, 500) * EDSCALE);
 }
 
 void ProjectManager::_language_selected(int p_id) {
+	ZoneScoped;
 	String lang = language_btn->get_item_metadata(p_id);
 	EditorSettings::get_singleton()->set("interface/editor/editor_language", lang);
 
@@ -2433,6 +2522,7 @@ void ProjectManager::_language_selected(int p_id) {
 }
 
 void ProjectManager::_restart_confirm() {
+	ZoneScoped;
 	List<String> args = OS::get_singleton()->get_cmdline_args();
 	Error err = OS::get_singleton()->create_instance(args);
 	ERR_FAIL_COND(err);
@@ -2442,6 +2532,7 @@ void ProjectManager::_restart_confirm() {
 }
 
 void ProjectManager::_install_project(const String &p_zip_path, const String &p_title) {
+	ZoneScoped;
 	npdialog->set_mode(ProjectDialog::MODE_INSTALL);
 	npdialog->set_zip_path(p_zip_path);
 	npdialog->set_zip_title(p_title);
@@ -2449,6 +2540,7 @@ void ProjectManager::_install_project(const String &p_zip_path, const String &p_
 }
 
 void ProjectManager::_files_dropped(PackedStringArray p_files) {
+	ZoneScoped;
 	if (p_files.size() == 1 && p_files[0].ends_with(".zip")) {
 		const String file = p_files[0].get_file();
 		_install_project(p_files[0], file.substr(0, file.length() - 4).capitalize());
@@ -2494,12 +2586,14 @@ void ProjectManager::_files_dropped(PackedStringArray p_files) {
 }
 
 void ProjectManager::_scan_multiple_folders(PackedStringArray p_files) {
+	ZoneScoped;
 	for (int i = 0; i < p_files.size(); i++) {
 		_scan_begin(p_files.get(i));
 	}
 }
 
 void ProjectManager::_on_order_option_changed(int p_idx) {
+	ZoneScoped;
 	if (is_inside_tree()) {
 		_project_list->set_order_option(p_idx);
 	}
@@ -2519,6 +2613,7 @@ void ProjectManager::_on_tab_changed(int p_tab) {
 }
 
 void ProjectManager::_on_search_term_changed(const String &p_term) {
+	ZoneScoped;
 	_project_list->set_search_term(p_term);
 	_project_list->sort_projects();
 
@@ -2530,20 +2625,24 @@ void ProjectManager::_on_search_term_changed(const String &p_term) {
 }
 
 void ProjectManager::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method("_update_project_buttons", &ProjectManager::_update_project_buttons);
 	ClassDB::bind_method("_version_button_pressed", &ProjectManager::_version_button_pressed);
 }
 
 void ProjectManager::_open_asset_library() {
+	ZoneScoped;
 	asset_library->disable_community_support();
 	tabs->set_current_tab(1);
 }
 
 void ProjectManager::_version_button_pressed() {
+	ZoneScoped;
 	DisplayServer::get_singleton()->clipboard_set(version_btn->get_text());
 }
 
 ProjectManager::ProjectManager() {
+	ZoneScoped;
 	singleton = this;
 
 	// load settings
@@ -2981,6 +3080,7 @@ ProjectManager::ProjectManager() {
 }
 
 ProjectManager::~ProjectManager() {
+	ZoneScoped;
 	singleton = nullptr;
 	if (EditorSettings::get_singleton()) {
 		EditorSettings::destroy();

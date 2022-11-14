@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_plugin.cpp                                                    */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_plugin.h"
 
 #include "editor/debugger/editor_debugger_node.h"
@@ -53,6 +84,7 @@
 #include "servers/rendering_server.h"
 
 TypedArray<Texture2D> EditorInterface::_make_mesh_previews(const TypedArray<Mesh> &p_meshes, int p_preview_size) {
+	ZoneScoped;
 	Vector<Ref<Mesh>> meshes;
 
 	for (int i = 0; i < p_meshes.size(); i++) {
@@ -69,6 +101,7 @@ TypedArray<Texture2D> EditorInterface::_make_mesh_previews(const TypedArray<Mesh
 }
 
 Vector<Ref<Texture2D>> EditorInterface::make_mesh_previews(const Vector<Ref<Mesh>> &p_meshes, Vector<Transform3D> *p_transforms, int p_preview_size) {
+	ZoneScoped;
 	int size = p_preview_size;
 
 	RID scenario = RS::get_singleton()->scenario_create();
@@ -157,26 +190,32 @@ Vector<Ref<Texture2D>> EditorInterface::make_mesh_previews(const Vector<Ref<Mesh
 }
 
 void EditorInterface::set_main_screen_editor(const String &p_name) {
+	ZoneScoped;
 	EditorNode::get_singleton()->select_editor_by_name(p_name);
 }
 
 VBoxContainer *EditorInterface::get_editor_main_screen() {
+	ZoneScoped;
 	return EditorNode::get_singleton()->get_main_screen_control();
 }
 
 void EditorInterface::edit_resource(const Ref<Resource> &p_resource) {
+	ZoneScoped;
 	EditorNode::get_singleton()->edit_resource(p_resource);
 }
 
 void EditorInterface::edit_node(Node *p_node) {
+	ZoneScoped;
 	EditorNode::get_singleton()->edit_node(p_node);
 }
 
 void EditorInterface::edit_script(const Ref<Script> &p_script, int p_line, int p_col, bool p_grab_focus) {
+	ZoneScoped;
 	ScriptEditor::get_singleton()->edit(p_script, p_line, p_col, p_grab_focus);
 }
 
 void EditorInterface::open_scene_from_path(const String &scene_path) {
+	ZoneScoped;
 	if (EditorNode::get_singleton()->is_changing_scene()) {
 		return;
 	}
@@ -185,6 +224,7 @@ void EditorInterface::open_scene_from_path(const String &scene_path) {
 }
 
 void EditorInterface::reload_scene_from_path(const String &scene_path) {
+	ZoneScoped;
 	if (EditorNode::get_singleton()->is_changing_scene()) {
 		return;
 	}
@@ -193,34 +233,42 @@ void EditorInterface::reload_scene_from_path(const String &scene_path) {
 }
 
 void EditorInterface::play_main_scene() {
+	ZoneScoped;
 	EditorNode::get_singleton()->run_play();
 }
 
 void EditorInterface::play_current_scene() {
+	ZoneScoped;
 	EditorNode::get_singleton()->run_play_current();
 }
 
 void EditorInterface::play_custom_scene(const String &scene_path) {
+	ZoneScoped;
 	EditorNode::get_singleton()->run_play_custom(scene_path);
 }
 
 void EditorInterface::stop_playing_scene() {
+	ZoneScoped;
 	EditorNode::get_singleton()->run_stop();
 }
 
 bool EditorInterface::is_playing_scene() const {
+	ZoneScoped;
 	return EditorNode::get_singleton()->is_run_playing();
 }
 
 String EditorInterface::get_playing_scene() const {
+	ZoneScoped;
 	return EditorNode::get_singleton()->get_run_playing_scene();
 }
 
 Node *EditorInterface::get_edited_scene_root() {
+	ZoneScoped;
 	return EditorNode::get_singleton()->get_edited_scene();
 }
 
 PackedStringArray EditorInterface::get_open_scenes() const {
+	ZoneScoped;
 	PackedStringArray ret;
 	Vector<EditorData::EditedScene> scenes = EditorNode::get_editor_data().get_edited_scenes();
 
@@ -235,77 +283,96 @@ PackedStringArray EditorInterface::get_open_scenes() const {
 }
 
 ScriptEditor *EditorInterface::get_script_editor() {
+	ZoneScoped;
 	return ScriptEditor::get_singleton();
 }
 
 void EditorInterface::select_file(const String &p_file) {
+	ZoneScoped;
 	FileSystemDock::get_singleton()->select_file(p_file);
 }
 
 String EditorInterface::get_selected_path() const {
+	ZoneScoped;
 	return FileSystemDock::get_singleton()->get_selected_path();
 }
 
 String EditorInterface::get_current_path() const {
+	ZoneScoped;
 	return FileSystemDock::get_singleton()->get_current_path();
 }
 
 void EditorInterface::inspect_object(Object *p_obj, const String &p_for_property, bool p_inspector_only) {
+	ZoneScoped;
 	EditorNode::get_singleton()->push_item(p_obj, p_for_property, p_inspector_only);
 }
 
 EditorFileSystem *EditorInterface::get_resource_file_system() {
+	ZoneScoped;
 	return EditorFileSystem::get_singleton();
 }
 
 FileSystemDock *EditorInterface::get_file_system_dock() {
+	ZoneScoped;
 	return FileSystemDock::get_singleton();
 }
 
 EditorSelection *EditorInterface::get_selection() {
+	ZoneScoped;
 	return EditorNode::get_singleton()->get_editor_selection();
 }
 
 Ref<EditorSettings> EditorInterface::get_editor_settings() {
+	ZoneScoped;
 	return EditorSettings::get_singleton();
 }
 EditorPaths *EditorInterface::get_editor_paths() {
+	ZoneScoped;
 	return EditorPaths::get_singleton();
 }
 
 EditorResourcePreview *EditorInterface::get_resource_previewer() {
+	ZoneScoped;
 	return EditorResourcePreview::get_singleton();
 }
 
 Control *EditorInterface::get_base_control() {
+	ZoneScoped;
 	return EditorNode::get_singleton()->get_gui_base();
 }
 
 float EditorInterface::get_editor_scale() const {
+	ZoneScoped;
 	return EDSCALE;
 }
 
 void EditorInterface::set_plugin_enabled(const String &p_plugin, bool p_enabled) {
+	ZoneScoped;
 	EditorNode::get_singleton()->set_addon_plugin_enabled(p_plugin, p_enabled, true);
 }
 
 bool EditorInterface::is_plugin_enabled(const String &p_plugin) const {
+	ZoneScoped;
 	return EditorNode::get_singleton()->is_addon_plugin_enabled(p_plugin);
 }
 
 void EditorInterface::set_movie_maker_enabled(bool p_enabled) {
+	ZoneScoped;
 	EditorNode::get_singleton()->set_movie_maker_enabled(p_enabled);
 }
 
 bool EditorInterface::is_movie_maker_enabled() const {
+	ZoneScoped;
 	return EditorNode::get_singleton()->is_movie_maker_enabled();
 }
 
 EditorInspector *EditorInterface::get_inspector() const {
+	ZoneScoped;
 	return InspectorDock::get_inspector_singleton();
 }
 
 Error EditorInterface::save_scene() {
+	ZoneScoped;
 	if (!get_edited_scene_root()) {
 		return ERR_CANT_CREATE;
 	}
@@ -318,14 +385,17 @@ Error EditorInterface::save_scene() {
 }
 
 void EditorInterface::save_scene_as(const String &p_scene, bool p_with_preview) {
+	ZoneScoped;
 	EditorNode::get_singleton()->save_scene_to_path(p_scene, p_with_preview);
 }
 
 void EditorInterface::set_distraction_free_mode(bool p_enter) {
+	ZoneScoped;
 	EditorNode::get_singleton()->set_distraction_free_mode(p_enter);
 }
 
 void EditorInterface::restart_editor(bool p_save) {
+	ZoneScoped;
 	if (p_save) {
 		EditorNode::get_singleton()->save_all_scenes();
 	}
@@ -333,16 +403,19 @@ void EditorInterface::restart_editor(bool p_save) {
 }
 
 bool EditorInterface::is_distraction_free_mode_enabled() const {
+	ZoneScoped;
 	return EditorNode::get_singleton()->is_distraction_free_mode_enabled();
 }
 
 EditorCommandPalette *EditorInterface::get_command_palette() const {
+	ZoneScoped;
 	return EditorCommandPalette::get_singleton();
 }
 
 EditorInterface *EditorInterface::singleton = nullptr;
 
 void EditorInterface::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("inspect_object", "object", "for_property", "inspector_only"), &EditorInterface::inspect_object, DEFVAL(String()), DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("get_selection"), &EditorInterface::get_selection);
 	ClassDB::bind_method(D_METHOD("get_editor_settings"), &EditorInterface::get_editor_settings);
@@ -393,47 +466,57 @@ void EditorInterface::_bind_methods() {
 }
 
 EditorInterface::EditorInterface() {
+	ZoneScoped;
 	singleton = this;
 }
 
 ///////////////////////////////////////////
 void EditorPlugin::add_custom_type(const String &p_type, const String &p_base, const Ref<Script> &p_script, const Ref<Texture2D> &p_icon) {
+	ZoneScoped;
 	EditorNode::get_editor_data().add_custom_type(p_type, p_base, p_script, p_icon);
 }
 
 void EditorPlugin::remove_custom_type(const String &p_type) {
+	ZoneScoped;
 	EditorNode::get_editor_data().remove_custom_type(p_type);
 }
 
 void EditorPlugin::add_autoload_singleton(const String &p_name, const String &p_path) {
+	ZoneScoped;
 	EditorNode::get_singleton()->get_project_settings()->get_autoload_settings()->autoload_add(p_name, p_path);
 }
 
 void EditorPlugin::remove_autoload_singleton(const String &p_name) {
+	ZoneScoped;
 	EditorNode::get_singleton()->get_project_settings()->get_autoload_settings()->autoload_remove(p_name);
 }
 
 Button *EditorPlugin::add_control_to_bottom_panel(Control *p_control, const String &p_title) {
+	ZoneScoped;
 	ERR_FAIL_NULL_V(p_control, nullptr);
 	return EditorNode::get_singleton()->add_bottom_panel_item(p_title, p_control);
 }
 
 void EditorPlugin::add_control_to_dock(DockSlot p_slot, Control *p_control) {
+	ZoneScoped;
 	ERR_FAIL_NULL(p_control);
 	EditorNode::get_singleton()->add_control_to_dock(EditorNode::DockSlot(p_slot), p_control);
 }
 
 void EditorPlugin::remove_control_from_docks(Control *p_control) {
+	ZoneScoped;
 	ERR_FAIL_NULL(p_control);
 	EditorNode::get_singleton()->remove_control_from_dock(p_control);
 }
 
 void EditorPlugin::remove_control_from_bottom_panel(Control *p_control) {
+	ZoneScoped;
 	ERR_FAIL_NULL(p_control);
 	EditorNode::get_singleton()->remove_bottom_panel_item(p_control);
 }
 
 void EditorPlugin::add_control_to_container(CustomControlContainer p_location, Control *p_control) {
+	ZoneScoped;
 	ERR_FAIL_NULL(p_control);
 
 	switch (p_location) {
@@ -487,6 +570,7 @@ void EditorPlugin::add_control_to_container(CustomControlContainer p_location, C
 }
 
 void EditorPlugin::remove_control_from_container(CustomControlContainer p_location, Control *p_control) {
+	ZoneScoped;
 	ERR_FAIL_NULL(p_control);
 
 	switch (p_location) {
@@ -535,39 +619,47 @@ void EditorPlugin::remove_control_from_container(CustomControlContainer p_locati
 }
 
 void EditorPlugin::add_tool_menu_item(const String &p_name, const Callable &p_callable) {
+	ZoneScoped;
 	EditorNode::get_singleton()->add_tool_menu_item(p_name, p_callable);
 }
 
 void EditorPlugin::add_tool_submenu_item(const String &p_name, PopupMenu *p_submenu) {
+	ZoneScoped;
 	ERR_FAIL_NULL(p_submenu);
 	EditorNode::get_singleton()->add_tool_submenu_item(p_name, p_submenu);
 }
 
 void EditorPlugin::remove_tool_menu_item(const String &p_name) {
+	ZoneScoped;
 	EditorNode::get_singleton()->remove_tool_menu_item(p_name);
 }
 
 PopupMenu *EditorPlugin::get_export_as_menu() {
+	ZoneScoped;
 	return EditorNode::get_singleton()->get_export_as_menu();
 }
 
 void EditorPlugin::set_input_event_forwarding_always_enabled() {
+	ZoneScoped;
 	input_event_forwarding_always_enabled = true;
 	EditorPluginList *always_input_forwarding_list = EditorNode::get_singleton()->get_editor_plugins_force_input_forwarding();
 	always_input_forwarding_list->add_plugin(this);
 }
 
 void EditorPlugin::set_force_draw_over_forwarding_enabled() {
+	ZoneScoped;
 	force_draw_over_forwarding_enabled = true;
 	EditorPluginList *always_draw_over_forwarding_list = EditorNode::get_singleton()->get_editor_plugins_force_over();
 	always_draw_over_forwarding_list->add_plugin(this);
 }
 
 void EditorPlugin::notify_scene_changed(const Node *scn_root) {
+	ZoneScoped;
 	emit_signal(SNAME("scene_changed"), scn_root);
 }
 
 void EditorPlugin::notify_main_screen_changed(const String &screen_name) {
+	ZoneScoped;
 	if (screen_name == last_main_screen_name) {
 		return;
 	}
@@ -577,29 +669,35 @@ void EditorPlugin::notify_main_screen_changed(const String &screen_name) {
 }
 
 void EditorPlugin::notify_scene_closed(const String &scene_filepath) {
+	ZoneScoped;
 	emit_signal(SNAME("scene_closed"), scene_filepath);
 }
 
 void EditorPlugin::notify_resource_saved(const Ref<Resource> &p_resource) {
+	ZoneScoped;
 	emit_signal(SNAME("resource_saved"), p_resource);
 }
 
 bool EditorPlugin::forward_canvas_gui_input(const Ref<InputEvent> &p_event) {
+	ZoneScoped;
 	bool success = false;
 	GDVIRTUAL_CALL(_forward_canvas_gui_input, p_event, success);
 	return success;
 }
 
 void EditorPlugin::forward_canvas_draw_over_viewport(Control *p_overlay) {
+	ZoneScoped;
 	GDVIRTUAL_CALL(_forward_canvas_draw_over_viewport, p_overlay);
 }
 
 void EditorPlugin::forward_canvas_force_draw_over_viewport(Control *p_overlay) {
+	ZoneScoped;
 	GDVIRTUAL_CALL(_forward_canvas_force_draw_over_viewport, p_overlay);
 }
 
 // Updates the overlays of the 2D viewport or, if in 3D mode, of every 3D viewport.
 int EditorPlugin::update_overlays() const {
+	ZoneScoped;
 	if (Node3DEditor::get_singleton()->is_visible()) {
 		int count = 0;
 		for (uint32_t i = 0; i < Node3DEditor::VIEWPORTS_COUNT; i++) {
@@ -618,42 +716,50 @@ int EditorPlugin::update_overlays() const {
 }
 
 EditorPlugin::AfterGUIInput EditorPlugin::forward_3d_gui_input(Camera3D *p_camera, const Ref<InputEvent> &p_event) {
+	ZoneScoped;
 	int success = EditorPlugin::AFTER_GUI_INPUT_PASS;
 	GDVIRTUAL_CALL(_forward_3d_gui_input, p_camera, p_event, success);
 	return static_cast<EditorPlugin::AfterGUIInput>(success);
 }
 
 void EditorPlugin::forward_3d_draw_over_viewport(Control *p_overlay) {
+	ZoneScoped;
 	GDVIRTUAL_CALL(_forward_3d_draw_over_viewport, p_overlay);
 }
 
 void EditorPlugin::forward_3d_force_draw_over_viewport(Control *p_overlay) {
+	ZoneScoped;
 	GDVIRTUAL_CALL(_forward_3d_force_draw_over_viewport, p_overlay);
 }
 
 String EditorPlugin::get_name() const {
+	ZoneScoped;
 	String name;
 	GDVIRTUAL_CALL(_get_plugin_name, name);
 	return name;
 }
 
 const Ref<Texture2D> EditorPlugin::get_icon() const {
+	ZoneScoped;
 	Ref<Texture2D> icon;
 	GDVIRTUAL_CALL(_get_plugin_icon, icon);
 	return icon;
 }
 
 bool EditorPlugin::has_main_screen() const {
+	ZoneScoped;
 	bool success = false;
 	GDVIRTUAL_CALL(_has_main_screen, success);
 	return success;
 }
 
 void EditorPlugin::make_visible(bool p_visible) {
+	ZoneScoped;
 	GDVIRTUAL_CALL(_make_visible, p_visible);
 }
 
 void EditorPlugin::edit(Object *p_object) {
+	ZoneScoped;
 	if (p_object->is_class("Resource")) {
 		GDVIRTUAL_CALL(_edit, Ref<Resource>(Object::cast_to<Resource>(p_object)));
 	} else {
@@ -662,36 +768,43 @@ void EditorPlugin::edit(Object *p_object) {
 }
 
 bool EditorPlugin::handles(Object *p_object) const {
+	ZoneScoped;
 	bool success = false;
 	GDVIRTUAL_CALL(_handles, p_object, success);
 	return success;
 }
 
 Dictionary EditorPlugin::get_state() const {
+	ZoneScoped;
 	Dictionary state;
 	GDVIRTUAL_CALL(_get_state, state);
 	return state;
 }
 
 void EditorPlugin::set_state(const Dictionary &p_state) {
+	ZoneScoped;
 	GDVIRTUAL_CALL(_set_state, p_state);
 }
 
 void EditorPlugin::clear() {
+	ZoneScoped;
 	GDVIRTUAL_CALL(_clear);
 }
 
 // if editor references external resources/scenes, save them
 void EditorPlugin::save_external_data() {
+	ZoneScoped;
 	GDVIRTUAL_CALL(_save_external_data);
 }
 
 // if changes are pending in editor, apply them
 void EditorPlugin::apply_changes() {
+	ZoneScoped;
 	GDVIRTUAL_CALL(_apply_changes);
 }
 
 void EditorPlugin::get_breakpoints(List<String> *p_breakpoints) {
+	ZoneScoped;
 	PackedStringArray arr;
 	if (GDVIRTUAL_CALL(_get_breakpoints, arr)) {
 		for (int i = 0; i < arr.size(); i++) {
@@ -701,6 +814,7 @@ void EditorPlugin::get_breakpoints(List<String> *p_breakpoints) {
 }
 
 bool EditorPlugin::get_remove_list(List<Node *> *p_list) {
+	ZoneScoped;
 	return false;
 }
 
@@ -708,84 +822,101 @@ void EditorPlugin::restore_global_state() {}
 void EditorPlugin::save_global_state() {}
 
 void EditorPlugin::add_undo_redo_inspector_hook_callback(Callable p_callable) {
+	ZoneScoped;
 	EditorNode::get_singleton()->get_editor_data().add_undo_redo_inspector_hook_callback(p_callable);
 }
 
 void EditorPlugin::remove_undo_redo_inspector_hook_callback(Callable p_callable) {
+	ZoneScoped;
 	EditorNode::get_singleton()->get_editor_data().remove_undo_redo_inspector_hook_callback(p_callable);
 }
 
 void EditorPlugin::add_translation_parser_plugin(const Ref<EditorTranslationParserPlugin> &p_parser) {
+	ZoneScoped;
 	ERR_FAIL_COND(!p_parser.is_valid());
 	EditorTranslationParser::get_singleton()->add_parser(p_parser, EditorTranslationParser::CUSTOM);
 }
 
 void EditorPlugin::remove_translation_parser_plugin(const Ref<EditorTranslationParserPlugin> &p_parser) {
+	ZoneScoped;
 	ERR_FAIL_COND(!p_parser.is_valid());
 	EditorTranslationParser::get_singleton()->remove_parser(p_parser, EditorTranslationParser::CUSTOM);
 }
 
 void EditorPlugin::add_import_plugin(const Ref<EditorImportPlugin> &p_importer, bool p_first_priority) {
+	ZoneScoped;
 	ERR_FAIL_COND(!p_importer.is_valid());
 	ResourceFormatImporter::get_singleton()->add_importer(p_importer, p_first_priority);
 	EditorFileSystem::get_singleton()->call_deferred(SNAME("scan"));
 }
 
 void EditorPlugin::remove_import_plugin(const Ref<EditorImportPlugin> &p_importer) {
+	ZoneScoped;
 	ERR_FAIL_COND(!p_importer.is_valid());
 	ResourceFormatImporter::get_singleton()->remove_importer(p_importer);
 	EditorFileSystem::get_singleton()->call_deferred(SNAME("scan"));
 }
 
 void EditorPlugin::add_export_plugin(const Ref<EditorExportPlugin> &p_exporter) {
+	ZoneScoped;
 	ERR_FAIL_COND(!p_exporter.is_valid());
 	EditorExport::get_singleton()->add_export_plugin(p_exporter);
 }
 
 void EditorPlugin::remove_export_plugin(const Ref<EditorExportPlugin> &p_exporter) {
+	ZoneScoped;
 	ERR_FAIL_COND(!p_exporter.is_valid());
 	EditorExport::get_singleton()->remove_export_plugin(p_exporter);
 }
 
 void EditorPlugin::add_node_3d_gizmo_plugin(const Ref<EditorNode3DGizmoPlugin> &p_gizmo_plugin) {
+	ZoneScoped;
 	ERR_FAIL_COND(!p_gizmo_plugin.is_valid());
 	Node3DEditor::get_singleton()->add_gizmo_plugin(p_gizmo_plugin);
 }
 
 void EditorPlugin::remove_node_3d_gizmo_plugin(const Ref<EditorNode3DGizmoPlugin> &p_gizmo_plugin) {
+	ZoneScoped;
 	ERR_FAIL_COND(!p_gizmo_plugin.is_valid());
 	Node3DEditor::get_singleton()->remove_gizmo_plugin(p_gizmo_plugin);
 }
 
 void EditorPlugin::add_inspector_plugin(const Ref<EditorInspectorPlugin> &p_plugin) {
+	ZoneScoped;
 	ERR_FAIL_COND(!p_plugin.is_valid());
 	EditorInspector::add_inspector_plugin(p_plugin);
 }
 
 void EditorPlugin::remove_inspector_plugin(const Ref<EditorInspectorPlugin> &p_plugin) {
+	ZoneScoped;
 	ERR_FAIL_COND(!p_plugin.is_valid());
 	EditorInspector::remove_inspector_plugin(p_plugin);
 }
 
 void EditorPlugin::add_scene_format_importer_plugin(const Ref<EditorSceneFormatImporter> &p_importer, bool p_first_priority) {
+	ZoneScoped;
 	ERR_FAIL_COND(!p_importer.is_valid());
 	ResourceImporterScene::add_importer(p_importer, p_first_priority);
 }
 
 void EditorPlugin::remove_scene_format_importer_plugin(const Ref<EditorSceneFormatImporter> &p_importer) {
+	ZoneScoped;
 	ERR_FAIL_COND(!p_importer.is_valid());
 	ResourceImporterScene::remove_importer(p_importer);
 }
 
 void EditorPlugin::add_scene_post_import_plugin(const Ref<EditorScenePostImportPlugin> &p_plugin, bool p_first_priority) {
+	ZoneScoped;
 	ResourceImporterScene::add_post_importer_plugin(p_plugin, p_first_priority);
 }
 
 void EditorPlugin::remove_scene_post_import_plugin(const Ref<EditorScenePostImportPlugin> &p_plugin) {
+	ZoneScoped;
 	ResourceImporterScene::remove_post_importer_plugin(p_plugin);
 }
 
 int find(const PackedStringArray &a, const String &v) {
+	ZoneScoped;
 	const String *r = a.ptr();
 	for (int j = 0; j < a.size(); ++j) {
 		if (r[j] == v) {
@@ -808,51 +939,63 @@ void EditorPlugin::disable_plugin() {
 }
 
 void EditorPlugin::set_window_layout(Ref<ConfigFile> p_layout) {
+	ZoneScoped;
 	GDVIRTUAL_CALL(_set_window_layout, p_layout);
 }
 
 void EditorPlugin::get_window_layout(Ref<ConfigFile> p_layout) {
+	ZoneScoped;
 	GDVIRTUAL_CALL(_get_window_layout, p_layout);
 }
 
 bool EditorPlugin::build() {
+	ZoneScoped;
 	bool success = true;
 	GDVIRTUAL_CALL(_build, success);
 	return success;
 }
 
 void EditorPlugin::queue_save_layout() {
+	ZoneScoped;
 	EditorNode::get_singleton()->save_layout();
 }
 
 void EditorPlugin::make_bottom_panel_item_visible(Control *p_item) {
+	ZoneScoped;
 	EditorNode::get_singleton()->make_bottom_panel_item_visible(p_item);
 }
 
 void EditorPlugin::hide_bottom_panel() {
+	ZoneScoped;
 	EditorNode::get_singleton()->hide_bottom_panel();
 }
 
 EditorInterface *EditorPlugin::get_editor_interface() {
+	ZoneScoped;
 	return EditorInterface::get_singleton();
 }
 
 ScriptCreateDialog *EditorPlugin::get_script_create_dialog() {
+	ZoneScoped;
 	return SceneTreeDock::get_singleton()->get_script_create_dialog();
 }
 
 void EditorPlugin::add_debugger_plugin(const Ref<Script> &p_script) {
+	ZoneScoped;
 	EditorDebuggerNode::get_singleton()->add_debugger_plugin(p_script);
 }
 
 void EditorPlugin::remove_debugger_plugin(const Ref<Script> &p_script) {
+	ZoneScoped;
 	EditorDebuggerNode::get_singleton()->remove_debugger_plugin(p_script);
 }
 
 void EditorPlugin::_editor_project_settings_changed() {
+	ZoneScoped;
 	emit_signal(SNAME("project_settings_changed"));
 }
 void EditorPlugin::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			EditorNode::get_singleton()->connect("project_settings_changed", callable_mp(this, &EditorPlugin::_editor_project_settings_changed));
@@ -865,6 +1008,7 @@ void EditorPlugin::_notification(int p_what) {
 }
 
 void EditorPlugin::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("add_control_to_container", "container", "control"), &EditorPlugin::add_control_to_container);
 	ClassDB::bind_method(D_METHOD("add_control_to_bottom_panel", "control", "title"), &EditorPlugin::add_control_to_bottom_panel);
 	ClassDB::bind_method(D_METHOD("add_control_to_dock", "slot", "control"), &EditorPlugin::add_control_to_dock);
@@ -971,6 +1115,7 @@ void EditorPlugin::_bind_methods() {
 }
 
 Ref<EditorUndoRedoManager> EditorPlugin::get_undo_redo() {
+	ZoneScoped;
 	return EditorNode::get_undo_redo();
 }
 

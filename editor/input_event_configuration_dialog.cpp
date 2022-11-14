@@ -28,10 +28,41 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "editor/input_event_configuration_dialog.h"
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  input_event_configuration_dialog.cpp                                 */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "core/input/input_map.h"
 #include "editor/editor_scale.h"
 #include "editor/event_listener_line_edit.h"
+#include "editor/input_event_configuration_dialog.h"
 #include "scene/gui/check_box.h"
 #include "scene/gui/line_edit.h"
 #include "scene/gui/option_button.h"
@@ -63,6 +94,7 @@ static const char *_joy_axis_descriptions[(size_t)JoyAxis::MAX * 2] = {
 };
 
 String InputEventConfigurationDialog::get_event_text(const Ref<InputEvent> &p_event, bool p_include_device) const {
+	ZoneScoped;
 	ERR_FAIL_COND_V_MSG(p_event.is_null(), String(), "Provided event is not a valid instance of InputEvent");
 
 	String text = p_event->as_text();
@@ -96,6 +128,7 @@ String InputEventConfigurationDialog::get_event_text(const Ref<InputEvent> &p_ev
 }
 
 void InputEventConfigurationDialog::_set_event(const Ref<InputEvent> &p_event, bool p_update_input_list_selection) {
+	ZoneScoped;
 	if (p_event.is_valid()) {
 		event = p_event;
 
@@ -254,6 +287,7 @@ void InputEventConfigurationDialog::_on_listen_input_changed(const Ref<InputEven
 }
 
 void InputEventConfigurationDialog::_on_listen_focus_changed() {
+	ZoneScoped;
 	if (event_listener->has_focus()) {
 		set_close_on_escape(false);
 	} else {
@@ -262,10 +296,12 @@ void InputEventConfigurationDialog::_on_listen_focus_changed() {
 }
 
 void InputEventConfigurationDialog::_search_term_updated(const String &) {
+	ZoneScoped;
 	_update_input_list();
 }
 
 void InputEventConfigurationDialog::_update_input_list() {
+	ZoneScoped;
 	input_list_tree->clear();
 
 	TreeItem *root = input_list_tree->create_item();
@@ -369,6 +405,7 @@ void InputEventConfigurationDialog::_update_input_list() {
 }
 
 void InputEventConfigurationDialog::_mod_toggled(bool p_checked, int p_index) {
+	ZoneScoped;
 	Ref<InputEventWithModifiers> ie = event;
 
 	// Not event with modifiers
@@ -394,6 +431,7 @@ void InputEventConfigurationDialog::_mod_toggled(bool p_checked, int p_index) {
 }
 
 void InputEventConfigurationDialog::_autoremap_command_or_control_toggled(bool p_checked) {
+	ZoneScoped;
 	Ref<InputEventWithModifiers> ie = event;
 	if (ie.is_valid()) {
 		ie->set_command_or_control_autoremap(p_checked);
@@ -410,6 +448,7 @@ void InputEventConfigurationDialog::_autoremap_command_or_control_toggled(bool p
 }
 
 void InputEventConfigurationDialog::_physical_keycode_toggled(bool p_checked) {
+	ZoneScoped;
 	Ref<InputEventKey> k = event;
 
 	if (k.is_null()) {
@@ -428,6 +467,7 @@ void InputEventConfigurationDialog::_physical_keycode_toggled(bool p_checked) {
 }
 
 void InputEventConfigurationDialog::_input_list_item_selected() {
+	ZoneScoped;
 	TreeItem *selected = input_list_tree->get_selected();
 
 	// Invalid tree selection - type only exists on the "category" items, which are not a valid selection.
@@ -517,14 +557,17 @@ void InputEventConfigurationDialog::_device_selection_changed(int p_option_butto
 }
 
 void InputEventConfigurationDialog::_set_current_device(int p_device) {
+	ZoneScoped;
 	device_id_option->select(p_device + 1);
 }
 
 int InputEventConfigurationDialog::_get_current_device() const {
+	ZoneScoped;
 	return device_id_option->get_selected() - 1;
 }
 
 String InputEventConfigurationDialog::_get_device_string(int p_device) const {
+	ZoneScoped;
 	if (p_device == InputMap::ALL_DEVICES) {
 		return TTR("All Devices");
 	}
@@ -532,6 +575,7 @@ String InputEventConfigurationDialog::_get_device_string(int p_device) const {
 }
 
 void InputEventConfigurationDialog::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_VISIBILITY_CHANGED: {
 			event_listener->grab_focus();
@@ -554,6 +598,7 @@ void InputEventConfigurationDialog::_notification(int p_what) {
 }
 
 void InputEventConfigurationDialog::popup_and_configure(const Ref<InputEvent> &p_event) {
+	ZoneScoped;
 	if (p_event.is_valid()) {
 		_set_event(p_event);
 	} else {
@@ -581,14 +626,17 @@ void InputEventConfigurationDialog::popup_and_configure(const Ref<InputEvent> &p
 }
 
 Ref<InputEvent> InputEventConfigurationDialog::get_event() const {
+	ZoneScoped;
 	return event;
 }
 
 void InputEventConfigurationDialog::set_allowed_input_types(int p_type_masks) {
+	ZoneScoped;
 	allowed_input_types = p_type_masks;
 }
 
 InputEventConfigurationDialog::InputEventConfigurationDialog() {
+	ZoneScoped;
 	allowed_input_types = INPUT_KEY | INPUT_MOUSE_BUTTON | INPUT_JOY_BUTTON | INPUT_JOY_MOTION;
 
 	set_title(TTR("Event Configuration"));

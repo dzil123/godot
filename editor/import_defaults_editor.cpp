@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  import_defaults_editor.cpp                                           */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "import_defaults_editor.h"
 
 #include "core/config/project_settings.h"
@@ -81,6 +112,7 @@ protected:
 };
 
 void ImportDefaultsEditor::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
@@ -94,6 +126,7 @@ void ImportDefaultsEditor::_notification(int p_what) {
 }
 
 void ImportDefaultsEditor::_reset() {
+	ZoneScoped;
 	if (settings->importer.is_valid()) {
 		settings->values = settings->default_values;
 		settings->notify_property_list_changed();
@@ -101,6 +134,7 @@ void ImportDefaultsEditor::_reset() {
 }
 
 void ImportDefaultsEditor::_save() {
+	ZoneScoped;
 	if (settings->importer.is_valid()) {
 		Dictionary modified;
 
@@ -121,6 +155,7 @@ void ImportDefaultsEditor::_save() {
 }
 
 void ImportDefaultsEditor::_update_importer() {
+	ZoneScoped;
 	List<Ref<ResourceImporter>> importer_list;
 	ResourceFormatImporter::get_singleton()->get_importers(&importer_list);
 	Ref<ResourceImporter> importer;
@@ -167,10 +202,12 @@ void ImportDefaultsEditor::_update_importer() {
 }
 
 void ImportDefaultsEditor::_importer_selected(int p_index) {
+	ZoneScoped;
 	_update_importer();
 }
 
 void ImportDefaultsEditor::clear() {
+	ZoneScoped;
 	String last_selected;
 	if (importers->get_selected() > 0) {
 		last_selected = importers->get_item_text(importers->get_selected());
@@ -200,10 +237,12 @@ void ImportDefaultsEditor::clear() {
 }
 
 void ImportDefaultsEditor::_bind_methods() {
+	ZoneScoped;
 	ADD_SIGNAL(MethodInfo("project_settings_changed"));
 }
 
 ImportDefaultsEditor::ImportDefaultsEditor() {
+	ZoneScoped;
 	HBoxContainer *hb = memnew(HBoxContainer);
 	hb->add_child(memnew(Label(TTR("Importer:"))));
 	importers = memnew(OptionButton);
@@ -230,5 +269,6 @@ ImportDefaultsEditor::ImportDefaultsEditor() {
 }
 
 ImportDefaultsEditor::~ImportDefaultsEditor() {
+	ZoneScoped;
 	memdelete(settings);
 }

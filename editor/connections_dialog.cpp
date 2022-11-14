@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  connections_dialog.cpp                                               */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "connections_dialog.h"
 
 #include "editor/doc_tools.h"
@@ -40,6 +71,7 @@
 #include "scene/resources/packed_scene.h"
 
 static Node *_find_first_script(Node *p_root, Node *p_node) {
+	ZoneScoped;
 	if (p_node != p_root && p_node->get_owner() != p_root) {
 		return nullptr;
 	}
@@ -109,6 +141,7 @@ public:
  * Signal automatically called by parent dialog.
  */
 void ConnectDialog::ok_pressed() {
+	ZoneScoped;
 	String method_name = dst_method->get_text();
 
 	if (method_name.is_empty()) {
@@ -139,14 +172,17 @@ void ConnectDialog::ok_pressed() {
 }
 
 void ConnectDialog::_cancel_pressed() {
+	ZoneScoped;
 	hide();
 }
 
 void ConnectDialog::_item_activated() {
+	ZoneScoped;
 	_ok_pressed(); // From AcceptDialog.
 }
 
 void ConnectDialog::_text_submitted(const String &p_text) {
+	ZoneScoped;
 	_ok_pressed(); // From AcceptDialog.
 }
 
@@ -154,6 +190,7 @@ void ConnectDialog::_text_submitted(const String &p_text) {
  * Called each time a target node is selected within the target node tree.
  */
 void ConnectDialog::_tree_node_selected() {
+	ZoneScoped;
 	Node *current = tree->get_selected();
 
 	if (!current) {
@@ -168,6 +205,7 @@ void ConnectDialog::_tree_node_selected() {
 }
 
 void ConnectDialog::_unbind_count_changed(double p_count) {
+	ZoneScoped;
 	for (Control *control : bind_controls) {
 		BaseButton *b = Object::cast_to<BaseButton>(control);
 		if (b) {
@@ -185,6 +223,7 @@ void ConnectDialog::_unbind_count_changed(double p_count) {
  * Adds a new parameter bind to connection.
  */
 void ConnectDialog::_add_bind() {
+	ZoneScoped;
 	Variant::Type type = (Variant::Type)type_list->get_item_id(type_list->get_selected());
 
 	Variant value;
@@ -199,6 +238,7 @@ void ConnectDialog::_add_bind() {
  * Remove parameter bind from connection.
  */
 void ConnectDialog::_remove_bind() {
+	ZoneScoped;
 	String st = bind_editor->get_selected_path();
 	if (st.is_empty()) {
 		return;
@@ -213,6 +253,7 @@ void ConnectDialog::_remove_bind() {
  * Automatically generates a name for the callback method.
  */
 StringName ConnectDialog::generate_method_callback_name(Node *p_source, String p_signal_name, Node *p_target) {
+	ZoneScoped;
 	String node_name = p_source->get_name();
 	for (int i = 0; i < node_name.length(); i++) { // TODO: Regex filter may be cleaner.
 		char32_t c = node_name[i];
@@ -254,6 +295,7 @@ StringName ConnectDialog::generate_method_callback_name(Node *p_source, String p
  * node is selected and valid in the selected mode.
  */
 void ConnectDialog::_update_ok_enabled() {
+	ZoneScoped;
 	Node *target = tree->get_selected();
 
 	if (target == nullptr) {
@@ -270,6 +312,7 @@ void ConnectDialog::_update_ok_enabled() {
 }
 
 void ConnectDialog::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			bind_editor->edit(cdbinds);
@@ -292,6 +335,7 @@ void ConnectDialog::_notification(int p_what) {
 }
 
 void ConnectDialog::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method("_cancel", &ConnectDialog::_cancel_pressed);
 	ClassDB::bind_method("_update_ok_enabled", &ConnectDialog::_update_ok_enabled);
 
@@ -299,22 +343,27 @@ void ConnectDialog::_bind_methods() {
 }
 
 Node *ConnectDialog::get_source() const {
+	ZoneScoped;
 	return source;
 }
 
 StringName ConnectDialog::get_signal_name() const {
+	ZoneScoped;
 	return signal;
 }
 
 NodePath ConnectDialog::get_dst_path() const {
+	ZoneScoped;
 	return dst_path;
 }
 
 void ConnectDialog::set_dst_node(Node *p_node) {
+	ZoneScoped;
 	tree->set_selected(p_node);
 }
 
 StringName ConnectDialog::get_dst_method_name() const {
+	ZoneScoped;
 	String txt = dst_method->get_text();
 	if (txt.contains("(")) {
 		txt = txt.left(txt.find("(")).strip_edges();
@@ -323,22 +372,27 @@ StringName ConnectDialog::get_dst_method_name() const {
 }
 
 void ConnectDialog::set_dst_method(const StringName &p_method) {
+	ZoneScoped;
 	dst_method->set_text(p_method);
 }
 
 int ConnectDialog::get_unbinds() const {
+	ZoneScoped;
 	return int(unbind_count->get_value());
 }
 
 Vector<Variant> ConnectDialog::get_binds() const {
+	ZoneScoped;
 	return cdbinds->params;
 }
 
 bool ConnectDialog::get_deferred() const {
+	ZoneScoped;
 	return deferred->is_pressed();
 }
 
 bool ConnectDialog::get_one_shot() const {
+	ZoneScoped;
 	return one_shot->is_pressed();
 }
 
@@ -346,6 +400,7 @@ bool ConnectDialog::get_one_shot() const {
  * Returns true if ConnectDialog is being used to edit an existing connection.
  */
 bool ConnectDialog::is_editing() const {
+	ZoneScoped;
 	return edit_mode;
 }
 
@@ -355,6 +410,7 @@ bool ConnectDialog::is_editing() const {
  * If editing an existing connection, previous data is retained.
  */
 void ConnectDialog::init(ConnectionData p_cd, bool p_edit) {
+	ZoneScoped;
 	set_hide_on_ok(false);
 
 	source = static_cast<Node *>(p_cd.source);
@@ -404,6 +460,7 @@ void ConnectDialog::init(ConnectionData p_cd, bool p_edit) {
 }
 
 void ConnectDialog::popup_dialog(const String &p_for_signal) {
+	ZoneScoped;
 	from_signal->set_text(p_for_signal);
 	error_label->add_theme_color_override("font_color", error_label->get_theme_color(SNAME("error_color"), SNAME("Editor")));
 	if (!advanced->is_pressed()) {
@@ -419,6 +476,7 @@ void ConnectDialog::popup_dialog(const String &p_for_signal) {
 }
 
 void ConnectDialog::_advanced_pressed() {
+	ZoneScoped;
 	if (advanced->is_pressed()) {
 		set_min_size(Size2(900, 500) * EDSCALE);
 		connect_to_label->set_text(TTR("Connect to Node:"));
@@ -443,6 +501,7 @@ void ConnectDialog::_advanced_pressed() {
 }
 
 ConnectDialog::ConnectDialog() {
+	ZoneScoped;
 	set_min_size(Size2(600, 500) * EDSCALE);
 
 	VBoxContainer *vbc = memnew(VBoxContainer);
@@ -557,6 +616,7 @@ ConnectDialog::ConnectDialog() {
 }
 
 ConnectDialog::~ConnectDialog() {
+	ZoneScoped;
 	memdelete(cdbinds);
 }
 
@@ -564,6 +624,7 @@ ConnectDialog::~ConnectDialog() {
 
 // Originally copied and adapted from EditorProperty, try to keep style in sync.
 Control *ConnectionsDockTree::make_custom_tooltip(const String &p_text) const {
+	ZoneScoped;
 	EditorHelpBit *help_bit = memnew(EditorHelpBit);
 	help_bit->get_rich_text()->set_fixed_size_to_width(360 * EDSCALE);
 
@@ -596,6 +657,7 @@ struct _ConnectionsDockMethodInfoSort {
 };
 
 void ConnectionsDock::_filter_changed(const String &p_text) {
+	ZoneScoped;
 	update_tree();
 }
 
@@ -604,6 +666,7 @@ void ConnectionsDock::_filter_changed(const String &p_text) {
  * Creates or edits connections based on state of the ConnectDialog when "Connect" is pressed.
  */
 void ConnectionsDock::_make_or_edit_connection() {
+	ZoneScoped;
 	TreeItem *it = tree->get_selected();
 	ERR_FAIL_COND(!it);
 
@@ -676,6 +739,7 @@ void ConnectionsDock::_make_or_edit_connection() {
  * Creates single connection w/ undo-redo functionality.
  */
 void ConnectionsDock::_connect(ConnectDialog::ConnectionData p_cd) {
+	ZoneScoped;
 	Node *source = Object::cast_to<Node>(p_cd.source);
 	Node *target = Object::cast_to<Node>(p_cd.target);
 
@@ -700,6 +764,7 @@ void ConnectionsDock::_connect(ConnectDialog::ConnectionData p_cd) {
  * Break single connection w/ undo-redo functionality.
  */
 void ConnectionsDock::_disconnect(TreeItem &p_item) {
+	ZoneScoped;
 	Connection connection = p_item.get_metadata(0);
 	ConnectDialog::ConnectionData cd = connection;
 
@@ -724,6 +789,7 @@ void ConnectionsDock::_disconnect(TreeItem &p_item) {
  * Can undo-redo as a single action.
  */
 void ConnectionsDock::_disconnect_all() {
+	ZoneScoped;
 	TreeItem *item = tree->get_selected();
 
 	if (!_is_item_signal(*item)) {
@@ -754,6 +820,7 @@ void ConnectionsDock::_disconnect_all() {
 }
 
 void ConnectionsDock::_tree_item_selected() {
+	ZoneScoped;
 	TreeItem *item = tree->get_selected();
 	if (!item) { // Unlikely. Disable button just in case.
 		connect_button->set_text(TTR("Connect..."));
@@ -783,10 +850,12 @@ void ConnectionsDock::_tree_item_activated() { // "Activation" on double-click.
 }
 
 bool ConnectionsDock::_is_item_signal(TreeItem &p_item) {
+	ZoneScoped;
 	return (p_item.get_parent() == tree->get_root() || p_item.get_parent()->get_parent() == tree->get_root());
 }
 
 bool ConnectionsDock::_is_connection_inherited(Connection &p_connection) {
+	ZoneScoped;
 	Node *scene_root = EditorNode::get_singleton()->get_edited_scene();
 	Ref<PackedScene> scn = ResourceLoader::load(scene_root->get_scene_file_path());
 	ERR_FAIL_NULL_V(scn, false);
@@ -810,6 +879,7 @@ bool ConnectionsDock::_is_connection_inherited(Connection &p_connection) {
  * Open connection dialog with TreeItem data to CREATE a brand-new connection.
  */
 void ConnectionsDock::_open_connection_dialog(TreeItem &p_item) {
+	ZoneScoped;
 	String signal_name = p_item.get_metadata(0).operator Dictionary()["name"];
 	const String &signal_name_ref = signal_name;
 
@@ -832,6 +902,7 @@ void ConnectionsDock::_open_connection_dialog(TreeItem &p_item) {
  * Open connection dialog with Connection data to EDIT an existing connection.
  */
 void ConnectionsDock::_open_connection_dialog(ConnectDialog::ConnectionData p_cd) {
+	ZoneScoped;
 	Node *src = Object::cast_to<Node>(p_cd.source);
 	Node *dst = Object::cast_to<Node>(p_cd.target);
 
@@ -847,6 +918,7 @@ void ConnectionsDock::_open_connection_dialog(ConnectDialog::ConnectionData p_cd
  * Open slot method location in script editor.
  */
 void ConnectionsDock::_go_to_script(TreeItem &p_item) {
+	ZoneScoped;
 	if (_is_item_signal(p_item)) {
 		return;
 	}
@@ -871,6 +943,7 @@ void ConnectionsDock::_go_to_script(TreeItem &p_item) {
 }
 
 void ConnectionsDock::_handle_signal_menu_option(int p_option) {
+	ZoneScoped;
 	TreeItem *item = tree->get_selected();
 
 	if (!item) {
@@ -893,6 +966,7 @@ void ConnectionsDock::_handle_signal_menu_option(int p_option) {
 }
 
 void ConnectionsDock::_signal_menu_about_to_popup() {
+	ZoneScoped;
 	TreeItem *signal_item = tree->get_selected();
 
 	bool disable_disconnect_all = true;
@@ -906,6 +980,7 @@ void ConnectionsDock::_signal_menu_about_to_popup() {
 }
 
 void ConnectionsDock::_handle_slot_menu_option(int p_option) {
+	ZoneScoped;
 	TreeItem *item = tree->get_selected();
 
 	if (!item) {
@@ -928,6 +1003,7 @@ void ConnectionsDock::_handle_slot_menu_option(int p_option) {
 }
 
 void ConnectionsDock::_slot_menu_about_to_popup() {
+	ZoneScoped;
 	bool connection_is_inherited = tree->get_selected()->has_meta("_inherited_connection");
 
 	slot_menu->set_item_disabled(slot_menu->get_item_index(EDIT), connection_is_inherited);
@@ -935,6 +1011,7 @@ void ConnectionsDock::_slot_menu_about_to_popup() {
 }
 
 void ConnectionsDock::_rmb_pressed(Vector2 p_position, MouseButton p_button) {
+	ZoneScoped;
 	if (p_button != MouseButton::RIGHT) {
 		return;
 	}
@@ -959,10 +1036,12 @@ void ConnectionsDock::_rmb_pressed(Vector2 p_position, MouseButton p_button) {
 }
 
 void ConnectionsDock::_close() {
+	ZoneScoped;
 	hide();
 }
 
 void ConnectionsDock::_connect_pressed() {
+	ZoneScoped;
 	TreeItem *item = tree->get_selected();
 	if (!item) {
 		connect_button->set_disabled(true);
@@ -978,6 +1057,7 @@ void ConnectionsDock::_connect_pressed() {
 }
 
 void ConnectionsDock::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -991,15 +1071,18 @@ void ConnectionsDock::_notification(int p_what) {
 }
 
 void ConnectionsDock::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method("update_tree", &ConnectionsDock::update_tree);
 }
 
 void ConnectionsDock::set_node(Node *p_node) {
+	ZoneScoped;
 	selected_node = p_node;
 	update_tree();
 }
 
 void ConnectionsDock::update_tree() {
+	ZoneScoped;
 	tree->clear();
 
 	if (!selected_node) {
@@ -1196,6 +1279,7 @@ void ConnectionsDock::update_tree() {
 }
 
 ConnectionsDock::ConnectionsDock() {
+	ZoneScoped;
 	set_name(TTR("Signals"));
 
 	VBoxContainer *vbc = this;

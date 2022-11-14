@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_run_native.cpp                                                */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_run_native.h"
 
 #include "editor/editor_node.h"
@@ -36,6 +67,7 @@
 #include "editor/export/editor_export_platform.h"
 
 void EditorRunNative::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			for (int i = 0; i < EditorExport::get_singleton()->get_export_platform_count(); i++) {
@@ -95,6 +127,7 @@ void EditorRunNative::_notification(int p_what) {
 }
 
 Error EditorRunNative::run_native(int p_idx, int p_platform) {
+	ZoneScoped;
 	if (!EditorNode::get_singleton()->ensure_main_scene(true)) {
 		resume_idx = p_idx;
 		resume_platform = p_platform;
@@ -160,18 +193,22 @@ Error EditorRunNative::run_native(int p_idx, int p_platform) {
 }
 
 void EditorRunNative::resume_run_native() {
+	ZoneScoped;
 	run_native(resume_idx, resume_platform);
 }
 
 void EditorRunNative::_bind_methods() {
+	ZoneScoped;
 	ADD_SIGNAL(MethodInfo("native_run", PropertyInfo(Variant::OBJECT, "preset", PROPERTY_HINT_RESOURCE_TYPE, "EditorExportPreset")));
 }
 
 bool EditorRunNative::is_deploy_debug_remote_enabled() const {
+	ZoneScoped;
 	return EditorSettings::get_singleton()->get_project_metadata("debug_options", "run_deploy_remote_debug", false);
 }
 
 EditorRunNative::EditorRunNative() {
+	ZoneScoped;
 	result_dialog = memnew(AcceptDialog);
 	result_dialog->set_title(TTR("Project Run"));
 	result_dialog_log = memnew(RichTextLabel);

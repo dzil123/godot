@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  animation_track_editor.cpp                                           */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "animation_track_editor.h"
 
 #include "animation_track_editor_plugins.h"
@@ -1393,12 +1424,14 @@ public:
 };
 
 void AnimationTimelineEdit::_zoom_changed(double) {
+	ZoneScoped;
 	queue_redraw();
 	play_position->queue_redraw();
 	emit_signal(SNAME("zoom_changed"));
 }
 
 float AnimationTimelineEdit::get_zoom_scale() const {
+	ZoneScoped;
 	float zv = zoom->get_max() - zoom->get_value();
 	if (zv < 1) {
 		zv = 1.0 - zv;
@@ -1409,6 +1442,7 @@ float AnimationTimelineEdit::get_zoom_scale() const {
 }
 
 void AnimationTimelineEdit::_anim_length_changed(double p_new_len) {
+	ZoneScoped;
 	if (editing) {
 		return;
 	}
@@ -1430,6 +1464,7 @@ void AnimationTimelineEdit::_anim_length_changed(double p_new_len) {
 }
 
 void AnimationTimelineEdit::_anim_loop_pressed() {
+	ZoneScoped;
 	if (!read_only) {
 		undo_redo->create_action(TTR("Change Animation Loop"));
 		switch (animation->get_loop_mode()) {
@@ -1461,6 +1496,7 @@ void AnimationTimelineEdit::_anim_loop_pressed() {
 }
 
 int AnimationTimelineEdit::get_buttons_width() const {
+	ZoneScoped;
 	Ref<Texture2D> interp_mode = get_theme_icon(SNAME("TrackContinuous"), SNAME("EditorIcons"));
 	Ref<Texture2D> interp_type = get_theme_icon(SNAME("InterpRaw"), SNAME("EditorIcons"));
 	Ref<Texture2D> loop_type = get_theme_icon(SNAME("InterpWrapClamp"), SNAME("EditorIcons"));
@@ -1474,6 +1510,7 @@ int AnimationTimelineEdit::get_buttons_width() const {
 }
 
 int AnimationTimelineEdit::get_name_limit() const {
+	ZoneScoped;
 	Ref<Texture2D> hsize_icon = get_theme_icon(SNAME("Hsize"), SNAME("EditorIcons"));
 
 	int limit = MAX(name_limit, add_track->get_minimum_size().width + hsize_icon->get_width());
@@ -1484,6 +1521,7 @@ int AnimationTimelineEdit::get_name_limit() const {
 }
 
 void AnimationTimelineEdit::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -1683,6 +1721,7 @@ void AnimationTimelineEdit::_notification(int p_what) {
 }
 
 void AnimationTimelineEdit::set_animation(const Ref<Animation> &p_animation, bool p_read_only) {
+	ZoneScoped;
 	animation = p_animation;
 	read_only = p_read_only;
 
@@ -1704,6 +1743,7 @@ void AnimationTimelineEdit::set_animation(const Ref<Animation> &p_animation, boo
 }
 
 Size2 AnimationTimelineEdit::get_minimum_size() const {
+	ZoneScoped;
 	Size2 ms = add_track->get_minimum_size();
 	Ref<Font> font = get_theme_font(SNAME("font"), SNAME("Label"));
 	int font_size = get_theme_font_size(SNAME("font_size"), SNAME("Label"));
@@ -1713,32 +1753,39 @@ Size2 AnimationTimelineEdit::get_minimum_size() const {
 }
 
 void AnimationTimelineEdit::set_undo_redo(Ref<EditorUndoRedoManager> p_undo_redo) {
+	ZoneScoped;
 	undo_redo = p_undo_redo;
 }
 
 void AnimationTimelineEdit::set_zoom(Range *p_zoom) {
+	ZoneScoped;
 	zoom = p_zoom;
 	zoom->connect("value_changed", callable_mp(this, &AnimationTimelineEdit::_zoom_changed));
 }
 
 void AnimationTimelineEdit::set_track_edit(AnimationTrackEdit *p_track_edit) {
+	ZoneScoped;
 	track_edit = p_track_edit;
 }
 
 void AnimationTimelineEdit::set_play_position(float p_pos) {
+	ZoneScoped;
 	play_position_pos = p_pos;
 	play_position->queue_redraw();
 }
 
 float AnimationTimelineEdit::get_play_position() const {
+	ZoneScoped;
 	return play_position_pos;
 }
 
 void AnimationTimelineEdit::update_play_position() {
+	ZoneScoped;
 	play_position->queue_redraw();
 }
 
 void AnimationTimelineEdit::update_values() {
+	ZoneScoped;
 	if (!animation.is_valid() || editing) {
 		return;
 	}
@@ -1777,6 +1824,7 @@ void AnimationTimelineEdit::update_values() {
 }
 
 void AnimationTimelineEdit::_play_position_draw() {
+	ZoneScoped;
 	if (!animation.is_valid() || play_position_pos < 0) {
 		return;
 	}
@@ -1797,6 +1845,7 @@ void AnimationTimelineEdit::_play_position_draw() {
 }
 
 void AnimationTimelineEdit::gui_input(const Ref<InputEvent> &p_event) {
+	ZoneScoped;
 	ERR_FAIL_COND(p_event.is_null());
 
 	if (panner->gui_input(p_event)) {
@@ -1862,6 +1911,7 @@ void AnimationTimelineEdit::gui_input(const Ref<InputEvent> &p_event) {
 }
 
 Control::CursorShape AnimationTimelineEdit::get_cursor_shape(const Point2 &p_pos) const {
+	ZoneScoped;
 	if (dragging_hsize || hsize_rect.has_point(p_pos)) {
 		// Indicate that the track name column's width can be adjusted
 		return Control::CURSOR_HSIZE;
@@ -1877,10 +1927,12 @@ void AnimationTimelineEdit::_scroll_callback(Vector2 p_scroll_vec, bool p_alt) {
 }
 
 void AnimationTimelineEdit::_pan_callback(Vector2 p_scroll_vec) {
+	ZoneScoped;
 	set_value(get_value() - p_scroll_vec.x / get_zoom_scale());
 }
 
 void AnimationTimelineEdit::_zoom_callback(Vector2 p_scroll_vec, Vector2 p_origin, bool p_alt) {
+	ZoneScoped;
 	double new_zoom_value;
 	double current_zoom_value = get_zoom()->get_value();
 	if (current_zoom_value <= 0.1) {
@@ -1892,24 +1944,29 @@ void AnimationTimelineEdit::_zoom_callback(Vector2 p_scroll_vec, Vector2 p_origi
 }
 
 void AnimationTimelineEdit::set_use_fps(bool p_use_fps) {
+	ZoneScoped;
 	use_fps = p_use_fps;
 	update_values();
 	queue_redraw();
 }
 
 bool AnimationTimelineEdit::is_using_fps() const {
+	ZoneScoped;
 	return use_fps;
 }
 
 void AnimationTimelineEdit::set_hscroll(HScrollBar *p_hscroll) {
+	ZoneScoped;
 	hscroll = p_hscroll;
 }
 
 void AnimationTimelineEdit::_track_added(int p_track) {
+	ZoneScoped;
 	emit_signal(SNAME("track_added"), p_track);
 }
 
 void AnimationTimelineEdit::_bind_methods() {
+	ZoneScoped;
 	ADD_SIGNAL(MethodInfo("zoom_changed"));
 	ADD_SIGNAL(MethodInfo("name_limit_changed"));
 	ADD_SIGNAL(MethodInfo("timeline_changed", PropertyInfo(Variant::FLOAT, "position"), PropertyInfo(Variant::BOOL, "drag"), PropertyInfo(Variant::BOOL, "timeline_only")));
@@ -1920,6 +1977,7 @@ void AnimationTimelineEdit::_bind_methods() {
 }
 
 AnimationTimelineEdit::AnimationTimelineEdit() {
+	ZoneScoped;
 	name_limit = 150 * EDSCALE;
 
 	play_position = memnew(Control);
@@ -1973,6 +2031,7 @@ AnimationTimelineEdit::AnimationTimelineEdit() {
 ////////////////////////////////////
 
 void AnimationTrackEdit::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			if (animation.is_null()) {
@@ -2305,6 +2364,7 @@ void AnimationTrackEdit::_notification(int p_what) {
 }
 
 int AnimationTrackEdit::get_key_height() const {
+	ZoneScoped;
 	if (!animation.is_valid()) {
 		return 0;
 	}
@@ -2313,6 +2373,7 @@ int AnimationTrackEdit::get_key_height() const {
 }
 
 Rect2 AnimationTrackEdit::get_key_rect(int p_index, float p_pixels_sec) {
+	ZoneScoped;
 	if (!animation.is_valid()) {
 		return Rect2();
 	}
@@ -2325,10 +2386,12 @@ Rect2 AnimationTrackEdit::get_key_rect(int p_index, float p_pixels_sec) {
 }
 
 bool AnimationTrackEdit::is_key_selectable_by_distance() const {
+	ZoneScoped;
 	return true;
 }
 
 void AnimationTrackEdit::draw_key_link(int p_index, float p_pixels_sec, int p_x, int p_next_x, int p_clip_left, int p_clip_right) {
+	ZoneScoped;
 	if (p_next_x < p_clip_left) {
 		return;
 	}
@@ -2352,6 +2415,7 @@ void AnimationTrackEdit::draw_key_link(int p_index, float p_pixels_sec, int p_x,
 }
 
 void AnimationTrackEdit::draw_key(int p_index, float p_pixels_sec, int p_x, bool p_selected, int p_clip_left, int p_clip_right) {
+	ZoneScoped;
 	if (!animation.is_valid()) {
 		return;
 	}
@@ -2420,6 +2484,7 @@ void AnimationTrackEdit::draw_key(int p_index, float p_pixels_sec, int p_x, bool
 
 // Helper.
 void AnimationTrackEdit::draw_rect_clipped(const Rect2 &p_rect, const Color &p_color, bool p_filled) {
+	ZoneScoped;
 	int clip_left = timeline->get_name_limit();
 	int clip_right = get_size().width - timeline->get_buttons_width();
 
@@ -2440,6 +2505,7 @@ void AnimationTrackEdit::draw_fg(int p_clip_left, int p_clip_right) {
 }
 
 void AnimationTrackEdit::draw_texture_region_clipped(const Ref<Texture2D> &p_texture, const Rect2 &p_rect, const Rect2 &p_region) {
+	ZoneScoped;
 	int clip_left = timeline->get_name_limit();
 	int clip_right = get_size().width - timeline->get_buttons_width();
 
@@ -2477,14 +2543,17 @@ void AnimationTrackEdit::draw_texture_region_clipped(const Ref<Texture2D> &p_tex
 }
 
 int AnimationTrackEdit::get_track() const {
+	ZoneScoped;
 	return track;
 }
 
 Ref<Animation> AnimationTrackEdit::get_animation() const {
+	ZoneScoped;
 	return animation;
 }
 
 void AnimationTrackEdit::set_animation_and_track(const Ref<Animation> &p_animation, int p_track, bool p_read_only) {
+	ZoneScoped;
 	animation = p_animation;
 	read_only = p_read_only;
 
@@ -2499,10 +2568,12 @@ void AnimationTrackEdit::set_animation_and_track(const Ref<Animation> &p_animati
 }
 
 NodePath AnimationTrackEdit::get_path() const {
+	ZoneScoped;
 	return node_path;
 }
 
 Size2 AnimationTrackEdit::get_minimum_size() const {
+	ZoneScoped;
 	Ref<Texture2D> texture = get_theme_icon(SNAME("Object"), SNAME("EditorIcons"));
 	Ref<Font> font = get_theme_font(SNAME("font"), SNAME("Label"));
 	int font_size = get_theme_font_size(SNAME("font_size"), SNAME("Label"));
@@ -2515,14 +2586,17 @@ Size2 AnimationTrackEdit::get_minimum_size() const {
 }
 
 void AnimationTrackEdit::set_undo_redo(Ref<EditorUndoRedoManager> p_undo_redo) {
+	ZoneScoped;
 	undo_redo = p_undo_redo;
 }
 
 Ref<EditorUndoRedoManager> AnimationTrackEdit::get_undo_redo() const {
+	ZoneScoped;
 	return undo_redo;
 }
 
 void AnimationTrackEdit::set_timeline(AnimationTimelineEdit *p_timeline) {
+	ZoneScoped;
 	timeline = p_timeline;
 	timeline->set_track_edit(this);
 	timeline->connect("zoom_changed", callable_mp(this, &AnimationTrackEdit::_zoom_changed));
@@ -2530,10 +2604,12 @@ void AnimationTrackEdit::set_timeline(AnimationTimelineEdit *p_timeline) {
 }
 
 void AnimationTrackEdit::set_editor(AnimationTrackEditor *p_editor) {
+	ZoneScoped;
 	editor = p_editor;
 }
 
 void AnimationTrackEdit::_play_position_draw() {
+	ZoneScoped;
 	if (!animation.is_valid() || play_position_pos < 0) {
 		return;
 	}
@@ -2550,24 +2626,29 @@ void AnimationTrackEdit::_play_position_draw() {
 }
 
 void AnimationTrackEdit::set_play_position(float p_pos) {
+	ZoneScoped;
 	play_position_pos = p_pos;
 	play_position->queue_redraw();
 }
 
 void AnimationTrackEdit::update_play_position() {
+	ZoneScoped;
 	play_position->queue_redraw();
 }
 
 void AnimationTrackEdit::set_root(Node *p_root) {
+	ZoneScoped;
 	root = p_root;
 }
 
 void AnimationTrackEdit::_zoom_changed() {
+	ZoneScoped;
 	queue_redraw();
 	play_position->queue_redraw();
 }
 
 void AnimationTrackEdit::_path_submitted(const String &p_text) {
+	ZoneScoped;
 	undo_redo->create_action(TTR("Change Track Path"));
 	undo_redo->add_do_method(animation.ptr(), "track_set_path", track, p_text);
 	undo_redo->add_undo_method(animation.ptr(), "track_set_path", track, animation->track_get_path(track));
@@ -2576,6 +2657,7 @@ void AnimationTrackEdit::_path_submitted(const String &p_text) {
 }
 
 bool AnimationTrackEdit::_is_value_key_valid(const Variant &p_key_value, Variant::Type &r_valid_type) const {
+	ZoneScoped;
 	if (root == nullptr) {
 		return false;
 	}
@@ -2600,6 +2682,7 @@ bool AnimationTrackEdit::_is_value_key_valid(const Variant &p_key_value, Variant
 }
 
 Ref<Texture2D> AnimationTrackEdit::_get_key_type_icon() const {
+	ZoneScoped;
 	const Ref<Texture2D> type_icons[9] = {
 		get_theme_icon(SNAME("KeyValue"), SNAME("EditorIcons")),
 		get_theme_icon(SNAME("KeyTrackPosition"), SNAME("EditorIcons")),
@@ -2615,6 +2698,7 @@ Ref<Texture2D> AnimationTrackEdit::_get_key_type_icon() const {
 }
 
 String AnimationTrackEdit::get_tooltip(const Point2 &p_pos) const {
+	ZoneScoped;
 	if (check_rect.has_point(p_pos)) {
 		return TTR("Toggle this track on/off.");
 	}
@@ -2774,6 +2858,7 @@ String AnimationTrackEdit::get_tooltip(const Point2 &p_pos) const {
 }
 
 void AnimationTrackEdit::gui_input(const Ref<InputEvent> &p_event) {
+	ZoneScoped;
 	ERR_FAIL_COND(p_event.is_null());
 
 	if (p_event->is_pressed()) {
@@ -3106,6 +3191,7 @@ void AnimationTrackEdit::gui_input(const Ref<InputEvent> &p_event) {
 }
 
 Variant AnimationTrackEdit::get_drag_data(const Point2 &p_point) {
+	ZoneScoped;
 	if (!clicking_on_name) {
 		return Variant();
 	}
@@ -3129,6 +3215,7 @@ Variant AnimationTrackEdit::get_drag_data(const Point2 &p_point) {
 }
 
 bool AnimationTrackEdit::can_drop_data(const Point2 &p_point, const Variant &p_data) const {
+	ZoneScoped;
 	Dictionary d = p_data;
 	if (!d.has("type")) {
 		return false;
@@ -3161,6 +3248,7 @@ bool AnimationTrackEdit::can_drop_data(const Point2 &p_point, const Variant &p_d
 }
 
 void AnimationTrackEdit::drop_data(const Point2 &p_point, const Variant &p_data) {
+	ZoneScoped;
 	Dictionary d = p_data;
 	if (!d.has("type")) {
 		return;
@@ -3190,6 +3278,7 @@ void AnimationTrackEdit::drop_data(const Point2 &p_point, const Variant &p_data)
 }
 
 void AnimationTrackEdit::_menu_selected(int p_index) {
+	ZoneScoped;
 	switch (p_index) {
 		case MENU_CALL_MODE_CONTINUOUS:
 		case MENU_CALL_MODE_DISCRETE:
@@ -3243,6 +3332,7 @@ void AnimationTrackEdit::_menu_selected(int p_index) {
 }
 
 void AnimationTrackEdit::cancel_drop() {
+	ZoneScoped;
 	if (dropping_at != 0) {
 		dropping_at = 0;
 		queue_redraw();
@@ -3250,11 +3340,13 @@ void AnimationTrackEdit::cancel_drop() {
 }
 
 void AnimationTrackEdit::set_in_group(bool p_enable) {
+	ZoneScoped;
 	in_group = p_enable;
 	queue_redraw();
 }
 
 void AnimationTrackEdit::append_to_selection(const Rect2 &p_box, bool p_deselection) {
+	ZoneScoped;
 	if (animation->track_is_compressed(track)) {
 		return; // Compressed keyframes can't be edited
 	}
@@ -3281,6 +3373,7 @@ void AnimationTrackEdit::append_to_selection(const Rect2 &p_box, bool p_deselect
 }
 
 void AnimationTrackEdit::_bind_methods() {
+	ZoneScoped;
 	ADD_SIGNAL(MethodInfo("timeline_changed", PropertyInfo(Variant::FLOAT, "position"), PropertyInfo(Variant::BOOL, "drag"), PropertyInfo(Variant::BOOL, "timeline_only")));
 	ADD_SIGNAL(MethodInfo("remove_request", PropertyInfo(Variant::INT, "track")));
 	ADD_SIGNAL(MethodInfo("dropped", PropertyInfo(Variant::INT, "from_track"), PropertyInfo(Variant::INT, "to_track")));
@@ -3300,6 +3393,7 @@ void AnimationTrackEdit::_bind_methods() {
 }
 
 AnimationTrackEdit::AnimationTrackEdit() {
+	ZoneScoped;
 	play_position = memnew(Control);
 	play_position->set_mouse_filter(MOUSE_FILTER_PASS);
 	add_child(play_position);
@@ -3312,6 +3406,7 @@ AnimationTrackEdit::AnimationTrackEdit() {
 //////////////////////////////////////
 
 AnimationTrackEdit *AnimationTrackEditPlugin::create_value_track_edit(Object *p_object, Variant::Type p_type, const String &p_property, PropertyHint p_hint, const String &p_hint_string, int p_usage) {
+	ZoneScoped;
 	if (get_script_instance()) {
 		Variant args[6] = {
 			p_object,
@@ -3338,6 +3433,7 @@ AnimationTrackEdit *AnimationTrackEditPlugin::create_value_track_edit(Object *p_
 }
 
 AnimationTrackEdit *AnimationTrackEditPlugin::create_audio_track_edit() {
+	ZoneScoped;
 	if (get_script_instance()) {
 		return Object::cast_to<AnimationTrackEdit>(get_script_instance()->call("create_audio_track_edit").operator Object *());
 	}
@@ -3345,6 +3441,7 @@ AnimationTrackEdit *AnimationTrackEditPlugin::create_audio_track_edit() {
 }
 
 AnimationTrackEdit *AnimationTrackEditPlugin::create_animation_track_edit(Object *p_object) {
+	ZoneScoped;
 	if (get_script_instance()) {
 		return Object::cast_to<AnimationTrackEdit>(get_script_instance()->call("create_animation_track_edit", p_object).operator Object *());
 	}
@@ -3354,6 +3451,7 @@ AnimationTrackEdit *AnimationTrackEditPlugin::create_animation_track_edit(Object
 ///////////////////////////////////////
 
 void AnimationTrackEditGroup::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
 			Ref<Font> font = get_theme_font(SNAME("font"), SNAME("Label"));
@@ -3394,6 +3492,7 @@ void AnimationTrackEditGroup::_notification(int p_what) {
 }
 
 void AnimationTrackEditGroup::set_type_and_name(const Ref<Texture2D> &p_type, const String &p_name, const NodePath &p_node) {
+	ZoneScoped;
 	icon = p_type;
 	node_name = p_name;
 	node = p_node;
@@ -3402,6 +3501,7 @@ void AnimationTrackEditGroup::set_type_and_name(const Ref<Texture2D> &p_type, co
 }
 
 Size2 AnimationTrackEditGroup::get_minimum_size() const {
+	ZoneScoped;
 	Ref<Font> font = get_theme_font(SNAME("font"), SNAME("Label"));
 	int font_size = get_theme_font_size(SNAME("font_size"), SNAME("Label"));
 	int separation = get_theme_constant(SNAME("v_separation"), SNAME("ItemList"));
@@ -3410,27 +3510,32 @@ Size2 AnimationTrackEditGroup::get_minimum_size() const {
 }
 
 void AnimationTrackEditGroup::set_timeline(AnimationTimelineEdit *p_timeline) {
+	ZoneScoped;
 	timeline = p_timeline;
 	timeline->connect("zoom_changed", callable_mp(this, &AnimationTrackEditGroup::_zoom_changed));
 	timeline->connect("name_limit_changed", callable_mp(this, &AnimationTrackEditGroup::_zoom_changed));
 }
 
 void AnimationTrackEditGroup::set_root(Node *p_root) {
+	ZoneScoped;
 	root = p_root;
 	queue_redraw();
 }
 
 void AnimationTrackEditGroup::_zoom_changed() {
+	ZoneScoped;
 	queue_redraw();
 }
 
 AnimationTrackEditGroup::AnimationTrackEditGroup() {
+	ZoneScoped;
 	set_mouse_filter(MOUSE_FILTER_PASS);
 }
 
 //////////////////////////////////////
 
 void AnimationTrackEditor::add_track_edit_plugin(const Ref<AnimationTrackEditPlugin> &p_plugin) {
+	ZoneScoped;
 	if (track_edit_plugins.has(p_plugin)) {
 		return;
 	}
@@ -3438,10 +3543,12 @@ void AnimationTrackEditor::add_track_edit_plugin(const Ref<AnimationTrackEditPlu
 }
 
 void AnimationTrackEditor::remove_track_edit_plugin(const Ref<AnimationTrackEditPlugin> &p_plugin) {
+	ZoneScoped;
 	track_edit_plugins.erase(p_plugin);
 }
 
 void AnimationTrackEditor::set_animation(const Ref<Animation> &p_anim, bool p_read_only) {
+	ZoneScoped;
 	if (animation != p_anim && _get_track_selected() >= 0) {
 		track_edits[_get_track_selected()]->release_focus();
 	}
@@ -3504,14 +3611,17 @@ void AnimationTrackEditor::set_animation(const Ref<Animation> &p_anim, bool p_re
 }
 
 Ref<Animation> AnimationTrackEditor::get_current_animation() const {
+	ZoneScoped;
 	return animation;
 }
 
 void AnimationTrackEditor::_root_removed() {
+	ZoneScoped;
 	root = nullptr;
 }
 
 void AnimationTrackEditor::set_root(Node *p_root) {
+	ZoneScoped;
 	if (root) {
 		root->disconnect("tree_exiting", callable_mp(this, &AnimationTrackEditor::_root_removed));
 	}
@@ -3526,10 +3636,12 @@ void AnimationTrackEditor::set_root(Node *p_root) {
 }
 
 Node *AnimationTrackEditor::get_root() const {
+	ZoneScoped;
 	return root;
 }
 
 void AnimationTrackEditor::update_keying() {
+	ZoneScoped;
 	bool keying_enabled = false;
 
 	EditorSelectionHistory *editor_history = EditorNode::get_singleton()->get_editor_selection_history();
@@ -3548,10 +3660,12 @@ void AnimationTrackEditor::update_keying() {
 }
 
 bool AnimationTrackEditor::has_keying() const {
+	ZoneScoped;
 	return keying;
 }
 
 Dictionary AnimationTrackEditor::get_state() const {
+	ZoneScoped;
 	Dictionary state;
 	state["fps_mode"] = timeline->is_using_fps();
 	state["zoom"] = zoom->get_value();
@@ -3561,6 +3675,7 @@ Dictionary AnimationTrackEditor::get_state() const {
 }
 
 void AnimationTrackEditor::set_state(const Dictionary &p_state) {
+	ZoneScoped;
 	if (p_state.has("fps_mode")) {
 		bool fps_mode = p_state["fps_mode"];
 		if (fps_mode) {
@@ -3591,22 +3706,27 @@ void AnimationTrackEditor::set_state(const Dictionary &p_state) {
 }
 
 void AnimationTrackEditor::cleanup() {
+	ZoneScoped;
 	set_animation(Ref<Animation>(), read_only);
 }
 
 void AnimationTrackEditor::_name_limit_changed() {
+	ZoneScoped;
 	_redraw_tracks();
 }
 
 void AnimationTrackEditor::_timeline_changed(float p_new_pos, bool p_drag, bool p_timeline_only) {
+	ZoneScoped;
 	emit_signal(SNAME("timeline_changed"), p_new_pos, p_drag, p_timeline_only);
 }
 
 void AnimationTrackEditor::_track_remove_request(int p_track) {
+	ZoneScoped;
 	_animation_track_remove_request(p_track, animation);
 }
 
 void AnimationTrackEditor::_animation_track_remove_request(int p_track, Ref<Animation> p_from_animation) {
+	ZoneScoped;
 	if (p_from_animation->track_is_compressed(p_track)) {
 		EditorNode::get_singleton()->show_warning(TTR("Compressed tracks can't be edited or removed. Re-import the animation with compression disabled in order to edit."));
 		return;
@@ -3686,6 +3806,7 @@ void AnimationTrackEditor::_track_grab_focus(int p_track) {
 }
 
 void AnimationTrackEditor::set_anim_pos(float p_pos) {
+	ZoneScoped;
 	timeline->set_play_position(p_pos);
 	for (int i = 0; i < track_edits.size(); i++) {
 		track_edits[i]->set_play_position(p_pos);
@@ -3695,6 +3816,7 @@ void AnimationTrackEditor::set_anim_pos(float p_pos) {
 }
 
 static bool track_type_is_resettable(Animation::TrackType p_type) {
+	ZoneScoped;
 	switch (p_type) {
 		case Animation::TYPE_VALUE:
 			[[fallthrough]];
@@ -3714,11 +3836,13 @@ static bool track_type_is_resettable(Animation::TrackType p_type) {
 }
 
 void AnimationTrackEditor::make_insert_queue() {
+	ZoneScoped;
 	insert_data.clear();
 	insert_queue = true;
 }
 
 void AnimationTrackEditor::commit_insert_queue() {
+	ZoneScoped;
 	bool reset_allowed = true;
 	AnimationPlayer *player = AnimationPlayerEditor::get_singleton()->get_player();
 	if (player->has_animation(SceneStringNames::get_singleton()->RESET) && player->get_animation(SceneStringNames::get_singleton()->RESET) == animation) {
@@ -3793,6 +3917,7 @@ void AnimationTrackEditor::commit_insert_queue() {
 }
 
 void AnimationTrackEditor::_query_insert(const InsertData &p_id) {
+	ZoneScoped;
 	if (!insert_queue) {
 		insert_data.clear();
 	}
@@ -3813,6 +3938,7 @@ void AnimationTrackEditor::_query_insert(const InsertData &p_id) {
 }
 
 void AnimationTrackEditor::_insert_track(bool p_reset_wanted, bool p_create_beziers) {
+	ZoneScoped;
 	undo_redo->create_action(TTR("Anim Insert"));
 
 	Ref<Animation> reset_anim;
@@ -3838,6 +3964,7 @@ void AnimationTrackEditor::_insert_track(bool p_reset_wanted, bool p_create_bezi
 }
 
 void AnimationTrackEditor::insert_transform_key(Node3D *p_node, const String &p_sub, const Animation::TrackType p_type, const Variant p_value) {
+	ZoneScoped;
 	ERR_FAIL_COND(!root);
 	ERR_FAIL_COND_MSG(
 			(p_type != Animation::TYPE_POSITION_3D && p_type != Animation::TYPE_ROTATION_3D && p_type != Animation::TYPE_SCALE_3D),
@@ -3881,6 +4008,7 @@ void AnimationTrackEditor::insert_transform_key(Node3D *p_node, const String &p_
 }
 
 bool AnimationTrackEditor::has_track(Node3D *p_node, const String &p_sub, const Animation::TrackType p_type) {
+	ZoneScoped;
 	ERR_FAIL_COND_V(!root, false);
 	if (!keying) {
 		return false;
@@ -3903,6 +4031,7 @@ bool AnimationTrackEditor::has_track(Node3D *p_node, const String &p_sub, const 
 }
 
 void AnimationTrackEditor::_insert_animation_key(NodePath p_path, const Variant &p_value) {
+	ZoneScoped;
 	String path = p_path;
 
 	// Animation property is a special case, always creates an animation track.
@@ -3937,6 +4066,7 @@ void AnimationTrackEditor::_insert_animation_key(NodePath p_path, const Variant 
 }
 
 void AnimationTrackEditor::insert_node_value_key(Node *p_node, const String &p_property, const Variant &p_value, bool p_only_if_exists) {
+	ZoneScoped;
 	ERR_FAIL_COND(!root);
 	// Let's build a node path.
 
@@ -4033,6 +4163,7 @@ void AnimationTrackEditor::insert_node_value_key(Node *p_node, const String &p_p
 }
 
 void AnimationTrackEditor::insert_value_key(const String &p_property, const Variant &p_value, bool p_advance) {
+	ZoneScoped;
 	EditorSelectionHistory *history = EditorNode::get_singleton()->get_editor_selection_history();
 
 	ERR_FAIL_COND(!root);
@@ -4128,6 +4259,7 @@ void AnimationTrackEditor::insert_value_key(const String &p_property, const Vari
 }
 
 Ref<Animation> AnimationTrackEditor::_create_and_get_reset_animation() {
+	ZoneScoped;
 	AnimationPlayer *player = AnimationPlayerEditor::get_singleton()->get_player();
 	if (player->has_animation(SceneStringNames::get_singleton()->RESET)) {
 		return player->get_animation(SceneStringNames::get_singleton()->RESET);
@@ -4152,6 +4284,7 @@ Ref<Animation> AnimationTrackEditor::_create_and_get_reset_animation() {
 }
 
 void AnimationTrackEditor::_confirm_insert_list() {
+	ZoneScoped;
 	undo_redo->create_action(TTR("Anim Create & Insert"));
 
 	bool create_reset = insert_confirm_reset->is_visible() && insert_confirm_reset->is_pressed();
@@ -4178,6 +4311,7 @@ void AnimationTrackEditor::_confirm_insert_list() {
 }
 
 PropertyInfo AnimationTrackEditor::_find_hint_for_track(int p_idx, NodePath &r_base_path, Variant *r_current_val) {
+	ZoneScoped;
 	r_base_path = NodePath();
 	ERR_FAIL_COND_V(!animation.is_valid(), PropertyInfo());
 	ERR_FAIL_INDEX_V(p_idx, animation->get_track_count(), PropertyInfo());
@@ -4242,6 +4376,7 @@ PropertyInfo AnimationTrackEditor::_find_hint_for_track(int p_idx, NodePath &r_b
 }
 
 static Vector<String> _get_bezier_subindices_for_type(Variant::Type p_type, bool *r_valid = nullptr) {
+	ZoneScoped;
 	Vector<String> subindices;
 	if (r_valid) {
 		*r_valid = true;
@@ -4291,6 +4426,7 @@ static Vector<String> _get_bezier_subindices_for_type(Variant::Type p_type, bool
 }
 
 AnimationTrackEditor::TrackIndices AnimationTrackEditor::_confirm_insert(InsertData p_id, TrackIndices p_next_tracks, bool p_reset_wanted, Ref<Animation> p_reset_anim, bool p_create_beziers) {
+	ZoneScoped;
 	bool created = false;
 
 	bool create_normal_track = p_id.track_idx < 0;
@@ -4430,10 +4566,12 @@ AnimationTrackEditor::TrackIndices AnimationTrackEditor::_confirm_insert(InsertD
 }
 
 void AnimationTrackEditor::show_select_node_warning(bool p_show) {
+	ZoneScoped;
 	info_message->set_visible(p_show);
 }
 
 bool AnimationTrackEditor::is_key_selected(int p_track, int p_key) const {
+	ZoneScoped;
 	SelectedKey sk;
 	sk.key = p_key;
 	sk.track = p_track;
@@ -4442,14 +4580,17 @@ bool AnimationTrackEditor::is_key_selected(int p_track, int p_key) const {
 }
 
 bool AnimationTrackEditor::is_selection_active() const {
+	ZoneScoped;
 	return selection.size();
 }
 
 bool AnimationTrackEditor::is_snap_enabled() const {
+	ZoneScoped;
 	return snap->is_pressed() ^ Input::get_singleton()->is_key_pressed(Key::CTRL);
 }
 
 void AnimationTrackEditor::_update_tracks() {
+	ZoneScoped;
 	int selected = _get_track_selected();
 
 	while (track_vbox->get_child_count()) {
@@ -4639,22 +4780,26 @@ void AnimationTrackEditor::_update_tracks() {
 }
 
 void AnimationTrackEditor::_redraw_tracks() {
+	ZoneScoped;
 	for (int i = 0; i < track_edits.size(); i++) {
 		track_edits[i]->queue_redraw();
 	}
 }
 
 void AnimationTrackEditor::_redraw_groups() {
+	ZoneScoped;
 	for (int i = 0; i < groups.size(); i++) {
 		groups[i]->queue_redraw();
 	}
 }
 
 void AnimationTrackEditor::_sync_animation_change() {
+	ZoneScoped;
 	bezier_edit->queue_redraw();
 }
 
 void AnimationTrackEditor::_animation_changed() {
+	ZoneScoped;
 	if (animation_changing_awaiting_update) {
 		return; // All will be updated, don't bother with anything.
 	}
@@ -4680,6 +4825,7 @@ void AnimationTrackEditor::_animation_changed() {
 }
 
 void AnimationTrackEditor::_snap_mode_changed(int p_mode) {
+	ZoneScoped;
 	timeline->set_use_fps(p_mode == 1);
 	if (key_edit) {
 		key_edit->set_use_fps(p_mode == 1);
@@ -4688,6 +4834,7 @@ void AnimationTrackEditor::_snap_mode_changed(int p_mode) {
 }
 
 void AnimationTrackEditor::_update_step_spinbox() {
+	ZoneScoped;
 	if (!animation.is_valid()) {
 		return;
 	}
@@ -4708,6 +4855,7 @@ void AnimationTrackEditor::_update_step_spinbox() {
 }
 
 void AnimationTrackEditor::_animation_update() {
+	ZoneScoped;
 	timeline->queue_redraw();
 	timeline->update_values();
 
@@ -4747,10 +4895,12 @@ void AnimationTrackEditor::_animation_update() {
 }
 
 MenuButton *AnimationTrackEditor::get_edit_menu() {
+	ZoneScoped;
 	return edit;
 }
 
 void AnimationTrackEditor::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
 			panner->setup((ViewPanner::ControlScheme)EDITOR_GET("editors/panning/animation_editors_panning_scheme").operator int(), ED_GET_SHORTCUT("canvas_item_editor/pan_view"), bool(EDITOR_GET("editors/panning/simple_panning")));
@@ -4782,11 +4932,13 @@ void AnimationTrackEditor::_notification(int p_what) {
 }
 
 void AnimationTrackEditor::_update_scroll(double) {
+	ZoneScoped;
 	_redraw_tracks();
 	_redraw_groups();
 }
 
 void AnimationTrackEditor::_update_step(double p_new_step) {
+	ZoneScoped;
 	undo_redo->create_action(TTR("Change Animation Step"));
 	float step_value = p_new_step;
 	if (timeline->is_using_fps()) {
@@ -4803,10 +4955,12 @@ void AnimationTrackEditor::_update_step(double p_new_step) {
 }
 
 void AnimationTrackEditor::_update_length(double p_new_len) {
+	ZoneScoped;
 	emit_signal(SNAME("animation_len_changed"), p_new_len);
 }
 
 void AnimationTrackEditor::_dropped_track(int p_from_track, int p_to_track) {
+	ZoneScoped;
 	if (p_from_track == p_to_track || p_from_track == p_to_track - 1) {
 		return;
 	}
@@ -4823,6 +4977,7 @@ void AnimationTrackEditor::_dropped_track(int p_from_track, int p_to_track) {
 }
 
 void AnimationTrackEditor::_new_track_node_selected(NodePath p_path) {
+	ZoneScoped;
 	ERR_FAIL_COND(!root);
 	Node *node = get_node(p_path);
 	ERR_FAIL_COND(!node);
@@ -4912,6 +5067,7 @@ void AnimationTrackEditor::_new_track_node_selected(NodePath p_path) {
 }
 
 void AnimationTrackEditor::_add_track(int p_type) {
+	ZoneScoped;
 	if (!root) {
 		EditorNode::get_singleton()->show_warning(TTR("Not possible to add a new track without a root"));
 		return;
@@ -4923,6 +5079,7 @@ void AnimationTrackEditor::_add_track(int p_type) {
 }
 
 void AnimationTrackEditor::_new_track_property_selected(String p_name) {
+	ZoneScoped;
 	String full_path = String(adding_track_path) + ":" + p_name;
 
 	if (adding_track_type == Animation::TYPE_VALUE) {
@@ -4987,6 +5144,7 @@ void AnimationTrackEditor::_new_track_property_selected(String p_name) {
 }
 
 void AnimationTrackEditor::_timeline_value_changed(double) {
+	ZoneScoped;
 	timeline->update_play_position();
 
 	_redraw_tracks();
@@ -5000,6 +5158,7 @@ void AnimationTrackEditor::_timeline_value_changed(double) {
 }
 
 int AnimationTrackEditor::_get_track_selected() {
+	ZoneScoped;
 	for (int i = 0; i < track_edits.size(); i++) {
 		if (track_edits[i]->has_focus()) {
 			return i;
@@ -5010,6 +5169,7 @@ int AnimationTrackEditor::_get_track_selected() {
 }
 
 void AnimationTrackEditor::_insert_key_from_track(float p_ofs, int p_track) {
+	ZoneScoped;
 	ERR_FAIL_INDEX(p_track, animation->get_track_count());
 
 	if (snap->is_pressed() && step->get_value() != 0) {
@@ -5145,6 +5305,7 @@ void AnimationTrackEditor::_insert_key_from_track(float p_ofs, int p_track) {
 }
 
 void AnimationTrackEditor::_add_method_key(const String &p_method) {
+	ZoneScoped;
 	if (!root->has_node(animation->track_get_path(insert_key_from_track_call_track))) {
 		EditorNode::get_singleton()->show_warning(TTR("Track path is invalid, so can't add a method key."));
 		return;
@@ -5187,6 +5348,7 @@ void AnimationTrackEditor::_add_method_key(const String &p_method) {
 }
 
 void AnimationTrackEditor::_key_selected(int p_key, bool p_single, int p_track) {
+	ZoneScoped;
 	ERR_FAIL_INDEX(p_track, animation->get_track_count());
 	ERR_FAIL_INDEX(p_key, animation->track_get_key_count(p_track));
 
@@ -5207,6 +5369,7 @@ void AnimationTrackEditor::_key_selected(int p_key, bool p_single, int p_track) 
 }
 
 void AnimationTrackEditor::_key_deselected(int p_key, int p_track) {
+	ZoneScoped;
 	ERR_FAIL_INDEX(p_track, animation->get_track_count());
 	ERR_FAIL_INDEX(p_key, animation->track_get_key_count(p_track));
 
@@ -5221,11 +5384,13 @@ void AnimationTrackEditor::_key_deselected(int p_key, int p_track) {
 }
 
 void AnimationTrackEditor::_move_selection_begin() {
+	ZoneScoped;
 	moving_selection = true;
 	moving_selection_offset = 0;
 }
 
 void AnimationTrackEditor::_move_selection(float p_offset) {
+	ZoneScoped;
 	moving_selection_offset = p_offset;
 	_redraw_tracks();
 }
@@ -5239,6 +5404,7 @@ struct _AnimMoveRestore {
 // Used for undo/redo.
 
 void AnimationTrackEditor::_clear_key_edit() {
+	ZoneScoped;
 	if (key_edit) {
 		// If key edit is the object being inspected, remove it first.
 		if (InspectorDock::get_inspector_singleton()->get_edited_object() == key_edit) {
@@ -5261,6 +5427,7 @@ void AnimationTrackEditor::_clear_key_edit() {
 }
 
 void AnimationTrackEditor::_clear_selection(bool p_update) {
+	ZoneScoped;
 	selection.clear();
 
 	if (p_update) {
@@ -5271,6 +5438,7 @@ void AnimationTrackEditor::_clear_selection(bool p_update) {
 }
 
 void AnimationTrackEditor::_update_key_edit() {
+	ZoneScoped;
 	_clear_key_edit();
 	if (!animation.is_valid()) {
 		return;
@@ -5329,6 +5497,7 @@ void AnimationTrackEditor::_update_key_edit() {
 }
 
 void AnimationTrackEditor::_clear_selection_for_anim(const Ref<Animation> &p_anim) {
+	ZoneScoped;
 	if (animation != p_anim) {
 		return;
 	}
@@ -5337,6 +5506,7 @@ void AnimationTrackEditor::_clear_selection_for_anim(const Ref<Animation> &p_ani
 }
 
 void AnimationTrackEditor::_select_at_anim(const Ref<Animation> &p_anim, int p_track, float p_pos) {
+	ZoneScoped;
 	if (animation != p_anim) {
 		return;
 	}
@@ -5354,6 +5524,7 @@ void AnimationTrackEditor::_select_at_anim(const Ref<Animation> &p_anim, int p_t
 }
 
 void AnimationTrackEditor::_move_selection_commit() {
+	ZoneScoped;
 	undo_redo->create_action(TTR("Anim Move Keys"));
 
 	List<_AnimMoveRestore> to_restore;
@@ -5430,25 +5601,30 @@ void AnimationTrackEditor::_move_selection_commit() {
 }
 
 void AnimationTrackEditor::_move_selection_cancel() {
+	ZoneScoped;
 	moving_selection = false;
 	_redraw_tracks();
 }
 
 bool AnimationTrackEditor::is_moving_selection() const {
+	ZoneScoped;
 	return moving_selection;
 }
 
 float AnimationTrackEditor::get_moving_selection_offset() const {
+	ZoneScoped;
 	return moving_selection_offset;
 }
 
 void AnimationTrackEditor::_box_selection_draw() {
+	ZoneScoped;
 	const Rect2 selection_rect = Rect2(Point2(), box_selection->get_size());
 	box_selection->draw_rect(selection_rect, get_theme_color(SNAME("box_selection_fill_color"), SNAME("Editor")));
 	box_selection->draw_rect(selection_rect, get_theme_color(SNAME("box_selection_stroke_color"), SNAME("Editor")), false, Math::round(EDSCALE));
 }
 
 void AnimationTrackEditor::_scroll_input(const Ref<InputEvent> &p_event) {
+	ZoneScoped;
 	if (panner->gui_input(p_event)) {
 		scroll->accept_event();
 		return;
@@ -5521,6 +5697,7 @@ void AnimationTrackEditor::_scroll_input(const Ref<InputEvent> &p_event) {
 }
 
 void AnimationTrackEditor::_toggle_bezier_edit() {
+	ZoneScoped;
 	if (bezier_edit->is_visible()) {
 		_cancel_bezier_edit();
 	} else {
@@ -5535,6 +5712,7 @@ void AnimationTrackEditor::_toggle_bezier_edit() {
 }
 
 void AnimationTrackEditor::_scroll_callback(Vector2 p_scroll_vec, bool p_alt) {
+	ZoneScoped;
 	if (p_alt) {
 		if (p_scroll_vec.x < 0 || p_scroll_vec.y < 0) {
 			goto_prev_step(true);
@@ -5547,11 +5725,13 @@ void AnimationTrackEditor::_scroll_callback(Vector2 p_scroll_vec, bool p_alt) {
 }
 
 void AnimationTrackEditor::_pan_callback(Vector2 p_scroll_vec) {
+	ZoneScoped;
 	timeline->set_value(timeline->get_value() - p_scroll_vec.x / timeline->get_zoom_scale());
 	scroll->set_v_scroll(scroll->get_v_scroll() - p_scroll_vec.y);
 }
 
 void AnimationTrackEditor::_zoom_callback(Vector2 p_scroll_vec, Vector2 p_origin, bool p_alt) {
+	ZoneScoped;
 	double new_zoom_value;
 	double current_zoom_value = timeline->get_zoom()->get_value();
 	if (current_zoom_value <= 0.1) {
@@ -5563,12 +5743,14 @@ void AnimationTrackEditor::_zoom_callback(Vector2 p_scroll_vec, Vector2 p_origin
 }
 
 void AnimationTrackEditor::_cancel_bezier_edit() {
+	ZoneScoped;
 	bezier_edit->hide();
 	scroll->show();
 	bezier_edit_icon->set_pressed(false);
 }
 
 void AnimationTrackEditor::_bezier_edit(int p_for_track) {
+	ZoneScoped;
 	_clear_selection(); // Bezier probably wants to use a separate selection mode.
 	bezier_edit->set_root(root);
 	bezier_edit->set_animation_and_track(animation, p_for_track, read_only);
@@ -5578,6 +5760,7 @@ void AnimationTrackEditor::_bezier_edit(int p_for_track) {
 }
 
 void AnimationTrackEditor::_bezier_track_set_key_handle_mode(Animation *p_anim, int p_track, int p_index, Animation::HandleMode p_mode, Animation::HandleSetMode p_set_mode) {
+	ZoneScoped;
 	if (!p_anim) {
 		return;
 	}
@@ -5661,11 +5844,13 @@ void AnimationTrackEditor::_anim_duplicate_keys(bool transpose) {
 }
 
 void AnimationTrackEditor::_edit_menu_about_to_popup() {
+	ZoneScoped;
 	AnimationPlayer *player = AnimationPlayerEditor::get_singleton()->get_player();
 	edit->get_popup()->set_item_disabled(edit->get_popup()->get_item_index(EDIT_APPLY_RESET), !player->can_apply_reset());
 }
 
 void AnimationTrackEditor::goto_prev_step(bool p_from_mouse_event) {
+	ZoneScoped;
 	if (animation.is_null()) {
 		return;
 	}
@@ -5689,6 +5874,7 @@ void AnimationTrackEditor::goto_prev_step(bool p_from_mouse_event) {
 }
 
 void AnimationTrackEditor::goto_next_step(bool p_from_mouse_event, bool p_timeline_only) {
+	ZoneScoped;
 	if (animation.is_null()) {
 		return;
 	}
@@ -5716,6 +5902,7 @@ void AnimationTrackEditor::goto_next_step(bool p_from_mouse_event, bool p_timeli
 }
 
 void AnimationTrackEditor::_edit_menu_pressed(int p_option) {
+	ZoneScoped;
 	last_menu_track_opt = p_option;
 	switch (p_option) {
 		case EDIT_COPY_TRACKS: {
@@ -6328,6 +6515,7 @@ void AnimationTrackEditor::_edit_menu_pressed(int p_option) {
 }
 
 void AnimationTrackEditor::_cleanup_animation(Ref<Animation> p_animation) {
+	ZoneScoped;
 	for (int i = 0; i < p_animation->get_track_count(); i++) {
 		bool prop_exists = false;
 		Variant::Type valid_type = Variant::NIL;
@@ -6379,12 +6567,14 @@ void AnimationTrackEditor::_cleanup_animation(Ref<Animation> p_animation) {
 }
 
 void AnimationTrackEditor::_view_group_toggle() {
+	ZoneScoped;
 	_update_tracks();
 	view_group->set_icon(get_theme_icon(view_group->is_pressed() ? SNAME("AnimationTrackList") : SNAME("AnimationTrackGroup"), SNAME("EditorIcons")));
 	bezier_edit->set_filtered(selected_filter->is_pressed());
 }
 
 bool AnimationTrackEditor::is_grouping_tracks() {
+	ZoneScoped;
 	if (!view_group) {
 		return false;
 	}
@@ -6393,6 +6583,7 @@ bool AnimationTrackEditor::is_grouping_tracks() {
 }
 
 void AnimationTrackEditor::_selection_changed() {
+	ZoneScoped;
 	if (selected_filter->is_pressed()) {
 		_update_tracks(); // Needs updatin.
 	} else {
@@ -6402,6 +6593,7 @@ void AnimationTrackEditor::_selection_changed() {
 }
 
 float AnimationTrackEditor::snap_time(float p_value, bool p_relative) {
+	ZoneScoped;
 	if (is_snap_enabled()) {
 		double snap_increment;
 		if (timeline->is_using_fps() && step->get_value() > 0) {
@@ -6434,6 +6626,7 @@ void AnimationTrackEditor::_show_imported_anim_warning() {
 }
 
 void AnimationTrackEditor::_select_all_tracks_for_copy() {
+	ZoneScoped;
 	TreeItem *track = track_copy_select->get_root()->get_first_child();
 	if (!track) {
 		return;
@@ -6456,6 +6649,7 @@ void AnimationTrackEditor::_select_all_tracks_for_copy() {
 }
 
 void AnimationTrackEditor::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method("_animation_update", &AnimationTrackEditor::_animation_update);
 	ClassDB::bind_method("_track_grab_focus", &AnimationTrackEditor::_track_grab_focus);
 	ClassDB::bind_method("_redraw_tracks", &AnimationTrackEditor::_redraw_tracks);
@@ -6472,6 +6666,7 @@ void AnimationTrackEditor::_bind_methods() {
 }
 
 void AnimationTrackEditor::_pick_track_filter_text_changed(const String &p_newtext) {
+	ZoneScoped;
 	TreeItem *root_item = pick_track->get_scene_tree()->get_scene_tree()->get_root();
 
 	Vector<Node *> select_candidates;
@@ -6500,6 +6695,7 @@ void AnimationTrackEditor::_pick_track_filter_text_changed(const String &p_newte
 }
 
 void AnimationTrackEditor::_pick_track_select_recursive(TreeItem *p_item, const String &p_filter, Vector<Node *> &p_select_candidates) {
+	ZoneScoped;
 	if (!p_item) {
 		return;
 	}
@@ -6520,6 +6716,7 @@ void AnimationTrackEditor::_pick_track_select_recursive(TreeItem *p_item, const 
 }
 
 void AnimationTrackEditor::_pick_track_filter_input(const Ref<InputEvent> &p_ie) {
+	ZoneScoped;
 	Ref<InputEventKey> k = p_ie;
 
 	if (k.is_valid()) {
@@ -6538,6 +6735,7 @@ void AnimationTrackEditor::_pick_track_filter_input(const Ref<InputEvent> &p_ie)
 }
 
 AnimationTrackEditor::AnimationTrackEditor() {
+	ZoneScoped;
 	undo_redo = EditorNode::get_undo_redo();
 
 	main_panel = memnew(PanelContainer);
@@ -6941,6 +7139,7 @@ AnimationTrackEditor::AnimationTrackEditor() {
 }
 
 AnimationTrackEditor::~AnimationTrackEditor() {
+	ZoneScoped;
 	if (key_edit) {
 		memdelete(key_edit);
 	}

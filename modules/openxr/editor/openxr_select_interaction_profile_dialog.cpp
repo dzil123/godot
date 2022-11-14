@@ -28,13 +28,46 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  openxr_select_interaction_profile_dialog.cpp                         */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "openxr_select_interaction_profile_dialog.h"
 
 void OpenXRSelectInteractionProfileDialog::_bind_methods() {
+	ZoneScoped;
 	ADD_SIGNAL(MethodInfo("interaction_profile_selected", PropertyInfo(Variant::STRING, "interaction_profile")));
 }
 
 void OpenXRSelectInteractionProfileDialog::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -44,6 +77,7 @@ void OpenXRSelectInteractionProfileDialog::_notification(int p_what) {
 }
 
 void OpenXRSelectInteractionProfileDialog::_on_select_interaction_profile(const String p_interaction_profile) {
+	ZoneScoped;
 	if (selected_interaction_profile != "") {
 		NodePath button_path = ip_buttons[selected_interaction_profile];
 		Button *button = static_cast<Button *>(get_node(button_path));
@@ -64,6 +98,7 @@ void OpenXRSelectInteractionProfileDialog::_on_select_interaction_profile(const 
 }
 
 void OpenXRSelectInteractionProfileDialog::open(PackedStringArray p_do_not_include) {
+	ZoneScoped;
 	int available_count = 0;
 
 	// out with the old...
@@ -101,6 +136,7 @@ void OpenXRSelectInteractionProfileDialog::open(PackedStringArray p_do_not_inclu
 }
 
 void OpenXRSelectInteractionProfileDialog::ok_pressed() {
+	ZoneScoped;
 	if (selected_interaction_profile == "") {
 		return;
 	}
@@ -111,6 +147,7 @@ void OpenXRSelectInteractionProfileDialog::ok_pressed() {
 }
 
 OpenXRSelectInteractionProfileDialog::OpenXRSelectInteractionProfileDialog() {
+	ZoneScoped;
 	set_title("Select an interaction profile");
 
 	scroll = memnew(ScrollContainer);

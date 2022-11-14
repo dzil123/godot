@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_node.cpp                                                      */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_node.h"
 
 #include "core/config/project_settings.h"
@@ -220,6 +251,7 @@ EditorNode *EditorNode::singleton = nullptr;
 static const String META_TEXT_TO_COPY = "text_to_copy";
 
 void EditorNode::disambiguate_filenames(const Vector<String> p_full_paths, Vector<String> &r_filenames) {
+	ZoneScoped;
 	ERR_FAIL_COND_MSG(p_full_paths.size() != r_filenames.size(), vformat("disambiguate_filenames requires two string vectors of same length (%d != %d).", p_full_paths.size(), r_filenames.size()));
 
 	// Keep track of a list of "index sets," i.e. sets of indices
@@ -330,6 +362,7 @@ void EditorNode::disambiguate_filenames(const Vector<String> p_full_paths, Vecto
 
 // TODO: This REALLY should be done in a better way than replacing all tabs after almost EVERY action.
 void EditorNode::_update_scene_tabs() {
+	ZoneScoped;
 	bool show_rb = EDITOR_GET("interface/scene_tabs/show_script_button");
 
 	if (DisplayServer::get_singleton()->has_feature(DisplayServer::FEATURE_GLOBAL_MENU)) {
@@ -412,6 +445,7 @@ void EditorNode::_update_scene_tabs() {
 }
 
 void EditorNode::_version_control_menu_option(int p_idx) {
+	ZoneScoped;
 	switch (vcs_actions_menu->get_item_id(p_idx)) {
 		case RUN_VCS_METADATA: {
 			VersionControlEditorPlugin::get_singleton()->popup_vcs_metadata_dialog();
@@ -423,6 +457,7 @@ void EditorNode::_version_control_menu_option(int p_idx) {
 }
 
 void EditorNode::_update_title() {
+	ZoneScoped;
 	const String appname = GLOBAL_GET("application/config/name");
 	String title = (appname.is_empty() ? TTR("Unnamed Project") : appname);
 	const String edited = editor_data.get_edited_scene_root() ? editor_data.get_edited_scene_root()->get_scene_file_path() : String();
@@ -441,6 +476,7 @@ void EditorNode::_update_title() {
 }
 
 void EditorNode::shortcut_input(const Ref<InputEvent> &p_event) {
+	ZoneScoped;
 	ERR_FAIL_COND(p_event.is_null());
 
 	Ref<InputEventKey> k = p_event;
@@ -487,6 +523,7 @@ void EditorNode::shortcut_input(const Ref<InputEvent> &p_event) {
 }
 
 void EditorNode::_update_from_settings() {
+	ZoneScoped;
 	int current_filter = GLOBAL_GET("rendering/textures/canvas_textures/default_texture_filter");
 	if (current_filter != scene_root->get_default_canvas_item_texture_filter()) {
 		Viewport::DefaultCanvasItemTextureFilter tf = (Viewport::DefaultCanvasItemTextureFilter)current_filter;
@@ -579,6 +616,7 @@ void EditorNode::_update_from_settings() {
 }
 
 void EditorNode::_select_default_main_screen_plugin() {
+	ZoneScoped;
 	if (EDITOR_3D < main_editor_buttons.size() && main_editor_buttons[EDITOR_3D]->is_visible()) {
 		// If the 3D editor is enabled, use this as the default.
 		editor_select(EDITOR_3D);
@@ -599,6 +637,7 @@ void EditorNode::_select_default_main_screen_plugin() {
 }
 
 void EditorNode::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_PROCESS: {
 			if (opening_prev && !confirmation->is_visible()) {
@@ -861,6 +900,7 @@ void EditorNode::_notification(int p_what) {
 }
 
 void EditorNode::_update_update_spinner() {
+	ZoneScoped;
 	update_spinner->set_visible(EDITOR_GET("interface/editor/show_update_spinner"));
 
 	const bool update_continuously = EDITOR_GET("interface/editor/update_continuously");
@@ -887,6 +927,7 @@ void EditorNode::_update_update_spinner() {
 }
 
 void EditorNode::_on_plugin_ready(Object *p_script, const String &p_activate_name) {
+	ZoneScoped;
 	Ref<Script> scr = Object::cast_to<Script>(p_script);
 	if (scr.is_null()) {
 		return;
@@ -900,6 +941,7 @@ void EditorNode::_on_plugin_ready(Object *p_script, const String &p_activate_nam
 }
 
 void EditorNode::_remove_plugin_from_enabled(const String &p_name) {
+	ZoneScoped;
 	ProjectSettings *ps = ProjectSettings::get_singleton();
 	PackedStringArray enabled_plugins = ps->get("editor_plugins/enabled");
 	for (int i = 0; i < enabled_plugins.size(); ++i) {
@@ -912,6 +954,7 @@ void EditorNode::_remove_plugin_from_enabled(const String &p_name) {
 }
 
 void EditorNode::_resources_changed(const Vector<String> &p_resources) {
+	ZoneScoped;
 	List<Ref<Resource>> changed;
 
 	int rc = p_resources.size();
@@ -947,6 +990,7 @@ void EditorNode::_resources_changed(const Vector<String> &p_resources) {
 }
 
 void EditorNode::_fs_changed() {
+	ZoneScoped;
 	for (FileDialog *E : file_dialogs) {
 		E->invalidate();
 	}
@@ -1035,6 +1079,7 @@ void EditorNode::_fs_changed() {
 }
 
 void EditorNode::_resources_reimported(const Vector<String> &p_resources) {
+	ZoneScoped;
 	List<String> scenes;
 	int current_tab = scene_tabs->get_current_tab();
 
@@ -1065,6 +1110,7 @@ void EditorNode::_resources_reimported(const Vector<String> &p_resources) {
 }
 
 void EditorNode::_sources_changed(bool p_exist) {
+	ZoneScoped;
 	if (waiting_for_first_scan) {
 		waiting_for_first_scan = false;
 
@@ -1097,6 +1143,7 @@ void EditorNode::_sources_changed(bool p_exist) {
 }
 
 void EditorNode::_scan_external_changes() {
+	ZoneScoped;
 	disk_changed_list->clear();
 	TreeItem *r = disk_changed_list->create_item();
 	disk_changed_list->set_hide_root(true);
@@ -1133,12 +1180,14 @@ void EditorNode::_scan_external_changes() {
 }
 
 void EditorNode::_resave_scenes(String p_str) {
+	ZoneScoped;
 	save_all_scenes();
 	ProjectSettings::get_singleton()->save();
 	disk_changed->hide();
 }
 
 void EditorNode::_reload_modified_scenes() {
+	ZoneScoped;
 	int current_idx = editor_data.get_edited_scene();
 
 	for (int i = 0; i < editor_data.get_edited_scene_count(); i++) {
@@ -1168,6 +1217,7 @@ void EditorNode::_reload_modified_scenes() {
 }
 
 void EditorNode::_reload_project_settings() {
+	ZoneScoped;
 	ProjectSettings::get_singleton()->setup(ProjectSettings::get_singleton()->get_resource_path(), String(), true);
 	settings_changed = true;
 }
@@ -1176,6 +1226,7 @@ void EditorNode::_vp_resized() {
 }
 
 void EditorNode::_titlebar_resized() {
+	ZoneScoped;
 	DisplayServer::get_singleton()->window_set_window_buttons_offset(Vector2i(menu_hb->get_global_position().y + menu_hb->get_size().y / 2, menu_hb->get_global_position().y + menu_hb->get_size().y / 2), DisplayServer::MAIN_WINDOW_ID);
 	const Vector3i &margin = DisplayServer::get_singleton()->window_get_safe_title_margins(DisplayServer::MAIN_WINDOW_ID);
 	if (left_menu_spacer) {
@@ -1192,16 +1243,19 @@ void EditorNode::_titlebar_resized() {
 }
 
 void EditorNode::_version_button_pressed() {
+	ZoneScoped;
 	DisplayServer::get_singleton()->clipboard_set(version_btn->get_meta(META_TEXT_TO_COPY));
 }
 
 void EditorNode::_node_renamed() {
+	ZoneScoped;
 	if (InspectorDock::get_inspector_singleton()) {
 		InspectorDock::get_inspector_singleton()->update_tree();
 	}
 }
 
 void EditorNode::_editor_select_next() {
+	ZoneScoped;
 	int editor = _get_current_main_editor();
 
 	do {
@@ -1216,10 +1270,12 @@ void EditorNode::_editor_select_next() {
 }
 
 void EditorNode::_open_command_palette() {
+	ZoneScoped;
 	command_palette->open_popup();
 }
 
 void EditorNode::_editor_select_prev() {
+	ZoneScoped;
 	int editor = _get_current_main_editor();
 
 	do {
@@ -1234,6 +1290,7 @@ void EditorNode::_editor_select_prev() {
 }
 
 Error EditorNode::load_resource(const String &p_resource, bool p_ignore_broken_deps) {
+	ZoneScoped;
 	dependency_errors.clear();
 
 	Error err;
@@ -1262,10 +1319,12 @@ Error EditorNode::load_resource(const String &p_resource, bool p_ignore_broken_d
 }
 
 void EditorNode::edit_node(Node *p_node) {
+	ZoneScoped;
 	push_item(p_node);
 }
 
 void EditorNode::save_resource_in_path(const Ref<Resource> &p_resource, const String &p_path) {
+	ZoneScoped;
 	editor_data.apply_changes_in_editors();
 	int flg = 0;
 	if (EDITOR_GET("filesystem/on_save/compress_binary_resources")) {
@@ -1381,14 +1440,17 @@ void EditorNode::save_resource_as(const Ref<Resource> &p_resource, const String 
 }
 
 void EditorNode::_menu_option(int p_option) {
+	ZoneScoped;
 	_menu_option_confirm(p_option, false);
 }
 
 void EditorNode::_menu_confirm_current() {
+	ZoneScoped;
 	_menu_option_confirm(current_menu_option, true);
 }
 
 void EditorNode::_dialog_display_save_error(String p_file, Error p_error) {
+	ZoneScoped;
 	if (p_error) {
 		switch (p_error) {
 			case ERR_FILE_CANT_WRITE: {
@@ -1405,6 +1467,7 @@ void EditorNode::_dialog_display_save_error(String p_file, Error p_error) {
 }
 
 void EditorNode::_dialog_display_load_error(String p_file, Error p_error) {
+	ZoneScoped;
 	if (p_error) {
 		switch (p_error) {
 			case ERR_CANT_OPEN: {
@@ -1427,6 +1490,7 @@ void EditorNode::_dialog_display_load_error(String p_file, Error p_error) {
 }
 
 void EditorNode::_get_scene_metadata(const String &p_file) {
+	ZoneScoped;
 	Node *scene = editor_data.get_edited_scene_root();
 
 	if (!scene) {
@@ -1459,6 +1523,7 @@ void EditorNode::_get_scene_metadata(const String &p_file) {
 }
 
 void EditorNode::_set_scene_metadata(const String &p_file, int p_idx) {
+	ZoneScoped;
 	Node *scene = editor_data.get_edited_scene_root(p_idx);
 
 	if (!scene) {
@@ -1490,6 +1555,7 @@ void EditorNode::_set_scene_metadata(const String &p_file, int p_idx) {
 }
 
 bool EditorNode::_find_and_save_resource(Ref<Resource> p_res, HashMap<Ref<Resource>, bool> &processed, int32_t flags) {
+	ZoneScoped;
 	if (p_res.is_null()) {
 		return false;
 	}
@@ -1516,6 +1582,7 @@ bool EditorNode::_find_and_save_resource(Ref<Resource> p_res, HashMap<Ref<Resour
 }
 
 bool EditorNode::_find_and_save_edited_subresources(Object *obj, HashMap<Ref<Resource>, bool> &processed, int32_t flags) {
+	ZoneScoped;
 	bool ret_changed = false;
 	List<PropertyInfo> pi;
 	obj->get_property_list(&pi);
@@ -1566,6 +1633,7 @@ bool EditorNode::_find_and_save_edited_subresources(Object *obj, HashMap<Ref<Res
 }
 
 void EditorNode::_save_edited_subresources(Node *scene, HashMap<Ref<Resource>, bool> &processed, int32_t flags) {
+	ZoneScoped;
 	_find_and_save_edited_subresources(scene, processed, flags);
 
 	for (int i = 0; i < scene->get_child_count(); i++) {
@@ -1578,6 +1646,7 @@ void EditorNode::_save_edited_subresources(Node *scene, HashMap<Ref<Resource>, b
 }
 
 void EditorNode::_find_node_types(Node *p_node, int &count_2d, int &count_3d) {
+	ZoneScoped;
 	if (p_node->is_class("Viewport") || (p_node != editor_data.get_edited_scene_root() && p_node->get_owner() != editor_data.get_edited_scene_root())) {
 		return;
 	}
@@ -1594,6 +1663,7 @@ void EditorNode::_find_node_types(Node *p_node, int &count_2d, int &count_3d) {
 }
 
 void EditorNode::_save_scene_with_preview(String p_file, int p_idx) {
+	ZoneScoped;
 	EditorProgress save("save", TTR("Saving Scene"), 4);
 
 	if (editor_data.get_edited_scene_root() != nullptr) {
@@ -1678,6 +1748,7 @@ void EditorNode::_save_scene_with_preview(String p_file, int p_idx) {
 }
 
 bool EditorNode::_validate_scene_recursive(const String &p_filename, Node *p_node) {
+	ZoneScoped;
 	for (int i = 0; i < p_node->get_child_count(); i++) {
 		Node *child = p_node->get_child(i);
 		if (child->get_scene_file_path() == p_filename) {
@@ -1744,6 +1815,7 @@ int EditorNode::_save_external_resources() {
 }
 
 static void _reset_animation_players(Node *p_node, List<Ref<AnimatedValuesBackup>> *r_anim_backups) {
+	ZoneScoped;
 	for (int i = 0; i < p_node->get_child_count(); i++) {
 		AnimationPlayer *player = Object::cast_to<AnimationPlayer>(p_node->get_child(i));
 		if (player && player->is_reset_on_save_enabled() && player->can_apply_reset()) {
@@ -1757,6 +1829,7 @@ static void _reset_animation_players(Node *p_node, List<Ref<AnimatedValuesBackup
 }
 
 void EditorNode::_save_scene(String p_file, int idx) {
+	ZoneScoped;
 	Node *scene = editor_data.get_edited_scene_root(idx);
 
 	if (!scene) {
@@ -1836,11 +1909,13 @@ void EditorNode::_save_scene(String p_file, int idx) {
 }
 
 void EditorNode::save_all_scenes() {
+	ZoneScoped;
 	_menu_option_confirm(RUN_STOP, true);
 	_save_all_scenes();
 }
 
 void EditorNode::save_scene_list(Vector<String> p_scene_filenames) {
+	ZoneScoped;
 	for (int i = 0; i < editor_data.get_edited_scene_count(); i++) {
 		Node *scene = editor_data.get_edited_scene_root(i);
 
@@ -1851,6 +1926,7 @@ void EditorNode::save_scene_list(Vector<String> p_scene_filenames) {
 }
 
 void EditorNode::restart_editor() {
+	ZoneScoped;
 	exiting = true;
 
 	if (editor_run.get_status() != EditorRun::STATUS_STOP) {
@@ -1883,6 +1959,7 @@ void EditorNode::restart_editor() {
 }
 
 void EditorNode::_save_all_scenes() {
+	ZoneScoped;
 	bool all_saved = true;
 	for (int i = 0; i < editor_data.get_edited_scene_count(); i++) {
 		Node *scene = editor_data.get_edited_scene_root(i);
@@ -1906,6 +1983,7 @@ void EditorNode::_save_all_scenes() {
 }
 
 void EditorNode::_mark_unsaved_scenes() {
+	ZoneScoped;
 	for (int i = 0; i < editor_data.get_edited_scene_count(); i++) {
 		Node *node = editor_data.get_edited_scene_root(i);
 		if (!node) {
@@ -1924,6 +2002,7 @@ void EditorNode::_mark_unsaved_scenes() {
 }
 
 void EditorNode::_dialog_action(String p_file) {
+	ZoneScoped;
 	switch (current_menu_option) {
 		case FILE_NEW_INHERITED_SCENE: {
 			Node *scene = editor_data.get_edited_scene_root();
@@ -2110,6 +2189,7 @@ void EditorNode::_dialog_action(String p_file) {
 }
 
 bool EditorNode::item_has_editor(Object *p_object) {
+	ZoneScoped;
 	if (_is_class_editor_disabled_by_feature_profile(p_object->get_class())) {
 		return false;
 	}
@@ -2118,10 +2198,12 @@ bool EditorNode::item_has_editor(Object *p_object) {
 }
 
 void EditorNode::edit_item_resource(Ref<Resource> p_resource) {
+	ZoneScoped;
 	edit_item(p_resource.ptr());
 }
 
 bool EditorNode::_is_class_editor_disabled_by_feature_profile(const StringName &p_class) {
+	ZoneScoped;
 	Ref<EditorFeatureProfile> profile = EditorFeatureProfileManager::get_singleton()->get_current_profile();
 	if (profile.is_null()) {
 		return false;
@@ -2143,6 +2225,7 @@ bool EditorNode::_is_class_editor_disabled_by_feature_profile(const StringName &
 }
 
 void EditorNode::edit_item(Object *p_object) {
+	ZoneScoped;
 	Vector<EditorPlugin *> sub_plugins;
 
 	if (p_object) {
@@ -2175,6 +2258,7 @@ void EditorNode::edit_item(Object *p_object) {
 }
 
 void EditorNode::push_item(Object *p_object, const String &p_property, bool p_inspector_only) {
+	ZoneScoped;
 	if (!p_object) {
 		InspectorDock::get_inspector_singleton()->edit(nullptr);
 		NodeDock::get_singleton()->set_node(nullptr);
@@ -2199,6 +2283,7 @@ void EditorNode::push_item(Object *p_object, const String &p_property, bool p_in
 }
 
 void EditorNode::_save_default_environment() {
+	ZoneScoped;
 	Ref<Environment> fallback = get_tree()->get_root()->get_world_3d()->get_fallback_environment();
 
 	if (fallback.is_valid() && fallback->get_path().is_resource_file()) {
@@ -2209,24 +2294,29 @@ void EditorNode::_save_default_environment() {
 }
 
 void EditorNode::hide_top_editors() {
+	ZoneScoped;
 	_display_top_editors(false);
 
 	editor_plugins_over->clear();
 }
 
 void EditorNode::_display_top_editors(bool p_display) {
+	ZoneScoped;
 	editor_plugins_over->make_visible(p_display);
 }
 
 void EditorNode::_set_top_editors(Vector<EditorPlugin *> p_editor_plugins_over) {
+	ZoneScoped;
 	editor_plugins_over->set_plugins_list(p_editor_plugins_over);
 }
 
 void EditorNode::_set_editing_top_editors(Object *p_current_object) {
+	ZoneScoped;
 	editor_plugins_over->edit(p_current_object);
 }
 
 static bool overrides_external_editor(Object *p_object) {
+	ZoneScoped;
 	Script *script = Object::cast_to<Script>(p_object);
 
 	if (!script) {
@@ -2237,6 +2327,7 @@ static bool overrides_external_editor(Object *p_object) {
 }
 
 void EditorNode::_edit_current(bool p_skip_foreign) {
+	ZoneScoped;
 	ObjectID current_id = editor_history.get_current();
 	Object *current_obj = current_id.is_valid() ? ObjectDB::get_instance(current_id) : nullptr;
 
@@ -2438,6 +2529,7 @@ void EditorNode::_edit_current(bool p_skip_foreign) {
 }
 
 void EditorNode::_write_movie_toggled(bool p_enabled) {
+	ZoneScoped;
 	if (p_enabled) {
 		launch_pad->add_theme_style_override("panel", gui_base->get_theme_stylebox(SNAME("LaunchPadMovieMode"), SNAME("EditorStyles")));
 		write_movie_panel->add_theme_style_override("panel", gui_base->get_theme_stylebox(SNAME("MovieWriterButtonPressed"), SNAME("EditorStyles")));
@@ -2448,6 +2540,7 @@ void EditorNode::_write_movie_toggled(bool p_enabled) {
 }
 
 void EditorNode::_run(bool p_current, const String &p_custom) {
+	ZoneScoped;
 	if (editor_run.get_status() == EditorRun::STATUS_PLAY) {
 		play_button->set_pressed(!_playing_edited);
 		play_scene_button->set_pressed(_playing_edited);
@@ -2559,6 +2652,7 @@ void EditorNode::_run(bool p_current, const String &p_custom) {
 }
 
 void EditorNode::_run_native(const Ref<EditorExportPreset> &p_preset) {
+	ZoneScoped;
 	bool autosave = EDITOR_GET("run/auto_save/save_before_running");
 	if (autosave) {
 		_menu_option_confirm(FILE_SAVE_ALL_SCENES, false);
@@ -2577,6 +2671,7 @@ void EditorNode::_run_native(const Ref<EditorExportPreset> &p_preset) {
 }
 
 void EditorNode::_reset_play_buttons() {
+	ZoneScoped;
 	play_button->set_pressed(false);
 	play_button->set_icon(gui_base->get_theme_icon(SNAME("MainPlay"), SNAME("EditorIcons")));
 	play_button->set_tooltip_text(TTR("Play the project."));
@@ -2589,10 +2684,12 @@ void EditorNode::_reset_play_buttons() {
 }
 
 void EditorNode::_android_build_source_selected(const String &p_file) {
+	ZoneScoped;
 	export_template_manager->install_android_template_from_file(p_file);
 }
 
 void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
+	ZoneScoped;
 	if (!p_confirmed) { // FIXME: this may be a hack.
 		current_menu_option = (MenuOptions)p_option;
 	}
@@ -3100,6 +3197,7 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 }
 
 String EditorNode::adjust_scene_name_casing(const String &root_name) {
+	ZoneScoped;
 	switch (GLOBAL_GET("editor/scene/scene_naming").operator int()) {
 		case SCENE_NAME_CASING_AUTO:
 			// Use casing of the root node.
@@ -3113,10 +3211,12 @@ String EditorNode::adjust_scene_name_casing(const String &root_name) {
 }
 
 void EditorNode::_request_screenshot() {
+	ZoneScoped;
 	_screenshot();
 }
 
 void EditorNode::_screenshot(bool p_use_utc) {
+	ZoneScoped;
 	String name = "editor_screenshot_" + Time::get_singleton()->get_datetime_string_from_system(p_use_utc).replace(":", "") + ".png";
 	NodePath path = String("user://") + name;
 	_save_screenshot(path);
@@ -3126,6 +3226,7 @@ void EditorNode::_screenshot(bool p_use_utc) {
 }
 
 void EditorNode::_save_screenshot(NodePath p_path) {
+	ZoneScoped;
 	Control *editor_main_screen = EditorInterface::get_singleton()->get_editor_main_screen();
 	ERR_FAIL_COND_MSG(!editor_main_screen, "Cannot get the editor main screen control.");
 	Viewport *viewport = editor_main_screen->get_viewport();
@@ -3139,6 +3240,7 @@ void EditorNode::_save_screenshot(NodePath p_path) {
 }
 
 void EditorNode::_tool_menu_option(int p_idx) {
+	ZoneScoped;
 	switch (tool_menu->get_item_id(p_idx)) {
 		case TOOLS_ORPHAN_RESOURCES: {
 			orphan_resources->show();
@@ -3160,6 +3262,7 @@ void EditorNode::_tool_menu_option(int p_idx) {
 }
 
 void EditorNode::_export_as_menu_option(int p_idx) {
+	ZoneScoped;
 	if (p_idx == 0) { // MeshLibrary
 		current_menu_option = FILE_EXPORT_MESH_LIBRARY;
 
@@ -3194,6 +3297,7 @@ void EditorNode::_export_as_menu_option(int p_idx) {
 }
 
 int EditorNode::_next_unsaved_scene(bool p_valid_filename, int p_start) {
+	ZoneScoped;
 	for (int i = p_start; i < editor_data.get_edited_scene_count(); i++) {
 		if (!editor_data.get_edited_scene_root(i)) {
 			continue;
@@ -3211,6 +3315,7 @@ int EditorNode::_next_unsaved_scene(bool p_valid_filename, int p_start) {
 }
 
 void EditorNode::_exit_editor(int p_exit_code) {
+	ZoneScoped;
 	exiting = true;
 	resource_preview->stop(); // Stop early to avoid crashes.
 	_save_docks();
@@ -3222,6 +3327,7 @@ void EditorNode::_exit_editor(int p_exit_code) {
 }
 
 void EditorNode::_discard_changes(const String &p_str) {
+	ZoneScoped;
 	switch (current_menu_option) {
 		case FILE_CLOSE_ALL_AND_QUIT:
 		case FILE_CLOSE_ALL_AND_RUN_PROJECT_MANAGER:
@@ -3305,6 +3411,7 @@ void EditorNode::_discard_changes(const String &p_str) {
 }
 
 void EditorNode::_update_file_menu_opened() {
+	ZoneScoped;
 	Ref<Shortcut> close_scene_sc = ED_GET_SHORTCUT("editor/close_scene");
 	close_scene_sc->set_name(TTR("Close Scene"));
 	Ref<Shortcut> reopen_closed_scene_sc = ED_GET_SHORTCUT("editor/reopen_closed_scene");
@@ -3318,14 +3425,17 @@ void EditorNode::_update_file_menu_opened() {
 }
 
 void EditorNode::_update_file_menu_closed() {
+	ZoneScoped;
 	file_menu->set_item_disabled(file_menu->get_item_index(FILE_OPEN_PREV), false);
 }
 
 VBoxContainer *EditorNode::get_main_screen_control() {
+	ZoneScoped;
 	return main_screen_vbox;
 }
 
 void EditorNode::editor_select(int p_which) {
+	ZoneScoped;
 	static bool selecting = false;
 	if (selecting || changing_scene) {
 		return;
@@ -3375,6 +3485,7 @@ void EditorNode::editor_select(int p_which) {
 }
 
 void EditorNode::select_editor_by_name(const String &p_name) {
+	ZoneScoped;
 	ERR_FAIL_COND(p_name.is_empty());
 
 	for (int i = 0; i < main_editor_buttons.size(); i++) {
@@ -3388,6 +3499,7 @@ void EditorNode::select_editor_by_name(const String &p_name) {
 }
 
 void EditorNode::add_editor_plugin(EditorPlugin *p_editor, bool p_config_changed) {
+	ZoneScoped;
 	if (p_editor->has_main_screen()) {
 		Button *tb = memnew(Button);
 		tb->set_flat(true);
@@ -3422,6 +3534,7 @@ void EditorNode::add_editor_plugin(EditorPlugin *p_editor, bool p_config_changed
 }
 
 void EditorNode::remove_editor_plugin(EditorPlugin *p_editor, bool p_config_changed) {
+	ZoneScoped;
 	if (p_editor->has_main_screen()) {
 		for (int i = 0; i < singleton->main_editor_buttons.size(); i++) {
 			if (p_editor->get_name() == singleton->main_editor_buttons[i]->get_text()) {
@@ -3451,6 +3564,7 @@ void EditorNode::remove_editor_plugin(EditorPlugin *p_editor, bool p_config_chan
 }
 
 void EditorNode::_update_addon_config() {
+	ZoneScoped;
 	if (_initializing_plugins) {
 		return;
 	}
@@ -3471,6 +3585,7 @@ void EditorNode::_update_addon_config() {
 }
 
 void EditorNode::set_addon_plugin_enabled(const String &p_addon, bool p_enabled, bool p_config_changed) {
+	ZoneScoped;
 	String addon_path = p_addon;
 
 	if (!addon_path.begins_with("res://")) {
@@ -3548,6 +3663,7 @@ void EditorNode::set_addon_plugin_enabled(const String &p_addon, bool p_enabled,
 }
 
 bool EditorNode::is_addon_plugin_enabled(const String &p_addon) const {
+	ZoneScoped;
 	if (p_addon.begins_with("res://")) {
 		return addon_name_to_plugin.has(p_addon);
 	}
@@ -3556,14 +3672,17 @@ bool EditorNode::is_addon_plugin_enabled(const String &p_addon) const {
 }
 
 void EditorNode::set_movie_maker_enabled(bool p_enabled) {
+	ZoneScoped;
 	write_movie_button->set_pressed(p_enabled);
 }
 
 bool EditorNode::is_movie_maker_enabled() const {
+	ZoneScoped;
 	return write_movie_button->is_pressed();
 }
 
 void EditorNode::_remove_edited_scene(bool p_change_tab) {
+	ZoneScoped;
 	int new_index = editor_data.get_edited_scene();
 	int old_index = new_index;
 
@@ -3598,6 +3717,7 @@ void EditorNode::_remove_scene(int index, bool p_change_tab) {
 }
 
 void EditorNode::set_edited_scene(Node *p_scene) {
+	ZoneScoped;
 	if (get_editor_data().get_edited_scene_root()) {
 		if (get_editor_data().get_edited_scene_root()->get_parent() == scene_root) {
 			scene_root->remove_child(get_editor_data().get_edited_scene_root());
@@ -3621,6 +3741,7 @@ void EditorNode::set_edited_scene(Node *p_scene) {
 }
 
 int EditorNode::_get_current_main_editor() {
+	ZoneScoped;
 	for (int i = 0; i < editor_table.size(); i++) {
 		if (editor_table[i] == editor_plugin_screen) {
 			return i;
@@ -3631,6 +3752,7 @@ int EditorNode::_get_current_main_editor() {
 }
 
 Dictionary EditorNode::_get_main_scene_state() {
+	ZoneScoped;
 	Dictionary state;
 	state["main_tab"] = _get_current_main_editor();
 	state["scene_tree_offset"] = SceneTreeDock::get_singleton()->get_tree_editor()->get_scene_tree()->get_vscroll_bar()->get_value();
@@ -3640,6 +3762,7 @@ Dictionary EditorNode::_get_main_scene_state() {
 }
 
 void EditorNode::_set_main_scene_state(Dictionary p_state, Node *p_for_scene) {
+	ZoneScoped;
 	if (get_edited_scene() != p_for_scene && p_for_scene != nullptr) {
 		return; // Not for this scene.
 	}
@@ -3696,6 +3819,7 @@ void EditorNode::_set_main_scene_state(Dictionary p_state, Node *p_for_scene) {
 }
 
 bool EditorNode::is_changing_scene() const {
+	ZoneScoped;
 	return changing_scene;
 }
 
@@ -3752,6 +3876,7 @@ void EditorNode::set_current_scene(int p_idx) {
 }
 
 void EditorNode::setup_color_picker(ColorPicker *picker) {
+	ZoneScoped;
 	int default_color_mode = EDITOR_GET("interface/inspector/default_color_picker_mode");
 	int picker_shape = EDITOR_GET("interface/inspector/default_color_picker_shape");
 	picker->set_color_mode((ColorPicker::ColorModeType)default_color_mode);
@@ -3759,6 +3884,7 @@ void EditorNode::setup_color_picker(ColorPicker *picker) {
 }
 
 bool EditorNode::is_scene_open(const String &p_path) {
+	ZoneScoped;
 	for (int i = 0; i < editor_data.get_edited_scene_count(); i++) {
 		if (editor_data.get_scene_path(i) == p_path) {
 			return true;
@@ -3769,10 +3895,12 @@ bool EditorNode::is_scene_open(const String &p_path) {
 }
 
 void EditorNode::fix_dependencies(const String &p_for_file) {
+	ZoneScoped;
 	dependency_fixer->edit(p_for_file);
 }
 
 int EditorNode::new_scene() {
+	ZoneScoped;
 	int idx = editor_data.add_edited_scene(-1);
 	// Remove placeholder empty scene.
 	if (editor_data.get_edited_scene_count() > 1) {
@@ -3793,6 +3921,7 @@ int EditorNode::new_scene() {
 }
 
 Error EditorNode::load_scene(const String &p_scene, bool p_ignore_broken_deps, bool p_set_inherited, bool p_clear_errors, bool p_force_open_imported, bool p_silent_change_tab) {
+	ZoneScoped;
 	if (!is_inside_tree()) {
 		defer_load_scene = p_scene;
 		return OK;
@@ -3944,6 +4073,7 @@ Error EditorNode::load_scene(const String &p_scene, bool p_ignore_broken_deps, b
 }
 
 void EditorNode::open_request(const String &p_path) {
+	ZoneScoped;
 	if (!opening_prev) {
 		List<String>::Element *prev_scene_item = previous_scenes.find(p_path);
 		if (prev_scene_item != nullptr) {
@@ -3955,11 +4085,13 @@ void EditorNode::open_request(const String &p_path) {
 }
 
 void EditorNode::edit_foreign_resource(Ref<Resource> p_resource) {
+	ZoneScoped;
 	load_scene(p_resource->get_path().get_slice("::", 0));
 	InspectorDock::get_singleton()->call_deferred("edit_resource", p_resource);
 }
 
 bool EditorNode::is_resource_read_only(Ref<Resource> p_resource, bool p_foreign_resources_are_writable) {
+	ZoneScoped;
 	ERR_FAIL_COND_V(p_resource.is_null(), false);
 
 	String path = p_resource->get_path();
@@ -3995,36 +4127,44 @@ bool EditorNode::is_resource_read_only(Ref<Resource> p_resource, bool p_foreign_
 }
 
 void EditorNode::request_instance_scene(const String &p_path) {
+	ZoneScoped;
 	SceneTreeDock::get_singleton()->instantiate(p_path);
 }
 
 void EditorNode::request_instantiate_scenes(const Vector<String> &p_files) {
+	ZoneScoped;
 	SceneTreeDock::get_singleton()->instantiate_scenes(p_files);
 }
 
 Ref<EditorUndoRedoManager> &EditorNode::get_undo_redo() {
+	ZoneScoped;
 	return singleton->editor_data.get_undo_redo();
 }
 
 void EditorNode::_inherit_request(String p_file) {
+	ZoneScoped;
 	current_menu_option = FILE_NEW_INHERITED_SCENE;
 	_dialog_action(p_file);
 }
 
 void EditorNode::_instantiate_request(const Vector<String> &p_files) {
+	ZoneScoped;
 	request_instantiate_scenes(p_files);
 }
 
 void EditorNode::_close_messages() {
+	ZoneScoped;
 	old_split_ofs = center_split->get_split_offset();
 	center_split->set_split_offset(0);
 }
 
 void EditorNode::_show_messages() {
+	ZoneScoped;
 	center_split->set_split_offset(old_split_ofs);
 }
 
 void EditorNode::_add_to_recent_scenes(const String &p_scene) {
+	ZoneScoped;
 	Array rc = EditorSettings::get_singleton()->get_project_metadata("recent_files", "scenes", Array());
 	if (rc.has(p_scene)) {
 		rc.erase(p_scene);
@@ -4039,6 +4179,7 @@ void EditorNode::_add_to_recent_scenes(const String &p_scene) {
 }
 
 void EditorNode::_open_recent_scene(int p_idx) {
+	ZoneScoped;
 	if (p_idx == recent_scenes->get_item_count() - 1) {
 		EditorSettings::get_singleton()->set_project_metadata("recent_files", "scenes", Array());
 		call_deferred(SNAME("_update_recent_scenes"));
@@ -4055,6 +4196,7 @@ void EditorNode::_open_recent_scene(int p_idx) {
 }
 
 void EditorNode::_update_recent_scenes() {
+	ZoneScoped;
 	Array rc = EditorSettings::get_singleton()->get_project_metadata("recent_files", "scenes", Array());
 	recent_scenes->clear();
 
@@ -4070,6 +4212,7 @@ void EditorNode::_update_recent_scenes() {
 }
 
 void EditorNode::_quick_opened() {
+	ZoneScoped;
 	Vector<String> files = quick_open->get_selected_files();
 
 	bool open_scene_dialog = quick_open->get_base_type() == "PackedScene";
@@ -4088,20 +4231,24 @@ void EditorNode::_quick_opened() {
 }
 
 void EditorNode::_quick_run() {
+	ZoneScoped;
 	_run(false, quick_run->get_selected());
 }
 
 void EditorNode::notify_all_debug_sessions_exited() {
+	ZoneScoped;
 	_menu_option_confirm(RUN_STOP, false);
 	stop_button->set_pressed(false);
 	editor_run.stop();
 }
 
 void EditorNode::add_io_error(const String &p_error) {
+	ZoneScoped;
 	_load_error_notify(singleton, p_error);
 }
 
 void EditorNode::_load_error_notify(void *p_ud, const String &p_text) {
+	ZoneScoped;
 	EditorNode *en = static_cast<EditorNode *>(p_ud);
 	en->load_errors->add_image(en->gui_base->get_theme_icon(SNAME("Error"), SNAME("EditorIcons")));
 	en->load_errors->add_text(p_text + "\n");
@@ -4109,6 +4256,7 @@ void EditorNode::_load_error_notify(void *p_ud, const String &p_text) {
 }
 
 bool EditorNode::_find_scene_in_use(Node *p_node, const String &p_path) const {
+	ZoneScoped;
 	if (p_node->get_scene_file_path() == p_path) {
 		return true;
 	}
@@ -4123,6 +4271,7 @@ bool EditorNode::_find_scene_in_use(Node *p_node, const String &p_path) const {
 }
 
 bool EditorNode::is_scene_in_use(const String &p_path) {
+	ZoneScoped;
 	Node *es = get_edited_scene();
 	if (es) {
 		return _find_scene_in_use(es, p_path);
@@ -4131,6 +4280,7 @@ bool EditorNode::is_scene_in_use(const String &p_path) {
 }
 
 void EditorNode::register_editor_types() {
+	ZoneScoped;
 	ResourceLoader::set_timestamp_on_load(true);
 	ResourceSaver::set_timestamp_on_save(true);
 
@@ -4178,6 +4328,7 @@ void EditorNode::register_editor_types() {
 }
 
 void EditorNode::unregister_editor_types() {
+	ZoneScoped;
 	_init_callbacks.clear();
 	if (EditorPaths::get_singleton()) {
 		EditorPaths::free();
@@ -4187,6 +4338,7 @@ void EditorNode::unregister_editor_types() {
 }
 
 void EditorNode::stop_child_process(OS::ProcessID p_pid) {
+	ZoneScoped;
 	if (has_child_process(p_pid)) {
 		editor_run.stop_child_process(p_pid);
 		if (!editor_run.get_child_process_count()) { // All children stopped. Closing.
@@ -4196,6 +4348,7 @@ void EditorNode::stop_child_process(OS::ProcessID p_pid) {
 }
 
 Ref<Script> EditorNode::get_object_custom_type_base(const Object *p_object) const {
+	ZoneScoped;
 	ERR_FAIL_COND_V(!p_object, nullptr);
 
 	Ref<Script> scr = p_object->get_script();
@@ -4228,6 +4381,7 @@ Ref<Script> EditorNode::get_object_custom_type_base(const Object *p_object) cons
 }
 
 StringName EditorNode::get_object_custom_type_name(const Object *p_object) const {
+	ZoneScoped;
 	ERR_FAIL_COND_V(!p_object, StringName());
 
 	Ref<Script> scr = p_object->get_script();
@@ -4261,6 +4415,7 @@ StringName EditorNode::get_object_custom_type_name(const Object *p_object) const
 }
 
 Ref<ImageTexture> EditorNode::_load_custom_class_icon(const String &p_path) const {
+	ZoneScoped;
 	if (p_path.length()) {
 		Ref<Image> img = memnew(Image);
 		Error err = ImageLoader::load_image(p_path, img);
@@ -4273,6 +4428,7 @@ Ref<ImageTexture> EditorNode::_load_custom_class_icon(const String &p_path) cons
 }
 
 void EditorNode::_pick_main_scene_custom_action(const String &p_custom_action_name) {
+	ZoneScoped;
 	if (p_custom_action_name == "select_current") {
 		Node *scene = editor_data.get_edited_scene_root();
 
@@ -4295,6 +4451,7 @@ void EditorNode::_pick_main_scene_custom_action(const String &p_custom_action_na
 }
 
 Ref<Texture2D> EditorNode::get_object_icon(const Object *p_object, const String &p_fallback) {
+	ZoneScoped;
 	ERR_FAIL_COND_V(!p_object || !gui_base, nullptr);
 
 	Ref<Script> scr = p_object->get_script();
@@ -4350,6 +4507,7 @@ Ref<Texture2D> EditorNode::get_object_icon(const Object *p_object, const String 
 }
 
 Ref<Texture2D> EditorNode::get_class_icon(const String &p_class, const String &p_fallback) const {
+	ZoneScoped;
 	ERR_FAIL_COND_V_MSG(p_class.is_empty(), nullptr, "Class name cannot be empty.");
 
 	if (ScriptServer::is_global_class(p_class)) {
@@ -4397,6 +4555,7 @@ Ref<Texture2D> EditorNode::get_class_icon(const String &p_class, const String &p
 }
 
 bool EditorNode::is_object_of_custom_type(const Object *p_object, const StringName &p_class) {
+	ZoneScoped;
 	ERR_FAIL_COND_V(!p_object, false);
 
 	Ref<Script> scr = p_object->get_script();
@@ -4418,6 +4577,7 @@ bool EditorNode::is_object_of_custom_type(const Object *p_object, const StringNa
 }
 
 void EditorNode::progress_add_task(const String &p_task, const String &p_label, int p_steps, bool p_can_cancel) {
+	ZoneScoped;
 	if (singleton->cmdline_export_mode) {
 		print_line(p_task + ": begin: " + p_label + " steps: " + itos(p_steps));
 	} else {
@@ -4426,6 +4586,7 @@ void EditorNode::progress_add_task(const String &p_task, const String &p_label, 
 }
 
 bool EditorNode::progress_task_step(const String &p_task, const String &p_state, int p_step, bool p_force_refresh) {
+	ZoneScoped;
 	if (singleton->cmdline_export_mode) {
 		print_line("\t" + p_task + ": step " + itos(p_step) + ": " + p_state);
 		return false;
@@ -4435,6 +4596,7 @@ bool EditorNode::progress_task_step(const String &p_task, const String &p_state,
 }
 
 void EditorNode::progress_end_task(const String &p_task) {
+	ZoneScoped;
 	if (singleton->cmdline_export_mode) {
 		print_line(p_task + ": end");
 	} else {
@@ -4443,18 +4605,22 @@ void EditorNode::progress_end_task(const String &p_task) {
 }
 
 void EditorNode::progress_add_task_bg(const String &p_task, const String &p_label, int p_steps) {
+	ZoneScoped;
 	singleton->progress_hb->add_task(p_task, p_label, p_steps);
 }
 
 void EditorNode::progress_task_step_bg(const String &p_task, int p_step) {
+	ZoneScoped;
 	singleton->progress_hb->task_step(p_task, p_step);
 }
 
 void EditorNode::progress_end_task_bg(const String &p_task) {
+	ZoneScoped;
 	singleton->progress_hb->end_task(p_task);
 }
 
 Ref<Texture2D> EditorNode::_file_dialog_get_icon(const String &p_path) {
+	ZoneScoped;
 	EditorFileSystemDirectory *efsd = EditorFileSystem::get_singleton()->get_filesystem_path(p_path.get_base_dir());
 	if (efsd) {
 		String file = p_path.get_file();
@@ -4475,6 +4641,7 @@ Ref<Texture2D> EditorNode::_file_dialog_get_icon(const String &p_path) {
 }
 
 void EditorNode::_build_icon_type_cache() {
+	ZoneScoped;
 	List<StringName> tl;
 	theme_base->get_theme()->get_icon_list(SNAME("EditorIcons"), &tl);
 	for (const StringName &E : tl) {
@@ -4486,34 +4653,40 @@ void EditorNode::_build_icon_type_cache() {
 }
 
 void EditorNode::_file_dialog_register(FileDialog *p_dialog) {
+	ZoneScoped;
 	singleton->file_dialogs.insert(p_dialog);
 }
 
 void EditorNode::_file_dialog_unregister(FileDialog *p_dialog) {
+	ZoneScoped;
 	singleton->file_dialogs.erase(p_dialog);
 }
 
 void EditorNode::_editor_file_dialog_register(EditorFileDialog *p_dialog) {
+	ZoneScoped;
 	singleton->editor_file_dialogs.insert(p_dialog);
 }
 
 void EditorNode::_editor_file_dialog_unregister(EditorFileDialog *p_dialog) {
+	ZoneScoped;
 	singleton->editor_file_dialogs.erase(p_dialog);
 }
 
 Vector<EditorNodeInitCallback> EditorNode::_init_callbacks;
 
 void EditorNode::_begin_first_scan() {
-	ZoneScopedS(60);
+	ZoneScoped;
 	Engine::get_singleton()->startup_benchmark_begin_measure("editor_scan_and_import");
 	EditorFileSystem::get_singleton()->scan();
 }
 void EditorNode::set_use_startup_benchmark(bool p_use_startup_benchmark, const String &p_startup_benchmark_file) {
+	ZoneScoped;
 	use_startup_benchmark = p_use_startup_benchmark;
 	startup_benchmark_file = p_startup_benchmark_file;
 }
 
 Error EditorNode::export_preset(const String &p_preset, const String &p_path, bool p_debug, bool p_pack_only) {
+	ZoneScoped;
 	export_defer.preset = p_preset;
 	export_defer.path = p_path;
 	export_defer.debug = p_debug;
@@ -4523,6 +4696,7 @@ Error EditorNode::export_preset(const String &p_preset, const String &p_path, bo
 }
 
 void EditorNode::show_accept(const String &p_text, const String &p_title) {
+	ZoneScoped;
 	current_menu_option = -1;
 	accept->set_ok_button_text(p_title);
 	accept->set_text(p_text);
@@ -4530,6 +4704,7 @@ void EditorNode::show_accept(const String &p_text, const String &p_title) {
 }
 
 void EditorNode::show_save_accept(const String &p_text, const String &p_title) {
+	ZoneScoped;
 	current_menu_option = -1;
 	save_accept->set_ok_button_text(p_title);
 	save_accept->set_text(p_text);
@@ -4537,6 +4712,7 @@ void EditorNode::show_save_accept(const String &p_text, const String &p_title) {
 }
 
 void EditorNode::show_warning(const String &p_text, const String &p_title) {
+	ZoneScoped;
 	if (warning->is_inside_tree()) {
 		warning->set_text(p_text);
 		warning->set_title(p_title);
@@ -4547,6 +4723,7 @@ void EditorNode::show_warning(const String &p_text, const String &p_title) {
 }
 
 void EditorNode::_copy_warning(const String &p_str) {
+	ZoneScoped;
 	DisplayServer::get_singleton()->clipboard_set(warning->get_text());
 }
 
@@ -4570,6 +4747,7 @@ void EditorNode::_dock_floating_close_request(Control *p_control) {
 }
 
 void EditorNode::_dock_make_float() {
+	ZoneScoped;
 	Control *dock = dock_slot[dock_popup_selected_idx]->get_current_tab_control();
 	ERR_FAIL_COND(!dock);
 
@@ -4615,6 +4793,7 @@ void EditorNode::_dock_make_float() {
 }
 
 void EditorNode::_update_dock_containers() {
+	ZoneScoped;
 	for (int i = 0; i < DOCK_SLOT_MAX; i++) {
 		if (dock_slot[i]->get_tab_count() == 0 && dock_slot[i]->is_visible()) {
 			dock_slot[i]->hide();
@@ -4640,6 +4819,7 @@ void EditorNode::_update_dock_containers() {
 }
 
 void EditorNode::_dock_select_input(const Ref<InputEvent> &p_input) {
+	ZoneScoped;
 	Ref<InputEventMouse> me = p_input;
 
 	if (me.is_valid()) {
@@ -4691,15 +4871,18 @@ void EditorNode::_dock_select_input(const Ref<InputEvent> &p_input) {
 }
 
 void EditorNode::_dock_popup_exit() {
+	ZoneScoped;
 	dock_select_rect_over_idx = -1;
 	dock_select->queue_redraw();
 }
 
 void EditorNode::_dock_pre_popup(int p_which) {
+	ZoneScoped;
 	dock_popup_selected_idx = p_which;
 }
 
 void EditorNode::_dock_move_left() {
+	ZoneScoped;
 	if (dock_popup_selected_idx < 0 || dock_popup_selected_idx >= DOCK_SLOT_MAX) {
 		return;
 	}
@@ -4715,6 +4898,7 @@ void EditorNode::_dock_move_left() {
 }
 
 void EditorNode::_dock_move_right() {
+	ZoneScoped;
 	Control *current_ctl = dock_slot[dock_popup_selected_idx]->get_tab_control(dock_slot[dock_popup_selected_idx]->get_current_tab());
 	Control *next_ctl = dock_slot[dock_popup_selected_idx]->get_tab_control(dock_slot[dock_popup_selected_idx]->get_current_tab() + 1);
 	if (!current_ctl || !next_ctl) {
@@ -4727,6 +4911,7 @@ void EditorNode::_dock_move_right() {
 }
 
 void EditorNode::_dock_select_draw() {
+	ZoneScoped;
 	Size2 s = dock_select->get_size();
 	s.y /= 2.0;
 	s.x /= 6.0;
@@ -4813,6 +4998,7 @@ void EditorNode::_dock_select_draw() {
 }
 
 void EditorNode::_save_docks() {
+	ZoneScoped;
 	if (waiting_for_first_scan) {
 		return; // Scanning, do not touch docks.
 	}
@@ -4829,6 +5015,7 @@ void EditorNode::_save_docks() {
 }
 
 void EditorNode::_save_docks_to_config(Ref<ConfigFile> p_layout, const String &p_section) {
+	ZoneScoped;
 	for (int i = 0; i < DOCK_SLOT_MAX; i++) {
 		String names;
 		for (int j = 0; j < dock_slot[i]->get_tab_count(); j++) {
@@ -4867,6 +5054,7 @@ void EditorNode::_save_docks_to_config(Ref<ConfigFile> p_layout, const String &p
 }
 
 void EditorNode::_save_open_scenes_to_config(Ref<ConfigFile> p_layout, const String &p_section) {
+	ZoneScoped;
 	Array scenes;
 	for (int i = 0; i < editor_data.get_edited_scene_count(); i++) {
 		String path = editor_data.get_scene_path(i);
@@ -4879,14 +5067,17 @@ void EditorNode::_save_open_scenes_to_config(Ref<ConfigFile> p_layout, const Str
 }
 
 void EditorNode::save_layout() {
+	ZoneScoped;
 	dock_drag_timer->start();
 }
 
 void EditorNode::_dock_split_dragged(int ofs) {
+	ZoneScoped;
 	dock_drag_timer->start();
 }
 
 void EditorNode::_load_docks() {
+	ZoneScoped;
 	Ref<ConfigFile> config;
 	config.instantiate();
 	Error err = config->load(EditorPaths::get_singleton()->get_project_settings_dir().path_join("editor_layout.cfg"));
@@ -4905,6 +5096,7 @@ void EditorNode::_load_docks() {
 }
 
 void EditorNode::_update_dock_slots_visibility(bool p_keep_selected_tabs) {
+	ZoneScoped;
 	if (!docks_visible) {
 		for (int i = 0; i < DOCK_SLOT_MAX; i++) {
 			dock_slot[i]->hide();
@@ -4997,6 +5189,7 @@ void EditorNode::_dock_tab_changed(int p_tab) {
 }
 
 void EditorNode::_load_docks_from_config(Ref<ConfigFile> p_layout, const String &p_section) {
+	ZoneScoped;
 	for (int i = 0; i < DOCK_SLOT_MAX; i++) {
 		if (!p_layout->has_section_key(p_section, "dock_" + itos(i + 1))) {
 			continue;
@@ -5099,6 +5292,7 @@ void EditorNode::_load_docks_from_config(Ref<ConfigFile> p_layout, const String 
 }
 
 void EditorNode::_load_open_scenes_from_config(Ref<ConfigFile> p_layout, const String &p_section) {
+	ZoneScoped;
 	if (!bool(EDITOR_GET("interface/scene_tabs/restore_scenes_on_load"))) {
 		return;
 	}
@@ -5119,6 +5313,7 @@ void EditorNode::_load_open_scenes_from_config(Ref<ConfigFile> p_layout, const S
 }
 
 bool EditorNode::has_scenes_in_session() {
+	ZoneScoped;
 	if (!bool(EDITOR_GET("interface/scene_tabs/restore_scenes_on_load"))) {
 		return false;
 	}
@@ -5136,6 +5331,7 @@ bool EditorNode::has_scenes_in_session() {
 }
 
 bool EditorNode::ensure_main_scene(bool p_from_native) {
+	ZoneScoped;
 	pick_main_scene->set_meta("from_native", p_from_native); // Whether from play button or native run.
 	String main_scene = GLOBAL_GET("application/run/main_scene");
 
@@ -5172,36 +5368,43 @@ bool EditorNode::ensure_main_scene(bool p_from_native) {
 }
 
 Error EditorNode::run_play_native(int p_idx, int p_platform) {
+	ZoneScoped;
 	return run_native->run_native(p_idx, p_platform);
 }
 
 void EditorNode::run_play() {
+	ZoneScoped;
 	_menu_option_confirm(RUN_STOP, true);
 	_run(false);
 }
 
 void EditorNode::run_play_current() {
+	ZoneScoped;
 	_save_default_environment();
 	_menu_option_confirm(RUN_STOP, true);
 	_run(true);
 }
 
 void EditorNode::run_play_custom(const String &p_custom) {
+	ZoneScoped;
 	bool is_current = !run_current_filename.is_empty();
 	_menu_option_confirm(RUN_STOP, true);
 	_run(is_current, p_custom);
 }
 
 void EditorNode::run_stop() {
+	ZoneScoped;
 	_menu_option_confirm(RUN_STOP, false);
 }
 
 bool EditorNode::is_run_playing() const {
+	ZoneScoped;
 	EditorRun::Status status = editor_run.get_status();
 	return (status == EditorRun::STATUS_PLAY || status == EditorRun::STATUS_PAUSED);
 }
 
 String EditorNode::get_run_playing_scene() const {
+	ZoneScoped;
 	String run_filename = editor_run.get_running_scene();
 	if (run_filename.is_empty() && is_run_playing()) {
 		run_filename = GLOBAL_GET("application/run/main_scene"); // Must be the main scene then.
@@ -5211,9 +5414,11 @@ String EditorNode::get_run_playing_scene() const {
 }
 
 void EditorNode::_immediate_dialog_confirmed() {
+	ZoneScoped;
 	immediate_dialog_confirmed = true;
 }
 bool EditorNode::immediate_confirmation_dialog(const String &p_text, const String &p_ok_text, const String &p_cancel_text) {
+	ZoneScoped;
 	ConfirmationDialog *cd = memnew(ConfirmationDialog);
 	cd->set_text(p_text);
 	cd->set_ok_button_text(p_ok_text);
@@ -5237,14 +5442,17 @@ bool EditorNode::immediate_confirmation_dialog(const String &p_text, const Strin
 }
 
 int EditorNode::get_current_tab() {
+	ZoneScoped;
 	return scene_tabs->get_current_tab();
 }
 
 void EditorNode::set_current_tab(int p_tab) {
+	ZoneScoped;
 	scene_tabs->set_current_tab(p_tab);
 }
 
 void EditorNode::_update_layouts_menu() {
+	ZoneScoped;
 	editor_layouts->clear();
 	overridden_default_layout = -1;
 
@@ -5275,6 +5483,7 @@ void EditorNode::_update_layouts_menu() {
 }
 
 void EditorNode::_layout_menu_option(int p_id) {
+	ZoneScoped;
 	switch (p_id) {
 		case SETTINGS_LAYOUT_SAVE: {
 			current_menu_option = p_id;
@@ -5309,6 +5518,7 @@ void EditorNode::_layout_menu_option(int p_id) {
 }
 
 void EditorNode::_scene_tab_script_edited(int p_tab) {
+	ZoneScoped;
 	Ref<Script> scr = editor_data.get_scene_root_script(p_tab);
 	if (scr.is_valid()) {
 		InspectorDock::get_singleton()->edit_resource(scr);
@@ -5316,6 +5526,7 @@ void EditorNode::_scene_tab_script_edited(int p_tab) {
 }
 
 void EditorNode::_scene_tab_closed(int p_tab, int option) {
+	ZoneScoped;
 	current_menu_option = option;
 	tab_closing_idx = p_tab;
 	Node *scene = editor_data.get_edited_scene_root(p_tab);
@@ -5338,6 +5549,7 @@ void EditorNode::_scene_tab_closed(int p_tab, int option) {
 }
 
 void EditorNode::_scene_tab_hovered(int p_tab) {
+	ZoneScoped;
 	if (!bool(EDITOR_GET("interface/scene_tabs/show_thumbnail_on_hover"))) {
 		return;
 	}
@@ -5354,10 +5566,12 @@ void EditorNode::_scene_tab_hovered(int p_tab) {
 }
 
 void EditorNode::_scene_tab_exit() {
+	ZoneScoped;
 	tab_preview_panel->hide();
 }
 
 void EditorNode::_scene_tab_input(const Ref<InputEvent> &p_input) {
+	ZoneScoped;
 	Ref<InputEventMouseButton> mb = p_input;
 
 	if (mb.is_valid()) {
@@ -5418,11 +5632,13 @@ void EditorNode::_scene_tab_input(const Ref<InputEvent> &p_input) {
 }
 
 void EditorNode::_reposition_active_tab(int idx_to) {
+	ZoneScoped;
 	editor_data.move_edited_scene_to_index(idx_to);
 	_update_scene_tabs();
 }
 
 void EditorNode::_thumbnail_done(const String &p_path, const Ref<Texture2D> &p_preview, const Ref<Texture2D> &p_small_preview, const Variant &p_udata) {
+	ZoneScoped;
 	int p_tab = p_udata.operator signed int();
 	if (p_preview.is_valid()) {
 		Rect2 rect = scene_tabs->get_tab_rect(p_tab);
@@ -5434,6 +5650,7 @@ void EditorNode::_thumbnail_done(const String &p_path, const Ref<Texture2D> &p_p
 }
 
 void EditorNode::_scene_tab_changed(int p_tab) {
+	ZoneScoped;
 	tab_preview_panel->hide();
 
 	if (p_tab == editor_data.get_edited_scene()) {
@@ -5443,6 +5660,7 @@ void EditorNode::_scene_tab_changed(int p_tab) {
 }
 
 Button *EditorNode::add_bottom_panel_item(String p_text, Control *p_item) {
+	ZoneScoped;
 	Button *tb = memnew(Button);
 	tb->set_flat(true);
 	tb->connect("toggled", callable_mp(this, &EditorNode::_bottom_panel_switch).bind(bottom_panel_items.size()));
@@ -5464,6 +5682,7 @@ Button *EditorNode::add_bottom_panel_item(String p_text, Control *p_item) {
 }
 
 void EditorNode::hide_bottom_panel() {
+	ZoneScoped;
 	for (int i = 0; i < bottom_panel_items.size(); i++) {
 		if (bottom_panel_items[i].control->is_visible()) {
 			_bottom_panel_switch(false, i);
@@ -5473,6 +5692,7 @@ void EditorNode::hide_bottom_panel() {
 }
 
 void EditorNode::make_bottom_panel_item_visible(Control *p_item) {
+	ZoneScoped;
 	for (int i = 0; i < bottom_panel_items.size(); i++) {
 		if (bottom_panel_items[i].control == p_item) {
 			_bottom_panel_switch(true, i);
@@ -5482,6 +5702,7 @@ void EditorNode::make_bottom_panel_item_visible(Control *p_item) {
 }
 
 void EditorNode::raise_bottom_panel_item(Control *p_item) {
+	ZoneScoped;
 	for (int i = 0; i < bottom_panel_items.size(); i++) {
 		if (bottom_panel_items[i].control == p_item) {
 			bottom_panel_items[i].button->move_to_front();
@@ -5497,6 +5718,7 @@ void EditorNode::raise_bottom_panel_item(Control *p_item) {
 }
 
 void EditorNode::remove_bottom_panel_item(Control *p_item) {
+	ZoneScoped;
 	for (int i = 0; i < bottom_panel_items.size(); i++) {
 		if (bottom_panel_items[i].control == p_item) {
 			if (p_item->is_visible_in_tree()) {
@@ -5517,6 +5739,7 @@ void EditorNode::remove_bottom_panel_item(Control *p_item) {
 }
 
 void EditorNode::_bottom_panel_switch(bool p_enable, int p_idx) {
+	ZoneScoped;
 	ERR_FAIL_INDEX(p_idx, bottom_panel_items.size());
 
 	if (bottom_panel_items[p_idx].control->is_visible() == p_enable) {
@@ -5555,15 +5778,18 @@ void EditorNode::_bottom_panel_switch(bool p_enable, int p_idx) {
 }
 
 void EditorNode::set_docks_visible(bool p_show) {
+	ZoneScoped;
 	docks_visible = p_show;
 	_update_dock_slots_visibility(true);
 }
 
 bool EditorNode::get_docks_visible() const {
+	ZoneScoped;
 	return docks_visible;
 }
 
 void EditorNode::_toggle_distraction_free_mode() {
+	ZoneScoped;
 	if (EDITOR_GET("interface/editor/separate_distraction_mode")) {
 		int screen = -1;
 		for (int i = 0; i < editor_table.size(); i++) {
@@ -5586,6 +5812,7 @@ void EditorNode::_toggle_distraction_free_mode() {
 }
 
 void EditorNode::set_distraction_free_mode(bool p_enter) {
+	ZoneScoped;
 	distraction_free->set_pressed(p_enter);
 
 	if (p_enter) {
@@ -5598,16 +5825,19 @@ void EditorNode::set_distraction_free_mode(bool p_enter) {
 }
 
 bool EditorNode::is_distraction_free_mode_enabled() const {
+	ZoneScoped;
 	return distraction_free->is_pressed();
 }
 
 void EditorNode::add_control_to_dock(DockSlot p_slot, Control *p_control) {
+	ZoneScoped;
 	ERR_FAIL_INDEX(p_slot, DOCK_SLOT_MAX);
 	dock_slot[p_slot]->add_child(p_control);
 	_update_dock_slots_visibility();
 }
 
 void EditorNode::remove_control_from_dock(Control *p_control) {
+	ZoneScoped;
 	Control *dock = nullptr;
 	for (int i = 0; i < DOCK_SLOT_MAX; i++) {
 		if (p_control->get_parent() == dock_slot[i]) {
@@ -5623,6 +5853,7 @@ void EditorNode::remove_control_from_dock(Control *p_control) {
 }
 
 Variant EditorNode::drag_resource(const Ref<Resource> &p_res, Control *p_from) {
+	ZoneScoped;
 	Control *drag_control = memnew(Control);
 	TextureRect *drag_preview = memnew(TextureRect);
 	Label *label = memnew(Label);
@@ -5663,6 +5894,7 @@ Variant EditorNode::drag_resource(const Ref<Resource> &p_res, Control *p_from) {
 }
 
 Variant EditorNode::drag_files_and_dirs(const Vector<String> &p_paths, Control *p_from) {
+	ZoneScoped;
 	bool has_folder = false;
 	bool has_file = false;
 	for (int i = 0; i < p_paths.size(); i++) {
@@ -5714,12 +5946,14 @@ Variant EditorNode::drag_files_and_dirs(const Vector<String> &p_paths, Control *
 }
 
 void EditorNode::add_tool_menu_item(const String &p_name, const Callable &p_callback) {
+	ZoneScoped;
 	int idx = tool_menu->get_item_count();
 	tool_menu->add_item(p_name, TOOLS_CUSTOM);
 	tool_menu->set_item_metadata(idx, p_callback);
 }
 
 void EditorNode::add_tool_submenu_item(const String &p_name, PopupMenu *p_submenu) {
+	ZoneScoped;
 	ERR_FAIL_NULL(p_submenu);
 	ERR_FAIL_COND(p_submenu->get_parent() != nullptr);
 
@@ -5728,6 +5962,7 @@ void EditorNode::add_tool_submenu_item(const String &p_name, PopupMenu *p_submen
 }
 
 void EditorNode::remove_tool_menu_item(const String &p_name) {
+	ZoneScoped;
 	for (int i = 0; i < tool_menu->get_item_count(); i++) {
 		if (tool_menu->get_item_id(i) != TOOLS_CUSTOM) {
 			continue;
@@ -5747,15 +5982,18 @@ void EditorNode::remove_tool_menu_item(const String &p_name) {
 }
 
 PopupMenu *EditorNode::get_export_as_menu() {
+	ZoneScoped;
 	return export_as_menu;
 }
 
 void EditorNode::_global_menu_scene(const Variant &p_tag) {
+	ZoneScoped;
 	int idx = (int)p_tag;
 	scene_tabs->set_current_tab(idx);
 }
 
 void EditorNode::_global_menu_new_window(const Variant &p_tag) {
+	ZoneScoped;
 	if (OS::get_singleton()->get_main_loop()) {
 		List<String> args;
 		args.push_back("-p");
@@ -5764,6 +6002,7 @@ void EditorNode::_global_menu_new_window(const Variant &p_tag) {
 }
 
 void EditorNode::_dropped_files(const Vector<String> &p_files) {
+	ZoneScoped;
 	String to_path = ProjectSettings::get_singleton()->globalize_path(FileSystemDock::get_singleton()->get_selected_path());
 
 	_add_dropped_files_recursive(p_files, to_path);
@@ -5772,6 +6011,7 @@ void EditorNode::_dropped_files(const Vector<String> &p_files) {
 }
 
 void EditorNode::_add_dropped_files_recursive(const Vector<String> &p_files, String to_path) {
+	ZoneScoped;
 	Ref<DirAccess> dir = DirAccess::create(DirAccess::ACCESS_FILESYSTEM);
 
 	for (int i = 0; i < p_files.size(); i++) {
@@ -5808,10 +6048,12 @@ void EditorNode::_add_dropped_files_recursive(const Vector<String> &p_files, Str
 }
 
 void EditorNode::_file_access_close_error_notify(const String &p_str) {
+	ZoneScoped;
 	add_io_error(vformat(TTR("Unable to write to file '%s', file in use, locked or lacking permissions."), p_str));
 }
 
 void EditorNode::reload_scene(const String &p_path) {
+	ZoneScoped;
 	int scene_idx = -1;
 	for (int i = 0; i < editor_data.get_edited_scene_count(); i++) {
 		if (editor_data.get_scene_path(i) == p_path) {
@@ -5850,6 +6092,7 @@ void EditorNode::reload_scene(const String &p_path) {
 int EditorNode::plugin_init_callback_count = 0;
 
 void EditorNode::add_plugin_init_callback(EditorPluginInitializeCallback p_callback) {
+	ZoneScoped;
 	ERR_FAIL_COND(plugin_init_callback_count == MAX_INIT_CALLBACKS);
 
 	plugin_init_callbacks[plugin_init_callback_count++] = p_callback;
@@ -5860,6 +6103,7 @@ EditorPluginInitializeCallback EditorNode::plugin_init_callbacks[EditorNode::MAX
 int EditorNode::build_callback_count = 0;
 
 void EditorNode::add_build_callback(EditorBuildCallback p_callback) {
+	ZoneScoped;
 	ERR_FAIL_COND(build_callback_count == MAX_INIT_CALLBACKS);
 
 	build_callbacks[build_callback_count++] = p_callback;
@@ -5868,6 +6112,7 @@ void EditorNode::add_build_callback(EditorBuildCallback p_callback) {
 EditorBuildCallback EditorNode::build_callbacks[EditorNode::MAX_BUILD_CALLBACKS];
 
 bool EditorNode::call_build() {
+	ZoneScoped;
 	bool builds_successful = true;
 
 	for (int i = 0; i < build_callback_count && builds_successful; i++) {
@@ -5886,36 +6131,44 @@ bool EditorNode::call_build() {
 }
 
 void EditorNode::_inherit_imported(const String &p_action) {
+	ZoneScoped;
 	open_imported->hide();
 	load_scene(open_import_request, true, true);
 }
 
 void EditorNode::_open_imported() {
+	ZoneScoped;
 	load_scene(open_import_request, true, false, true, true);
 }
 
 void EditorNode::dim_editor(bool p_dimming) {
+	ZoneScoped;
 	dimmed = p_dimming;
 	gui_base->set_modulate(p_dimming ? Color(0.5, 0.5, 0.5) : Color(1, 1, 1));
 }
 
 bool EditorNode::is_editor_dimmed() const {
+	ZoneScoped;
 	return dimmed;
 }
 
 void EditorNode::open_export_template_manager() {
+	ZoneScoped;
 	export_template_manager->popup_manager();
 }
 
 void EditorNode::add_resource_conversion_plugin(const Ref<EditorResourceConversionPlugin> &p_plugin) {
+	ZoneScoped;
 	resource_conversion_plugins.push_back(p_plugin);
 }
 
 void EditorNode::remove_resource_conversion_plugin(const Ref<EditorResourceConversionPlugin> &p_plugin) {
+	ZoneScoped;
 	resource_conversion_plugins.erase(p_plugin);
 }
 
 Vector<Ref<EditorResourceConversionPlugin>> EditorNode::find_resource_conversion_plugin(const Ref<Resource> &p_for_resource) {
+	ZoneScoped;
 	Vector<Ref<EditorResourceConversionPlugin>> ret;
 
 	for (int i = 0; i < resource_conversion_plugins.size(); i++) {
@@ -5928,10 +6181,12 @@ Vector<Ref<EditorResourceConversionPlugin>> EditorNode::find_resource_conversion
 }
 
 void EditorNode::_bottom_panel_raise_toggled(bool p_pressed) {
+	ZoneScoped;
 	top_split->set_visible(!p_pressed);
 }
 
 void EditorNode::_update_renderer_color() {
+	ZoneScoped;
 	if (renderer->get_text() == "gl_compatibility") {
 		renderer->add_theme_color_override("font_color", Color::hex(0x5586a4ff));
 	} else if (renderer->get_text() == "forward_plus" || renderer->get_text() == "mobile") {
@@ -5940,6 +6195,7 @@ void EditorNode::_update_renderer_color() {
 }
 
 void EditorNode::_renderer_selected(int p_which) {
+	ZoneScoped;
 	String rendering_method = renderer->get_item_metadata(p_which);
 
 	String current_renderer = GLOBAL_GET("rendering/renderer/rendering_method");
@@ -5955,6 +6211,7 @@ void EditorNode::_renderer_selected(int p_which) {
 }
 
 void EditorNode::_resource_saved(Ref<Resource> p_resource, const String &p_path) {
+	ZoneScoped;
 	if (EditorFileSystem::get_singleton()) {
 		EditorFileSystem::get_singleton()->update_file(p_path);
 	}
@@ -5963,10 +6220,12 @@ void EditorNode::_resource_saved(Ref<Resource> p_resource, const String &p_path)
 }
 
 void EditorNode::_resource_loaded(Ref<Resource> p_resource, const String &p_path) {
+	ZoneScoped;
 	singleton->editor_folding.load_resource_folding(p_resource, p_path);
 }
 
 void EditorNode::_feature_profile_changed() {
+	ZoneScoped;
 	Ref<EditorFeatureProfile> profile = feature_profile_manager->get_current_profile();
 	TabContainer *import_tabs = cast_to<TabContainer>(ImportDock::get_singleton()->get_parent());
 	TabContainer *node_tabs = cast_to<TabContainer>(NodeDock::get_singleton()->get_parent());
@@ -6010,6 +6269,7 @@ void EditorNode::_feature_profile_changed() {
 }
 
 void EditorNode::_bind_methods() {
+	ZoneScoped;
 	GLOBAL_DEF("editor/scene/scene_naming", SCENE_NAME_CASING_SNAKE_CASE);
 	ProjectSettings::get_singleton()->set_custom_property_info("editor/scene/scene_naming", PropertyInfo(Variant::INT, "editor/scene/scene_naming", PROPERTY_HINT_ENUM, "Auto,PascalCase,snake_case"));
 	ClassDB::bind_method("edit_current", &EditorNode::edit_current);
@@ -6045,10 +6305,12 @@ void EditorNode::_bind_methods() {
 }
 
 static Node *_resource_get_edited_scene() {
+	ZoneScoped;
 	return EditorNode::get_singleton()->get_edited_scene();
 }
 
 void EditorNode::_print_handler(void *p_this, const String &p_string, bool p_error, bool p_rich) {
+	ZoneScoped;
 	EditorNode *en = static_cast<EditorNode *>(p_this);
 	if (p_error) {
 		en->log->add_message(p_string, EditorLog::MSG_TYPE_ERROR);
@@ -6060,6 +6322,7 @@ void EditorNode::_print_handler(void *p_this, const String &p_string, bool p_err
 }
 
 static void _execute_thread(void *p_ud) {
+	ZoneScoped;
 	EditorNode::ExecuteThreadArgs *eta = (EditorNode::ExecuteThreadArgs *)p_ud;
 	Error err = OS::get_singleton()->execute(eta->path, eta->args, &eta->output, &eta->exitcode, true, &eta->execute_output_mutex);
 	print_verbose("Thread exit status: " + itos(eta->exitcode));
@@ -6071,6 +6334,7 @@ static void _execute_thread(void *p_ud) {
 }
 
 int EditorNode::execute_and_show_output(const String &p_title, const String &p_path, const List<String> &p_arguments, bool p_close_on_ok, bool p_close_on_errors) {
+	ZoneScoped;
 	execute_output_dialog->set_title(p_title);
 	execute_output_dialog->get_ok_button()->set_disabled(true);
 	execute_outputs->clear();
@@ -6115,10 +6379,12 @@ int EditorNode::execute_and_show_output(const String &p_title, const String &p_p
 }
 
 void EditorNode::notify_settings_changed() {
+	ZoneScoped;
 	settings_changed = true;
 }
 
 EditorNode::EditorNode() {
+	ZoneScoped;
 	EditorPropertyNameProcessor *epnp = memnew(EditorPropertyNameProcessor);
 	add_child(epnp);
 
@@ -7618,6 +7884,7 @@ EditorNode::EditorNode() {
 }
 
 EditorNode::~EditorNode() {
+	ZoneScoped;
 	EditorInspector::cleanup_plugins();
 	EditorTranslationParser::get_singleton()->clean_parsers();
 	ResourceImporterScene::clean_up_importer_plugins();
@@ -7638,18 +7905,21 @@ EditorNode::~EditorNode() {
  */
 
 void EditorPluginList::make_visible(bool p_visible) {
+	ZoneScoped;
 	for (int i = 0; i < plugins_list.size(); i++) {
 		plugins_list[i]->make_visible(p_visible);
 	}
 }
 
 void EditorPluginList::edit(Object *p_object) {
+	ZoneScoped;
 	for (int i = 0; i < plugins_list.size(); i++) {
 		plugins_list[i]->edit(p_object);
 	}
 }
 
 bool EditorPluginList::forward_gui_input(const Ref<InputEvent> &p_event) {
+	ZoneScoped;
 	bool discard = false;
 
 	for (int i = 0; i < plugins_list.size(); i++) {
@@ -7662,6 +7932,7 @@ bool EditorPluginList::forward_gui_input(const Ref<InputEvent> &p_event) {
 }
 
 EditorPlugin::AfterGUIInput EditorPluginList::forward_3d_gui_input(Camera3D *p_camera, const Ref<InputEvent> &p_event, bool serve_when_force_input_enabled) {
+	ZoneScoped;
 	EditorPlugin::AfterGUIInput after = EditorPlugin::AFTER_GUI_INPUT_PASS;
 
 	for (int i = 0; i < plugins_list.size(); i++) {
@@ -7682,42 +7953,50 @@ EditorPlugin::AfterGUIInput EditorPluginList::forward_3d_gui_input(Camera3D *p_c
 }
 
 void EditorPluginList::forward_canvas_draw_over_viewport(Control *p_overlay) {
+	ZoneScoped;
 	for (int i = 0; i < plugins_list.size(); i++) {
 		plugins_list[i]->forward_canvas_draw_over_viewport(p_overlay);
 	}
 }
 
 void EditorPluginList::forward_canvas_force_draw_over_viewport(Control *p_overlay) {
+	ZoneScoped;
 	for (int i = 0; i < plugins_list.size(); i++) {
 		plugins_list[i]->forward_canvas_force_draw_over_viewport(p_overlay);
 	}
 }
 
 void EditorPluginList::forward_3d_draw_over_viewport(Control *p_overlay) {
+	ZoneScoped;
 	for (int i = 0; i < plugins_list.size(); i++) {
 		plugins_list[i]->forward_3d_draw_over_viewport(p_overlay);
 	}
 }
 
 void EditorPluginList::forward_3d_force_draw_over_viewport(Control *p_overlay) {
+	ZoneScoped;
 	for (int i = 0; i < plugins_list.size(); i++) {
 		plugins_list[i]->forward_3d_force_draw_over_viewport(p_overlay);
 	}
 }
 
 void EditorPluginList::add_plugin(EditorPlugin *p_plugin) {
+	ZoneScoped;
 	plugins_list.push_back(p_plugin);
 }
 
 void EditorPluginList::remove_plugin(EditorPlugin *p_plugin) {
+	ZoneScoped;
 	plugins_list.erase(p_plugin);
 }
 
 bool EditorPluginList::is_empty() {
+	ZoneScoped;
 	return plugins_list.is_empty();
 }
 
 void EditorPluginList::clear() {
+	ZoneScoped;
 	plugins_list.clear();
 }
 

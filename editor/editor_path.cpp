@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_path.cpp                                                      */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_path.h"
 
 #include "editor/editor_data.h"
@@ -36,6 +67,7 @@
 #include "editor/multi_node_edit.h"
 
 void EditorPath::_add_children_to_popup(Object *p_obj, int p_depth) {
+	ZoneScoped;
 	if (p_depth > 8) {
 		return;
 	}
@@ -81,6 +113,7 @@ void EditorPath::_add_children_to_popup(Object *p_obj, int p_depth) {
 }
 
 void EditorPath::_show_popup() {
+	ZoneScoped;
 	if (sub_objects_menu->is_visible()) {
 		sub_objects_menu->hide();
 		return;
@@ -101,6 +134,7 @@ void EditorPath::_show_popup() {
 }
 
 void EditorPath::_about_to_show() {
+	ZoneScoped;
 	Object *obj = ObjectDB::get_instance(history->get_path_object(history->get_path_size() - 1));
 	if (!obj) {
 		return;
@@ -116,6 +150,7 @@ void EditorPath::_about_to_show() {
 }
 
 void EditorPath::update_path() {
+	ZoneScoped;
 	for (int i = 0; i < history->get_path_size(); i++) {
 		Object *obj = ObjectDB::get_instance(history->get_path_object(i));
 		if (!obj) {
@@ -165,6 +200,7 @@ void EditorPath::update_path() {
 }
 
 void EditorPath::clear_path() {
+	ZoneScoped;
 	set_disabled(true);
 	set_tooltip_text("");
 
@@ -174,11 +210,13 @@ void EditorPath::clear_path() {
 }
 
 void EditorPath::enable_path() {
+	ZoneScoped;
 	set_disabled(false);
 	sub_objects_icon->show();
 }
 
 void EditorPath::_id_pressed(int p_idx) {
+	ZoneScoped;
 	ERR_FAIL_INDEX(p_idx, objects.size());
 
 	Object *obj = ObjectDB::get_instance(objects[p_idx]);
@@ -190,6 +228,7 @@ void EditorPath::_id_pressed(int p_idx) {
 }
 
 void EditorPath::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -209,6 +248,7 @@ void EditorPath::_bind_methods() {
 }
 
 EditorPath::EditorPath(EditorSelectionHistory *p_history) {
+	ZoneScoped;
 	history = p_history;
 
 	MarginContainer *main_mc = memnew(MarginContainer);

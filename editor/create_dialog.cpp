@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  create_dialog.cpp                                                    */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "create_dialog.h"
 
 #include "core/object/class_db.h"
@@ -39,6 +70,7 @@
 #include "editor/editor_settings.h"
 
 void CreateDialog::popup_create(bool p_dont_clear, bool p_replace_mode, const String &p_current_type, const String &p_current_name) {
+	ZoneScoped;
 	_fill_type_list();
 
 	icon_fallback = search_options->has_theme_icon(base_type, SNAME("EditorIcons")) ? base_type : "Object";
@@ -77,6 +109,7 @@ void CreateDialog::popup_create(bool p_dont_clear, bool p_replace_mode, const St
 }
 
 void CreateDialog::_fill_type_list() {
+	ZoneScoped;
 	List<StringName> complete_type_list;
 	ClassDB::get_class_list(&complete_type_list);
 	ScriptServer::get_global_class_list(&complete_type_list);
@@ -104,6 +137,7 @@ void CreateDialog::_fill_type_list() {
 }
 
 bool CreateDialog::_is_type_preferred(const String &p_type) const {
+	ZoneScoped;
 	if (ClassDB::class_exists(p_type)) {
 		return ClassDB::is_parent_class(p_type, preferred_search_result_type);
 	}
@@ -112,12 +146,14 @@ bool CreateDialog::_is_type_preferred(const String &p_type) const {
 }
 
 bool CreateDialog::_is_class_disabled_by_feature_profile(const StringName &p_class) const {
+	ZoneScoped;
 	Ref<EditorFeatureProfile> profile = EditorFeatureProfileManager::get_singleton()->get_current_profile();
 
 	return !profile.is_null() && profile->is_class_disabled(p_class);
 }
 
 bool CreateDialog::_should_hide_type(const String &p_type) const {
+	ZoneScoped;
 	if (_is_class_disabled_by_feature_profile(p_type)) {
 		return true;
 	}
@@ -160,6 +196,7 @@ bool CreateDialog::_should_hide_type(const String &p_type) const {
 }
 
 void CreateDialog::_update_search() {
+	ZoneScoped;
 	search_options->clear();
 	search_options_types.clear();
 
@@ -200,6 +237,7 @@ void CreateDialog::_update_search() {
 }
 
 void CreateDialog::_add_type(const String &p_type, const TypeCategory p_type_category) {
+	ZoneScoped;
 	if (search_options_types.has(p_type)) {
 		return;
 	}
@@ -268,6 +306,7 @@ void CreateDialog::_add_type(const String &p_type, const TypeCategory p_type_cat
 }
 
 void CreateDialog::_configure_search_option_item(TreeItem *r_item, const String &p_type, const TypeCategory p_type_category) {
+	ZoneScoped;
 	bool script_type = ScriptServer::is_global_class(p_type);
 	if (p_type_category == TypeCategory::CPP_TYPE) {
 		r_item->set_text(0, p_type);
@@ -325,6 +364,7 @@ void CreateDialog::_configure_search_option_item(TreeItem *r_item, const String 
 }
 
 String CreateDialog::_top_result(const Vector<String> p_candidates, const String &p_search_text) const {
+	ZoneScoped;
 	float highest_score = 0;
 	int highest_index = 0;
 	for (int i = 0; i < p_candidates.size(); i++) {
@@ -339,6 +379,7 @@ String CreateDialog::_top_result(const Vector<String> p_candidates, const String
 }
 
 float CreateDialog::_score_type(const String &p_type, const String &p_search) const {
+	ZoneScoped;
 	if (p_type == p_search) {
 		// Always favor an exact match (case-sensitive), since clicking a favorite will set the search text to the type.
 		return 1.0f;
@@ -374,6 +415,7 @@ float CreateDialog::_score_type(const String &p_type, const String &p_search) co
 }
 
 void CreateDialog::_cleanup() {
+	ZoneScoped;
 	type_list.clear();
 	favorite_list.clear();
 	favorites->clear();
@@ -383,6 +425,7 @@ void CreateDialog::_cleanup() {
 }
 
 void CreateDialog::_confirmed() {
+	ZoneScoped;
 	String selected_item = get_selected_type();
 	if (selected_item.is_empty()) {
 		return;
@@ -409,10 +452,12 @@ void CreateDialog::_confirmed() {
 }
 
 void CreateDialog::_text_changed(const String &p_newtext) {
+	ZoneScoped;
 	_update_search();
 }
 
 void CreateDialog::_sbox_input(const Ref<InputEvent> &p_ie) {
+	ZoneScoped;
 	Ref<InputEventKey> k = p_ie;
 	if (k.is_valid()) {
 		switch (k->get_keycode()) {
@@ -430,11 +475,13 @@ void CreateDialog::_sbox_input(const Ref<InputEvent> &p_ie) {
 }
 
 void CreateDialog::_update_theme() {
+	ZoneScoped;
 	search_box->set_right_icon(search_options->get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
 	favorite->set_icon(search_options->get_theme_icon(SNAME("Favorites"), SNAME("EditorIcons")));
 }
 
 void CreateDialog::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			connect("confirmed", callable_mp(this, &CreateDialog::_confirmed));
@@ -461,6 +508,7 @@ void CreateDialog::_notification(int p_what) {
 }
 
 void CreateDialog::select_type(const String &p_type, bool p_center_on_item) {
+	ZoneScoped;
 	if (!search_options_types.has(p_type)) {
 		return;
 	}
@@ -486,6 +534,7 @@ void CreateDialog::select_type(const String &p_type, bool p_center_on_item) {
 }
 
 void CreateDialog::select_base() {
+	ZoneScoped;
 	if (search_options_types.is_empty()) {
 		_update_search();
 	}
@@ -493,6 +542,7 @@ void CreateDialog::select_base() {
 }
 
 String CreateDialog::get_selected_type() {
+	ZoneScoped;
 	TreeItem *selected = search_options->get_selected();
 	if (!selected) {
 		return String();
@@ -502,6 +552,7 @@ String CreateDialog::get_selected_type() {
 }
 
 Variant CreateDialog::instance_selected() {
+	ZoneScoped;
 	TreeItem *selected = search_options->get_selected();
 
 	if (!selected) {
@@ -530,19 +581,23 @@ Variant CreateDialog::instance_selected() {
 }
 
 void CreateDialog::_item_selected() {
+	ZoneScoped;
 	String name = get_selected_type();
 	select_type(name, false);
 }
 
 void CreateDialog::_hide_requested() {
+	ZoneScoped;
 	_cancel_pressed(); // From AcceptDialog.
 }
 
 void CreateDialog::cancel_pressed() {
+	ZoneScoped;
 	_cleanup();
 }
 
 void CreateDialog::_favorite_toggled() {
+	ZoneScoped;
 	TreeItem *item = search_options->get_selected();
 	if (!item) {
 		return;
@@ -562,12 +617,14 @@ void CreateDialog::_favorite_toggled() {
 }
 
 void CreateDialog::_history_selected(int p_idx) {
+	ZoneScoped;
 	search_box->set_text(recent->get_item_text(p_idx).get_slicec(' ', 0));
 	favorites->deselect_all();
 	_update_search();
 }
 
 void CreateDialog::_favorite_selected() {
+	ZoneScoped;
 	TreeItem *item = favorites->get_selected();
 	if (!item) {
 		return;
@@ -579,16 +636,19 @@ void CreateDialog::_favorite_selected() {
 }
 
 void CreateDialog::_history_activated(int p_idx) {
+	ZoneScoped;
 	_history_selected(p_idx);
 	_confirmed();
 }
 
 void CreateDialog::_favorite_activated() {
+	ZoneScoped;
 	_favorite_selected();
 	_confirmed();
 }
 
 Variant CreateDialog::get_drag_data_fw(const Point2 &p_point, Control *p_from) {
+	ZoneScoped;
 	TreeItem *ti = favorites->get_item_at_position(p_point);
 	if (ti) {
 		Dictionary d;
@@ -608,6 +668,7 @@ Variant CreateDialog::get_drag_data_fw(const Point2 &p_point, Control *p_from) {
 }
 
 bool CreateDialog::can_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) const {
+	ZoneScoped;
 	Dictionary d = p_data;
 	if (d.has("type") && String(d["type"]) == "create_favorite_drag") {
 		favorites->set_drop_mode_flags(Tree::DROP_MODE_INBETWEEN);
@@ -618,6 +679,7 @@ bool CreateDialog::can_drop_data_fw(const Point2 &p_point, const Variant &p_data
 }
 
 void CreateDialog::drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) {
+	ZoneScoped;
 	Dictionary d = p_data;
 
 	TreeItem *ti = favorites->get_item_at_position(p_point);
@@ -662,6 +724,7 @@ void CreateDialog::drop_data_fw(const Point2 &p_point, const Variant &p_data, Co
 }
 
 void CreateDialog::_save_and_update_favorite_list() {
+	ZoneScoped;
 	favorites->clear();
 	TreeItem *root = favorites->create_item();
 
@@ -691,6 +754,7 @@ void CreateDialog::_save_and_update_favorite_list() {
 }
 
 void CreateDialog::_load_favorites_and_history() {
+	ZoneScoped;
 	String dir = EditorPaths::get_singleton()->get_project_settings_dir();
 	Ref<FileAccess> f = FileAccess::open(dir.path_join("create_recent." + base_type), FileAccess::READ);
 	if (f.is_valid()) {
@@ -717,6 +781,7 @@ void CreateDialog::_load_favorites_and_history() {
 }
 
 void CreateDialog::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("_save_and_update_favorite_list"), &CreateDialog::_save_and_update_favorite_list);
 
 	ClassDB::bind_method("_get_drag_data_fw", &CreateDialog::get_drag_data_fw);
@@ -728,6 +793,7 @@ void CreateDialog::_bind_methods() {
 }
 
 CreateDialog::CreateDialog() {
+	ZoneScoped;
 	base_type = "Object";
 	preferred_search_result_type = "";
 

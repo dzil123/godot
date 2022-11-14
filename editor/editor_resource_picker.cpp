@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_resource_picker.cpp                                           */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_resource_picker.h"
 
 #include "editor/audio_stream_preview.h"
@@ -45,10 +76,12 @@
 HashMap<StringName, List<StringName>> EditorResourcePicker::allowed_types_cache;
 
 void EditorResourcePicker::clear_caches() {
+	ZoneScoped;
 	allowed_types_cache.clear();
 }
 
 void EditorResourcePicker::_update_resource() {
+	ZoneScoped;
 	String resource_path;
 	if (edited_resource.is_valid() && edited_resource->get_path().is_resource_file()) {
 		resource_path = edited_resource->get_path() + "\n";
@@ -91,6 +124,7 @@ void EditorResourcePicker::_update_resource() {
 }
 
 void EditorResourcePicker::_update_resource_preview(const String &p_path, const Ref<Texture2D> &p_preview, const Ref<Texture2D> &p_small_preview, ObjectID p_obj) {
+	ZoneScoped;
 	if (!edited_resource.is_valid() || edited_resource->get_instance_id() != p_obj) {
 		return;
 	}
@@ -123,6 +157,7 @@ void EditorResourcePicker::_update_resource_preview(const String &p_path, const 
 }
 
 void EditorResourcePicker::_resource_selected() {
+	ZoneScoped;
 	if (edited_resource.is_null()) {
 		edit_button->set_pressed(true);
 		_update_menu();
@@ -133,6 +168,7 @@ void EditorResourcePicker::_resource_selected() {
 }
 
 void EditorResourcePicker::_file_selected(const String &p_path) {
+	ZoneScoped;
 	Ref<Resource> loaded_resource = ResourceLoader::load(p_path);
 	ERR_FAIL_COND_MSG(loaded_resource.is_null(), "Cannot load resource from path '" + p_path + "'.");
 
@@ -172,10 +208,12 @@ void EditorResourcePicker::_file_selected(const String &p_path) {
 }
 
 void EditorResourcePicker::_file_quick_selected() {
+	ZoneScoped;
 	_file_selected(quick_open->get_selected());
 }
 
 void EditorResourcePicker::_update_menu() {
+	ZoneScoped;
 	_update_menu_items();
 
 	Rect2 gt = edit_button->get_screen_rect();
@@ -187,6 +225,7 @@ void EditorResourcePicker::_update_menu() {
 }
 
 void EditorResourcePicker::_update_menu_items() {
+	ZoneScoped;
 	_ensure_resource_menu();
 	edit_menu->clear();
 
@@ -296,6 +335,7 @@ void EditorResourcePicker::_update_menu_items() {
 }
 
 void EditorResourcePicker::_edit_menu_cbk(int p_which) {
+	ZoneScoped;
 	switch (p_which) {
 		case OBJ_MENU_LOAD: {
 			List<String> extensions;
@@ -454,6 +494,7 @@ void EditorResourcePicker::_edit_menu_cbk(int p_which) {
 }
 
 void EditorResourcePicker::set_create_options(Object *p_menu_node) {
+	ZoneScoped;
 	_ensure_resource_menu();
 	// If a subclass implements this method, use it to replace all create items.
 	if (GDVIRTUAL_CALL(_set_create_options, p_menu_node)) {
@@ -512,12 +553,14 @@ void EditorResourcePicker::set_create_options(Object *p_menu_node) {
 }
 
 bool EditorResourcePicker::handle_menu_selected(int p_which) {
+	ZoneScoped;
 	bool success = false;
 	GDVIRTUAL_CALL(_handle_menu_selected, p_which, success);
 	return success;
 }
 
 void EditorResourcePicker::_button_draw() {
+	ZoneScoped;
 	if (dropping) {
 		Color color = get_theme_color(SNAME("accent_color"), SNAME("Editor"));
 		assign_button->draw_rect(Rect2(Point2(), assign_button->get_size()), color, false);
@@ -525,6 +568,7 @@ void EditorResourcePicker::_button_draw() {
 }
 
 void EditorResourcePicker::_button_input(const Ref<InputEvent> &p_event) {
+	ZoneScoped;
 	Ref<InputEventMouseButton> mb = p_event;
 
 	if (mb.is_valid() && mb->is_pressed() && mb->get_button_index() == MouseButton::RIGHT) {
@@ -543,6 +587,7 @@ void EditorResourcePicker::_button_input(const Ref<InputEvent> &p_event) {
 }
 
 String EditorResourcePicker::_get_resource_type(const Ref<Resource> &p_resource) const {
+	ZoneScoped;
 	if (p_resource.is_null()) {
 		return String();
 	}
@@ -562,6 +607,7 @@ String EditorResourcePicker::_get_resource_type(const Ref<Resource> &p_resource)
 }
 
 void EditorResourcePicker::_get_allowed_types(bool p_with_convert, HashSet<String> *p_vector) const {
+	ZoneScoped;
 	Vector<String> allowed_types = base_type.split(",");
 	int size = allowed_types.size();
 
@@ -630,6 +676,7 @@ void EditorResourcePicker::_get_allowed_types(bool p_with_convert, HashSet<Strin
 }
 
 bool EditorResourcePicker::_is_drop_valid(const Dictionary &p_drag_data) const {
+	ZoneScoped;
 	if (base_type.is_empty()) {
 		return true;
 	}
@@ -674,6 +721,7 @@ bool EditorResourcePicker::_is_drop_valid(const Dictionary &p_drag_data) const {
 }
 
 bool EditorResourcePicker::_is_type_valid(const String p_type_name, HashSet<String> p_allowed_types) const {
+	ZoneScoped;
 	for (const String &E : p_allowed_types) {
 		String at = E.strip_edges();
 		if (p_type_name == at || ClassDB::is_parent_class(p_type_name, at) || EditorNode::get_editor_data().script_class_is_parent(p_type_name, at)) {
@@ -685,6 +733,7 @@ bool EditorResourcePicker::_is_type_valid(const String p_type_name, HashSet<Stri
 }
 
 Variant EditorResourcePicker::get_drag_data_fw(const Point2 &p_point, Control *p_from) {
+	ZoneScoped;
 	if (edited_resource.is_valid()) {
 		return EditorNode::get_singleton()->drag_resource(edited_resource, p_from);
 	}
@@ -693,10 +742,12 @@ Variant EditorResourcePicker::get_drag_data_fw(const Point2 &p_point, Control *p
 }
 
 bool EditorResourcePicker::can_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) const {
+	ZoneScoped;
 	return editable && _is_drop_valid(p_data);
 }
 
 void EditorResourcePicker::drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) {
+	ZoneScoped;
 	ERR_FAIL_COND(!_is_drop_valid(p_data));
 
 	Dictionary drag_data = p_data;
@@ -771,6 +822,7 @@ void EditorResourcePicker::drop_data_fw(const Point2 &p_point, const Variant &p_
 }
 
 void EditorResourcePicker::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("_update_resource_preview"), &EditorResourcePicker::_update_resource_preview);
 	ClassDB::bind_method(D_METHOD("_get_drag_data_fw", "position", "from"), &EditorResourcePicker::get_drag_data_fw);
 	ClassDB::bind_method(D_METHOD("_can_drop_data_fw", "position", "data", "from"), &EditorResourcePicker::can_drop_data_fw);
@@ -800,6 +852,7 @@ void EditorResourcePicker::_bind_methods() {
 }
 
 void EditorResourcePicker::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			_update_resource();
@@ -830,6 +883,7 @@ void EditorResourcePicker::_notification(int p_what) {
 }
 
 void EditorResourcePicker::set_base_type(const String &p_base_type) {
+	ZoneScoped;
 	base_type = p_base_type;
 
 	// There is a possibility that the new base type is conflicting with the existing value.
@@ -857,10 +911,12 @@ void EditorResourcePicker::set_base_type(const String &p_base_type) {
 }
 
 String EditorResourcePicker::get_base_type() const {
+	ZoneScoped;
 	return base_type;
 }
 
 Vector<String> EditorResourcePicker::get_allowed_types() const {
+	ZoneScoped;
 	HashSet<String> allowed_types;
 	_get_allowed_types(false, &allowed_types);
 
@@ -878,6 +934,7 @@ Vector<String> EditorResourcePicker::get_allowed_types() const {
 }
 
 void EditorResourcePicker::set_edited_resource(Ref<Resource> p_resource) {
+	ZoneScoped;
 	if (!p_resource.is_valid()) {
 		edited_resource = Ref<Resource>();
 		_update_resource();
@@ -906,18 +963,22 @@ void EditorResourcePicker::set_edited_resource(Ref<Resource> p_resource) {
 }
 
 Ref<Resource> EditorResourcePicker::get_edited_resource() {
+	ZoneScoped;
 	return edited_resource;
 }
 
 void EditorResourcePicker::set_toggle_mode(bool p_enable) {
+	ZoneScoped;
 	assign_button->set_toggle_mode(p_enable);
 }
 
 bool EditorResourcePicker::is_toggle_mode() const {
+	ZoneScoped;
 	return assign_button->is_toggle_mode();
 }
 
 void EditorResourcePicker::set_toggle_pressed(bool p_pressed) {
+	ZoneScoped;
 	if (!is_toggle_mode()) {
 		return;
 	}
@@ -926,16 +987,19 @@ void EditorResourcePicker::set_toggle_pressed(bool p_pressed) {
 }
 
 void EditorResourcePicker::set_editable(bool p_editable) {
+	ZoneScoped;
 	editable = p_editable;
 	assign_button->set_disabled(!editable && !edited_resource.is_valid());
 	edit_button->set_visible(editable);
 }
 
 bool EditorResourcePicker::is_editable() const {
+	ZoneScoped;
 	return editable;
 }
 
 void EditorResourcePicker::_ensure_resource_menu() {
+	ZoneScoped;
 	if (edit_menu) {
 		return;
 	}
@@ -946,6 +1010,7 @@ void EditorResourcePicker::_ensure_resource_menu() {
 }
 
 EditorResourcePicker::EditorResourcePicker(bool p_hide_assign_button_controls) {
+	ZoneScoped;
 	assign_button = memnew(Button);
 	assign_button->set_flat(true);
 	assign_button->set_h_size_flags(SIZE_EXPAND_FILL);
@@ -980,6 +1045,7 @@ EditorResourcePicker::EditorResourcePicker(bool p_hide_assign_button_controls) {
 // EditorScriptPicker
 
 void EditorScriptPicker::set_create_options(Object *p_menu_node) {
+	ZoneScoped;
 	PopupMenu *menu_node = Object::cast_to<PopupMenu>(p_menu_node);
 	if (!menu_node) {
 		return;
@@ -996,6 +1062,7 @@ void EditorScriptPicker::set_create_options(Object *p_menu_node) {
 }
 
 bool EditorScriptPicker::handle_menu_selected(int p_which) {
+	ZoneScoped;
 	switch (p_which) {
 		case OBJ_MENU_NEW_SCRIPT: {
 			if (script_owner) {
@@ -1016,14 +1083,17 @@ bool EditorScriptPicker::handle_menu_selected(int p_which) {
 }
 
 void EditorScriptPicker::set_script_owner(Node *p_owner) {
+	ZoneScoped;
 	script_owner = p_owner;
 }
 
 Node *EditorScriptPicker::get_script_owner() const {
+	ZoneScoped;
 	return script_owner;
 }
 
 void EditorScriptPicker::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("set_script_owner", "owner_node"), &EditorScriptPicker::set_script_owner);
 	ClassDB::bind_method(D_METHOD("get_script_owner"), &EditorScriptPicker::get_script_owner);
 
@@ -1036,6 +1106,7 @@ EditorScriptPicker::EditorScriptPicker() {
 // EditorShaderPicker
 
 void EditorShaderPicker::set_create_options(Object *p_menu_node) {
+	ZoneScoped;
 	PopupMenu *menu_node = Object::cast_to<PopupMenu>(p_menu_node);
 	if (!menu_node) {
 		return;
@@ -1046,6 +1117,7 @@ void EditorShaderPicker::set_create_options(Object *p_menu_node) {
 }
 
 bool EditorShaderPicker::handle_menu_selected(int p_which) {
+	ZoneScoped;
 	Ref<ShaderMaterial> ed_material = Ref<ShaderMaterial>(get_edited_material());
 
 	switch (p_which) {
@@ -1062,14 +1134,17 @@ bool EditorShaderPicker::handle_menu_selected(int p_which) {
 }
 
 void EditorShaderPicker::set_edited_material(ShaderMaterial *p_material) {
+	ZoneScoped;
 	edited_material = p_material;
 }
 
 ShaderMaterial *EditorShaderPicker::get_edited_material() const {
+	ZoneScoped;
 	return edited_material;
 }
 
 void EditorShaderPicker::set_preferred_mode(int p_mode) {
+	ZoneScoped;
 	preferred_mode = p_mode;
 }
 
@@ -1079,6 +1154,7 @@ EditorShaderPicker::EditorShaderPicker() {
 //////////////
 
 void EditorAudioStreamPicker::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_READY:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -1138,6 +1214,7 @@ void EditorAudioStreamPicker::_notification(int p_what) {
 }
 
 void EditorAudioStreamPicker::_update_resource() {
+	ZoneScoped;
 	EditorResourcePicker::_update_resource();
 
 	Ref<Font> font = get_theme_font(SNAME("font"), SNAME("Label"));
@@ -1153,6 +1230,7 @@ void EditorAudioStreamPicker::_update_resource() {
 }
 
 void EditorAudioStreamPicker::_preview_draw() {
+	ZoneScoped;
 	Ref<AudioStream> audio_stream = get_edited_resource();
 	if (!audio_stream.is_valid()) {
 		get_assign_button()->set_text(TTR("<empty>"));

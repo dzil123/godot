@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  history_dock.cpp                                                     */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "history_dock.h"
 
 #include "editor/editor_node.h"
@@ -42,6 +73,7 @@ struct SortActionsByTimestamp {
 };
 
 void HistoryDock::on_history_changed() {
+	ZoneScoped;
 	if (is_visible_in_tree()) {
 		refresh_history();
 	} else {
@@ -50,6 +82,7 @@ void HistoryDock::on_history_changed() {
 }
 
 void HistoryDock::refresh_history() {
+	ZoneScoped;
 	action_list->clear();
 	bool include_scene = current_scene_checkbox->is_pressed();
 	bool include_global = global_history_checkbox->is_pressed();
@@ -109,6 +142,7 @@ void HistoryDock::refresh_history() {
 }
 
 void HistoryDock::on_version_changed() {
+	ZoneScoped;
 	if (is_visible_in_tree()) {
 		refresh_version();
 	} else {
@@ -117,6 +151,7 @@ void HistoryDock::on_version_changed() {
 }
 
 void HistoryDock::refresh_version() {
+	ZoneScoped;
 	int idx = 0;
 	bool include_scene = current_scene_checkbox->is_pressed();
 	bool include_global = global_history_checkbox->is_pressed();
@@ -171,6 +206,7 @@ void HistoryDock::refresh_version() {
 }
 
 void HistoryDock::seek_history(int p_index) {
+	ZoneScoped;
 	bool include_scene = current_scene_checkbox->is_pressed();
 	bool include_global = global_history_checkbox->is_pressed();
 
@@ -205,6 +241,7 @@ void HistoryDock::seek_history(int p_index) {
 }
 
 void HistoryDock::_notification(int p_notification) {
+	ZoneScoped;
 	switch (p_notification) {
 		case NOTIFICATION_ENTER_TREE: {
 			EditorNode::get_singleton()->connect("scene_changed", callable_mp(this, &HistoryDock::on_history_changed));
@@ -219,6 +256,7 @@ void HistoryDock::_notification(int p_notification) {
 }
 
 HistoryDock::HistoryDock() {
+	ZoneScoped;
 	ur_manager = EditorNode::get_undo_redo();
 	ur_manager->connect("history_changed", callable_mp(this, &HistoryDock::on_history_changed));
 	ur_manager->connect("version_changed", callable_mp(this, &HistoryDock::on_version_changed));

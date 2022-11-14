@@ -28,9 +28,41 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  event_listener_line_edit.cpp                                         */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor/event_listener_line_edit.h"
 
 bool EventListenerLineEdit::_is_event_allowed(const Ref<InputEvent> &p_event) const {
+	ZoneScoped;
 	const Ref<InputEventMouseButton> mb = p_event;
 	const Ref<InputEventKey> k = p_event;
 	const Ref<InputEventJoypadButton> jb = p_event;
@@ -43,6 +75,7 @@ bool EventListenerLineEdit::_is_event_allowed(const Ref<InputEvent> &p_event) co
 }
 
 void EventListenerLineEdit::gui_input(const Ref<InputEvent> &p_event) {
+	ZoneScoped;
 	const Ref<InputEventMouseMotion> mm = p_event;
 	if (mm.is_valid()) {
 		LineEdit::gui_input(p_event);
@@ -76,25 +109,30 @@ void EventListenerLineEdit::gui_input(const Ref<InputEvent> &p_event) {
 }
 
 void EventListenerLineEdit::_on_text_changed(const String &p_text) {
+	ZoneScoped;
 	if (p_text.is_empty()) {
 		clear_event();
 	}
 }
 
 void EventListenerLineEdit::_on_focus() {
+	ZoneScoped;
 	set_placeholder(TTR("Listening for input..."));
 }
 
 void EventListenerLineEdit::_on_unfocus() {
+	ZoneScoped;
 	ignore_next_event = true;
 	set_placeholder(TTR("Filter by event..."));
 }
 
 Ref<InputEvent> EventListenerLineEdit::get_event() const {
+	ZoneScoped;
 	return event;
 }
 
 void EventListenerLineEdit::clear_event() {
+	ZoneScoped;
 	if (event.is_valid()) {
 		event = Ref<InputEvent>();
 		set_text("");
@@ -103,10 +141,12 @@ void EventListenerLineEdit::clear_event() {
 }
 
 void EventListenerLineEdit::set_allowed_input_types(int input_types) {
+	ZoneScoped;
 	allowed_input_types = input_types;
 }
 
 int EventListenerLineEdit::get_allowed_input_types() const {
+	ZoneScoped;
 	return allowed_input_types;
 }
 
@@ -117,6 +157,7 @@ void EventListenerLineEdit::grab_focus() {
 }
 
 void EventListenerLineEdit::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			connect("text_changed", callable_mp(this, &EventListenerLineEdit::_on_text_changed));
@@ -129,10 +170,12 @@ void EventListenerLineEdit::_notification(int p_what) {
 }
 
 void EventListenerLineEdit::_bind_methods() {
+	ZoneScoped;
 	ADD_SIGNAL(MethodInfo("event_changed", PropertyInfo(Variant::OBJECT, "event", PROPERTY_HINT_RESOURCE_TYPE, "InputEvent")));
 }
 
 EventListenerLineEdit::EventListenerLineEdit() {
+	ZoneScoped;
 	set_caret_blink_enabled(false);
 	set_placeholder(TTR("Filter by event..."));
 }

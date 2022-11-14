@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  property_selector.cpp                                                */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "property_selector.h"
 
 #include "core/os/keyboard.h"
@@ -40,10 +71,12 @@
 #include "scene/gui/tree.h"
 
 void PropertySelector::_text_changed(const String &p_newtext) {
+	ZoneScoped;
 	_update_search();
 }
 
 void PropertySelector::_sbox_input(const Ref<InputEvent> &p_ie) {
+	ZoneScoped;
 	Ref<InputEventKey> k = p_ie;
 
 	if (k.is_valid()) {
@@ -78,6 +111,7 @@ void PropertySelector::_sbox_input(const Ref<InputEvent> &p_ie) {
 }
 
 void PropertySelector::_update_search() {
+	ZoneScoped;
 	if (properties) {
 		set_title(TTR("Select Property"));
 	} else if (virtuals_only) {
@@ -340,6 +374,7 @@ void PropertySelector::_update_search() {
 }
 
 void PropertySelector::_confirmed() {
+	ZoneScoped;
 	TreeItem *ti = search_options->get_selected();
 	if (!ti) {
 		return;
@@ -349,6 +384,7 @@ void PropertySelector::_confirmed() {
 }
 
 void PropertySelector::_item_selected() {
+	ZoneScoped;
 	help_bit->set_text("");
 
 	TreeItem *item = search_options->get_selected();
@@ -421,10 +457,12 @@ void PropertySelector::_item_selected() {
 }
 
 void PropertySelector::_hide_requested() {
+	ZoneScoped;
 	_cancel_pressed(); // From AcceptDialog.
 }
 
 void PropertySelector::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			connect("confirmed", callable_mp(this, &PropertySelector::_confirmed));
@@ -437,6 +475,7 @@ void PropertySelector::_notification(int p_what) {
 }
 
 void PropertySelector::select_method_from_base_type(const String &p_base, const String &p_current, bool p_virtuals_only) {
+	ZoneScoped;
 	base_type = p_base;
 	selected = p_current;
 	type = Variant::NIL;
@@ -452,6 +491,7 @@ void PropertySelector::select_method_from_base_type(const String &p_base, const 
 }
 
 void PropertySelector::select_method_from_script(const Ref<Script> &p_script, const String &p_current) {
+	ZoneScoped;
 	ERR_FAIL_COND(p_script.is_null());
 	base_type = p_script->get_instance_base_type();
 	selected = p_current;
@@ -468,6 +508,7 @@ void PropertySelector::select_method_from_script(const Ref<Script> &p_script, co
 }
 
 void PropertySelector::select_method_from_basic_type(Variant::Type p_type, const String &p_current) {
+	ZoneScoped;
 	ERR_FAIL_COND(p_type == Variant::NIL);
 	base_type = "";
 	selected = p_current;
@@ -484,6 +525,7 @@ void PropertySelector::select_method_from_basic_type(Variant::Type p_type, const
 }
 
 void PropertySelector::select_method_from_instance(Object *p_instance, const String &p_current) {
+	ZoneScoped;
 	base_type = p_instance->get_class();
 	selected = p_current;
 	type = Variant::NIL;
@@ -505,6 +547,7 @@ void PropertySelector::select_method_from_instance(Object *p_instance, const Str
 }
 
 void PropertySelector::select_property_from_base_type(const String &p_base, const String &p_current) {
+	ZoneScoped;
 	base_type = p_base;
 	selected = p_current;
 	type = Variant::NIL;
@@ -520,6 +563,7 @@ void PropertySelector::select_property_from_base_type(const String &p_base, cons
 }
 
 void PropertySelector::select_property_from_script(const Ref<Script> &p_script, const String &p_current) {
+	ZoneScoped;
 	ERR_FAIL_COND(p_script.is_null());
 
 	base_type = p_script->get_instance_base_type();
@@ -537,6 +581,7 @@ void PropertySelector::select_property_from_script(const Ref<Script> &p_script, 
 }
 
 void PropertySelector::select_property_from_basic_type(Variant::Type p_type, const String &p_current) {
+	ZoneScoped;
 	ERR_FAIL_COND(p_type == Variant::NIL);
 	base_type = "";
 	selected = p_current;
@@ -553,6 +598,7 @@ void PropertySelector::select_property_from_basic_type(Variant::Type p_type, con
 }
 
 void PropertySelector::select_property_from_instance(Object *p_instance, const String &p_current) {
+	ZoneScoped;
 	base_type = "";
 	selected = p_current;
 	type = Variant::NIL;
@@ -568,14 +614,17 @@ void PropertySelector::select_property_from_instance(Object *p_instance, const S
 }
 
 void PropertySelector::set_type_filter(const Vector<Variant::Type> &p_type_filter) {
+	ZoneScoped;
 	type_filter = p_type_filter;
 }
 
 void PropertySelector::_bind_methods() {
+	ZoneScoped;
 	ADD_SIGNAL(MethodInfo("selected", PropertyInfo(Variant::STRING, "name")));
 }
 
 PropertySelector::PropertySelector() {
+	ZoneScoped;
 	VBoxContainer *vbc = memnew(VBoxContainer);
 	add_child(vbc);
 	//set_child_rect(vbc);

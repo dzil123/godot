@@ -28,15 +28,48 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  audio_stream_preview.cpp                                             */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "audio_stream_preview.h"
 
 /////////////////////
 
 float AudioStreamPreview::get_length() const {
+	ZoneScoped;
 	return length;
 }
 
 float AudioStreamPreview::get_max(float p_time, float p_time_next) const {
+	ZoneScoped;
 	if (length == 0) {
 		return 0;
 	}
@@ -64,6 +97,7 @@ float AudioStreamPreview::get_max(float p_time, float p_time_next) const {
 }
 
 float AudioStreamPreview::get_min(float p_time, float p_time_next) const {
+	ZoneScoped;
 	if (length == 0) {
 		return 0;
 	}
@@ -91,16 +125,19 @@ float AudioStreamPreview::get_min(float p_time, float p_time_next) const {
 }
 
 AudioStreamPreview::AudioStreamPreview() {
+	ZoneScoped;
 	length = 0;
 }
 
 ////
 
 void AudioStreamPreviewGenerator::_update_emit(ObjectID p_id) {
+	ZoneScoped;
 	emit_signal(SNAME("preview_updated"), p_id);
 }
 
 void AudioStreamPreviewGenerator::_preview_thread(void *p_preview) {
+	ZoneScoped;
 	Preview *preview = static_cast<Preview *>(p_preview);
 
 	float muxbuff_chunk_s = 0.25;
@@ -161,6 +198,7 @@ void AudioStreamPreviewGenerator::_preview_thread(void *p_preview) {
 }
 
 Ref<AudioStreamPreview> AudioStreamPreviewGenerator::generate_preview(const Ref<AudioStream> &p_stream) {
+	ZoneScoped;
 	ERR_FAIL_COND_V(p_stream.is_null(), Ref<AudioStreamPreview>());
 
 	if (previews.has(p_stream->get_instance_id())) {
@@ -208,6 +246,7 @@ Ref<AudioStreamPreview> AudioStreamPreviewGenerator::generate_preview(const Ref<
 }
 
 void AudioStreamPreviewGenerator::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method("_update_emit", &AudioStreamPreviewGenerator::_update_emit);
 	ClassDB::bind_method(D_METHOD("generate_preview", "stream"), &AudioStreamPreviewGenerator::generate_preview);
 
@@ -217,6 +256,7 @@ void AudioStreamPreviewGenerator::_bind_methods() {
 AudioStreamPreviewGenerator *AudioStreamPreviewGenerator::singleton = nullptr;
 
 void AudioStreamPreviewGenerator::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_PROCESS: {
 			List<ObjectID> to_erase;
@@ -242,6 +282,7 @@ void AudioStreamPreviewGenerator::_notification(int p_what) {
 }
 
 AudioStreamPreviewGenerator::AudioStreamPreviewGenerator() {
+	ZoneScoped;
 	singleton = this;
 	set_process(true);
 }

@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_build_profile.cpp                                             */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_build_profile.h"
 
 #include "core/io/dir_access.h"
@@ -111,6 +142,7 @@ const EditorBuildProfile::BuildOptionCategory EditorBuildProfile::build_option_c
 };
 
 void EditorBuildProfile::set_disable_class(const StringName &p_class, bool p_disabled) {
+	ZoneScoped;
 	if (p_disabled) {
 		disabled_classes.insert(p_class);
 	} else {
@@ -119,6 +151,7 @@ void EditorBuildProfile::set_disable_class(const StringName &p_class, bool p_dis
 }
 
 bool EditorBuildProfile::is_class_disabled(const StringName &p_class) const {
+	ZoneScoped;
 	if (p_class == StringName()) {
 		return false;
 	}
@@ -126,6 +159,7 @@ bool EditorBuildProfile::is_class_disabled(const StringName &p_class) const {
 }
 
 void EditorBuildProfile::set_item_collapsed(const StringName &p_class, bool p_collapsed) {
+	ZoneScoped;
 	if (p_collapsed) {
 		collapsed_classes.insert(p_class);
 	} else {
@@ -134,38 +168,46 @@ void EditorBuildProfile::set_item_collapsed(const StringName &p_class, bool p_co
 }
 
 bool EditorBuildProfile::is_item_collapsed(const StringName &p_class) const {
+	ZoneScoped;
 	return collapsed_classes.has(p_class);
 }
 
 void EditorBuildProfile::set_disable_build_option(BuildOption p_build_option, bool p_disable) {
+	ZoneScoped;
 	ERR_FAIL_INDEX(p_build_option, BUILD_OPTION_MAX);
 	build_options_disabled[p_build_option] = p_disable;
 }
 
 void EditorBuildProfile::clear_disabled_classes() {
+	ZoneScoped;
 	disabled_classes.clear();
 	collapsed_classes.clear();
 }
 
 bool EditorBuildProfile::is_build_option_disabled(BuildOption p_build_option) const {
+	ZoneScoped;
 	ERR_FAIL_INDEX_V(p_build_option, BUILD_OPTION_MAX, false);
 	return build_options_disabled[p_build_option];
 }
 
 bool EditorBuildProfile::get_build_option_disable_value(BuildOption p_build_option) {
+	ZoneScoped;
 	ERR_FAIL_INDEX_V(p_build_option, BUILD_OPTION_MAX, false);
 	return build_option_disable_values[p_build_option];
 }
 
 void EditorBuildProfile::set_force_detect_classes(const String &p_classes) {
+	ZoneScoped;
 	force_detect_classes = p_classes;
 }
 
 String EditorBuildProfile::get_force_detect_classes() const {
+	ZoneScoped;
 	return force_detect_classes;
 }
 
 String EditorBuildProfile::get_build_option_name(BuildOption p_build_option) {
+	ZoneScoped;
 	ERR_FAIL_INDEX_V(p_build_option, BUILD_OPTION_MAX, String());
 	const char *build_option_names[BUILD_OPTION_MAX] = {
 		TTRC("3D Engine"),
@@ -187,6 +229,7 @@ String EditorBuildProfile::get_build_option_name(BuildOption p_build_option) {
 }
 
 String EditorBuildProfile::get_build_option_description(BuildOption p_build_option) {
+	ZoneScoped;
 	ERR_FAIL_INDEX_V(p_build_option, BUILD_OPTION_MAX, String());
 
 	const char *build_option_descriptions[BUILD_OPTION_MAX] = {
@@ -210,11 +253,13 @@ String EditorBuildProfile::get_build_option_description(BuildOption p_build_opti
 }
 
 EditorBuildProfile::BuildOptionCategory EditorBuildProfile::get_build_option_category(BuildOption p_build_option) {
+	ZoneScoped;
 	ERR_FAIL_INDEX_V(p_build_option, BUILD_OPTION_MAX, BUILD_OPTION_CATEGORY_GENERAL);
 	return build_option_category[p_build_option];
 }
 
 String EditorBuildProfile::get_build_option_category_name(BuildOptionCategory p_build_option_category) {
+	ZoneScoped;
 	ERR_FAIL_INDEX_V(p_build_option_category, BUILD_OPTION_CATEGORY_MAX, String());
 
 	const char *build_option_subcategories[BUILD_OPTION_CATEGORY_MAX]{
@@ -226,6 +271,7 @@ String EditorBuildProfile::get_build_option_category_name(BuildOptionCategory p_
 }
 
 Error EditorBuildProfile::save_to_file(const String &p_path) {
+	ZoneScoped;
 	Dictionary data;
 	data["type"] = "build_profile";
 	Array dis_classes;
@@ -261,6 +307,7 @@ Error EditorBuildProfile::save_to_file(const String &p_path) {
 }
 
 Error EditorBuildProfile::load_from_file(const String &p_path) {
+	ZoneScoped;
 	Error err;
 	String text = FileAccess::get_file_as_string(p_path, &err);
 	if (err != OK) {
@@ -320,6 +367,7 @@ Error EditorBuildProfile::load_from_file(const String &p_path) {
 }
 
 void EditorBuildProfile::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("set_disable_class", "class_name", "disable"), &EditorBuildProfile::set_disable_class);
 	ClassDB::bind_method(D_METHOD("is_class_disabled", "class_name"), &EditorBuildProfile::is_class_disabled);
 
@@ -353,6 +401,7 @@ void EditorBuildProfile::_bind_methods() {
 }
 
 EditorBuildProfile::EditorBuildProfile() {
+	ZoneScoped;
 	for (int i = 0; i < EditorBuildProfile::BUILD_OPTION_MAX; i++) {
 		build_options_disabled[i] = build_option_disabled_by_default[i];
 	}
@@ -361,6 +410,7 @@ EditorBuildProfile::EditorBuildProfile() {
 //////////////////////////
 
 void EditorBuildProfileManager::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_READY: {
 			String last_file = EditorSettings::get_singleton()->get_project_metadata("build_profile", "last_file_path", "");
@@ -377,6 +427,7 @@ void EditorBuildProfileManager::_notification(int p_what) {
 }
 
 void EditorBuildProfileManager::_profile_action(int p_action) {
+	ZoneScoped;
 	last_action = Action(p_action);
 
 	switch (p_action) {
@@ -415,6 +466,7 @@ void EditorBuildProfileManager::_profile_action(int p_action) {
 }
 
 void EditorBuildProfileManager::_find_files(EditorFileSystemDirectory *p_dir, const HashMap<String, DetectedFile> &p_cache, HashMap<String, DetectedFile> &r_detected) {
+	ZoneScoped;
 	if (p_dir == nullptr) {
 		return;
 	}
@@ -471,6 +523,7 @@ void EditorBuildProfileManager::_find_files(EditorFileSystemDirectory *p_dir, co
 }
 
 void EditorBuildProfileManager::_detect_classes() {
+	ZoneScoped;
 	HashMap<String, DetectedFile> previous_file_cache;
 
 	Ref<FileAccess> f = FileAccess::open("res://.godot/editor/used_class_cache", FileAccess::READ);
@@ -566,6 +619,7 @@ void EditorBuildProfileManager::_detect_classes() {
 }
 
 void EditorBuildProfileManager::_action_confirm() {
+	ZoneScoped;
 	switch (last_action) {
 		case ACTION_RESET: {
 			edited.instantiate();
@@ -592,6 +646,7 @@ void EditorBuildProfileManager::_action_confirm() {
 }
 
 void EditorBuildProfileManager::_fill_classes_from(TreeItem *p_parent, const String &p_class, const String &p_selected) {
+	ZoneScoped;
 	TreeItem *class_item = class_list->create_item(p_parent);
 	class_item->set_cell_mode(0, TreeItem::CELL_MODE_CHECK);
 	class_item->set_icon(0, EditorNode::get_singleton()->get_class_icon(p_class, "Node"));
@@ -633,6 +688,7 @@ void EditorBuildProfileManager::_fill_classes_from(TreeItem *p_parent, const Str
 }
 
 void EditorBuildProfileManager::_class_list_item_selected() {
+	ZoneScoped;
 	if (updating_build_options) {
 		return;
 	}
@@ -666,6 +722,7 @@ void EditorBuildProfileManager::_class_list_item_selected() {
 }
 
 void EditorBuildProfileManager::_class_list_item_edited() {
+	ZoneScoped;
 	if (updating_build_options) {
 		return;
 	}
@@ -689,6 +746,7 @@ void EditorBuildProfileManager::_class_list_item_edited() {
 }
 
 void EditorBuildProfileManager::_class_list_item_collapsed(Object *p_item) {
+	ZoneScoped;
 	if (updating_build_options) {
 		return;
 	}
@@ -709,6 +767,7 @@ void EditorBuildProfileManager::_class_list_item_collapsed(Object *p_item) {
 }
 
 void EditorBuildProfileManager::_update_edited_profile() {
+	ZoneScoped;
 	String class_selected;
 	int build_option_selected = -1;
 
@@ -768,6 +827,7 @@ void EditorBuildProfileManager::_update_edited_profile() {
 }
 
 void EditorBuildProfileManager::_force_detect_classes_changed(const String &p_text) {
+	ZoneScoped;
 	if (updating_build_options) {
 		return;
 	}
@@ -775,6 +835,7 @@ void EditorBuildProfileManager::_force_detect_classes_changed(const String &p_te
 }
 
 void EditorBuildProfileManager::_import_profile(const String &p_path) {
+	ZoneScoped;
 	Ref<EditorBuildProfile> profile;
 	profile.instantiate();
 	Error err = profile->load_from_file(p_path);
@@ -792,6 +853,7 @@ void EditorBuildProfileManager::_import_profile(const String &p_path) {
 }
 
 void EditorBuildProfileManager::_export_profile(const String &p_path) {
+	ZoneScoped;
 	ERR_FAIL_COND(edited.is_null());
 	Error err = edited->save_to_file(p_path);
 	if (err != OK) {
@@ -803,16 +865,19 @@ void EditorBuildProfileManager::_export_profile(const String &p_path) {
 }
 
 Ref<EditorBuildProfile> EditorBuildProfileManager::get_current_profile() {
+	ZoneScoped;
 	return edited;
 }
 
 EditorBuildProfileManager *EditorBuildProfileManager::singleton = nullptr;
 
 void EditorBuildProfileManager::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method("_update_selected_profile", &EditorBuildProfileManager::_update_edited_profile);
 }
 
 EditorBuildProfileManager::EditorBuildProfileManager() {
+	ZoneScoped;
 	VBoxContainer *main_vbc = memnew(VBoxContainer);
 	add_child(main_vbc);
 

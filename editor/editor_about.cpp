@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_about.cpp                                                     */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_about.h"
 
 #include "core/authors.gen.h"
@@ -39,6 +70,7 @@
 static const String META_TEXT_TO_COPY = "text_to_copy";
 
 void EditorAbout::_theme_changed() {
+	ZoneScoped;
 	const Ref<Font> font = get_theme_font(SNAME("source"), SNAME("EditorFonts"));
 	const int font_size = get_theme_font_size(SNAME("source_size"), SNAME("EditorFonts"));
 	_tpl_text->add_theme_font_override("normal_font", font);
@@ -51,6 +83,7 @@ void EditorAbout::_theme_changed() {
 }
 
 void EditorAbout::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			_theme_changed();
@@ -59,24 +92,29 @@ void EditorAbout::_notification(int p_what) {
 }
 
 void EditorAbout::_license_tree_selected() {
+	ZoneScoped;
 	TreeItem *selected = _tpl_tree->get_selected();
 	_tpl_text->scroll_to_line(0);
 	_tpl_text->set_text(selected->get_metadata(0));
 }
 
 void EditorAbout::_version_button_pressed() {
+	ZoneScoped;
 	DisplayServer::get_singleton()->clipboard_set(version_btn->get_meta(META_TEXT_TO_COPY));
 }
 
 void EditorAbout::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("_version_button_pressed"), &EditorAbout::_version_button_pressed);
 }
 
 TextureRect *EditorAbout::get_logo() const {
+	ZoneScoped;
 	return _logo;
 }
 
 ScrollContainer *EditorAbout::_populate_list(const String &p_name, const List<String> &p_sections, const char *const *const p_src[], const int p_flag_single_column) {
+	ZoneScoped;
 	ScrollContainer *sc = memnew(ScrollContainer);
 	sc->set_name(p_name);
 	sc->set_v_size_flags(Control::SIZE_EXPAND);
@@ -116,6 +154,7 @@ ScrollContainer *EditorAbout::_populate_list(const String &p_name, const List<St
 }
 
 EditorAbout::EditorAbout() {
+	ZoneScoped;
 	set_title(TTR("Thanks from the Godot community!"));
 	set_hide_on_ok(true);
 

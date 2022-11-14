@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_file_system.cpp                                               */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_file_system.h"
 
 #include "core/config/project_settings.h"
@@ -50,10 +81,12 @@ EditorFileSystem *EditorFileSystem::singleton = nullptr;
 #define CACHE_FILE_NAME "filesystem_cache7"
 
 void EditorFileSystemDirectory::sort_files() {
+	ZoneScoped;
 	files.sort_custom<FileInfoSort>();
 }
 
 int EditorFileSystemDirectory::find_file_index(const String &p_file) const {
+	ZoneScoped;
 	for (int i = 0; i < files.size(); i++) {
 		if (files[i]->file == p_file) {
 			return i;
@@ -63,6 +96,7 @@ int EditorFileSystemDirectory::find_file_index(const String &p_file) const {
 }
 
 int EditorFileSystemDirectory::find_dir_index(const String &p_dir) const {
+	ZoneScoped;
 	for (int i = 0; i < subdirs.size(); i++) {
 		if (subdirs[i]->name == p_dir) {
 			return i;
@@ -78,25 +112,30 @@ void EditorFileSystemDirectory::force_update() {
 }
 
 int EditorFileSystemDirectory::get_subdir_count() const {
+	ZoneScoped;
 	return subdirs.size();
 }
 
 EditorFileSystemDirectory *EditorFileSystemDirectory::get_subdir(int p_idx) {
+	ZoneScoped;
 	ERR_FAIL_INDEX_V(p_idx, subdirs.size(), nullptr);
 	return subdirs[p_idx];
 }
 
 int EditorFileSystemDirectory::get_file_count() const {
+	ZoneScoped;
 	return files.size();
 }
 
 String EditorFileSystemDirectory::get_file(int p_idx) const {
+	ZoneScoped;
 	ERR_FAIL_INDEX_V(p_idx, files.size(), "");
 
 	return files[p_idx]->file;
 }
 
 String EditorFileSystemDirectory::get_path() const {
+	ZoneScoped;
 	String p;
 	const EditorFileSystemDirectory *d = this;
 	while (d->parent) {
@@ -108,6 +147,7 @@ String EditorFileSystemDirectory::get_path() const {
 }
 
 String EditorFileSystemDirectory::get_file_path(int p_idx) const {
+	ZoneScoped;
 	String file = get_file(p_idx);
 	const EditorFileSystemDirectory *d = this;
 	while (d->parent) {
@@ -119,6 +159,7 @@ String EditorFileSystemDirectory::get_file_path(int p_idx) const {
 }
 
 Vector<String> EditorFileSystemDirectory::get_file_deps(int p_idx) const {
+	ZoneScoped;
 	ERR_FAIL_INDEX_V(p_idx, files.size(), Vector<String>());
 	Vector<String> deps;
 
@@ -143,41 +184,50 @@ Vector<String> EditorFileSystemDirectory::get_file_deps(int p_idx) const {
 }
 
 bool EditorFileSystemDirectory::get_file_import_is_valid(int p_idx) const {
+	ZoneScoped;
 	ERR_FAIL_INDEX_V(p_idx, files.size(), false);
 	return files[p_idx]->import_valid;
 }
 
 uint64_t EditorFileSystemDirectory::get_file_modified_time(int p_idx) const {
+	ZoneScoped;
 	ERR_FAIL_INDEX_V(p_idx, files.size(), 0);
 	return files[p_idx]->modified_time;
 }
 
 String EditorFileSystemDirectory::get_file_script_class_name(int p_idx) const {
+	ZoneScoped;
 	return files[p_idx]->script_class_name;
 }
 
 String EditorFileSystemDirectory::get_file_script_class_extends(int p_idx) const {
+	ZoneScoped;
 	return files[p_idx]->script_class_extends;
 }
 
 String EditorFileSystemDirectory::get_file_script_class_icon_path(int p_idx) const {
+	ZoneScoped;
 	return files[p_idx]->script_class_icon_path;
 }
 
 StringName EditorFileSystemDirectory::get_file_type(int p_idx) const {
+	ZoneScoped;
 	ERR_FAIL_INDEX_V(p_idx, files.size(), "");
 	return files[p_idx]->type;
 }
 
 String EditorFileSystemDirectory::get_name() {
+	ZoneScoped;
 	return name;
 }
 
 EditorFileSystemDirectory *EditorFileSystemDirectory::get_parent() {
+	ZoneScoped;
 	return parent;
 }
 
 void EditorFileSystemDirectory::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("get_subdir_count"), &EditorFileSystemDirectory::get_subdir_count);
 	ClassDB::bind_method(D_METHOD("get_subdir", "idx"), &EditorFileSystemDirectory::get_subdir);
 	ClassDB::bind_method(D_METHOD("get_file_count"), &EditorFileSystemDirectory::get_file_count);
@@ -195,11 +245,13 @@ void EditorFileSystemDirectory::_bind_methods() {
 }
 
 EditorFileSystemDirectory::EditorFileSystemDirectory() {
+	ZoneScoped;
 	modified_time = 0;
 	parent = nullptr;
 }
 
 EditorFileSystemDirectory::~EditorFileSystemDirectory() {
+	ZoneScoped;
 	for (int i = 0; i < files.size(); i++) {
 		memdelete(files[i]);
 	}
@@ -210,6 +262,7 @@ EditorFileSystemDirectory::~EditorFileSystemDirectory() {
 }
 
 void EditorFileSystem::_scan_filesystem() {
+	ZoneScoped;
 	ERR_FAIL_COND(!scanning || new_filesystem);
 
 	//read .fscache
@@ -331,6 +384,7 @@ void EditorFileSystem::_scan_filesystem() {
 }
 
 void EditorFileSystem::_save_filesystem_cache() {
+	ZoneScoped;
 	group_file_cache.clear();
 
 	String fscache = EditorPaths::get_singleton()->get_project_settings_dir().path_join(CACHE_FILE_NAME);
@@ -349,6 +403,7 @@ void EditorFileSystem::_thread_func(void *_userdata) {
 }
 
 bool EditorFileSystem::_test_for_reimport(const String &p_path, bool p_only_imported_files) {
+	ZoneScoped;
 	if (!reimport_on_missing_imported_files && p_only_imported_files) {
 		return false;
 	}
@@ -515,6 +570,7 @@ bool EditorFileSystem::_test_for_reimport(const String &p_path, bool p_only_impo
 }
 
 bool EditorFileSystem::_scan_import_support(Vector<String> reimports) {
+	ZoneScoped;
 	if (import_support_queries.size() == 0) {
 		return false;
 	}
@@ -554,6 +610,7 @@ bool EditorFileSystem::_scan_import_support(Vector<String> reimports) {
 }
 
 bool EditorFileSystem::_update_scan_actions() {
+	ZoneScoped;
 	sources_changed.clear();
 
 	bool fs_changed = false;
@@ -682,6 +739,7 @@ bool EditorFileSystem::_update_scan_actions() {
 }
 
 void EditorFileSystem::scan() {
+	ZoneScoped;
 	if (false /*&& bool(Globals::get_singleton()->get("debug/disable_scan"))*/) {
 		return;
 	}
@@ -722,12 +780,14 @@ void EditorFileSystem::scan() {
 }
 
 void EditorFileSystem::ScanProgress::update(int p_current, int p_total) const {
+	ZoneScoped;
 	float ratio = low + ((hi - low) / p_total) * p_current;
 	progress->step(ratio * 1000);
 	EditorFileSystem::singleton->scan_total = ratio;
 }
 
 EditorFileSystem::ScanProgress EditorFileSystem::ScanProgress::get_sub(int p_current, int p_total) const {
+	ZoneScoped;
 	ScanProgress sp = *this;
 	float slice = (sp.hi - sp.low) / p_total;
 	sp.low += slice * p_current;
@@ -736,6 +796,7 @@ EditorFileSystem::ScanProgress EditorFileSystem::ScanProgress::get_sub(int p_cur
 }
 
 void EditorFileSystem::_scan_new_dir(EditorFileSystemDirectory *p_dir, Ref<DirAccess> &da, const ScanProgress &p_progress) {
+	ZoneScoped;
 	List<String> dirs;
 	List<String> files;
 
@@ -938,6 +999,7 @@ void EditorFileSystem::_scan_new_dir(EditorFileSystemDirectory *p_dir, Ref<DirAc
 }
 
 void EditorFileSystem::_scan_fs_changes(EditorFileSystemDirectory *p_dir, const ScanProgress &p_progress) {
+	ZoneScoped;
 	uint64_t current_mtime = FileAccess::get_modified_time(p_dir->get_path());
 
 	bool updated_dir = false;
@@ -1126,6 +1188,7 @@ void EditorFileSystem::_scan_fs_changes(EditorFileSystemDirectory *p_dir, const 
 }
 
 void EditorFileSystem::_delete_internal_files(String p_file) {
+	ZoneScoped;
 	if (FileAccess::exists(p_file + ".import")) {
 		List<String> paths;
 		ResourceFormatImporter::get_singleton()->get_internal_resource_path_list(p_file, &paths);
@@ -1138,6 +1201,7 @@ void EditorFileSystem::_delete_internal_files(String p_file) {
 }
 
 void EditorFileSystem::_thread_func_sources(void *_userdata) {
+	ZoneScoped;
 	EditorFileSystem *efs = (EditorFileSystem *)_userdata;
 	if (efs->filesystem) {
 		EditorProgressBG pr("sources", TTR("ScanSources"), 1000);
@@ -1151,6 +1215,7 @@ void EditorFileSystem::_thread_func_sources(void *_userdata) {
 }
 
 void EditorFileSystem::scan_changes() {
+	ZoneScoped;
 	if (first_scan || // Prevent a premature changes scan from inhibiting the first full scan
 			scanning || scanning_changes || thread.is_started()) {
 		scan_changes_pending = true;
@@ -1190,6 +1255,7 @@ void EditorFileSystem::scan_changes() {
 }
 
 void EditorFileSystem::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_EXIT_TREE: {
 			Thread &active_thread = thread.is_started() ? thread : thread_sources;
@@ -1254,18 +1320,22 @@ void EditorFileSystem::_notification(int p_what) {
 }
 
 bool EditorFileSystem::is_scanning() const {
+	ZoneScoped;
 	return scanning || scanning_changes;
 }
 
 float EditorFileSystem::get_scanning_progress() const {
+	ZoneScoped;
 	return scan_total;
 }
 
 EditorFileSystemDirectory *EditorFileSystem::get_filesystem() {
+	ZoneScoped;
 	return filesystem;
 }
 
 void EditorFileSystem::_save_filesystem_cache(EditorFileSystemDirectory *p_dir, Ref<FileAccess> p_file) {
+	ZoneScoped;
 	if (!p_dir) {
 		return; //none
 	}
@@ -1371,6 +1441,7 @@ bool EditorFileSystem::_find_file(const String &p_file, EditorFileSystemDirector
 }
 
 String EditorFileSystem::get_file_type(const String &p_file) const {
+	ZoneScoped;
 	EditorFileSystemDirectory *fs = nullptr;
 	int cpos = -1;
 
@@ -1382,6 +1453,7 @@ String EditorFileSystem::get_file_type(const String &p_file) const {
 }
 
 EditorFileSystemDirectory *EditorFileSystem::find_file(const String &p_file, int *r_index) const {
+	ZoneScoped;
 	if (!filesystem || scanning) {
 		return nullptr;
 	}
@@ -1400,6 +1472,7 @@ EditorFileSystemDirectory *EditorFileSystem::find_file(const String &p_file, int
 }
 
 EditorFileSystemDirectory *EditorFileSystem::get_filesystem_path(const String &p_path) {
+	ZoneScoped;
 	if (!filesystem || scanning) {
 		return nullptr;
 	}
@@ -1458,6 +1531,7 @@ void EditorFileSystem::_save_late_updated_files() {
 }
 
 Vector<String> EditorFileSystem::_get_dependencies(const String &p_path) {
+	ZoneScoped;
 	List<String> deps;
 	ResourceLoader::get_dependencies(p_path, &deps);
 
@@ -1470,6 +1544,7 @@ Vector<String> EditorFileSystem::_get_dependencies(const String &p_path) {
 }
 
 String EditorFileSystem::_get_global_script_class(const String &p_type, const String &p_path, String *r_extends, String *r_icon_path) const {
+	ZoneScoped;
 	for (int i = 0; i < ScriptServer::get_language_count(); i++) {
 		if (ScriptServer::get_language(i)->handles_global_class_type(p_type)) {
 			String global_name;
@@ -1488,6 +1563,7 @@ String EditorFileSystem::_get_global_script_class(const String &p_type, const St
 }
 
 void EditorFileSystem::_scan_script_classes(EditorFileSystemDirectory *p_dir) {
+	ZoneScoped;
 	int filecount = p_dir->files.size();
 	const EditorFileSystemDirectory::FileInfo *const *files = p_dir->files.ptr();
 	for (int i = 0; i < filecount; i++) {
@@ -1511,6 +1587,7 @@ void EditorFileSystem::_scan_script_classes(EditorFileSystemDirectory *p_dir) {
 }
 
 void EditorFileSystem::update_script_classes() {
+	ZoneScoped;
 	if (!update_script_classes_queued.is_set()) {
 		return;
 	}
@@ -1534,6 +1611,7 @@ void EditorFileSystem::update_script_classes() {
 }
 
 void EditorFileSystem::_queue_update_script_classes() {
+	ZoneScoped;
 	if (update_script_classes_queued.is_set()) {
 		return;
 	}
@@ -1543,6 +1621,7 @@ void EditorFileSystem::_queue_update_script_classes() {
 }
 
 void EditorFileSystem::update_file(const String &p_file) {
+	ZoneScoped;
 	EditorFileSystemDirectory *fs = nullptr;
 	int cpos = -1;
 
@@ -1631,10 +1710,12 @@ void EditorFileSystem::update_file(const String &p_file) {
 }
 
 HashSet<String> EditorFileSystem::get_valid_extensions() const {
+	ZoneScoped;
 	return valid_extensions;
 }
 
 Error EditorFileSystem::_reimport_group(const String &p_group_file, const Vector<String> &p_files) {
+	ZoneScoped;
 	String importer_name;
 
 	HashMap<String, HashMap<StringName, Variant>> source_file_options;
@@ -1803,6 +1884,7 @@ Error EditorFileSystem::_reimport_group(const String &p_group_file, const Vector
 }
 
 void EditorFileSystem::_reimport_file(const String &p_file, const HashMap<StringName, Variant> *p_custom_options, const String &p_custom_importer) {
+	ZoneScoped;
 	EditorFileSystemDirectory *fs = nullptr;
 	int cpos = -1;
 	bool found = _find_file(p_file, &fs, cpos);
@@ -2041,6 +2123,7 @@ void EditorFileSystem::_reimport_file(const String &p_file, const HashMap<String
 }
 
 void EditorFileSystem::_find_group_files(EditorFileSystemDirectory *efd, HashMap<String, Vector<String>> &group_files, HashSet<String> &groups_to_reimport) {
+	ZoneScoped;
 	int fc = efd->files.size();
 	const EditorFileSystemDirectory::FileInfo *const *files = efd->files.ptr();
 	for (int i = 0; i < fc; i++) {
@@ -2058,15 +2141,18 @@ void EditorFileSystem::_find_group_files(EditorFileSystemDirectory *efd, HashMap
 }
 
 void EditorFileSystem::reimport_file_with_custom_parameters(const String &p_file, const String &p_importer, const HashMap<StringName, Variant> &p_custom_params) {
+	ZoneScoped;
 	_reimport_file(p_file, &p_custom_params, p_importer);
 }
 
 void EditorFileSystem::_reimport_thread(uint32_t p_index, ImportThreadData *p_import_data) {
+	ZoneScoped;
 	p_import_data->max_index = MAX(p_import_data->reimport_from + int(p_index), p_import_data->max_index);
 	_reimport_file(p_import_data->reimport_files[p_import_data->reimport_from + p_index].path);
 }
 
 void EditorFileSystem::reimport_files(const Vector<String> &p_files) {
+	ZoneScoped;
 	importing = true;
 	EditorProgress pr("reimport", TTR("(Re)Importing Assets"), p_files.size());
 
@@ -2180,6 +2266,7 @@ void EditorFileSystem::reimport_files(const Vector<String> &p_files) {
 }
 
 Error EditorFileSystem::_resource_import(const String &p_path) {
+	ZoneScoped;
 	Vector<String> files;
 	files.push_back(p_path);
 
@@ -2190,6 +2277,7 @@ Error EditorFileSystem::_resource_import(const String &p_path) {
 }
 
 bool EditorFileSystem::_should_skip_directory(const String &p_path) {
+	ZoneScoped;
 	String project_data_path = ProjectSettings::get_singleton()->get_project_data_path();
 	if (p_path == project_data_path || p_path.begins_with(project_data_path + "/")) {
 		return true;
@@ -2209,10 +2297,12 @@ bool EditorFileSystem::_should_skip_directory(const String &p_path) {
 }
 
 bool EditorFileSystem::is_group_file(const String &p_path) const {
+	ZoneScoped;
 	return group_file_cache.has(p_path);
 }
 
 void EditorFileSystem::_move_group_files(EditorFileSystemDirectory *efd, const String &p_group_file, const String &p_new_location) {
+	ZoneScoped;
 	int fc = efd->files.size();
 	EditorFileSystemDirectory::FileInfo *const *files = efd->files.ptrw();
 	for (int i = 0; i < fc; i++) {
@@ -2250,6 +2340,7 @@ void EditorFileSystem::_move_group_files(EditorFileSystemDirectory *efd, const S
 }
 
 void EditorFileSystem::move_group_file(const String &p_path, const String &p_new_path) {
+	ZoneScoped;
 	if (get_filesystem()) {
 		_move_group_files(get_filesystem(), p_path, p_new_path);
 		if (group_file_cache.has(p_path)) {
@@ -2260,6 +2351,7 @@ void EditorFileSystem::move_group_file(const String &p_path, const String &p_new
 }
 
 ResourceUID::ID EditorFileSystem::_resource_saver_get_resource_id_for_path(const String &p_path, bool p_generate) {
+	ZoneScoped;
 	if (!p_path.is_resource_file() || p_path.begins_with(ProjectSettings::get_singleton()->get_project_data_path())) {
 		// Saved externally (configuration file) or internal file, do not assign an ID.
 		return ResourceUID::INVALID_ID;
@@ -2290,6 +2382,7 @@ ResourceUID::ID EditorFileSystem::_resource_saver_get_resource_id_for_path(const
 }
 
 static void _scan_extensions_dir(EditorFileSystemDirectory *d, HashSet<String> &extensions) {
+	ZoneScoped;
 	int fc = d->get_file_count();
 	for (int i = 0; i < fc; i++) {
 		if (d->get_file_type(i) == SNAME("NativeExtension")) {
@@ -2302,6 +2395,7 @@ static void _scan_extensions_dir(EditorFileSystemDirectory *d, HashSet<String> &
 	}
 }
 bool EditorFileSystem::_scan_extensions() {
+	ZoneScoped;
 	EditorFileSystemDirectory *d = get_filesystem();
 	HashSet<String> extensions;
 
@@ -2362,6 +2456,7 @@ bool EditorFileSystem::_scan_extensions() {
 }
 
 void EditorFileSystem::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("get_filesystem"), &EditorFileSystem::get_filesystem);
 	ClassDB::bind_method(D_METHOD("is_scanning"), &EditorFileSystem::is_scanning);
 	ClassDB::bind_method(D_METHOD("get_scanning_progress"), &EditorFileSystem::get_scanning_progress);
@@ -2380,6 +2475,7 @@ void EditorFileSystem::_bind_methods() {
 }
 
 void EditorFileSystem::_update_extensions() {
+	ZoneScoped;
 	valid_extensions.clear();
 	import_extensions.clear();
 	textfile_extensions.clear();
@@ -2407,14 +2503,17 @@ void EditorFileSystem::_update_extensions() {
 }
 
 void EditorFileSystem::add_import_format_support_query(Ref<EditorFileSystemImportFormatSupportQuery> p_query) {
+	ZoneScoped;
 	ERR_FAIL_COND(import_support_queries.find(p_query) != -1);
 	import_support_queries.push_back(p_query);
 }
 void EditorFileSystem::remove_import_format_support_query(Ref<EditorFileSystemImportFormatSupportQuery> p_query) {
+	ZoneScoped;
 	import_support_queries.erase(p_query);
 }
 
 EditorFileSystem::EditorFileSystem() {
+	ZoneScoped;
 	ResourceLoader::import = _resource_import;
 	reimport_on_missing_imported_files = GLOBAL_DEF("editor/import/reimport_missing_imported_files", true);
 	GLOBAL_DEF("editor/import/use_multiple_threads", true);
@@ -2435,5 +2534,6 @@ EditorFileSystem::EditorFileSystem() {
 }
 
 EditorFileSystem::~EditorFileSystem() {
+	ZoneScoped;
 	ResourceSaver::set_get_resource_id_for_path(nullptr);
 }

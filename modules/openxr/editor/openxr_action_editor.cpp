@@ -28,17 +28,51 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  openxr_action_editor.cpp                                             */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "openxr_action_editor.h"
 
 void OpenXRActionEditor::_bind_methods() {
+	ZoneScoped;
 	ADD_SIGNAL(MethodInfo("remove", PropertyInfo(Variant::OBJECT, "action_editor")));
 }
 
 void OpenXRActionEditor::_theme_changed() {
+	ZoneScoped;
 	rem_action->set_icon(get_theme_icon(SNAME("Remove"), SNAME("EditorIcons")));
 }
 
 void OpenXRActionEditor::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -59,20 +93,24 @@ void OpenXRActionEditor::_on_action_name_changed(const String p_new_text) {
 }
 
 void OpenXRActionEditor::_on_action_localized_name_changed(const String p_new_text) {
+	ZoneScoped;
 	action->set_localized_name(p_new_text);
 }
 
 void OpenXRActionEditor::_on_item_selected(int p_idx) {
+	ZoneScoped;
 	ERR_FAIL_INDEX(p_idx, OpenXRAction::OPENXR_ACTION_MAX);
 
 	action->set_action_type(OpenXRAction::ActionType(p_idx));
 }
 
 void OpenXRActionEditor::_on_remove_action() {
+	ZoneScoped;
 	emit_signal("remove", this);
 }
 
 OpenXRActionEditor::OpenXRActionEditor(Ref<OpenXRAction> p_action) {
+	ZoneScoped;
 	action = p_action;
 
 	set_h_size_flags(Control::SIZE_EXPAND_FILL);

@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_property_name_processor.cpp                                   */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_property_name_processor.h"
 
 #include "editor_settings.h"
@@ -35,6 +66,7 @@
 EditorPropertyNameProcessor *EditorPropertyNameProcessor::singleton = nullptr;
 
 EditorPropertyNameProcessor::Style EditorPropertyNameProcessor::get_default_inspector_style() {
+	ZoneScoped;
 	const Style style = (Style)EDITOR_GET("interface/inspector/default_property_name_style").operator int();
 	if (style == STYLE_LOCALIZED && !is_localization_available()) {
 		return STYLE_CAPITALIZED;
@@ -43,20 +75,24 @@ EditorPropertyNameProcessor::Style EditorPropertyNameProcessor::get_default_insp
 }
 
 EditorPropertyNameProcessor::Style EditorPropertyNameProcessor::get_settings_style() {
+	ZoneScoped;
 	const bool translate = EDITOR_GET("interface/editor/localize_settings");
 	return translate ? STYLE_LOCALIZED : STYLE_CAPITALIZED;
 }
 
 EditorPropertyNameProcessor::Style EditorPropertyNameProcessor::get_tooltip_style(Style p_style) {
+	ZoneScoped;
 	return p_style == STYLE_LOCALIZED ? STYLE_CAPITALIZED : STYLE_LOCALIZED;
 }
 
 bool EditorPropertyNameProcessor::is_localization_available() {
+	ZoneScoped;
 	const Vector<String> forbidden = String("en").split(",");
 	return forbidden.find(EDITOR_GET("interface/editor/editor_language")) == -1;
 }
 
 String EditorPropertyNameProcessor::_capitalize_name(const String &p_name) const {
+	ZoneScoped;
 	HashMap<String, String>::ConstIterator cached = capitalize_string_cache.find(p_name);
 	if (cached) {
 		return cached->value;
@@ -78,6 +114,7 @@ String EditorPropertyNameProcessor::_capitalize_name(const String &p_name) const
 }
 
 String EditorPropertyNameProcessor::process_name(const String &p_name, Style p_style) const {
+	ZoneScoped;
 	switch (p_style) {
 		case STYLE_RAW: {
 			return p_name;
@@ -95,6 +132,7 @@ String EditorPropertyNameProcessor::process_name(const String &p_name, Style p_s
 }
 
 EditorPropertyNameProcessor::EditorPropertyNameProcessor() {
+	ZoneScoped;
 	ERR_FAIL_COND(singleton != nullptr);
 	singleton = this;
 
@@ -252,5 +290,6 @@ EditorPropertyNameProcessor::EditorPropertyNameProcessor() {
 }
 
 EditorPropertyNameProcessor::~EditorPropertyNameProcessor() {
+	ZoneScoped;
 	singleton = nullptr;
 }

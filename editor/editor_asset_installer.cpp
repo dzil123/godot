@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  editor_asset_installer.cpp                                           */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "editor_asset_installer.h"
 
 #include "core/io/dir_access.h"
@@ -38,6 +69,7 @@
 #include "editor/progress_dialog.h"
 
 void EditorAssetInstaller::_item_edited() {
+	ZoneScoped;
 	if (updating) {
 		return;
 	}
@@ -53,6 +85,7 @@ void EditorAssetInstaller::_item_edited() {
 }
 
 void EditorAssetInstaller::_check_propagated_to_item(Object *p_obj, int column) {
+	ZoneScoped;
 	TreeItem *affected_item = Object::cast_to<TreeItem>(p_obj);
 	if (affected_item && affected_item->get_custom_color(0) != Color()) {
 		affected_item->set_checked(0, false);
@@ -61,6 +94,7 @@ void EditorAssetInstaller::_check_propagated_to_item(Object *p_obj, int column) 
 }
 
 void EditorAssetInstaller::open(const String &p_path, int p_depth) {
+	ZoneScoped;
 	package_path = p_path;
 	HashSet<String> files_sorted;
 
@@ -239,6 +273,7 @@ void EditorAssetInstaller::open(const String &p_path, int p_depth) {
 }
 
 void EditorAssetInstaller::ok_pressed() {
+	ZoneScoped;
 	Ref<FileAccess> io_fa;
 	zlib_filefunc_def io = zipio_create_io(&io_fa);
 
@@ -331,10 +366,12 @@ void EditorAssetInstaller::ok_pressed() {
 }
 
 void EditorAssetInstaller::set_asset_name(const String &p_asset_name) {
+	ZoneScoped;
 	asset_name = p_asset_name;
 }
 
 String EditorAssetInstaller::get_asset_name() const {
+	ZoneScoped;
 	return asset_name;
 }
 
@@ -342,6 +379,7 @@ void EditorAssetInstaller::_bind_methods() {
 }
 
 EditorAssetInstaller::EditorAssetInstaller() {
+	ZoneScoped;
 	VBoxContainer *vb = memnew(VBoxContainer);
 	add_child(vb);
 

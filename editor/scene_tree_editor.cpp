@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  scene_tree_editor.cpp                                                */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "scene_tree_editor.h"
 
 #include "core/config/project_settings.h"
@@ -46,12 +77,14 @@
 #include "scene/resources/packed_scene.h"
 
 Node *SceneTreeEditor::get_scene_node() {
+	ZoneScoped;
 	ERR_FAIL_COND_V(!is_inside_tree(), nullptr);
 
 	return get_tree()->get_edited_scene_root();
 }
 
 void SceneTreeEditor::_cell_button_pressed(Object *p_item, int p_column, int p_id, MouseButton p_button) {
+	ZoneScoped;
 	if (p_button != MouseButton::LEFT) {
 		return;
 	}
@@ -166,6 +199,7 @@ void SceneTreeEditor::_cell_button_pressed(Object *p_item, int p_column, int p_i
 }
 
 void SceneTreeEditor::_toggle_visible(Node *p_node) {
+	ZoneScoped;
 	if (p_node->has_method("is_visible") && p_node->has_method("set_visible")) {
 		bool v = bool(p_node->call("is_visible"));
 		Ref<EditorUndoRedoManager> &undo_redo = EditorNode::get_undo_redo();
@@ -175,6 +209,7 @@ void SceneTreeEditor::_toggle_visible(Node *p_node) {
 }
 
 void SceneTreeEditor::_add_nodes(Node *p_node, TreeItem *p_parent) {
+	ZoneScoped;
 	if (!p_node) {
 		return;
 	}
@@ -500,6 +535,7 @@ void SceneTreeEditor::_add_nodes(Node *p_node, TreeItem *p_parent) {
 }
 
 void SceneTreeEditor::_node_visibility_changed(Node *p_node) {
+	ZoneScoped;
 	if (!p_node || (p_node != get_scene_node() && !p_node->get_owner())) {
 		return;
 	}
@@ -532,6 +568,7 @@ void SceneTreeEditor::_node_visibility_changed(Node *p_node) {
 }
 
 void SceneTreeEditor::_update_visibility_color(Node *p_node, TreeItem *p_item) {
+	ZoneScoped;
 	if (p_node->is_class("CanvasItem") || p_node->is_class("Node3D")) {
 		Color color(1, 1, 1, 1);
 		bool visible_on_screen = p_node->call("is_visible_in_tree");
@@ -544,6 +581,7 @@ void SceneTreeEditor::_update_visibility_color(Node *p_node, TreeItem *p_item) {
 }
 
 void SceneTreeEditor::_node_script_changed(Node *p_node) {
+	ZoneScoped;
 	if (tree_dirty) {
 		return;
 	}
@@ -553,6 +591,7 @@ void SceneTreeEditor::_node_script_changed(Node *p_node) {
 }
 
 void SceneTreeEditor::_node_removed(Node *p_node) {
+	ZoneScoped;
 	if (EditorNode::get_singleton()->is_exiting()) {
 		return; //speed up exit
 	}
@@ -574,6 +613,7 @@ void SceneTreeEditor::_node_removed(Node *p_node) {
 }
 
 void SceneTreeEditor::_node_renamed(Node *p_node) {
+	ZoneScoped;
 	if (p_node != get_scene_node() && !get_scene_node()->is_ancestor_of(p_node)) {
 		return;
 	}
@@ -587,6 +627,7 @@ void SceneTreeEditor::_node_renamed(Node *p_node) {
 }
 
 void SceneTreeEditor::_update_tree(bool p_scroll_to_selected) {
+	ZoneScoped;
 	if (!is_inside_tree()) {
 		tree_dirty = false;
 		return;
@@ -612,6 +653,7 @@ void SceneTreeEditor::_update_tree(bool p_scroll_to_selected) {
 }
 
 bool SceneTreeEditor::_update_filter(TreeItem *p_parent, bool p_scroll_to_selected) {
+	ZoneScoped;
 	if (!p_parent) {
 		p_parent = tree->get_root();
 		filter_term_warning.clear();
@@ -662,6 +704,7 @@ bool SceneTreeEditor::_update_filter(TreeItem *p_parent, bool p_scroll_to_select
 }
 
 bool SceneTreeEditor::_item_matches_all_terms(TreeItem *p_item, PackedStringArray p_terms) {
+	ZoneScoped;
 	if (p_terms.is_empty()) {
 		return true;
 	}
@@ -733,6 +776,7 @@ bool SceneTreeEditor::_item_matches_all_terms(TreeItem *p_item, PackedStringArra
 }
 
 void SceneTreeEditor::_compute_hash(Node *p_node, uint64_t &hash) {
+	ZoneScoped;
 	hash = hash_djb2_one_64(p_node->get_instance_id(), hash);
 	if (p_node->get_parent()) {
 		hash = hash_djb2_one_64(p_node->get_parent()->get_instance_id(), hash); //so a reparent still produces a different hash
@@ -744,6 +788,7 @@ void SceneTreeEditor::_compute_hash(Node *p_node, uint64_t &hash) {
 }
 
 void SceneTreeEditor::_test_update_tree() {
+	ZoneScoped;
 	pending_test_update = false;
 
 	if (!is_inside_tree()) {
@@ -768,11 +813,13 @@ void SceneTreeEditor::_test_update_tree() {
 }
 
 void SceneTreeEditor::_tree_process_mode_changed() {
+	ZoneScoped;
 	MessageQueue::get_singleton()->push_call(this, "_update_tree");
 	tree_dirty = true;
 }
 
 void SceneTreeEditor::_tree_changed() {
+	ZoneScoped;
 	if (EditorNode::get_singleton()->is_exiting()) {
 		return; //speed up exit
 	}
@@ -788,6 +835,7 @@ void SceneTreeEditor::_tree_changed() {
 }
 
 void SceneTreeEditor::_selected_changed() {
+	ZoneScoped;
 	TreeItem *s = tree->get_selected();
 	ERR_FAIL_COND(!s);
 	NodePath np = s->get_metadata(0);
@@ -814,6 +862,7 @@ void SceneTreeEditor::_deselect_items() {
 }
 
 void SceneTreeEditor::_cell_multi_selected(Object *p_object, int p_cell, bool p_selected) {
+	ZoneScoped;
 	TreeItem *item = Object::cast_to<TreeItem>(p_object);
 	ERR_FAIL_COND(!item);
 
@@ -847,6 +896,7 @@ void SceneTreeEditor::_cell_multi_selected(Object *p_object, int p_cell, bool p_
 }
 
 void SceneTreeEditor::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			get_tree()->connect("tree_changed", callable_mp(this, &SceneTreeEditor::_tree_changed));
@@ -876,6 +926,7 @@ void SceneTreeEditor::_notification(int p_what) {
 }
 
 TreeItem *SceneTreeEditor::_find(TreeItem *p_node, const NodePath &p_path) {
+	ZoneScoped;
 	if (!p_node) {
 		return nullptr;
 	}
@@ -898,6 +949,7 @@ TreeItem *SceneTreeEditor::_find(TreeItem *p_node, const NodePath &p_path) {
 }
 
 void SceneTreeEditor::set_selected(Node *p_node, bool p_emit_selected) {
+	ZoneScoped;
 	ERR_FAIL_COND(blocked > 0);
 
 	if (pending_test_update) {
@@ -940,6 +992,7 @@ void SceneTreeEditor::set_selected(Node *p_node, bool p_emit_selected) {
 }
 
 void SceneTreeEditor::_rename_node(ObjectID p_node, const String &p_name) {
+	ZoneScoped;
 	Object *o = ObjectDB::get_instance(p_node);
 	ERR_FAIL_COND(!o);
 	Node *n = Object::cast_to<Node>(o);
@@ -953,6 +1006,7 @@ void SceneTreeEditor::_rename_node(ObjectID p_node, const String &p_name) {
 }
 
 void SceneTreeEditor::_renamed() {
+	ZoneScoped;
 	TreeItem *which = tree->get_edited();
 
 	ERR_FAIL_COND(!which);
@@ -1013,10 +1067,12 @@ void SceneTreeEditor::_renamed() {
 }
 
 Node *SceneTreeEditor::get_selected() {
+	ZoneScoped;
 	return selected;
 }
 
 void SceneTreeEditor::set_marked(const HashSet<Node *> &p_marked, bool p_selectable, bool p_children_selectable) {
+	ZoneScoped;
 	if (tree_dirty) {
 		_update_tree();
 	}
@@ -1027,6 +1083,7 @@ void SceneTreeEditor::set_marked(const HashSet<Node *> &p_marked, bool p_selecta
 }
 
 void SceneTreeEditor::set_marked(Node *p_marked, bool p_selectable, bool p_children_selectable) {
+	ZoneScoped;
 	HashSet<Node *> s;
 	if (p_marked) {
 		s.insert(p_marked);
@@ -1035,32 +1092,39 @@ void SceneTreeEditor::set_marked(Node *p_marked, bool p_selectable, bool p_child
 }
 
 void SceneTreeEditor::set_filter(const String &p_filter) {
+	ZoneScoped;
 	filter = p_filter;
 	_update_filter(nullptr, true);
 }
 
 String SceneTreeEditor::get_filter() const {
+	ZoneScoped;
 	return filter;
 }
 
 String SceneTreeEditor::get_filter_term_warning() {
+	ZoneScoped;
 	return filter_term_warning;
 }
 
 void SceneTreeEditor::set_as_scene_tree_dock() {
+	ZoneScoped;
 	is_scene_tree_dock = true;
 }
 
 void SceneTreeEditor::set_display_foreign_nodes(bool p_display) {
+	ZoneScoped;
 	display_foreign = p_display;
 	_update_tree();
 }
 
 void SceneTreeEditor::set_valid_types(const Vector<StringName> &p_valid) {
+	ZoneScoped;
 	valid_types = p_valid;
 }
 
 void SceneTreeEditor::set_editor_selection(EditorSelection *p_selection) {
+	ZoneScoped;
 	editor_selection = p_selection;
 	tree->set_select_mode(Tree::SELECT_MULTI);
 	tree->set_cursor_can_exit_tree(false);
@@ -1068,6 +1132,7 @@ void SceneTreeEditor::set_editor_selection(EditorSelection *p_selection) {
 }
 
 void SceneTreeEditor::_update_selection(TreeItem *item) {
+	ZoneScoped;
 	ERR_FAIL_COND(!item);
 
 	NodePath np = item->get_metadata(0);
@@ -1097,6 +1162,7 @@ void SceneTreeEditor::_update_selection(TreeItem *item) {
 }
 
 void SceneTreeEditor::_selection_changed() {
+	ZoneScoped;
 	if (!editor_selection) {
 		return;
 	}
@@ -1110,6 +1176,7 @@ void SceneTreeEditor::_selection_changed() {
 }
 
 void SceneTreeEditor::_cell_collapsed(Object *p_obj) {
+	ZoneScoped;
 	if (updating_tree) {
 		return;
 	}
@@ -1133,6 +1200,7 @@ void SceneTreeEditor::_cell_collapsed(Object *p_obj) {
 }
 
 Variant SceneTreeEditor::get_drag_data_fw(const Point2 &p_point, Control *p_from) {
+	ZoneScoped;
 	if (!can_rename) {
 		return Variant(); //not editable tree
 	}
@@ -1196,10 +1264,12 @@ Variant SceneTreeEditor::get_drag_data_fw(const Point2 &p_point, Control *p_from
 }
 
 bool SceneTreeEditor::_is_script_type(const StringName &p_type) const {
+	ZoneScoped;
 	return (script_types->find(p_type));
 }
 
 bool SceneTreeEditor::can_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) const {
+	ZoneScoped;
 	if (!can_rename) {
 		return false; //not editable tree
 	}
@@ -1268,6 +1338,7 @@ bool SceneTreeEditor::can_drop_data_fw(const Point2 &p_point, const Variant &p_d
 }
 
 void SceneTreeEditor::drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) {
+	ZoneScoped;
 	if (!can_drop_data_fw(p_point, p_data, p_from)) {
 		return;
 	}
@@ -1317,6 +1388,7 @@ void SceneTreeEditor::drop_data_fw(const Point2 &p_point, const Variant &p_data,
 }
 
 void SceneTreeEditor::_empty_clicked(const Vector2 &p_pos, MouseButton p_button) {
+	ZoneScoped;
 	if (p_button != MouseButton::RIGHT) {
 		return;
 	}
@@ -1324,6 +1396,7 @@ void SceneTreeEditor::_empty_clicked(const Vector2 &p_pos, MouseButton p_button)
 }
 
 void SceneTreeEditor::_rmb_select(const Vector2 &p_pos, MouseButton p_button) {
+	ZoneScoped;
 	if (p_button != MouseButton::RIGHT) {
 		return;
 	}
@@ -1331,6 +1404,7 @@ void SceneTreeEditor::_rmb_select(const Vector2 &p_pos, MouseButton p_button) {
 }
 
 void SceneTreeEditor::update_warning() {
+	ZoneScoped;
 	_warning_changed(nullptr);
 }
 
@@ -1340,6 +1414,7 @@ void SceneTreeEditor::_warning_changed(Node *p_for_node) {
 }
 
 void SceneTreeEditor::set_auto_expand_selected(bool p_auto, bool p_update_settings) {
+	ZoneScoped;
 	if (p_update_settings) {
 		EditorSettings::get_singleton()->set("docks/scene_tree/auto_expand_to_selected", p_auto);
 	}
@@ -1347,16 +1422,19 @@ void SceneTreeEditor::set_auto_expand_selected(bool p_auto, bool p_update_settin
 }
 
 void SceneTreeEditor::set_connect_to_script_mode(bool p_enable) {
+	ZoneScoped;
 	connect_to_script_mode = p_enable;
 	update_tree();
 }
 
 void SceneTreeEditor::set_connecting_signal(bool p_enable) {
+	ZoneScoped;
 	connecting_signal = p_enable;
 	update_tree();
 }
 
 void SceneTreeEditor::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("_update_tree"), &SceneTreeEditor::_update_tree, DEFVAL(false)); // Still used by UndoRedo.
 	ClassDB::bind_method("_rename_node", &SceneTreeEditor::_rename_node);
 	ClassDB::bind_method("_test_update_tree", &SceneTreeEditor::_test_update_tree);
@@ -1382,6 +1460,7 @@ void SceneTreeEditor::_bind_methods() {
 }
 
 SceneTreeEditor::SceneTreeEditor(bool p_label, bool p_can_rename, bool p_can_open_instance) {
+	ZoneScoped;
 	selected = nullptr;
 
 	can_rename = p_can_rename;
@@ -1441,20 +1520,24 @@ SceneTreeEditor::SceneTreeEditor(bool p_label, bool p_can_rename, bool p_can_ope
 }
 
 SceneTreeEditor::~SceneTreeEditor() {
+	ZoneScoped;
 	memdelete(script_types);
 }
 
 /******** DIALOG *********/
 
 void SceneTreeDialog::popup_scenetree_dialog() {
+	ZoneScoped;
 	popup_centered_clamped(Size2(350, 700) * EDSCALE);
 }
 
 void SceneTreeDialog::_update_theme() {
+	ZoneScoped;
 	filter->set_right_icon(tree->get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
 }
 
 void SceneTreeDialog::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_VISIBILITY_CHANGED: {
 			if (is_visible()) {
@@ -1481,10 +1564,12 @@ void SceneTreeDialog::_notification(int p_what) {
 }
 
 void SceneTreeDialog::_cancel() {
+	ZoneScoped;
 	hide();
 }
 
 void SceneTreeDialog::_select() {
+	ZoneScoped;
 	if (tree->get_selected()) {
 		// The signal may cause another dialog to be displayed, so be sure to hide this one first.
 		hide();
@@ -1493,20 +1578,24 @@ void SceneTreeDialog::_select() {
 }
 
 void SceneTreeDialog::_selected_changed() {
+	ZoneScoped;
 	get_ok_button()->set_disabled(!tree->get_selected());
 }
 
 void SceneTreeDialog::_filter_changed(const String &p_filter) {
+	ZoneScoped;
 	tree->set_filter(p_filter);
 }
 
 void SceneTreeDialog::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method("_cancel", &SceneTreeDialog::_cancel);
 
 	ADD_SIGNAL(MethodInfo("selected", PropertyInfo(Variant::NODE_PATH, "path")));
 }
 
 SceneTreeDialog::SceneTreeDialog() {
+	ZoneScoped;
 	set_title(TTR("Select a Node"));
 	VBoxContainer *vbc = memnew(VBoxContainer);
 	add_child(vbc);

@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  project_settings_editor.cpp                                          */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "project_settings_editor.h"
 
 #include "core/config/project_settings.h"
@@ -42,6 +73,7 @@
 ProjectSettingsEditor *ProjectSettingsEditor::singleton = nullptr;
 
 void ProjectSettingsEditor::connect_filesystem_dock_signals(FileSystemDock *p_fs_dock) {
+	ZoneScoped;
 	localization_editor->connect_filesystem_dock_signals(p_fs_dock);
 }
 
@@ -65,38 +97,46 @@ void ProjectSettingsEditor::popup_project_settings() {
 }
 
 void ProjectSettingsEditor::queue_save() {
+	ZoneScoped;
 	EditorNode::get_singleton()->notify_settings_changed();
 	timer->start();
 }
 
 void ProjectSettingsEditor::set_plugins_page() {
+	ZoneScoped;
 	tab_container->set_current_tab(tab_container->get_tab_idx_from_control(plugin_settings));
 }
 
 void ProjectSettingsEditor::set_general_page(const String &p_category) {
+	ZoneScoped;
 	tab_container->set_current_tab(tab_container->get_tab_idx_from_control(general_editor));
 	general_settings_inspector->set_current_section(p_category);
 }
 
 void ProjectSettingsEditor::update_plugins() {
+	ZoneScoped;
 	plugin_settings->update_plugins();
 }
 
 void ProjectSettingsEditor::_setting_edited(const String &p_name) {
+	ZoneScoped;
 	queue_save();
 }
 
 void ProjectSettingsEditor::_update_advanced(bool p_is_advanced) {
+	ZoneScoped;
 	custom_properties->set_visible(p_is_advanced);
 }
 
 void ProjectSettingsEditor::_advanced_toggled(bool p_button_pressed) {
+	ZoneScoped;
 	EditorSettings::get_singleton()->set_project_metadata("project_settings", "advanced_mode", p_button_pressed);
 	_update_advanced(p_button_pressed);
 	general_settings_inspector->set_restrict_to_basic_settings(!p_button_pressed);
 }
 
 void ProjectSettingsEditor::_setting_selected(const String &p_path) {
+	ZoneScoped;
 	if (p_path.is_empty()) {
 		return;
 	}
@@ -107,6 +147,7 @@ void ProjectSettingsEditor::_setting_selected(const String &p_path) {
 }
 
 void ProjectSettingsEditor::_add_setting() {
+	ZoneScoped;
 	String setting = _get_setting_name();
 
 	// Initialize the property with the default value for the given type.
@@ -130,6 +171,7 @@ void ProjectSettingsEditor::_add_setting() {
 }
 
 void ProjectSettingsEditor::_delete_setting() {
+	ZoneScoped;
 	String setting = _get_setting_name();
 	Variant value = ps->get(setting);
 	int order = ps->get_order(setting);
@@ -153,10 +195,12 @@ void ProjectSettingsEditor::_delete_setting() {
 }
 
 void ProjectSettingsEditor::_property_box_changed(const String &p_text) {
+	ZoneScoped;
 	_update_property_box();
 }
 
 void ProjectSettingsEditor::_feature_selected(int p_index) {
+	ZoneScoped;
 	Vector<String> t = property_box->get_text().strip_edges().split(".", true, 1);
 	const String feature = p_index ? "." + feature_box->get_item_text(p_index) : "";
 	property_box->set_text(t[0] + feature);
@@ -164,6 +208,7 @@ void ProjectSettingsEditor::_feature_selected(int p_index) {
 }
 
 void ProjectSettingsEditor::_update_property_box() {
+	ZoneScoped;
 	const String setting = _get_setting_name();
 	const Vector<String> t = setting.split(".", true, 1);
 	const String name = t[0];
@@ -218,10 +263,12 @@ void ProjectSettingsEditor::_update_property_box() {
 }
 
 void ProjectSettingsEditor::_select_type(Variant::Type p_type) {
+	ZoneScoped;
 	type_box->select(type_box->get_item_index(p_type));
 }
 
 void ProjectSettingsEditor::shortcut_input(const Ref<InputEvent> &p_event) {
+	ZoneScoped;
 	ERR_FAIL_COND(p_event.is_null());
 	Ref<EditorUndoRedoManager> &undo_redo = EditorNode::get_undo_redo();
 
@@ -260,6 +307,7 @@ void ProjectSettingsEditor::shortcut_input(const Ref<InputEvent> &p_event) {
 }
 
 String ProjectSettingsEditor::_get_setting_name() const {
+	ZoneScoped;
 	String name = property_box->get_text().strip_edges();
 	if (!name.contains("/")) {
 		name = "global/" + name;
@@ -268,6 +316,7 @@ String ProjectSettingsEditor::_get_setting_name() const {
 }
 
 void ProjectSettingsEditor::_add_feature_overrides() {
+	ZoneScoped;
 	HashSet<String> presets;
 
 	presets.insert("bptc");
@@ -318,20 +367,24 @@ void ProjectSettingsEditor::_add_feature_overrides() {
 }
 
 void ProjectSettingsEditor::_editor_restart() {
+	ZoneScoped;
 	ProjectSettings::get_singleton()->save();
 	EditorNode::get_singleton()->save_all_scenes();
 	EditorNode::get_singleton()->restart_editor();
 }
 
 void ProjectSettingsEditor::_editor_restart_request() {
+	ZoneScoped;
 	restart_container->show();
 }
 
 void ProjectSettingsEditor::_editor_restart_close() {
+	ZoneScoped;
 	restart_container->hide();
 }
 
 void ProjectSettingsEditor::_action_added(const String &p_name) {
+	ZoneScoped;
 	String name = "input/" + p_name;
 
 	ERR_FAIL_COND_MSG(ProjectSettings::get_singleton()->has_setting(name),
@@ -354,6 +407,7 @@ void ProjectSettingsEditor::_action_added(const String &p_name) {
 }
 
 void ProjectSettingsEditor::_action_edited(const String &p_name, const Dictionary &p_action) {
+	ZoneScoped;
 	const String property_name = "input/" + p_name;
 	Dictionary old_val = GLOBAL_GET(property_name);
 
@@ -389,6 +443,7 @@ void ProjectSettingsEditor::_action_edited(const String &p_name, const Dictionar
 }
 
 void ProjectSettingsEditor::_action_removed(const String &p_name) {
+	ZoneScoped;
 	const String property_name = "input/" + p_name;
 
 	Dictionary old_val = GLOBAL_GET(property_name);
@@ -408,6 +463,7 @@ void ProjectSettingsEditor::_action_removed(const String &p_name) {
 }
 
 void ProjectSettingsEditor::_action_renamed(const String &p_old_name, const String &p_new_name) {
+	ZoneScoped;
 	const String old_property_name = "input/" + p_old_name;
 	const String new_property_name = "input/" + p_new_name;
 
@@ -436,6 +492,7 @@ void ProjectSettingsEditor::_action_renamed(const String &p_old_name, const Stri
 }
 
 void ProjectSettingsEditor::_action_reordered(const String &p_action_name, const String &p_relative_to, bool p_before) {
+	ZoneScoped;
 	const String action_name = "input/" + p_action_name;
 	const String target_name = "input/" + p_relative_to;
 
@@ -497,6 +554,7 @@ void ProjectSettingsEditor::_action_reordered(const String &p_action_name, const
 }
 
 void ProjectSettingsEditor::_update_action_map_editor() {
+	ZoneScoped;
 	Vector<ActionMapEditor::ActionInfo> actions;
 
 	List<PropertyInfo> props;
@@ -532,6 +590,7 @@ void ProjectSettingsEditor::_update_action_map_editor() {
 }
 
 void ProjectSettingsEditor::_update_theme() {
+	ZoneScoped;
 	search_box->set_right_icon(get_theme_icon(SNAME("Search"), SNAME("EditorIcons")));
 	restart_close_button->set_icon(get_theme_icon(SNAME("Close"), SNAME("EditorIcons")));
 	restart_container->add_theme_style_override("panel", get_theme_stylebox(SNAME("panel"), SNAME("Tree")));
@@ -550,6 +609,7 @@ void ProjectSettingsEditor::_update_theme() {
 }
 
 void ProjectSettingsEditor::_notification(int p_what) {
+	ZoneScoped;
 	switch (p_what) {
 		case NOTIFICATION_VISIBILITY_CHANGED: {
 			if (!is_visible()) {
@@ -570,12 +630,14 @@ void ProjectSettingsEditor::_notification(int p_what) {
 }
 
 void ProjectSettingsEditor::_bind_methods() {
+	ZoneScoped;
 	ClassDB::bind_method(D_METHOD("queue_save"), &ProjectSettingsEditor::queue_save);
 
 	ClassDB::bind_method(D_METHOD("_update_action_map_editor"), &ProjectSettingsEditor::_update_action_map_editor);
 }
 
 ProjectSettingsEditor::ProjectSettingsEditor(EditorData *p_data) {
+	ZoneScoped;
 	singleton = this;
 	set_title(TTR("Project Settings (project.godot)"));
 
