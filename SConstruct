@@ -472,6 +472,8 @@ if selected_platform in platform_list:
 
     env.extra_suffix = ""
 
+    env.extra_suffix += ".tracy"
+
     if env["extra_suffix"] != "":
         env.extra_suffix += "." + env["extra_suffix"]
 
