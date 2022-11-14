@@ -60,6 +60,8 @@
 #include "fontconfig-so_wrap.h"
 #endif
 
+#include "modules/tracy/include.h"
+
 void OS_LinuxBSD::alert(const String &p_alert, const String &p_title) {
 	const char *message_programs[] = { "zenity", "kdialog", "Xdialog", "xmessage" };
 
@@ -778,6 +780,9 @@ void OS_LinuxBSD::run() {
 	//uint64_t frame=0;
 
 	while (true) {
+		FrameMark;
+		ZoneScoped;
+
 		DisplayServer::get_singleton()->process_events(); // get rid of pending events
 #ifdef JOYDEV_ENABLED
 		joypad->process_joypads();
