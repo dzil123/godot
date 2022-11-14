@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  occluder_instance_3d.cpp                                             */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "occluder_instance_3d.h"
 
 #include "core/config/project_settings.h"
@@ -44,10 +75,12 @@
 #endif
 
 RID Occluder3D::get_rid() const {
+	ZoneScopedS(60);
 	return occluder;
 }
 
 void Occluder3D::_update() {
+	ZoneScopedS(60);
 	_update_arrays(vertices, indices);
 
 	aabb = AABB();
@@ -65,14 +98,17 @@ void Occluder3D::_update() {
 }
 
 PackedVector3Array Occluder3D::get_vertices() const {
+	ZoneScopedS(60);
 	return vertices;
 }
 
 PackedInt32Array Occluder3D::get_indices() const {
+	ZoneScopedS(60);
 	return indices;
 }
 
 Vector<Vector3> Occluder3D::get_debug_lines() const {
+	ZoneScopedS(60);
 	if (!debug_lines.is_empty()) {
 		return debug_lines;
 	}
@@ -99,6 +135,7 @@ Vector<Vector3> Occluder3D::get_debug_lines() const {
 }
 
 Ref<ArrayMesh> Occluder3D::get_debug_mesh() const {
+	ZoneScopedS(60);
 	if (debug_mesh.is_valid()) {
 		return debug_mesh;
 	}
@@ -118,10 +155,12 @@ Ref<ArrayMesh> Occluder3D::get_debug_mesh() const {
 }
 
 AABB Occluder3D::get_aabb() const {
+	ZoneScopedS(60);
 	return aabb;
 }
 
 void Occluder3D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_POSTINITIALIZE: {
 			_update();
@@ -133,10 +172,12 @@ void Occluder3D::_bind_methods() {
 }
 
 Occluder3D::Occluder3D() {
+	ZoneScopedS(60);
 	occluder = RS::get_singleton()->occluder_create();
 }
 
 Occluder3D::~Occluder3D() {
+	ZoneScopedS(60);
 	if (occluder.is_valid()) {
 		RS::get_singleton()->free(occluder);
 	}
@@ -145,27 +186,32 @@ Occluder3D::~Occluder3D() {
 /////////////////////////////////////////////////
 
 void ArrayOccluder3D::set_arrays(PackedVector3Array p_vertices, PackedInt32Array p_indices) {
+	ZoneScopedS(60);
 	vertices = p_vertices;
 	indices = p_indices;
 	_update();
 }
 
 void ArrayOccluder3D::set_vertices(PackedVector3Array p_vertices) {
+	ZoneScopedS(60);
 	vertices = p_vertices;
 	_update();
 }
 
 void ArrayOccluder3D::set_indices(PackedInt32Array p_indices) {
+	ZoneScopedS(60);
 	indices = p_indices;
 	_update();
 }
 
 void ArrayOccluder3D::_update_arrays(PackedVector3Array &r_vertices, PackedInt32Array &r_indices) {
+	ZoneScopedS(60);
 	r_vertices = vertices;
 	r_indices = indices;
 }
 
 void ArrayOccluder3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_arrays", "vertices", "indices"), &ArrayOccluder3D::set_arrays);
 
 	ClassDB::bind_method(D_METHOD("set_vertices", "vertices"), &ArrayOccluder3D::set_vertices);
@@ -187,6 +233,7 @@ ArrayOccluder3D::~ArrayOccluder3D() {
 /////////////////////////////////////////////////
 
 void QuadOccluder3D::set_size(const Size2 &p_size) {
+	ZoneScopedS(60);
 	if (size == p_size) {
 		return;
 	}
@@ -196,10 +243,12 @@ void QuadOccluder3D::set_size(const Size2 &p_size) {
 }
 
 Size2 QuadOccluder3D::get_size() const {
+	ZoneScopedS(60);
 	return size;
 }
 
 void QuadOccluder3D::_update_arrays(PackedVector3Array &r_vertices, PackedInt32Array &r_indices) {
+	ZoneScopedS(60);
 	Size2 _size = Size2(size.x / 2.0f, size.y / 2.0f);
 
 	r_vertices = {
@@ -216,6 +265,7 @@ void QuadOccluder3D::_update_arrays(PackedVector3Array &r_vertices, PackedInt32A
 }
 
 void QuadOccluder3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_size", "size"), &QuadOccluder3D::set_size);
 	ClassDB::bind_method(D_METHOD("get_size"), &QuadOccluder3D::get_size);
 
@@ -231,6 +281,7 @@ QuadOccluder3D::~QuadOccluder3D() {
 /////////////////////////////////////////////////
 
 void BoxOccluder3D::set_size(const Vector3 &p_size) {
+	ZoneScopedS(60);
 	if (size == p_size) {
 		return;
 	}
@@ -240,10 +291,12 @@ void BoxOccluder3D::set_size(const Vector3 &p_size) {
 }
 
 Vector3 BoxOccluder3D::get_size() const {
+	ZoneScopedS(60);
 	return size;
 }
 
 void BoxOccluder3D::_update_arrays(PackedVector3Array &r_vertices, PackedInt32Array &r_indices) {
+	ZoneScopedS(60);
 	Vector3 _size = Vector3(size.x / 2.0f, size.y / 2.0f, size.z / 2.0f);
 
 	r_vertices = {
@@ -282,6 +335,7 @@ void BoxOccluder3D::_update_arrays(PackedVector3Array &r_vertices, PackedInt32Ar
 }
 
 void BoxOccluder3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_size", "size"), &BoxOccluder3D::set_size);
 	ClassDB::bind_method(D_METHOD("get_size"), &BoxOccluder3D::get_size);
 
@@ -297,6 +351,7 @@ BoxOccluder3D::~BoxOccluder3D() {
 /////////////////////////////////////////////////
 
 void SphereOccluder3D::set_radius(float p_radius) {
+	ZoneScopedS(60);
 	if (radius == p_radius) {
 		return;
 	}
@@ -306,10 +361,12 @@ void SphereOccluder3D::set_radius(float p_radius) {
 }
 
 float SphereOccluder3D::get_radius() const {
+	ZoneScopedS(60);
 	return radius;
 }
 
 void SphereOccluder3D::_update_arrays(PackedVector3Array &r_vertices, PackedInt32Array &r_indices) {
+	ZoneScopedS(60);
 	r_vertices.resize((RINGS + 2) * (RADIAL_SEGMENTS + 1));
 	int vertex_i = 0;
 	Vector3 *vertex_ptr = r_vertices.ptrw();
@@ -351,6 +408,7 @@ void SphereOccluder3D::_update_arrays(PackedVector3Array &r_vertices, PackedInt3
 }
 
 void SphereOccluder3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_radius", "radius"), &SphereOccluder3D::set_radius);
 	ClassDB::bind_method(D_METHOD("get_radius"), &SphereOccluder3D::get_radius);
 
@@ -366,15 +424,18 @@ SphereOccluder3D::~SphereOccluder3D() {
 /////////////////////////////////////////////////
 
 void PolygonOccluder3D::set_polygon(const Vector<Vector2> &p_polygon) {
+	ZoneScopedS(60);
 	polygon = p_polygon;
 	_update();
 }
 
 Vector<Vector2> PolygonOccluder3D::get_polygon() const {
+	ZoneScopedS(60);
 	return polygon;
 }
 
 void PolygonOccluder3D::_update_arrays(PackedVector3Array &r_vertices, PackedInt32Array &r_indices) {
+	ZoneScopedS(60);
 	if (polygon.size() < 3) {
 		r_vertices.clear();
 		r_indices.clear();
@@ -406,10 +467,12 @@ void PolygonOccluder3D::_update_arrays(PackedVector3Array &r_vertices, PackedInt
 }
 
 bool PolygonOccluder3D::_has_editable_3d_polygon_no_depth() const {
+	ZoneScopedS(60);
 	return false;
 }
 
 void PolygonOccluder3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_polygon", "polygon"), &PolygonOccluder3D::set_polygon);
 	ClassDB::bind_method(D_METHOD("get_polygon"), &PolygonOccluder3D::get_polygon);
 
@@ -427,6 +490,7 @@ PolygonOccluder3D::~PolygonOccluder3D() {
 /////////////////////////////////////////////////
 
 AABB OccluderInstance3D::get_aabb() const {
+	ZoneScopedS(60);
 	if (occluder.is_valid()) {
 		return occluder->get_aabb();
 	}
@@ -434,6 +498,7 @@ AABB OccluderInstance3D::get_aabb() const {
 }
 
 void OccluderInstance3D::set_occluder(const Ref<Occluder3D> &p_occluder) {
+	ZoneScopedS(60);
 	if (occluder == p_occluder) {
 		return;
 	}
@@ -463,32 +528,39 @@ void OccluderInstance3D::set_occluder(const Ref<Occluder3D> &p_occluder) {
 }
 
 void OccluderInstance3D::_occluder_changed() {
+	ZoneScopedS(60);
 	update_gizmos();
 	update_configuration_warnings();
 }
 
 Ref<Occluder3D> OccluderInstance3D::get_occluder() const {
+	ZoneScopedS(60);
 	return occluder;
 }
 
 void OccluderInstance3D::set_bake_mask(uint32_t p_mask) {
+	ZoneScopedS(60);
 	bake_mask = p_mask;
 	update_configuration_warnings();
 }
 
 uint32_t OccluderInstance3D::get_bake_mask() const {
+	ZoneScopedS(60);
 	return bake_mask;
 }
 
 void OccluderInstance3D::set_bake_simplification_distance(float p_dist) {
+	ZoneScopedS(60);
 	bake_simplification_dist = MAX(p_dist, 0.0f);
 }
 
 float OccluderInstance3D::get_bake_simplification_distance() const {
+	ZoneScopedS(60);
 	return bake_simplification_dist;
 }
 
 void OccluderInstance3D::set_bake_mask_value(int p_layer_number, bool p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_layer_number < 1, "Render layer number must be between 1 and 20 inclusive.");
 	ERR_FAIL_COND_MSG(p_layer_number > 20, "Render layer number must be between 1 and 20 inclusive.");
 	uint32_t mask = get_bake_mask();
@@ -501,12 +573,14 @@ void OccluderInstance3D::set_bake_mask_value(int p_layer_number, bool p_value) {
 }
 
 bool OccluderInstance3D::get_bake_mask_value(int p_layer_number) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(p_layer_number < 1, false, "Render layer number must be between 1 and 20 inclusive.");
 	ERR_FAIL_COND_V_MSG(p_layer_number > 20, false, "Render layer number must be between 1 and 20 inclusive.");
 	return bake_mask & (1 << (p_layer_number - 1));
 }
 
 bool OccluderInstance3D::_bake_material_check(Ref<Material> p_material) {
+	ZoneScopedS(60);
 	StandardMaterial3D *standard_mat = Object::cast_to<StandardMaterial3D>(p_material.ptr());
 	if (standard_mat && standard_mat->get_transparency() != StandardMaterial3D::TRANSPARENCY_DISABLED) {
 		return false;
@@ -515,6 +589,7 @@ bool OccluderInstance3D::_bake_material_check(Ref<Material> p_material) {
 }
 
 void OccluderInstance3D::_bake_surface(const Transform3D &p_transform, Array p_surface_arrays, Ref<Material> p_material, float p_simplification_dist, PackedVector3Array &r_vertices, PackedInt32Array &r_indices) {
+	ZoneScopedS(60);
 	if (!_bake_material_check(p_material)) {
 		return;
 	}
@@ -556,6 +631,7 @@ void OccluderInstance3D::_bake_surface(const Transform3D &p_transform, Array p_s
 }
 
 void OccluderInstance3D::_bake_node(Node *p_node, PackedVector3Array &r_vertices, PackedInt32Array &r_indices) {
+	ZoneScopedS(60);
 	MeshInstance3D *mi = Object::cast_to<MeshInstance3D>(p_node);
 	if (mi && mi->is_visible_in_tree()) {
 		Ref<Mesh> mesh = mi->get_mesh();
@@ -593,6 +669,7 @@ void OccluderInstance3D::_bake_node(Node *p_node, PackedVector3Array &r_vertices
 }
 
 void OccluderInstance3D::bake_single_node(const Node3D *p_node, float p_simplification_distance, PackedVector3Array &r_vertices, PackedInt32Array &r_indices) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!p_node);
 
 	Transform3D xform = p_node->is_inside_tree() ? p_node->get_global_transform() : p_node->get_transform();
@@ -639,6 +716,7 @@ void OccluderInstance3D::bake_single_node(const Node3D *p_node, float p_simplifi
 }
 
 OccluderInstance3D::BakeError OccluderInstance3D::bake_scene(Node *p_from_node, String p_occluder_path) {
+	ZoneScopedS(60);
 	if (p_occluder_path.is_empty()) {
 		if (get_occluder().is_null()) {
 			return BAKE_ERROR_NO_SAVE_PATH;
@@ -683,6 +761,7 @@ OccluderInstance3D::BakeError OccluderInstance3D::bake_scene(Node *p_from_node, 
 }
 
 PackedStringArray OccluderInstance3D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (!bool(GLOBAL_GET("rendering/occlusion_culling/use_occlusion_culling"))) {
@@ -712,14 +791,17 @@ PackedStringArray OccluderInstance3D::get_configuration_warnings() const {
 }
 
 bool OccluderInstance3D::_is_editable_3d_polygon() const {
+	ZoneScopedS(60);
 	return Ref<PolygonOccluder3D>(occluder).is_valid();
 }
 
 Ref<Resource> OccluderInstance3D::_get_editable_3d_polygon_resource() const {
+	ZoneScopedS(60);
 	return occluder;
 }
 
 void OccluderInstance3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_bake_mask", "mask"), &OccluderInstance3D::set_bake_mask);
 	ClassDB::bind_method(D_METHOD("get_bake_mask"), &OccluderInstance3D::get_bake_mask);
 	ClassDB::bind_method(D_METHOD("set_bake_mask_value", "layer_number", "value"), &OccluderInstance3D::set_bake_mask_value);

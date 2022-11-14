@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  line_builder.cpp                                                     */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "line_builder.h"
 
 //----------------------------------------------------------------------------
@@ -63,6 +94,7 @@ static SegmentIntersectionResult segment_intersection(
 }
 
 static float calculate_total_distance(const Vector<Vector2> &points) {
+	ZoneScopedS(60);
 	float d = 0.f;
 	for (int i = 1; i < points.size(); ++i) {
 		d += points[i].distance_to(points[i - 1]);
@@ -71,11 +103,13 @@ static float calculate_total_distance(const Vector<Vector2> &points) {
 }
 
 static inline Vector2 rotate90(const Vector2 &v) {
+	ZoneScopedS(60);
 	// Note: the 2D referential is X-right, Y-down
 	return Vector2(v.y, -v.x);
 }
 
 static inline Vector2 interpolate(const Rect2 &r, const Vector2 &v) {
+	ZoneScopedS(60);
 	return Vector2(
 			Math::lerp(r.position.x, r.position.x + r.get_size().x, v.x),
 			Math::lerp(r.position.y, r.position.y + r.get_size().y, v.y));
@@ -89,6 +123,7 @@ LineBuilder::LineBuilder() {
 }
 
 void LineBuilder::clear_output() {
+	ZoneScopedS(60);
 	vertices.clear();
 	colors.clear();
 	indices.clear();
@@ -96,6 +131,7 @@ void LineBuilder::clear_output() {
 }
 
 void LineBuilder::build() {
+	ZoneScopedS(60);
 	// Need at least 2 points to draw a line
 	if (points.size() < 2) {
 		clear_output();
@@ -418,6 +454,7 @@ void LineBuilder::build() {
 }
 
 void LineBuilder::strip_begin(Vector2 up, Vector2 down, Color color, float uvx) {
+	ZoneScopedS(60);
 	int vi = vertices.size();
 
 	vertices.push_back(up);
@@ -438,6 +475,7 @@ void LineBuilder::strip_begin(Vector2 up, Vector2 down, Color color, float uvx) 
 }
 
 void LineBuilder::strip_add_quad(Vector2 up, Vector2 down, Color color, float uvx) {
+	ZoneScopedS(60);
 	int vi = vertices.size();
 
 	vertices.push_back(up);
@@ -465,6 +503,7 @@ void LineBuilder::strip_add_quad(Vector2 up, Vector2 down, Color color, float uv
 }
 
 void LineBuilder::strip_add_tri(Vector2 up, Orientation orientation) {
+	ZoneScopedS(60);
 	int vi = vertices.size();
 
 	vertices.push_back(up);
@@ -489,6 +528,7 @@ void LineBuilder::strip_add_tri(Vector2 up, Orientation orientation) {
 }
 
 void LineBuilder::strip_add_arc(Vector2 center, float angle_delta, Orientation orientation) {
+	ZoneScopedS(60);
 	// Take the two last vertices and extrude an arc made of triangles
 	// that all share one of the initial vertices
 
@@ -518,6 +558,7 @@ void LineBuilder::strip_add_arc(Vector2 center, float angle_delta, Orientation o
 }
 
 void LineBuilder::new_arc(Vector2 center, Vector2 vbegin, float angle_delta, Color color, Rect2 uv_rect) {
+	ZoneScopedS(60);
 	// Make a standalone arc that doesn't use existing vertices,
 	// with undistorted UVs from within a square section
 

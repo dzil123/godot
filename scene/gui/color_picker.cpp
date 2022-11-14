@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  color_picker.cpp                                                     */
 /*************************************************************************/
@@ -47,6 +48,7 @@ List<Color> ColorPicker::preset_cache;
 List<Color> ColorPicker::recent_preset_cache;
 
 void ColorPicker::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			_update_color();
@@ -132,6 +134,7 @@ Ref<Shader> ColorPicker::circle_shader;
 Ref<Shader> ColorPicker::circle_ok_color_shader;
 
 void ColorPicker::init_shaders() {
+	ZoneScopedS(60);
 	wheel_shader.instantiate();
 	wheel_shader->set_code(R"(
 // ColorPicker wheel shader.
@@ -207,16 +210,19 @@ void fragment() {
 }
 
 void ColorPicker::finish_shaders() {
+	ZoneScopedS(60);
 	wheel_shader.unref();
 	circle_shader.unref();
 	circle_ok_color_shader.unref();
 }
 
 void ColorPicker::set_focus_on_line_edit() {
+	ZoneScopedS(60);
 	c_text->call_deferred(SNAME("grab_focus"));
 }
 
 void ColorPicker::_update_controls() {
+	ZoneScopedS(60);
 	int mode_sliders_count = modes[current_mode]->get_slider_count();
 
 	for (int i = current_slider_count; i < mode_sliders_count; i++) {
@@ -290,6 +296,7 @@ void ColorPicker::_update_controls() {
 }
 
 void ColorPicker::_set_pick_color(const Color &p_color, bool p_update_sliders) {
+	ZoneScopedS(60);
 	if (text_changed) {
 		add_recent_preset(color);
 		text_changed = false;
@@ -309,22 +316,27 @@ void ColorPicker::_set_pick_color(const Color &p_color, bool p_update_sliders) {
 }
 
 void ColorPicker::set_pick_color(const Color &p_color) {
+	ZoneScopedS(60);
 	_set_pick_color(p_color, true); //because setters can't have more arguments
 }
 
 void ColorPicker::set_old_color(const Color &p_color) {
+	ZoneScopedS(60);
 	old_color = p_color;
 }
 
 void ColorPicker::set_display_old_color(bool p_enabled) {
+	ZoneScopedS(60);
 	display_old_color = p_enabled;
 }
 
 bool ColorPicker::is_displaying_old_color() const {
+	ZoneScopedS(60);
 	return display_old_color;
 }
 
 void ColorPicker::set_edit_alpha(bool p_show) {
+	ZoneScopedS(60);
 	if (edit_alpha == p_show) {
 		return;
 	}
@@ -340,10 +352,12 @@ void ColorPicker::set_edit_alpha(bool p_show) {
 }
 
 bool ColorPicker::is_editing_alpha() const {
+	ZoneScopedS(60);
 	return edit_alpha;
 }
 
 void ColorPicker::_value_changed(double) {
+	ZoneScopedS(60);
 	if (updating) {
 		return;
 	}
@@ -362,10 +376,12 @@ void ColorPicker::_value_changed(double) {
 }
 
 void ColorPicker::add_mode(ColorMode *p_mode) {
+	ZoneScopedS(60);
 	modes.push_back(p_mode);
 }
 
 void ColorPicker::create_slider(GridContainer *gc, int idx) {
+	ZoneScopedS(60);
 	Label *lbl = memnew(Label());
 	lbl->set_v_size_flags(SIZE_SHRINK_CENTER);
 	gc->add_child(lbl);
@@ -405,6 +421,7 @@ void ColorPicker::create_slider(GridContainer *gc, int idx) {
 }
 
 HSlider *ColorPicker::get_slider(int p_idx) {
+	ZoneScopedS(60);
 	if (p_idx < SLIDER_COUNT) {
 		return sliders[p_idx];
 	}
@@ -412,6 +429,7 @@ HSlider *ColorPicker::get_slider(int p_idx) {
 }
 
 Vector<float> ColorPicker::get_active_slider_values() {
+	ZoneScopedS(60);
 	Vector<float> cur_values;
 	for (int i = 0; i < current_slider_count; i++) {
 		cur_values.push_back(sliders[i]->get_value());
@@ -421,6 +439,7 @@ Vector<float> ColorPicker::get_active_slider_values() {
 }
 
 void ColorPicker::_copy_color_to_hsv() {
+	ZoneScopedS(60);
 	if (_get_actual_shape() == SHAPE_OKHSL_CIRCLE) {
 		h = color.get_ok_hsl_h();
 		s = color.get_ok_hsl_s();
@@ -433,6 +452,7 @@ void ColorPicker::_copy_color_to_hsv() {
 }
 
 void ColorPicker::_copy_hsv_to_color() {
+	ZoneScopedS(60);
 	if (_get_actual_shape() == SHAPE_OKHSL_CIRCLE) {
 		color.set_ok_hsl(h, s, v, color.a);
 	} else {
@@ -441,6 +461,7 @@ void ColorPicker::_copy_hsv_to_color() {
 }
 
 void ColorPicker::_select_from_preset_container(const Color &p_color) {
+	ZoneScopedS(60);
 	if (preset_group->get_pressed_button()) {
 		preset_group->get_pressed_button()->set_pressed(false);
 	}
@@ -455,6 +476,7 @@ void ColorPicker::_select_from_preset_container(const Color &p_color) {
 }
 
 bool ColorPicker::_select_from_recent_preset_hbc(const Color &p_color) {
+	ZoneScopedS(60);
 	for (int i = 0; i < recent_preset_hbc->get_child_count(); i++) {
 		ColorPresetButton *current_btn = Object::cast_to<ColorPresetButton>(recent_preset_hbc->get_child(i));
 		if (current_btn && p_color == current_btn->get_preset_color()) {
@@ -466,10 +488,12 @@ bool ColorPicker::_select_from_recent_preset_hbc(const Color &p_color) {
 }
 
 ColorPicker::PickerShapeType ColorPicker::_get_actual_shape() const {
+	ZoneScopedS(60);
 	return modes[current_mode]->get_shape_override() != SHAPE_MAX ? modes[current_mode]->get_shape_override() : current_shape;
 }
 
 void ColorPicker::_reset_theme() {
+	ZoneScopedS(60);
 	Ref<StyleBoxFlat> style_box_flat(memnew(StyleBoxFlat));
 	style_box_flat->set_default_margin(SIDE_TOP, 16 * get_theme_default_base_scale());
 	style_box_flat->set_bg_color(Color(0.2, 0.23, 0.31).lerp(Color(0, 0, 0, 1), 0.3).clamp());
@@ -490,6 +514,7 @@ void ColorPicker::_reset_theme() {
 }
 
 void ColorPicker::_html_submitted(const String &p_html) {
+	ZoneScopedS(60);
 	if (updating || text_is_constructor || !c_text->is_visible()) {
 		return;
 	}
@@ -512,6 +537,7 @@ void ColorPicker::_html_submitted(const String &p_html) {
 }
 
 void ColorPicker::_update_color(bool p_update_sliders) {
+	ZoneScopedS(60);
 	updating = true;
 
 	if (p_update_sliders) {
@@ -541,6 +567,7 @@ void ColorPicker::_update_color(bool p_update_sliders) {
 }
 
 void ColorPicker::_update_presets() {
+	ZoneScopedS(60);
 	int preset_size = _get_preset_size();
 	// Only update the preset button size if it has changed.
 	if (preset_size != prev_preset_size) {
@@ -589,6 +616,7 @@ void ColorPicker::_update_recent_presets() {
 }
 
 void ColorPicker::_text_type_toggled() {
+	ZoneScopedS(60);
 	text_is_constructor = !text_is_constructor;
 	if (text_is_constructor) {
 		text_type->set_text("");
@@ -607,10 +635,12 @@ void ColorPicker::_text_type_toggled() {
 }
 
 Color ColorPicker::get_pick_color() const {
+	ZoneScopedS(60);
 	return color;
 }
 
 void ColorPicker::set_picker_shape(PickerShapeType p_shape) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_shape, SHAPE_MAX);
 	if (p_shape == current_shape) {
 		return;
@@ -632,14 +662,17 @@ void ColorPicker::set_picker_shape(PickerShapeType p_shape) {
 }
 
 ColorPicker::PickerShapeType ColorPicker::get_picker_shape() const {
+	ZoneScopedS(60);
 	return current_shape;
 }
 
 inline int ColorPicker::_get_preset_size() {
+	ZoneScopedS(60);
 	return (int(get_minimum_size().width) - (preset_container->get_theme_constant(SNAME("h_separation")) * (PRESET_COLUMN_COUNT - 1))) / PRESET_COLUMN_COUNT;
 }
 
 void ColorPicker::_add_preset_button(int p_size, const Color &p_color) {
+	ZoneScopedS(60);
 	ColorPresetButton *btn_preset_new = memnew(ColorPresetButton(p_color, p_size));
 	btn_preset_new->set_tooltip_text(vformat(RTR("Color: #%s\nLMB: Apply color\nRMB: Remove preset"), p_color.to_html(p_color.a < 1)));
 	btn_preset_new->set_drag_forwarding(this);
@@ -650,6 +683,7 @@ void ColorPicker::_add_preset_button(int p_size, const Color &p_color) {
 }
 
 void ColorPicker::_add_recent_preset_button(int p_size, const Color &p_color) {
+	ZoneScopedS(60);
 	ColorPresetButton *btn_preset_new = memnew(ColorPresetButton(p_color, p_size));
 	btn_preset_new->set_tooltip_text(vformat(RTR("Color: #%s\nLMB: Apply color"), p_color.to_html(p_color.a < 1)));
 	btn_preset_new->set_button_group(recent_preset_group);
@@ -660,6 +694,7 @@ void ColorPicker::_add_recent_preset_button(int p_size, const Color &p_color) {
 }
 
 void ColorPicker::_show_hide_preset(const bool &p_is_btn_pressed, Button *p_btn_preset, Container *p_preset_container) {
+	ZoneScopedS(60);
 	if (p_is_btn_pressed) {
 		p_preset_container->show();
 	} else {
@@ -669,6 +704,7 @@ void ColorPicker::_show_hide_preset(const bool &p_is_btn_pressed, Button *p_btn_
 }
 
 void ColorPicker::_update_drop_down_arrow(const bool &p_is_btn_pressed, Button *p_btn_preset) {
+	ZoneScopedS(60);
 	if (p_is_btn_pressed) {
 		p_btn_preset->set_icon(get_theme_icon(SNAME("expanded_arrow"), SNAME("ColorPicker")));
 	} else {
@@ -677,6 +713,7 @@ void ColorPicker::_update_drop_down_arrow(const bool &p_is_btn_pressed, Button *
 }
 
 void ColorPicker::_set_mode_popup_value(ColorModeType p_mode) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_mode, MODE_MAX + 1);
 
 	if (p_mode == MODE_MAX) {
@@ -687,6 +724,7 @@ void ColorPicker::_set_mode_popup_value(ColorModeType p_mode) {
 }
 
 Variant ColorPicker::_get_drag_data_fw(const Point2 &p_point, Control *p_from_control) {
+	ZoneScopedS(60);
 	ColorPresetButton *dragged_preset_button = Object::cast_to<ColorPresetButton>(p_from_control);
 
 	if (!dragged_preset_button) {
@@ -704,6 +742,7 @@ Variant ColorPicker::_get_drag_data_fw(const Point2 &p_point, Control *p_from_co
 }
 
 bool ColorPicker::_can_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from_control) const {
+	ZoneScopedS(60);
 	Dictionary d = p_data;
 	if (!d.has("type") || String(d["type"]) != "color_preset") {
 		return false;
@@ -712,6 +751,7 @@ bool ColorPicker::_can_drop_data_fw(const Point2 &p_point, const Variant &p_data
 }
 
 void ColorPicker::_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from_control) {
+	ZoneScopedS(60);
 	Dictionary d = p_data;
 	if (!d.has("type")) {
 		return;
@@ -729,6 +769,7 @@ void ColorPicker::_drop_data_fw(const Point2 &p_point, const Variant &p_data, Co
 }
 
 void ColorPicker::add_preset(const Color &p_color) {
+	ZoneScopedS(60);
 	List<Color>::Element *e = presets.find(p_color);
 	if (e) {
 		presets.move_to_back(e);
@@ -751,6 +792,7 @@ void ColorPicker::add_preset(const Color &p_color) {
 }
 
 void ColorPicker::add_recent_preset(const Color &p_color) {
+	ZoneScopedS(60);
 	if (!_select_from_recent_preset_hbc(p_color)) {
 		if (recent_preset_hbc->get_child_count() >= PRESET_COLUMN_COUNT) {
 			recent_preset_cache.pop_front();
@@ -772,6 +814,7 @@ void ColorPicker::add_recent_preset(const Color &p_color) {
 }
 
 void ColorPicker::erase_preset(const Color &p_color) {
+	ZoneScopedS(60);
 	List<Color>::Element *e = presets.find(p_color);
 	if (e) {
 		presets.erase(e);
@@ -796,6 +839,7 @@ void ColorPicker::erase_preset(const Color &p_color) {
 }
 
 void ColorPicker::erase_recent_preset(const Color &p_color) {
+	ZoneScopedS(60);
 	List<Color>::Element *e = recent_presets.find(p_color);
 	if (e) {
 		recent_presets.erase(e);
@@ -820,6 +864,7 @@ void ColorPicker::erase_recent_preset(const Color &p_color) {
 }
 
 PackedColorArray ColorPicker::get_presets() const {
+	ZoneScopedS(60);
 	PackedColorArray arr;
 	arr.resize(presets.size());
 	for (int i = 0; i < presets.size(); i++) {
@@ -829,6 +874,7 @@ PackedColorArray ColorPicker::get_presets() const {
 }
 
 PackedColorArray ColorPicker::get_recent_presets() const {
+	ZoneScopedS(60);
 	PackedColorArray arr;
 	arr.resize(recent_presets.size());
 	for (int i = 0; i < recent_presets.size(); i++) {
@@ -838,6 +884,7 @@ PackedColorArray ColorPicker::get_recent_presets() const {
 }
 
 void ColorPicker::set_color_mode(ColorModeType p_mode) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_mode, MODE_MAX);
 
 	if (current_mode == p_mode) {
@@ -868,10 +915,12 @@ void ColorPicker::set_color_mode(ColorModeType p_mode) {
 }
 
 ColorPicker::ColorModeType ColorPicker::get_color_mode() const {
+	ZoneScopedS(60);
 	return current_mode;
 }
 
 void ColorPicker::set_colorize_sliders(bool p_colorize_sliders) {
+	ZoneScopedS(60);
 	if (colorize_sliders == p_colorize_sliders) {
 		return;
 	}
@@ -903,18 +952,22 @@ void ColorPicker::set_colorize_sliders(bool p_colorize_sliders) {
 }
 
 bool ColorPicker::is_colorizing_sliders() const {
+	ZoneScopedS(60);
 	return colorize_sliders;
 }
 
 void ColorPicker::set_deferred_mode(bool p_enabled) {
+	ZoneScopedS(60);
 	deferred_mode_enabled = p_enabled;
 }
 
 bool ColorPicker::is_deferred_mode() const {
+	ZoneScopedS(60);
 	return deferred_mode_enabled;
 }
 
 void ColorPicker::_update_text_value() {
+	ZoneScopedS(60);
 	bool text_visible = true;
 	if (text_is_constructor) {
 		String t = "Color(" + String::num(color.r) + ", " + String::num(color.g) + ", " + String::num(color.b);
@@ -937,6 +990,7 @@ void ColorPicker::_update_text_value() {
 }
 
 void ColorPicker::_sample_input(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	const Ref<InputEventMouseButton> mb = p_event;
 	if (mb.is_valid() && mb->is_pressed() && mb->get_button_index() == MouseButton::LEFT) {
 		const Rect2 rect_old = Rect2(Point2(), Size2(sample->get_size().width * 0.5, sample->get_size().height * 0.95));
@@ -949,6 +1003,7 @@ void ColorPicker::_sample_input(const Ref<InputEvent> &p_event) {
 }
 
 void ColorPicker::_sample_draw() {
+	ZoneScopedS(60);
 	// Covers the right half of the sample if the old color is being displayed,
 	// or the whole sample if it's not being displayed.
 	Rect2 rect_new;
@@ -986,6 +1041,7 @@ void ColorPicker::_sample_draw() {
 }
 
 void ColorPicker::_hsv_draw(int p_which, Control *c) {
+	ZoneScopedS(60);
 	if (!c) {
 		return;
 	}
@@ -1149,12 +1205,14 @@ void ColorPicker::_hsv_draw(int p_which, Control *c) {
 }
 
 void ColorPicker::_slider_draw(int p_which) {
+	ZoneScopedS(60);
 	if (colorize_sliders) {
 		modes[current_mode]->slider_draw(p_which);
 	}
 }
 
 void ColorPicker::_uv_input(const Ref<InputEvent> &p_event, Control *c) {
+	ZoneScopedS(60);
 	Ref<InputEventMouseButton> bev = p_event;
 	PickerShapeType actual_shape = _get_actual_shape();
 
@@ -1264,6 +1322,7 @@ void ColorPicker::_uv_input(const Ref<InputEvent> &p_event, Control *c) {
 }
 
 void ColorPicker::_w_input(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	Ref<InputEventMouseButton> bev = p_event;
 	PickerShapeType actual_shape = _get_actual_shape();
 
@@ -1318,6 +1377,7 @@ void ColorPicker::_w_input(const Ref<InputEvent> &p_event) {
 }
 
 void ColorPicker::_slider_or_spin_input(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	if (line_edit_mouse_release) {
 		line_edit_mouse_release = false;
 		return;
@@ -1329,6 +1389,7 @@ void ColorPicker::_slider_or_spin_input(const Ref<InputEvent> &p_event) {
 }
 
 void ColorPicker::_line_edit_input(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	Ref<InputEventMouseButton> bev = p_event;
 	if (bev.is_valid() && !bev->is_pressed() && bev->get_button_index() == MouseButton::LEFT) {
 		line_edit_mouse_release = true;
@@ -1336,6 +1397,7 @@ void ColorPicker::_line_edit_input(const Ref<InputEvent> &p_event) {
 }
 
 void ColorPicker::_preset_input(const Ref<InputEvent> &p_event, const Color &p_color) {
+	ZoneScopedS(60);
 	Ref<InputEventMouseButton> bev = p_event;
 
 	if (bev.is_valid()) {
@@ -1351,6 +1413,7 @@ void ColorPicker::_preset_input(const Ref<InputEvent> &p_event, const Color &p_c
 }
 
 void ColorPicker::_recent_preset_pressed(const bool p_pressed, ColorPresetButton *p_preset) {
+	ZoneScopedS(60);
 	if (!p_pressed) {
 		return;
 	}
@@ -1367,6 +1430,7 @@ void ColorPicker::_recent_preset_pressed(const bool p_pressed, ColorPresetButton
 }
 
 void ColorPicker::_screen_input(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	if (!is_inside_tree()) {
 		return;
 	}
@@ -1395,15 +1459,18 @@ void ColorPicker::_screen_input(const Ref<InputEvent> &p_event) {
 }
 
 void ColorPicker::_text_changed(const String &) {
+	ZoneScopedS(60);
 	text_changed = true;
 }
 
 void ColorPicker::_add_preset_pressed() {
+	ZoneScopedS(60);
 	add_preset(color);
 	emit_signal(SNAME("preset_added"), color);
 }
 
 void ColorPicker::_screen_pick_pressed() {
+	ZoneScopedS(60);
 	if (!is_inside_tree()) {
 		return;
 	}
@@ -1427,6 +1494,7 @@ void ColorPicker::_screen_pick_pressed() {
 }
 
 void ColorPicker::_html_focus_exit() {
+	ZoneScopedS(60);
 	if (c_text->is_menu_visible()) {
 		return;
 	}
@@ -1434,6 +1502,7 @@ void ColorPicker::_html_focus_exit() {
 }
 
 void ColorPicker::set_can_add_swatches(bool p_enabled) {
+	ZoneScopedS(60);
 	if (can_add_swatches == p_enabled) {
 		return;
 	}
@@ -1448,10 +1517,12 @@ void ColorPicker::set_can_add_swatches(bool p_enabled) {
 }
 
 bool ColorPicker::are_swatches_enabled() const {
+	ZoneScopedS(60);
 	return can_add_swatches;
 }
 
 void ColorPicker::set_presets_visible(bool p_visible) {
+	ZoneScopedS(60);
 	if (presets_visible == p_visible) {
 		return;
 	}
@@ -1461,10 +1532,12 @@ void ColorPicker::set_presets_visible(bool p_visible) {
 }
 
 bool ColorPicker::are_presets_visible() const {
+	ZoneScopedS(60);
 	return presets_visible;
 }
 
 void ColorPicker::set_modes_visible(bool p_visible) {
+	ZoneScopedS(60);
 	if (color_modes_visible == p_visible) {
 		return;
 	}
@@ -1473,10 +1546,12 @@ void ColorPicker::set_modes_visible(bool p_visible) {
 }
 
 bool ColorPicker::are_modes_visible() const {
+	ZoneScopedS(60);
 	return color_modes_visible;
 }
 
 void ColorPicker::set_sampler_visible(bool p_visible) {
+	ZoneScopedS(60);
 	if (sampler_visible == p_visible) {
 		return;
 	}
@@ -1485,10 +1560,12 @@ void ColorPicker::set_sampler_visible(bool p_visible) {
 }
 
 bool ColorPicker::is_sampler_visible() const {
+	ZoneScopedS(60);
 	return sampler_visible;
 }
 
 void ColorPicker::set_sliders_visible(bool p_visible) {
+	ZoneScopedS(60);
 	if (sliders_visible == p_visible) {
 		return;
 	}
@@ -1497,10 +1574,12 @@ void ColorPicker::set_sliders_visible(bool p_visible) {
 }
 
 bool ColorPicker::are_sliders_visible() const {
+	ZoneScopedS(60);
 	return sliders_visible;
 }
 
 void ColorPicker::set_hex_visible(bool p_visible) {
+	ZoneScopedS(60);
 	if (hex_visible == p_visible) {
 		return;
 	}
@@ -1509,10 +1588,12 @@ void ColorPicker::set_hex_visible(bool p_visible) {
 }
 
 bool ColorPicker::is_hex_visible() const {
+	ZoneScopedS(60);
 	return hex_visible;
 }
 
 void ColorPicker::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_pick_color", "color"), &ColorPicker::set_pick_color);
 	ClassDB::bind_method(D_METHOD("get_pick_color"), &ColorPicker::get_pick_color);
 	ClassDB::bind_method(D_METHOD("set_deferred_mode", "mode"), &ColorPicker::set_deferred_mode);
@@ -1788,6 +1869,7 @@ ColorPicker::ColorPicker() :
 }
 
 ColorPicker::~ColorPicker() {
+	ZoneScopedS(60);
 	for (int i = 0; i < modes.size(); i++) {
 		delete modes[i];
 	}
@@ -1796,6 +1878,7 @@ ColorPicker::~ColorPicker() {
 /////////////////
 
 void ColorPickerButton::_about_to_popup() {
+	ZoneScopedS(60);
 	set_pressed(true);
 	if (picker) {
 		picker->set_old_color(color);
@@ -1803,17 +1886,20 @@ void ColorPickerButton::_about_to_popup() {
 }
 
 void ColorPickerButton::_color_changed(const Color &p_color) {
+	ZoneScopedS(60);
 	color = p_color;
 	queue_redraw();
 	emit_signal(SNAME("color_changed"), color);
 }
 
 void ColorPickerButton::_modal_closed() {
+	ZoneScopedS(60);
 	emit_signal(SNAME("popup_closed"));
 	set_pressed(false);
 }
 
 void ColorPickerButton::pressed() {
+	ZoneScopedS(60);
 	_update_picker();
 
 	Size2 size = get_size() * get_viewport()->get_canvas_transform().get_scale();
@@ -1849,6 +1935,7 @@ void ColorPickerButton::pressed() {
 }
 
 void ColorPickerButton::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
 			const Ref<StyleBox> normal = get_theme_stylebox(SNAME("normal"));
@@ -1877,6 +1964,7 @@ void ColorPickerButton::_notification(int p_what) {
 }
 
 void ColorPickerButton::set_pick_color(const Color &p_color) {
+	ZoneScopedS(60);
 	if (color == p_color) {
 		return;
 	}
@@ -1889,10 +1977,12 @@ void ColorPickerButton::set_pick_color(const Color &p_color) {
 }
 
 Color ColorPickerButton::get_pick_color() const {
+	ZoneScopedS(60);
 	return color;
 }
 
 void ColorPickerButton::set_edit_alpha(bool p_show) {
+	ZoneScopedS(60);
 	if (edit_alpha == p_show) {
 		return;
 	}
@@ -1903,20 +1993,24 @@ void ColorPickerButton::set_edit_alpha(bool p_show) {
 }
 
 bool ColorPickerButton::is_editing_alpha() const {
+	ZoneScopedS(60);
 	return edit_alpha;
 }
 
 ColorPicker *ColorPickerButton::get_picker() {
+	ZoneScopedS(60);
 	_update_picker();
 	return picker;
 }
 
 PopupPanel *ColorPickerButton::get_popup() {
+	ZoneScopedS(60);
 	_update_picker();
 	return popup;
 }
 
 void ColorPickerButton::_update_picker() {
+	ZoneScopedS(60);
 	if (!picker) {
 		popup = memnew(PopupPanel);
 		popup->set_wrap_controls(true);
@@ -1936,6 +2030,7 @@ void ColorPickerButton::_update_picker() {
 }
 
 void ColorPickerButton::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_pick_color", "color"), &ColorPickerButton::set_pick_color);
 	ClassDB::bind_method(D_METHOD("get_pick_color"), &ColorPickerButton::get_pick_color);
 	ClassDB::bind_method(D_METHOD("get_picker"), &ColorPickerButton::get_picker);
@@ -1959,6 +2054,7 @@ ColorPickerButton::ColorPickerButton(const String &p_text) :
 /////////////////
 
 void ColorPresetButton::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
 			const Rect2 r = Rect2(Point2(0, 0), get_size());
@@ -2010,14 +2106,17 @@ void ColorPresetButton::_notification(int p_what) {
 }
 
 void ColorPresetButton::set_preset_color(const Color &p_color) {
+	ZoneScopedS(60);
 	preset_color = p_color;
 }
 
 Color ColorPresetButton::get_preset_color() const {
+	ZoneScopedS(60);
 	return preset_color;
 }
 
 ColorPresetButton::ColorPresetButton(Color p_color, int p_size) {
+	ZoneScopedS(60);
 	preset_color = p_color;
 	set_toggle_mode(true);
 	set_custom_minimum_size(Size2(p_size, p_size));

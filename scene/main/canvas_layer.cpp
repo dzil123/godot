@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  canvas_layer.cpp                                                     */
 /*************************************************************************/
@@ -35,6 +36,7 @@
 #include "scene/resources/world_2d.h"
 
 void CanvasLayer::set_layer(int p_xform) {
+	ZoneScopedS(60);
 	layer = p_xform;
 	if (viewport.is_valid()) {
 		RenderingServer::get_singleton()->viewport_set_canvas_stacking(viewport, canvas, layer, get_index());
@@ -43,10 +45,12 @@ void CanvasLayer::set_layer(int p_xform) {
 }
 
 int CanvasLayer::get_layer() const {
+	ZoneScopedS(60);
 	return layer;
 }
 
 void CanvasLayer::set_visible(bool p_visible) {
+	ZoneScopedS(60);
 	if (p_visible == visible) {
 		return;
 	}
@@ -65,18 +69,22 @@ void CanvasLayer::set_visible(bool p_visible) {
 }
 
 void CanvasLayer::show() {
+	ZoneScopedS(60);
 	set_visible(true);
 }
 
 void CanvasLayer::hide() {
+	ZoneScopedS(60);
 	set_visible(false);
 }
 
 bool CanvasLayer::is_visible() const {
+	ZoneScopedS(60);
 	return visible;
 }
 
 void CanvasLayer::set_transform(const Transform2D &p_xform) {
+	ZoneScopedS(60);
 	transform = p_xform;
 	locrotscale_dirty = true;
 	if (viewport.is_valid()) {
@@ -85,10 +93,12 @@ void CanvasLayer::set_transform(const Transform2D &p_xform) {
 }
 
 Transform2D CanvasLayer::get_transform() const {
+	ZoneScopedS(60);
 	return transform;
 }
 
 void CanvasLayer::_update_xform() {
+	ZoneScopedS(60);
 	transform.set_rotation_and_scale(rot, scale);
 	transform.set_origin(ofs);
 	if (viewport.is_valid()) {
@@ -97,6 +107,7 @@ void CanvasLayer::_update_xform() {
 }
 
 void CanvasLayer::_update_locrotscale() {
+	ZoneScopedS(60);
 	ofs = transform.columns[2];
 	rot = transform.get_rotation();
 	scale = transform.get_scale();
@@ -104,6 +115,7 @@ void CanvasLayer::_update_locrotscale() {
 }
 
 void CanvasLayer::set_offset(const Vector2 &p_offset) {
+	ZoneScopedS(60);
 	if (locrotscale_dirty) {
 		_update_locrotscale();
 	}
@@ -113,6 +125,7 @@ void CanvasLayer::set_offset(const Vector2 &p_offset) {
 }
 
 Vector2 CanvasLayer::get_offset() const {
+	ZoneScopedS(60);
 	if (locrotscale_dirty) {
 		const_cast<CanvasLayer *>(this)->_update_locrotscale();
 	}
@@ -121,6 +134,7 @@ Vector2 CanvasLayer::get_offset() const {
 }
 
 void CanvasLayer::set_rotation(real_t p_radians) {
+	ZoneScopedS(60);
 	if (locrotscale_dirty) {
 		_update_locrotscale();
 	}
@@ -130,6 +144,7 @@ void CanvasLayer::set_rotation(real_t p_radians) {
 }
 
 real_t CanvasLayer::get_rotation() const {
+	ZoneScopedS(60);
 	if (locrotscale_dirty) {
 		const_cast<CanvasLayer *>(this)->_update_locrotscale();
 	}
@@ -138,6 +153,7 @@ real_t CanvasLayer::get_rotation() const {
 }
 
 void CanvasLayer::set_scale(const Vector2 &p_scale) {
+	ZoneScopedS(60);
 	if (locrotscale_dirty) {
 		_update_locrotscale();
 	}
@@ -147,6 +163,7 @@ void CanvasLayer::set_scale(const Vector2 &p_scale) {
 }
 
 Vector2 CanvasLayer::get_scale() const {
+	ZoneScopedS(60);
 	if (locrotscale_dirty) {
 		const_cast<CanvasLayer *>(this)->_update_locrotscale();
 	}
@@ -155,6 +172,7 @@ Vector2 CanvasLayer::get_scale() const {
 }
 
 void CanvasLayer::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			if (custom_viewport && ObjectDB::get_instance(custom_viewport_id)) {
@@ -191,6 +209,7 @@ void CanvasLayer::_notification(int p_what) {
 }
 
 Size2 CanvasLayer::get_viewport_size() const {
+	ZoneScopedS(60);
 	if (!is_inside_tree()) {
 		return Size2(1, 1);
 	}
@@ -202,10 +221,12 @@ Size2 CanvasLayer::get_viewport_size() const {
 }
 
 RID CanvasLayer::get_viewport() const {
+	ZoneScopedS(60);
 	return viewport;
 }
 
 void CanvasLayer::set_custom_viewport(Node *p_viewport) {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL_MSG(p_viewport, "Cannot set viewport to nullptr.");
 	if (is_inside_tree()) {
 		vp->_canvas_layer_remove(this);
@@ -238,22 +259,27 @@ void CanvasLayer::set_custom_viewport(Node *p_viewport) {
 }
 
 Node *CanvasLayer::get_custom_viewport() const {
+	ZoneScopedS(60);
 	return custom_viewport;
 }
 
 void CanvasLayer::reset_sort_index() {
+	ZoneScopedS(60);
 	sort_index = 0;
 }
 
 int CanvasLayer::get_sort_index() {
+	ZoneScopedS(60);
 	return sort_index++;
 }
 
 RID CanvasLayer::get_canvas() const {
+	ZoneScopedS(60);
 	return canvas;
 }
 
 void CanvasLayer::set_follow_viewport(bool p_enable) {
+	ZoneScopedS(60);
 	if (follow_viewport == p_enable) {
 		return;
 	}
@@ -264,19 +290,23 @@ void CanvasLayer::set_follow_viewport(bool p_enable) {
 }
 
 bool CanvasLayer::is_following_viewport() const {
+	ZoneScopedS(60);
 	return follow_viewport;
 }
 
 void CanvasLayer::set_follow_viewport_scale(float p_ratio) {
+	ZoneScopedS(60);
 	follow_viewport_scale = p_ratio;
 	_update_follow_viewport();
 }
 
 float CanvasLayer::get_follow_viewport_scale() const {
+	ZoneScopedS(60);
 	return follow_viewport_scale;
 }
 
 void CanvasLayer::_update_follow_viewport(bool p_force_exit) {
+	ZoneScopedS(60);
 	if (!is_inside_tree()) {
 		return;
 	}
@@ -288,12 +318,14 @@ void CanvasLayer::_update_follow_viewport(bool p_force_exit) {
 }
 
 void CanvasLayer::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (!follow_viewport && p_property.name == "follow_viewport_scale") {
 		p_property.usage = PROPERTY_USAGE_NO_EDITOR;
 	}
 }
 
 void CanvasLayer::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_layer", "layer"), &CanvasLayer::set_layer);
 	ClassDB::bind_method(D_METHOD("get_layer"), &CanvasLayer::get_layer);
 
@@ -343,9 +375,11 @@ void CanvasLayer::_bind_methods() {
 }
 
 CanvasLayer::CanvasLayer() {
+	ZoneScopedS(60);
 	canvas = RS::get_singleton()->canvas_create();
 }
 
 CanvasLayer::~CanvasLayer() {
+	ZoneScopedS(60);
 	RS::get_singleton()->free(canvas);
 }

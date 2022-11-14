@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  polygon_2d.cpp                                                       */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "polygon_2d.h"
 
 #include "core/math/geometry_2d.h"
@@ -35,30 +66,36 @@
 
 #ifdef TOOLS_ENABLED
 Dictionary Polygon2D::_edit_get_state() const {
+	ZoneScopedS(60);
 	Dictionary state = Node2D::_edit_get_state();
 	state["offset"] = offset;
 	return state;
 }
 
 void Polygon2D::_edit_set_state(const Dictionary &p_state) {
+	ZoneScopedS(60);
 	Node2D::_edit_set_state(p_state);
 	set_offset(p_state["offset"]);
 }
 
 void Polygon2D::_edit_set_pivot(const Point2 &p_pivot) {
+	ZoneScopedS(60);
 	set_position(get_transform().xform(p_pivot));
 	set_offset(get_offset() - p_pivot);
 }
 
 Point2 Polygon2D::_edit_get_pivot() const {
+	ZoneScopedS(60);
 	return Vector2();
 }
 
 bool Polygon2D::_edit_use_pivot() const {
+	ZoneScopedS(60);
 	return true;
 }
 
 Rect2 Polygon2D::_edit_get_rect() const {
+	ZoneScopedS(60);
 	if (rect_cache_dirty) {
 		int l = polygon.size();
 		const Vector2 *r = polygon.ptr();
@@ -78,10 +115,12 @@ Rect2 Polygon2D::_edit_get_rect() const {
 }
 
 bool Polygon2D::_edit_use_rect() const {
+	ZoneScopedS(60);
 	return polygon.size() > 0;
 }
 
 bool Polygon2D::_edit_is_selected_on_click(const Point2 &p_point, double p_tolerance) const {
+	ZoneScopedS(60);
 	Vector<Vector2> polygon2d = Variant(polygon);
 	if (internal_vertices > 0) {
 		polygon2d.resize(polygon2d.size() - internal_vertices);
@@ -91,16 +130,19 @@ bool Polygon2D::_edit_is_selected_on_click(const Point2 &p_point, double p_toler
 #endif
 
 void Polygon2D::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (!invert && p_property.name == "invert_border") {
 		p_property.usage = PROPERTY_USAGE_NO_EDITOR;
 	}
 }
 
 void Polygon2D::_skeleton_bone_setup_changed() {
+	ZoneScopedS(60);
 	queue_redraw();
 }
 
 void Polygon2D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
 			if (polygon.size() < 3) {
@@ -373,134 +415,163 @@ void Polygon2D::_notification(int p_what) {
 }
 
 void Polygon2D::set_polygon(const Vector<Vector2> &p_polygon) {
+	ZoneScopedS(60);
 	polygon = p_polygon;
 	rect_cache_dirty = true;
 	queue_redraw();
 }
 
 Vector<Vector2> Polygon2D::get_polygon() const {
+	ZoneScopedS(60);
 	return polygon;
 }
 
 void Polygon2D::set_internal_vertex_count(int p_count) {
+	ZoneScopedS(60);
 	internal_vertices = p_count;
 }
 
 int Polygon2D::get_internal_vertex_count() const {
+	ZoneScopedS(60);
 	return internal_vertices;
 }
 
 void Polygon2D::set_uv(const Vector<Vector2> &p_uv) {
+	ZoneScopedS(60);
 	uv = p_uv;
 	queue_redraw();
 }
 
 Vector<Vector2> Polygon2D::get_uv() const {
+	ZoneScopedS(60);
 	return uv;
 }
 
 void Polygon2D::set_polygons(const Array &p_polygons) {
+	ZoneScopedS(60);
 	polygons = p_polygons;
 	queue_redraw();
 }
 
 Array Polygon2D::get_polygons() const {
+	ZoneScopedS(60);
 	return polygons;
 }
 
 void Polygon2D::set_color(const Color &p_color) {
+	ZoneScopedS(60);
 	color = p_color;
 	queue_redraw();
 }
 
 Color Polygon2D::get_color() const {
+	ZoneScopedS(60);
 	return color;
 }
 
 void Polygon2D::set_vertex_colors(const Vector<Color> &p_colors) {
+	ZoneScopedS(60);
 	vertex_colors = p_colors;
 	queue_redraw();
 }
 
 Vector<Color> Polygon2D::get_vertex_colors() const {
+	ZoneScopedS(60);
 	return vertex_colors;
 }
 
 void Polygon2D::set_texture(const Ref<Texture2D> &p_texture) {
+	ZoneScopedS(60);
 	texture = p_texture;
 	queue_redraw();
 }
 
 Ref<Texture2D> Polygon2D::get_texture() const {
+	ZoneScopedS(60);
 	return texture;
 }
 
 void Polygon2D::set_texture_offset(const Vector2 &p_offset) {
+	ZoneScopedS(60);
 	tex_ofs = p_offset;
 	queue_redraw();
 }
 
 Vector2 Polygon2D::get_texture_offset() const {
+	ZoneScopedS(60);
 	return tex_ofs;
 }
 
 void Polygon2D::set_texture_rotation(real_t p_rot) {
+	ZoneScopedS(60);
 	tex_rot = p_rot;
 	queue_redraw();
 }
 
 real_t Polygon2D::get_texture_rotation() const {
+	ZoneScopedS(60);
 	return tex_rot;
 }
 
 void Polygon2D::set_texture_scale(const Size2 &p_scale) {
+	ZoneScopedS(60);
 	tex_scale = p_scale;
 	queue_redraw();
 }
 
 Size2 Polygon2D::get_texture_scale() const {
+	ZoneScopedS(60);
 	return tex_scale;
 }
 
 void Polygon2D::set_invert(bool p_invert) {
+	ZoneScopedS(60);
 	invert = p_invert;
 	queue_redraw();
 	notify_property_list_changed();
 }
 
 bool Polygon2D::get_invert() const {
+	ZoneScopedS(60);
 	return invert;
 }
 
 void Polygon2D::set_antialiased(bool p_antialiased) {
+	ZoneScopedS(60);
 	antialiased = p_antialiased;
 	queue_redraw();
 }
 
 bool Polygon2D::get_antialiased() const {
+	ZoneScopedS(60);
 	return antialiased;
 }
 
 void Polygon2D::set_invert_border(real_t p_invert_border) {
+	ZoneScopedS(60);
 	invert_border = p_invert_border;
 	queue_redraw();
 }
 
 real_t Polygon2D::get_invert_border() const {
+	ZoneScopedS(60);
 	return invert_border;
 }
 
 void Polygon2D::set_offset(const Vector2 &p_offset) {
+	ZoneScopedS(60);
 	offset = p_offset;
 	rect_cache_dirty = true;
 	queue_redraw();
 }
 
 Vector2 Polygon2D::get_offset() const {
+	ZoneScopedS(60);
 	return offset;
 }
 
 void Polygon2D::add_bone(const NodePath &p_path, const Vector<float> &p_weights) {
+	ZoneScopedS(60);
 	Bone bone;
 	bone.path = p_path;
 	bone.weights = p_weights;
@@ -508,41 +579,49 @@ void Polygon2D::add_bone(const NodePath &p_path, const Vector<float> &p_weights)
 }
 
 int Polygon2D::get_bone_count() const {
+	ZoneScopedS(60);
 	return bone_weights.size();
 }
 
 NodePath Polygon2D::get_bone_path(int p_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_index, bone_weights.size(), NodePath());
 	return bone_weights[p_index].path;
 }
 
 Vector<float> Polygon2D::get_bone_weights(int p_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_index, bone_weights.size(), Vector<float>());
 	return bone_weights[p_index].weights;
 }
 
 void Polygon2D::erase_bone(int p_idx) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_idx, bone_weights.size());
 	bone_weights.remove_at(p_idx);
 }
 
 void Polygon2D::clear_bones() {
+	ZoneScopedS(60);
 	bone_weights.clear();
 }
 
 void Polygon2D::set_bone_weights(int p_index, const Vector<float> &p_weights) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, bone_weights.size());
 	bone_weights.write[p_index].weights = p_weights;
 	queue_redraw();
 }
 
 void Polygon2D::set_bone_path(int p_index, const NodePath &p_path) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, bone_weights.size());
 	bone_weights.write[p_index].path = p_path;
 	queue_redraw();
 }
 
 Array Polygon2D::_get_bones() const {
+	ZoneScopedS(60);
 	Array bones;
 	for (int i = 0; i < get_bone_count(); i++) {
 		// Convert path property to String to avoid errors due to invalid node path in editor,
@@ -554,6 +633,7 @@ Array Polygon2D::_get_bones() const {
 }
 
 void Polygon2D::_set_bones(const Array &p_bones) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_bones.size() & 1);
 	clear_bones();
 	for (int i = 0; i < p_bones.size(); i += 2) {
@@ -563,6 +643,7 @@ void Polygon2D::_set_bones(const Array &p_bones) {
 }
 
 void Polygon2D::set_skeleton(const NodePath &p_skeleton) {
+	ZoneScopedS(60);
 	if (skeleton == p_skeleton) {
 		return;
 	}
@@ -571,10 +652,12 @@ void Polygon2D::set_skeleton(const NodePath &p_skeleton) {
 }
 
 NodePath Polygon2D::get_skeleton() const {
+	ZoneScopedS(60);
 	return skeleton;
 }
 
 void Polygon2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_polygon", "polygon"), &Polygon2D::set_polygon);
 	ClassDB::bind_method(D_METHOD("get_polygon"), &Polygon2D::get_polygon);
 
@@ -659,9 +742,11 @@ void Polygon2D::_bind_methods() {
 }
 
 Polygon2D::Polygon2D() {
+	ZoneScopedS(60);
 	mesh = RS::get_singleton()->mesh_create();
 }
 
 Polygon2D::~Polygon2D() {
+	ZoneScopedS(60);
 	RS::get_singleton()->free(mesh);
 }

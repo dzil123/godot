@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  sky.cpp                                                              */
 /*************************************************************************/
@@ -33,6 +34,7 @@
 #include "core/io/image_loader.h"
 
 void Sky::set_radiance_size(RadianceSize p_size) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_size, RADIANCE_SIZE_MAX);
 
 	radiance_size = p_size;
@@ -43,19 +45,23 @@ void Sky::set_radiance_size(RadianceSize p_size) {
 }
 
 Sky::RadianceSize Sky::get_radiance_size() const {
+	ZoneScopedS(60);
 	return radiance_size;
 }
 
 void Sky::set_process_mode(ProcessMode p_mode) {
+	ZoneScopedS(60);
 	mode = p_mode;
 	RS::get_singleton()->sky_set_mode(sky, RS::SkyMode(mode));
 }
 
 Sky::ProcessMode Sky::get_process_mode() const {
+	ZoneScopedS(60);
 	return mode;
 }
 
 void Sky::set_material(const Ref<Material> &p_material) {
+	ZoneScopedS(60);
 	sky_material = p_material;
 	RID material_rid;
 	if (sky_material.is_valid()) {
@@ -65,14 +71,17 @@ void Sky::set_material(const Ref<Material> &p_material) {
 }
 
 Ref<Material> Sky::get_material() const {
+	ZoneScopedS(60);
 	return sky_material;
 }
 
 RID Sky::get_rid() const {
+	ZoneScopedS(60);
 	return sky;
 }
 
 void Sky::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_radiance_size", "size"), &Sky::set_radiance_size);
 	ClassDB::bind_method(D_METHOD("get_radiance_size"), &Sky::get_radiance_size);
 
@@ -102,9 +111,11 @@ void Sky::_bind_methods() {
 }
 
 Sky::Sky() {
+	ZoneScopedS(60);
 	sky = RS::get_singleton()->sky_create();
 }
 
 Sky::~Sky() {
+	ZoneScopedS(60);
 	RS::get_singleton()->free(sky);
 }

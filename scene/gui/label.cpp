@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  label.cpp                                                            */
 /*************************************************************************/
@@ -38,6 +39,7 @@
 #include "servers/text_server.h"
 
 void Label::set_autowrap_mode(TextServer::AutowrapMode p_mode) {
+	ZoneScopedS(60);
 	if (autowrap_mode == p_mode) {
 		return;
 	}
@@ -52,10 +54,12 @@ void Label::set_autowrap_mode(TextServer::AutowrapMode p_mode) {
 }
 
 TextServer::AutowrapMode Label::get_autowrap_mode() const {
+	ZoneScopedS(60);
 	return autowrap_mode;
 }
 
 void Label::set_uppercase(bool p_uppercase) {
+	ZoneScopedS(60);
 	if (uppercase == p_uppercase) {
 		return;
 	}
@@ -67,10 +71,12 @@ void Label::set_uppercase(bool p_uppercase) {
 }
 
 bool Label::is_uppercase() const {
+	ZoneScopedS(60);
 	return uppercase;
 }
 
 int Label::get_line_height(int p_line) const {
+	ZoneScopedS(60);
 	Ref<Font> font = (settings.is_valid() && settings->get_font().is_valid()) ? settings->get_font() : theme_cache.font;
 	if (p_line >= 0 && p_line < lines_rid.size()) {
 		return TS->shaped_text_get_size(lines_rid[p_line]).y;
@@ -87,6 +93,7 @@ int Label::get_line_height(int p_line) const {
 }
 
 void Label::_shape() {
+	ZoneScopedS(60);
 	Ref<StyleBox> style = theme_cache.normal_style;
 	int width = (get_size().width - style->get_minimum_size().width);
 
@@ -232,6 +239,7 @@ void Label::_shape() {
 }
 
 void Label::_update_visible() {
+	ZoneScopedS(60);
 	int line_spacing = settings.is_valid() ? settings->get_line_spacing() : theme_cache.line_spacing;
 	Ref<StyleBox> style = theme_cache.normal_style;
 	int lines_visible = lines_rid.size();
@@ -251,6 +259,7 @@ void Label::_update_visible() {
 }
 
 inline void draw_glyph(const Glyph &p_gl, const RID &p_canvas, const Color &p_font_color, const Vector2 &p_ofs) {
+	ZoneScopedS(60);
 	if (p_gl.font_rid != RID()) {
 		TS->font_draw_glyph(p_gl.font_rid, p_canvas, p_gl.font_size, p_ofs + Vector2(p_gl.x_off, p_gl.y_off), p_gl.index, p_font_color);
 	} else {
@@ -259,6 +268,7 @@ inline void draw_glyph(const Glyph &p_gl, const RID &p_canvas, const Color &p_fo
 }
 
 inline void draw_glyph_outline(const Glyph &p_gl, const RID &p_canvas, const Color &p_font_color, const Color &p_font_shadow_color, const Color &p_font_outline_color, const int &p_shadow_outline_size, const int &p_outline_size, const Vector2 &p_ofs, const Vector2 &shadow_ofs) {
+	ZoneScopedS(60);
 	if (p_gl.font_rid != RID()) {
 		if (p_font_shadow_color.a > 0) {
 			TS->font_draw_glyph(p_gl.font_rid, p_canvas, p_gl.font_size, p_ofs + Vector2(p_gl.x_off, p_gl.y_off) + shadow_ofs, p_gl.index, p_font_shadow_color);
@@ -273,6 +283,7 @@ inline void draw_glyph_outline(const Glyph &p_gl, const RID &p_canvas, const Col
 }
 
 void Label::_update_theme_item_cache() {
+	ZoneScopedS(60);
 	Control::_update_theme_item_cache();
 
 	theme_cache.normal_style = get_theme_stylebox(SNAME("normal"));
@@ -289,6 +300,7 @@ void Label::_update_theme_item_cache() {
 }
 
 PackedStringArray Label::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Control::get_configuration_warnings();
 
 	// Ensure that the font can render all of the required glyphs.
@@ -319,6 +331,7 @@ PackedStringArray Label::get_configuration_warnings() const {
 }
 
 void Label::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_TRANSLATION_CHANGED: {
 			String new_text = atr(text);
@@ -602,6 +615,7 @@ void Label::_notification(int p_what) {
 }
 
 Size2 Label::get_minimum_size() const {
+	ZoneScopedS(60);
 	// don't want to mutable everything
 	if (dirty || font_dirty || lines_dirty) {
 		const_cast<Label *>(this)->_shape();
@@ -626,6 +640,7 @@ Size2 Label::get_minimum_size() const {
 }
 
 int Label::get_line_count() const {
+	ZoneScopedS(60);
 	if (!is_inside_tree()) {
 		return 1;
 	}
@@ -637,6 +652,7 @@ int Label::get_line_count() const {
 }
 
 int Label::get_visible_line_count() const {
+	ZoneScopedS(60);
 	Ref<StyleBox> style = theme_cache.normal_style;
 	int line_spacing = settings.is_valid() ? settings->get_line_spacing() : theme_cache.line_spacing;
 	int lines_visible = 0;
@@ -661,6 +677,7 @@ int Label::get_visible_line_count() const {
 }
 
 void Label::set_horizontal_alignment(HorizontalAlignment p_alignment) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX((int)p_alignment, 4);
 	if (horizontal_alignment == p_alignment) {
 		return;
@@ -675,10 +692,12 @@ void Label::set_horizontal_alignment(HorizontalAlignment p_alignment) {
 }
 
 HorizontalAlignment Label::get_horizontal_alignment() const {
+	ZoneScopedS(60);
 	return horizontal_alignment;
 }
 
 void Label::set_vertical_alignment(VerticalAlignment p_alignment) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX((int)p_alignment, 4);
 
 	if (vertical_alignment == p_alignment) {
@@ -690,10 +709,12 @@ void Label::set_vertical_alignment(VerticalAlignment p_alignment) {
 }
 
 VerticalAlignment Label::get_vertical_alignment() const {
+	ZoneScopedS(60);
 	return vertical_alignment;
 }
 
 void Label::set_text(const String &p_string) {
+	ZoneScopedS(60);
 	if (text == p_string) {
 		return;
 	}
@@ -709,11 +730,13 @@ void Label::set_text(const String &p_string) {
 }
 
 void Label::_invalidate() {
+	ZoneScopedS(60);
 	font_dirty = true;
 	queue_redraw();
 }
 
 void Label::set_label_settings(const Ref<LabelSettings> &p_settings) {
+	ZoneScopedS(60);
 	if (settings != p_settings) {
 		if (settings.is_valid()) {
 			settings->disconnect(CoreStringNames::get_singleton()->changed, callable_mp(this, &Label::_invalidate));
@@ -727,10 +750,12 @@ void Label::set_label_settings(const Ref<LabelSettings> &p_settings) {
 }
 
 Ref<LabelSettings> Label::get_label_settings() const {
+	ZoneScopedS(60);
 	return settings;
 }
 
 void Label::set_text_direction(Control::TextDirection p_text_direction) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND((int)p_text_direction < -1 || (int)p_text_direction > 3);
 	if (text_direction != p_text_direction) {
 		text_direction = p_text_direction;
@@ -740,6 +765,7 @@ void Label::set_text_direction(Control::TextDirection p_text_direction) {
 }
 
 void Label::set_structured_text_bidi_override(TextServer::StructuredTextParser p_parser) {
+	ZoneScopedS(60);
 	if (st_parser != p_parser) {
 		st_parser = p_parser;
 		dirty = true;
@@ -748,10 +774,12 @@ void Label::set_structured_text_bidi_override(TextServer::StructuredTextParser p
 }
 
 TextServer::StructuredTextParser Label::get_structured_text_bidi_override() const {
+	ZoneScopedS(60);
 	return st_parser;
 }
 
 void Label::set_structured_text_bidi_override_options(Array p_args) {
+	ZoneScopedS(60);
 	if (st_args == p_args) {
 		return;
 	}
@@ -762,14 +790,17 @@ void Label::set_structured_text_bidi_override_options(Array p_args) {
 }
 
 Array Label::get_structured_text_bidi_override_options() const {
+	ZoneScopedS(60);
 	return st_args;
 }
 
 Control::TextDirection Label::get_text_direction() const {
+	ZoneScopedS(60);
 	return text_direction;
 }
 
 void Label::set_language(const String &p_language) {
+	ZoneScopedS(60);
 	if (language != p_language) {
 		language = p_language;
 		dirty = true;
@@ -778,10 +809,12 @@ void Label::set_language(const String &p_language) {
 }
 
 String Label::get_language() const {
+	ZoneScopedS(60);
 	return language;
 }
 
 void Label::set_clip_text(bool p_clip) {
+	ZoneScopedS(60);
 	if (clip == p_clip) {
 		return;
 	}
@@ -792,10 +825,12 @@ void Label::set_clip_text(bool p_clip) {
 }
 
 bool Label::is_clipping_text() const {
+	ZoneScopedS(60);
 	return clip;
 }
 
 void Label::set_text_overrun_behavior(TextServer::OverrunBehavior p_behavior) {
+	ZoneScopedS(60);
 	if (overrun_behavior == p_behavior) {
 		return;
 	}
@@ -809,14 +844,17 @@ void Label::set_text_overrun_behavior(TextServer::OverrunBehavior p_behavior) {
 }
 
 TextServer::OverrunBehavior Label::get_text_overrun_behavior() const {
+	ZoneScopedS(60);
 	return overrun_behavior;
 }
 
 String Label::get_text() const {
+	ZoneScopedS(60);
 	return text;
 }
 
 void Label::set_visible_characters(int p_amount) {
+	ZoneScopedS(60);
 	if (visible_chars != p_amount) {
 		visible_chars = p_amount;
 		if (get_total_character_count() > 0) {
@@ -832,10 +870,12 @@ void Label::set_visible_characters(int p_amount) {
 }
 
 int Label::get_visible_characters() const {
+	ZoneScopedS(60);
 	return visible_chars;
 }
 
 void Label::set_visible_ratio(float p_ratio) {
+	ZoneScopedS(60);
 	if (visible_ratio != p_ratio) {
 		if (p_ratio >= 1.0) {
 			visible_chars = -1;
@@ -856,14 +896,17 @@ void Label::set_visible_ratio(float p_ratio) {
 }
 
 float Label::get_visible_ratio() const {
+	ZoneScopedS(60);
 	return visible_ratio;
 }
 
 TextServer::VisibleCharactersBehavior Label::get_visible_characters_behavior() const {
+	ZoneScopedS(60);
 	return visible_chars_behavior;
 }
 
 void Label::set_visible_characters_behavior(TextServer::VisibleCharactersBehavior p_behavior) {
+	ZoneScopedS(60);
 	if (visible_chars_behavior != p_behavior) {
 		visible_chars_behavior = p_behavior;
 		dirty = true;
@@ -872,6 +915,7 @@ void Label::set_visible_characters_behavior(TextServer::VisibleCharactersBehavio
 }
 
 void Label::set_lines_skipped(int p_lines) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_lines < 0);
 
 	if (lines_skipped == p_lines) {
@@ -884,10 +928,12 @@ void Label::set_lines_skipped(int p_lines) {
 }
 
 int Label::get_lines_skipped() const {
+	ZoneScopedS(60);
 	return lines_skipped;
 }
 
 void Label::set_max_lines_visible(int p_lines) {
+	ZoneScopedS(60);
 	if (max_lines_visible == p_lines) {
 		return;
 	}
@@ -898,10 +944,12 @@ void Label::set_max_lines_visible(int p_lines) {
 }
 
 int Label::get_max_lines_visible() const {
+	ZoneScopedS(60);
 	return max_lines_visible;
 }
 
 int Label::get_total_character_count() const {
+	ZoneScopedS(60);
 	if (dirty || font_dirty || lines_dirty) {
 		const_cast<Label *>(this)->_shape();
 	}
@@ -910,6 +958,7 @@ int Label::get_total_character_count() const {
 }
 
 void Label::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_horizontal_alignment", "alignment"), &Label::set_horizontal_alignment);
 	ClassDB::bind_method(D_METHOD("get_horizontal_alignment"), &Label::get_horizontal_alignment);
 	ClassDB::bind_method(D_METHOD("set_vertical_alignment", "alignment"), &Label::set_vertical_alignment);
@@ -974,6 +1023,7 @@ void Label::_bind_methods() {
 }
 
 Label::Label(const String &p_text) {
+	ZoneScopedS(60);
 	text_rid = TS->create_shaped_text();
 
 	set_mouse_filter(MOUSE_FILTER_IGNORE);
@@ -982,6 +1032,7 @@ Label::Label(const String &p_text) {
 }
 
 Label::~Label() {
+	ZoneScopedS(60);
 	for (int i = 0; i < lines_rid.size(); i++) {
 		TS->free_rid(lines_rid[i]);
 	}

@@ -28,64 +28,108 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  reflection_probe.cpp                                                 */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "reflection_probe.h"
 
 void ReflectionProbe::set_intensity(float p_intensity) {
+	ZoneScopedS(60);
 	intensity = p_intensity;
 	RS::get_singleton()->reflection_probe_set_intensity(probe, p_intensity);
 }
 
 float ReflectionProbe::get_intensity() const {
+	ZoneScopedS(60);
 	return intensity;
 }
 
 void ReflectionProbe::set_ambient_mode(AmbientMode p_mode) {
+	ZoneScopedS(60);
 	ambient_mode = p_mode;
 	RS::get_singleton()->reflection_probe_set_ambient_mode(probe, RS::ReflectionProbeAmbientMode(p_mode));
 	notify_property_list_changed();
 }
 
 ReflectionProbe::AmbientMode ReflectionProbe::get_ambient_mode() const {
+	ZoneScopedS(60);
 	return ambient_mode;
 }
 
 void ReflectionProbe::set_ambient_color(Color p_ambient) {
+	ZoneScopedS(60);
 	ambient_color = p_ambient;
 	RS::get_singleton()->reflection_probe_set_ambient_color(probe, p_ambient);
 }
 
 void ReflectionProbe::set_ambient_color_energy(float p_energy) {
+	ZoneScopedS(60);
 	ambient_color_energy = p_energy;
 	RS::get_singleton()->reflection_probe_set_ambient_energy(probe, p_energy);
 }
 
 float ReflectionProbe::get_ambient_color_energy() const {
+	ZoneScopedS(60);
 	return ambient_color_energy;
 }
 
 Color ReflectionProbe::get_ambient_color() const {
+	ZoneScopedS(60);
 	return ambient_color;
 }
 
 void ReflectionProbe::set_max_distance(float p_distance) {
+	ZoneScopedS(60);
 	max_distance = p_distance;
 	RS::get_singleton()->reflection_probe_set_max_distance(probe, p_distance);
 }
 
 float ReflectionProbe::get_max_distance() const {
+	ZoneScopedS(60);
 	return max_distance;
 }
 
 void ReflectionProbe::set_mesh_lod_threshold(float p_pixels) {
+	ZoneScopedS(60);
 	mesh_lod_threshold = p_pixels;
 	RS::get_singleton()->reflection_probe_set_mesh_lod_threshold(probe, p_pixels);
 }
 
 float ReflectionProbe::get_mesh_lod_threshold() const {
+	ZoneScopedS(60);
 	return mesh_lod_threshold;
 }
 
 void ReflectionProbe::set_extents(const Vector3 &p_extents) {
+	ZoneScopedS(60);
 	extents = p_extents;
 
 	for (int i = 0; i < 3; i++) {
@@ -105,10 +149,12 @@ void ReflectionProbe::set_extents(const Vector3 &p_extents) {
 }
 
 Vector3 ReflectionProbe::get_extents() const {
+	ZoneScopedS(60);
 	return extents;
 }
 
 void ReflectionProbe::set_origin_offset(const Vector3 &p_extents) {
+	ZoneScopedS(60);
 	origin_offset = p_extents;
 
 	for (int i = 0; i < 3; i++) {
@@ -123,55 +169,67 @@ void ReflectionProbe::set_origin_offset(const Vector3 &p_extents) {
 }
 
 Vector3 ReflectionProbe::get_origin_offset() const {
+	ZoneScopedS(60);
 	return origin_offset;
 }
 
 void ReflectionProbe::set_enable_box_projection(bool p_enable) {
+	ZoneScopedS(60);
 	box_projection = p_enable;
 	RS::get_singleton()->reflection_probe_set_enable_box_projection(probe, p_enable);
 }
 
 bool ReflectionProbe::is_box_projection_enabled() const {
+	ZoneScopedS(60);
 	return box_projection;
 }
 
 void ReflectionProbe::set_as_interior(bool p_enable) {
+	ZoneScopedS(60);
 	interior = p_enable;
 	RS::get_singleton()->reflection_probe_set_as_interior(probe, interior);
 }
 
 bool ReflectionProbe::is_set_as_interior() const {
+	ZoneScopedS(60);
 	return interior;
 }
 
 void ReflectionProbe::set_enable_shadows(bool p_enable) {
+	ZoneScopedS(60);
 	enable_shadows = p_enable;
 	RS::get_singleton()->reflection_probe_set_enable_shadows(probe, p_enable);
 }
 
 bool ReflectionProbe::are_shadows_enabled() const {
+	ZoneScopedS(60);
 	return enable_shadows;
 }
 
 void ReflectionProbe::set_cull_mask(uint32_t p_layers) {
+	ZoneScopedS(60);
 	cull_mask = p_layers;
 	RS::get_singleton()->reflection_probe_set_cull_mask(probe, p_layers);
 }
 
 uint32_t ReflectionProbe::get_cull_mask() const {
+	ZoneScopedS(60);
 	return cull_mask;
 }
 
 void ReflectionProbe::set_update_mode(UpdateMode p_mode) {
+	ZoneScopedS(60);
 	update_mode = p_mode;
 	RS::get_singleton()->reflection_probe_set_update_mode(probe, RS::ReflectionProbeUpdateMode(p_mode));
 }
 
 ReflectionProbe::UpdateMode ReflectionProbe::get_update_mode() const {
+	ZoneScopedS(60);
 	return update_mode;
 }
 
 AABB ReflectionProbe::get_aabb() const {
+	ZoneScopedS(60);
 	AABB aabb;
 	aabb.position = -origin_offset;
 	aabb.size = origin_offset + extents;
@@ -179,6 +237,7 @@ AABB ReflectionProbe::get_aabb() const {
 }
 
 void ReflectionProbe::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (p_property.name == "ambient_color" || p_property.name == "ambient_color_energy") {
 		if (ambient_mode != AMBIENT_COLOR) {
 			p_property.usage = PROPERTY_USAGE_NO_EDITOR;
@@ -187,6 +246,7 @@ void ReflectionProbe::_validate_property(PropertyInfo &p_property) const {
 }
 
 void ReflectionProbe::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_intensity", "intensity"), &ReflectionProbe::set_intensity);
 	ClassDB::bind_method(D_METHOD("get_intensity"), &ReflectionProbe::get_intensity);
 
@@ -251,11 +311,13 @@ void ReflectionProbe::_bind_methods() {
 }
 
 ReflectionProbe::ReflectionProbe() {
+	ZoneScopedS(60);
 	probe = RenderingServer::get_singleton()->reflection_probe_create();
 	RS::get_singleton()->instance_set_base(get_instance(), probe);
 	set_disable_scale(true);
 }
 
 ReflectionProbe::~ReflectionProbe() {
+	ZoneScopedS(60);
 	RS::get_singleton()->free(probe);
 }

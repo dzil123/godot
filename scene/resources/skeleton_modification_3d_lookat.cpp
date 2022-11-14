@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  skeleton_modification_3d_lookat.cpp                                  */
 /*************************************************************************/
@@ -28,11 +29,12 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "scene/resources/skeleton_modification_3d_lookat.h"
 #include "scene/3d/skeleton_3d.h"
 #include "scene/resources/skeleton_modification_3d.h"
+#include "scene/resources/skeleton_modification_3d_lookat.h"
 
 bool SkeletonModification3DLookAt::_set(const StringName &p_path, const Variant &p_value) {
+	ZoneScopedS(60);
 	if (p_path == "lock_rotation_to_plane") {
 		set_lock_rotation_to_plane(p_value);
 	} else if (p_path == "lock_rotation_plane") {
@@ -49,6 +51,7 @@ bool SkeletonModification3DLookAt::_set(const StringName &p_path, const Variant 
 }
 
 bool SkeletonModification3DLookAt::_get(const StringName &p_path, Variant &r_ret) const {
+	ZoneScopedS(60);
 	if (p_path == "lock_rotation_to_plane") {
 		r_ret = get_lock_rotation_to_plane();
 	} else if (p_path == "lock_rotation_plane") {
@@ -65,6 +68,7 @@ bool SkeletonModification3DLookAt::_get(const StringName &p_path, Variant &r_ret
 }
 
 void SkeletonModification3DLookAt::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	p_list->push_back(PropertyInfo(Variant::BOOL, "lock_rotation_to_plane", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT));
 	if (lock_rotation_to_plane) {
 		p_list->push_back(PropertyInfo(Variant::INT, "lock_rotation_plane", PROPERTY_HINT_ENUM, "X plane,Y plane,Z plane", PROPERTY_USAGE_DEFAULT));
@@ -73,6 +77,7 @@ void SkeletonModification3DLookAt::_get_property_list(List<PropertyInfo> *p_list
 }
 
 void SkeletonModification3DLookAt::_execute(real_t p_delta) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!stack || !is_setup || stack->skeleton == nullptr,
 			"Modification is not setup and therefore cannot execute!");
 	if (!enabled) {
@@ -132,6 +137,7 @@ void SkeletonModification3DLookAt::_execute(real_t p_delta) {
 }
 
 void SkeletonModification3DLookAt::_setup_modification(SkeletonModificationStack3D *p_stack) {
+	ZoneScopedS(60);
 	stack = p_stack;
 
 	if (stack != nullptr) {
@@ -142,6 +148,7 @@ void SkeletonModification3DLookAt::_setup_modification(SkeletonModificationStack
 }
 
 void SkeletonModification3DLookAt::set_bone_name(String p_name) {
+	ZoneScopedS(60);
 	bone_name = p_name;
 	if (stack) {
 		if (stack->skeleton) {
@@ -153,14 +160,17 @@ void SkeletonModification3DLookAt::set_bone_name(String p_name) {
 }
 
 String SkeletonModification3DLookAt::get_bone_name() const {
+	ZoneScopedS(60);
 	return bone_name;
 }
 
 int SkeletonModification3DLookAt::get_bone_index() const {
+	ZoneScopedS(60);
 	return bone_idx;
 }
 
 void SkeletonModification3DLookAt::set_bone_index(int p_bone_idx) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_bone_idx < 0, "Bone index is out of range: The index is too low!");
 	bone_idx = p_bone_idx;
 
@@ -174,6 +184,7 @@ void SkeletonModification3DLookAt::set_bone_index(int p_bone_idx) {
 }
 
 void SkeletonModification3DLookAt::update_cache() {
+	ZoneScopedS(60);
 	if (!is_setup || !stack) {
 		_print_execution_error(true, "Cannot update target cache: modification is not properly setup!");
 		return;
@@ -197,40 +208,49 @@ void SkeletonModification3DLookAt::update_cache() {
 }
 
 void SkeletonModification3DLookAt::set_target_node(const NodePath &p_target_node) {
+	ZoneScopedS(60);
 	target_node = p_target_node;
 	update_cache();
 }
 
 NodePath SkeletonModification3DLookAt::get_target_node() const {
+	ZoneScopedS(60);
 	return target_node;
 }
 
 Vector3 SkeletonModification3DLookAt::get_additional_rotation() const {
+	ZoneScopedS(60);
 	return additional_rotation;
 }
 
 void SkeletonModification3DLookAt::set_additional_rotation(Vector3 p_offset) {
+	ZoneScopedS(60);
 	additional_rotation = p_offset;
 }
 
 bool SkeletonModification3DLookAt::get_lock_rotation_to_plane() const {
+	ZoneScopedS(60);
 	return lock_rotation_plane;
 }
 
 void SkeletonModification3DLookAt::set_lock_rotation_to_plane(bool p_lock_rotation) {
+	ZoneScopedS(60);
 	lock_rotation_to_plane = p_lock_rotation;
 	notify_property_list_changed();
 }
 
 int SkeletonModification3DLookAt::get_lock_rotation_plane() const {
+	ZoneScopedS(60);
 	return lock_rotation_plane;
 }
 
 void SkeletonModification3DLookAt::set_lock_rotation_plane(int p_plane) {
+	ZoneScopedS(60);
 	lock_rotation_plane = p_plane;
 }
 
 void SkeletonModification3DLookAt::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_bone_name", "name"), &SkeletonModification3DLookAt::set_bone_name);
 	ClassDB::bind_method(D_METHOD("get_bone_name"), &SkeletonModification3DLookAt::get_bone_name);
 
@@ -254,6 +274,7 @@ void SkeletonModification3DLookAt::_bind_methods() {
 }
 
 SkeletonModification3DLookAt::SkeletonModification3DLookAt() {
+	ZoneScopedS(60);
 	stack = nullptr;
 	is_setup = false;
 	bone_name = "";

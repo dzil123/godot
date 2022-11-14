@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  rich_text_effect.cpp                                                 */
 /*************************************************************************/
@@ -36,14 +37,17 @@ CharFXTransform::CharFXTransform() {
 }
 
 CharFXTransform::~CharFXTransform() {
+	ZoneScopedS(60);
 	environment.clear();
 }
 
-void RichTextEffect::_bind_methods(){
+void RichTextEffect::_bind_methods() {
+	ZoneScopedS(60);
 	GDVIRTUAL_BIND(_process_custom_fx, "char_fx")
 }
 
 Variant RichTextEffect::get_bbcode() const {
+	ZoneScopedS(60);
 	Variant r;
 	if (get_script_instance()) {
 		if (!get_script_instance()->get("bbcode", r)) {
@@ -55,6 +59,7 @@ Variant RichTextEffect::get_bbcode() const {
 }
 
 bool RichTextEffect::_process_effect_impl(Ref<CharFXTransform> p_cfx) {
+	ZoneScopedS(60);
 	bool return_value = false;
 	GDVIRTUAL_CALL(_process_custom_fx, p_cfx, return_value);
 	return return_value;
@@ -64,6 +69,7 @@ RichTextEffect::RichTextEffect() {
 }
 
 void CharFXTransform::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_range"), &CharFXTransform::get_range);
 	ClassDB::bind_method(D_METHOD("set_range", "range"), &CharFXTransform::set_range);
 

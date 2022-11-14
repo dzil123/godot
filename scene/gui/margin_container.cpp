@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  margin_container.cpp                                                 */
 /*************************************************************************/
@@ -31,6 +32,7 @@
 #include "margin_container.h"
 
 void MarginContainer::_update_theme_item_cache() {
+	ZoneScopedS(60);
 	Container::_update_theme_item_cache();
 
 	theme_cache.margin_left = get_theme_constant(SNAME("margin_left"));
@@ -40,6 +42,7 @@ void MarginContainer::_update_theme_item_cache() {
 }
 
 Size2 MarginContainer::get_minimum_size() const {
+	ZoneScopedS(60);
 	Size2 max;
 
 	for (int i = 0; i < get_child_count(); i++) {
@@ -70,6 +73,7 @@ Size2 MarginContainer::get_minimum_size() const {
 }
 
 Vector<int> MarginContainer::get_allowed_size_flags_horizontal() const {
+	ZoneScopedS(60);
 	Vector<int> flags;
 	flags.append(SIZE_FILL);
 	flags.append(SIZE_SHRINK_BEGIN);
@@ -79,6 +83,7 @@ Vector<int> MarginContainer::get_allowed_size_flags_horizontal() const {
 }
 
 Vector<int> MarginContainer::get_allowed_size_flags_vertical() const {
+	ZoneScopedS(60);
 	Vector<int> flags;
 	flags.append(SIZE_FILL);
 	flags.append(SIZE_SHRINK_BEGIN);
@@ -88,6 +93,7 @@ Vector<int> MarginContainer::get_allowed_size_flags_vertical() const {
 }
 
 void MarginContainer::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_SORT_CHILDREN: {
 			Size2 s = get_size();

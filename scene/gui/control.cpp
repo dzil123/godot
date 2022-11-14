@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  control.cpp                                                          */
 /*************************************************************************/
@@ -57,6 +58,7 @@
 // TODO: Decouple controls from their editor plugin and get rid of this.
 #ifdef TOOLS_ENABLED
 Dictionary Control::_edit_get_state() const {
+	ZoneScopedS(60);
 	Dictionary s;
 	s["rotation"] = get_rotation();
 	s["scale"] = get_scale();
@@ -83,6 +85,7 @@ Dictionary Control::_edit_get_state() const {
 }
 
 void Control::_edit_set_state(const Dictionary &p_state) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND((p_state.size() <= 0) ||
 			!p_state.has("rotation") || !p_state.has("scale") ||
 			!p_state.has("pivot") || !p_state.has("anchors") || !p_state.has("offsets") ||
@@ -124,49 +127,60 @@ void Control::_edit_set_state(const Dictionary &p_state) {
 }
 
 void Control::_edit_set_position(const Point2 &p_position) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!Engine::get_singleton()->is_editor_hint(), "This function can only be used from editor plugins.");
 	set_position(p_position, ControlEditorToolbar::get_singleton()->is_anchors_mode_enabled() && Object::cast_to<Control>(data.parent));
 };
 
 Point2 Control::_edit_get_position() const {
+	ZoneScopedS(60);
 	return get_position();
 };
 
 void Control::_edit_set_scale(const Size2 &p_scale) {
+	ZoneScopedS(60);
 	set_scale(p_scale);
 }
 
 Size2 Control::_edit_get_scale() const {
+	ZoneScopedS(60);
 	return data.scale;
 }
 
 void Control::_edit_set_rect(const Rect2 &p_edit_rect) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!Engine::get_singleton()->is_editor_hint(), "This function can only be used from editor plugins.");
 	set_position((get_position() + get_transform().basis_xform(p_edit_rect.position)).snapped(Vector2(1, 1)), ControlEditorToolbar::get_singleton()->is_anchors_mode_enabled());
 	set_size(p_edit_rect.size.snapped(Vector2(1, 1)), ControlEditorToolbar::get_singleton()->is_anchors_mode_enabled());
 }
 
 Rect2 Control::_edit_get_rect() const {
+	ZoneScopedS(60);
 	return Rect2(Point2(), get_size());
 }
 
 bool Control::_edit_use_rect() const {
+	ZoneScopedS(60);
 	return true;
 }
 
 void Control::_edit_set_rotation(real_t p_rotation) {
+	ZoneScopedS(60);
 	set_rotation(p_rotation);
 }
 
 real_t Control::_edit_get_rotation() const {
+	ZoneScopedS(60);
 	return get_rotation();
 }
 
 bool Control::_edit_use_rotation() const {
+	ZoneScopedS(60);
 	return true;
 }
 
 void Control::_edit_set_pivot(const Point2 &p_pivot) {
+	ZoneScopedS(60);
 	Vector2 delta_pivot = p_pivot - get_pivot_offset();
 	Vector2 move = Vector2((cos(data.rotation) - 1.0) * delta_pivot.x - sin(data.rotation) * delta_pivot.y, sin(data.rotation) * delta_pivot.x + (cos(data.rotation) - 1.0) * delta_pivot.y);
 	set_position(get_position() + move);
@@ -174,14 +188,17 @@ void Control::_edit_set_pivot(const Point2 &p_pivot) {
 }
 
 Point2 Control::_edit_get_pivot() const {
+	ZoneScopedS(60);
 	return get_pivot_offset();
 }
 
 bool Control::_edit_use_pivot() const {
+	ZoneScopedS(60);
 	return true;
 }
 
 Size2 Control::_edit_get_minimum_size() const {
+	ZoneScopedS(60);
 	return get_combined_minimum_size();
 }
 #endif
@@ -189,6 +206,7 @@ Size2 Control::_edit_get_minimum_size() const {
 // Editor integration.
 
 void Control::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+	ZoneScopedS(60);
 	Node::get_argument_options(p_function, p_idx, r_options);
 
 	if (p_idx == 0) {
@@ -214,6 +232,7 @@ void Control::get_argument_options(const StringName &p_function, int p_idx, List
 }
 
 PackedStringArray Control::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (data.mouse_filter == MOUSE_FILTER_IGNORE && !data.tooltip.is_empty()) {
@@ -224,6 +243,7 @@ PackedStringArray Control::get_configuration_warnings() const {
 }
 
 bool Control::is_text_field() const {
+	ZoneScopedS(60);
 	return false;
 }
 
@@ -245,6 +265,7 @@ String Control::properties_managed_by_container[] = {
 };
 
 bool Control::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	String name = p_name;
 	if (!name.begins_with("theme_override")) {
 		return false;
@@ -315,6 +336,7 @@ bool Control::_set(const StringName &p_name, const Variant &p_value) {
 }
 
 bool Control::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	String sname = p_name;
 	if (!sname.begins_with("theme_override")) {
 		return false;
@@ -346,6 +368,7 @@ bool Control::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void Control::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	Ref<Theme> theme = ThemeDB::get_singleton()->get_default_theme();
 
 	p_list->push_back(PropertyInfo(Variant::NIL, TTRC("Theme Overrides"), PROPERTY_HINT_NONE, "theme_override_", PROPERTY_USAGE_GROUP));
@@ -425,6 +448,7 @@ void Control::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 void Control::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	// Update theme type variation options.
 	if (p_property.name == "theme_type_variation") {
 		List<StringName> names;
@@ -568,6 +592,7 @@ void Control::_validate_property(PropertyInfo &p_property) const {
 }
 
 bool Control::_property_can_revert(const StringName &p_name) const {
+	ZoneScopedS(60);
 	if (p_name == "layout_mode" || p_name == "anchors_preset") {
 		return true;
 	}
@@ -576,6 +601,7 @@ bool Control::_property_can_revert(const StringName &p_name) const {
 }
 
 bool Control::_property_get_revert(const StringName &p_name, Variant &r_property) const {
+	ZoneScopedS(60);
 	if (p_name == "layout_mode") {
 		r_property = _get_default_layout_mode();
 		return true;
@@ -590,18 +616,22 @@ bool Control::_property_get_revert(const StringName &p_name, Variant &r_property
 // Global relations.
 
 bool Control::is_top_level_control() const {
+	ZoneScopedS(60);
 	return is_inside_tree() && (!data.parent_canvas_item && !data.RI && is_set_as_top_level());
 }
 
 Control *Control::get_parent_control() const {
+	ZoneScopedS(60);
 	return data.parent;
 }
 
 Window *Control::get_parent_window() const {
+	ZoneScopedS(60);
 	return data.parent_window;
 }
 
 Control *Control::get_root_parent_control() const {
+	ZoneScopedS(60);
 	const CanvasItem *ci = this;
 	const Control *root = this;
 
@@ -622,6 +652,7 @@ Control *Control::get_root_parent_control() const {
 }
 
 Rect2 Control::get_parent_anchorable_rect() const {
+	ZoneScopedS(60);
 	if (!is_inside_tree()) {
 		return Rect2();
 	}
@@ -647,12 +678,14 @@ Rect2 Control::get_parent_anchorable_rect() const {
 }
 
 Size2 Control::get_parent_area_size() const {
+	ZoneScopedS(60);
 	return get_parent_anchorable_rect().size;
 }
 
 // Positioning and sizing.
 
 Transform2D Control::_get_internal_transform() const {
+	ZoneScopedS(60);
 	Transform2D rot_scale;
 	rot_scale.set_rotation_and_scale(data.rotation, data.scale);
 	Transform2D offset;
@@ -662,6 +695,7 @@ Transform2D Control::_get_internal_transform() const {
 }
 
 void Control::_update_canvas_item_transform() {
+	ZoneScopedS(60);
 	Transform2D xform = _get_internal_transform();
 	xform[2] += get_position();
 
@@ -674,6 +708,7 @@ void Control::_update_canvas_item_transform() {
 }
 
 Transform2D Control::get_transform() const {
+	ZoneScopedS(60);
 	Transform2D xform = _get_internal_transform();
 	xform[2] += get_position();
 	return xform;
@@ -682,10 +717,12 @@ Transform2D Control::get_transform() const {
 /// Anchors and offsets.
 
 void Control::_set_anchor(Side p_side, real_t p_anchor) {
+	ZoneScopedS(60);
 	set_anchor(p_side, p_anchor);
 }
 
 void Control::set_anchor(Side p_side, real_t p_anchor, bool p_keep_offset, bool p_push_opposite_anchor) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX((int)p_side, 4);
 
 	Rect2 parent_rect = get_parent_anchorable_rect();
@@ -718,12 +755,14 @@ void Control::set_anchor(Side p_side, real_t p_anchor, bool p_keep_offset, bool 
 }
 
 real_t Control::get_anchor(Side p_side) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(int(p_side), 4, 0.0);
 
 	return data.anchor[p_side];
 }
 
 void Control::set_offset(Side p_side, real_t p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX((int)p_side, 4);
 	if (data.offset[p_side] == p_value) {
 		return;
@@ -734,17 +773,20 @@ void Control::set_offset(Side p_side, real_t p_value) {
 }
 
 real_t Control::get_offset(Side p_side) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V((int)p_side, 4, 0);
 
 	return data.offset[p_side];
 }
 
 void Control::set_anchor_and_offset(Side p_side, real_t p_anchor, real_t p_pos, bool p_push_opposite_anchor) {
+	ZoneScopedS(60);
 	set_anchor(p_side, p_anchor, false, p_push_opposite_anchor);
 	set_offset(p_side, p_pos);
 }
 
 void Control::set_begin(const Size2 &p_point) {
+	ZoneScopedS(60);
 	if (data.offset[0] == p_point.x && data.offset[1] == p_point.y) {
 		return;
 	}
@@ -755,10 +797,12 @@ void Control::set_begin(const Size2 &p_point) {
 }
 
 Size2 Control::get_begin() const {
+	ZoneScopedS(60);
 	return Size2(data.offset[0], data.offset[1]);
 }
 
 void Control::set_end(const Size2 &p_point) {
+	ZoneScopedS(60);
 	if (data.offset[2] == p_point.x && data.offset[3] == p_point.y) {
 		return;
 	}
@@ -769,10 +813,12 @@ void Control::set_end(const Size2 &p_point) {
 }
 
 Size2 Control::get_end() const {
+	ZoneScopedS(60);
 	return Size2(data.offset[2], data.offset[3]);
 }
 
 void Control::set_h_grow_direction(GrowDirection p_direction) {
+	ZoneScopedS(60);
 	if (data.h_grow == p_direction) {
 		return;
 	}
@@ -784,10 +830,12 @@ void Control::set_h_grow_direction(GrowDirection p_direction) {
 }
 
 Control::GrowDirection Control::get_h_grow_direction() const {
+	ZoneScopedS(60);
 	return data.h_grow;
 }
 
 void Control::set_v_grow_direction(GrowDirection p_direction) {
+	ZoneScopedS(60);
 	if (data.v_grow == p_direction) {
 		return;
 	}
@@ -799,10 +847,12 @@ void Control::set_v_grow_direction(GrowDirection p_direction) {
 }
 
 Control::GrowDirection Control::get_v_grow_direction() const {
+	ZoneScopedS(60);
 	return data.v_grow;
 }
 
 void Control::_compute_anchors(Rect2 p_rect, const real_t p_offsets[4], real_t (&r_anchors)[4]) {
+	ZoneScopedS(60);
 	Size2 parent_rect_size = get_parent_anchorable_rect().size;
 	ERR_FAIL_COND(parent_rect_size.x == 0.0);
 	ERR_FAIL_COND(parent_rect_size.y == 0.0);
@@ -818,6 +868,7 @@ void Control::_compute_anchors(Rect2 p_rect, const real_t p_offsets[4], real_t (
 }
 
 void Control::_compute_offsets(Rect2 p_rect, const real_t p_anchors[4], real_t (&r_offsets)[4]) {
+	ZoneScopedS(60);
 	Size2 parent_rect_size = get_parent_anchorable_rect().size;
 
 	real_t x = p_rect.position.x;
@@ -833,6 +884,7 @@ void Control::_compute_offsets(Rect2 p_rect, const real_t p_anchors[4], real_t (
 /// Presets and layout modes.
 
 void Control::_set_layout_mode(LayoutMode p_mode) {
+	ZoneScopedS(60);
 	bool list_changed = false;
 
 	if (data.stored_layout_mode != p_mode) {
@@ -852,6 +904,7 @@ void Control::_set_layout_mode(LayoutMode p_mode) {
 }
 
 Control::LayoutMode Control::_get_layout_mode() const {
+	ZoneScopedS(60);
 	Node *parent_node = get_parent_control();
 	// In these modes the property is read-only.
 	if (!parent_node) {
@@ -870,6 +923,7 @@ Control::LayoutMode Control::_get_layout_mode() const {
 }
 
 Control::LayoutMode Control::_get_default_layout_mode() const {
+	ZoneScopedS(60);
 	Node *parent_node = get_parent_control();
 	// In these modes the property is read-only.
 	if (!parent_node) {
@@ -883,6 +937,7 @@ Control::LayoutMode Control::_get_default_layout_mode() const {
 }
 
 void Control::_set_anchors_layout_preset(int p_preset) {
+	ZoneScopedS(60);
 	bool list_changed = false;
 
 	if (data.stored_layout_mode != LayoutMode::LAYOUT_MODE_ANCHORS) {
@@ -940,6 +995,7 @@ void Control::_set_anchors_layout_preset(int p_preset) {
 }
 
 int Control::_get_anchors_layout_preset() const {
+	ZoneScopedS(60);
 	// If the custom preset was selected by user, use it.
 	if (data.stored_use_custom_anchors) {
 		return -1;
@@ -1010,6 +1066,7 @@ int Control::_get_anchors_layout_preset() const {
 }
 
 void Control::set_anchors_preset(LayoutPreset p_preset, bool p_keep_offsets) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX((int)p_preset, 16);
 
 	//Left
@@ -1126,6 +1183,7 @@ void Control::set_anchors_preset(LayoutPreset p_preset, bool p_keep_offsets) {
 }
 
 void Control::set_offsets_preset(LayoutPreset p_preset, LayoutPresetMode p_resize_mode, int p_margin) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX((int)p_preset, 16);
 	ERR_FAIL_INDEX((int)p_resize_mode, 4);
 
@@ -1261,11 +1319,13 @@ void Control::set_offsets_preset(LayoutPreset p_preset, LayoutPresetMode p_resiz
 }
 
 void Control::set_anchors_and_offsets_preset(LayoutPreset p_preset, LayoutPresetMode p_resize_mode, int p_margin) {
+	ZoneScopedS(60);
 	set_anchors_preset(p_preset);
 	set_offsets_preset(p_preset, p_resize_mode, p_margin);
 }
 
 void Control::set_grow_direction_preset(LayoutPreset p_preset) {
+	ZoneScopedS(60);
 	// Select correct horizontal grow direction.
 	switch (p_preset) {
 		case PRESET_TOP_LEFT:
@@ -1324,10 +1384,12 @@ void Control::set_grow_direction_preset(LayoutPreset p_preset) {
 /// Manual positioning.
 
 void Control::_set_position(const Size2 &p_point) {
+	ZoneScopedS(60);
 	set_position(p_point);
 }
 
 void Control::set_position(const Size2 &p_point, bool p_keep_offsets) {
+	ZoneScopedS(60);
 	if (p_keep_offsets) {
 		_compute_anchors(Rect2(p_point, data.size_cache), data.offset, data.anchor);
 	} else {
@@ -1337,14 +1399,17 @@ void Control::set_position(const Size2 &p_point, bool p_keep_offsets) {
 }
 
 Size2 Control::get_position() const {
+	ZoneScopedS(60);
 	return data.pos_cache;
 }
 
 void Control::_set_global_position(const Point2 &p_point) {
+	ZoneScopedS(60);
 	set_global_position(p_point);
 }
 
 void Control::set_global_position(const Point2 &p_point, bool p_keep_offsets) {
+	ZoneScopedS(60);
 	Transform2D inv;
 
 	if (data.parent_canvas_item) {
@@ -1355,10 +1420,12 @@ void Control::set_global_position(const Point2 &p_point, bool p_keep_offsets) {
 }
 
 Point2 Control::get_global_position() const {
+	ZoneScopedS(60);
 	return get_global_transform().get_origin();
 }
 
 Point2 Control::get_screen_position() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!is_inside_tree(), Point2());
 	Point2 global_pos = get_global_transform_with_canvas().get_origin();
 	Window *w = Object::cast_to<Window>(get_viewport());
@@ -1379,6 +1446,7 @@ void Control::_set_size(const Size2 &p_size) {
 }
 
 void Control::set_size(const Size2 &p_size, bool p_keep_offsets) {
+	ZoneScopedS(60);
 	Size2 new_size = p_size;
 	Size2 min = get_combined_minimum_size();
 	if (new_size.x < min.x) {
@@ -1397,14 +1465,17 @@ void Control::set_size(const Size2 &p_size, bool p_keep_offsets) {
 }
 
 Size2 Control::get_size() const {
+	ZoneScopedS(60);
 	return data.size_cache;
 }
 
 void Control::reset_size() {
+	ZoneScopedS(60);
 	set_size(Size2());
 }
 
 void Control::set_rect(const Rect2 &p_rect) {
+	ZoneScopedS(60);
 	for (int i = 0; i < 4; i++) {
 		data.anchor[i] = ANCHOR_BEGIN;
 	}
@@ -1416,14 +1487,17 @@ void Control::set_rect(const Rect2 &p_rect) {
 }
 
 Rect2 Control::get_rect() const {
+	ZoneScopedS(60);
 	return Rect2(get_position(), get_size());
 }
 
 Rect2 Control::get_global_rect() const {
+	ZoneScopedS(60);
 	return Rect2(get_global_position(), get_size());
 }
 
 Rect2 Control::get_screen_rect() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!is_inside_tree(), Rect2());
 
 	Rect2 r(get_global_position(), get_size());
@@ -1437,10 +1511,12 @@ Rect2 Control::get_screen_rect() const {
 }
 
 Rect2 Control::get_anchorable_rect() const {
+	ZoneScopedS(60);
 	return Rect2(Point2(), get_size());
 }
 
 void Control::set_scale(const Vector2 &p_scale) {
+	ZoneScopedS(60);
 	if (data.scale == p_scale) {
 		return;
 	}
@@ -1458,10 +1534,12 @@ void Control::set_scale(const Vector2 &p_scale) {
 }
 
 Vector2 Control::get_scale() const {
+	ZoneScopedS(60);
 	return data.scale;
 }
 
 void Control::set_rotation(real_t p_radians) {
+	ZoneScopedS(60);
 	if (data.rotation == p_radians) {
 		return;
 	}
@@ -1472,10 +1550,12 @@ void Control::set_rotation(real_t p_radians) {
 }
 
 real_t Control::get_rotation() const {
+	ZoneScopedS(60);
 	return data.rotation;
 }
 
 void Control::set_pivot_offset(const Vector2 &p_pivot) {
+	ZoneScopedS(60);
 	if (data.pivot_offset == p_pivot) {
 		return;
 	}
@@ -1486,12 +1566,14 @@ void Control::set_pivot_offset(const Vector2 &p_pivot) {
 }
 
 Vector2 Control::get_pivot_offset() const {
+	ZoneScopedS(60);
 	return data.pivot_offset;
 }
 
 /// Sizes.
 
 void Control::_update_minimum_size() {
+	ZoneScopedS(60);
 	if (!is_inside_tree()) {
 		return;
 	}
@@ -1507,6 +1589,7 @@ void Control::_update_minimum_size() {
 }
 
 void Control::update_minimum_size() {
+	ZoneScopedS(60);
 	if (!is_inside_tree() || data.block_minimum_size_adjust) {
 		return;
 	}
@@ -1542,20 +1625,24 @@ void Control::update_minimum_size() {
 }
 
 void Control::set_block_minimum_size_adjust(bool p_block) {
+	ZoneScopedS(60);
 	data.block_minimum_size_adjust = p_block;
 }
 
 bool Control::is_minimum_size_adjust_blocked() const {
+	ZoneScopedS(60);
 	return data.block_minimum_size_adjust;
 }
 
 Size2 Control::get_minimum_size() const {
+	ZoneScopedS(60);
 	Vector2 ms;
 	GDVIRTUAL_CALL(_get_minimum_size, ms);
 	return ms;
 }
 
 void Control::set_custom_minimum_size(const Size2 &p_custom) {
+	ZoneScopedS(60);
 	if (p_custom == data.custom_minimum_size) {
 		return;
 	}
@@ -1564,10 +1651,12 @@ void Control::set_custom_minimum_size(const Size2 &p_custom) {
 }
 
 Size2 Control::get_custom_minimum_size() const {
+	ZoneScopedS(60);
 	return data.custom_minimum_size;
 }
 
 void Control::_update_minimum_size_cache() {
+	ZoneScopedS(60);
 	Size2 minsize = get_minimum_size();
 	minsize.x = MAX(minsize.x, data.custom_minimum_size.x);
 	minsize.y = MAX(minsize.y, data.custom_minimum_size.y);
@@ -1586,6 +1675,7 @@ void Control::_update_minimum_size_cache() {
 }
 
 Size2 Control::get_combined_minimum_size() const {
+	ZoneScopedS(60);
 	if (!data.minimum_size_valid) {
 		const_cast<Control *>(this)->_update_minimum_size_cache();
 	}
@@ -1593,6 +1683,7 @@ Size2 Control::get_combined_minimum_size() const {
 }
 
 void Control::_size_changed() {
+	ZoneScopedS(60);
 	Rect2 parent_rect = get_parent_anchorable_rect();
 
 	real_t edge_pos[4];
@@ -1653,12 +1744,14 @@ void Control::_size_changed() {
 }
 
 void Control::_clear_size_warning() {
+	ZoneScopedS(60);
 	data.size_warning = false;
 }
 
 // Container sizing.
 
 void Control::set_h_size_flags(int p_flags) {
+	ZoneScopedS(60);
 	if (data.h_size_flags == p_flags) {
 		return;
 	}
@@ -1667,10 +1760,12 @@ void Control::set_h_size_flags(int p_flags) {
 }
 
 int Control::get_h_size_flags() const {
+	ZoneScopedS(60);
 	return data.h_size_flags;
 }
 
 void Control::set_v_size_flags(int p_flags) {
+	ZoneScopedS(60);
 	if (data.v_size_flags == p_flags) {
 		return;
 	}
@@ -1679,10 +1774,12 @@ void Control::set_v_size_flags(int p_flags) {
 }
 
 int Control::get_v_size_flags() const {
+	ZoneScopedS(60);
 	return data.v_size_flags;
 }
 
 void Control::set_stretch_ratio(real_t p_ratio) {
+	ZoneScopedS(60);
 	if (data.expand == p_ratio) {
 		return;
 	}
@@ -1692,12 +1789,14 @@ void Control::set_stretch_ratio(real_t p_ratio) {
 }
 
 real_t Control::get_stretch_ratio() const {
+	ZoneScopedS(60);
 	return data.expand;
 }
 
 // Input events.
 
 void Control::_call_gui_input(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	emit_signal(SceneStringNames::get_singleton()->gui_input, p_event); //signal should be first, so it's possible to override an event (and then accept it)
 	if (!is_inside_tree() || get_viewport()->is_input_handled()) {
 		return; //input was handled, abort
@@ -1713,12 +1812,14 @@ void Control::gui_input(const Ref<InputEvent> &p_event) {
 }
 
 void Control::accept_event() {
+	ZoneScopedS(60);
 	if (is_inside_tree()) {
 		get_viewport()->_gui_accept_event();
 	}
 }
 
 bool Control::has_point(const Point2 &p_point) const {
+	ZoneScopedS(60);
 	bool ret;
 	if (GDVIRTUAL_CALL(_has_point, p_point, ret)) {
 		return ret;
@@ -1727,6 +1828,7 @@ bool Control::has_point(const Point2 &p_point) const {
 }
 
 void Control::set_mouse_filter(MouseFilter p_filter) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_filter, 3);
 	data.mouse_filter = p_filter;
 	notify_property_list_changed();
@@ -1734,23 +1836,28 @@ void Control::set_mouse_filter(MouseFilter p_filter) {
 }
 
 Control::MouseFilter Control::get_mouse_filter() const {
+	ZoneScopedS(60);
 	return data.mouse_filter;
 }
 
 void Control::set_force_pass_scroll_events(bool p_force_pass_scroll_events) {
+	ZoneScopedS(60);
 	data.force_pass_scroll_events = p_force_pass_scroll_events;
 }
 
 bool Control::is_force_pass_scroll_events() const {
+	ZoneScopedS(60);
 	return data.force_pass_scroll_events;
 }
 
 void Control::warp_mouse(const Point2 &p_position) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!is_inside_tree());
 	get_viewport()->warp_mouse(get_global_transform_with_canvas().xform(p_position));
 }
 
 void Control::set_shortcut_context(const Node *p_node) {
+	ZoneScopedS(60);
 	if (p_node != nullptr) {
 		data.shortcut_context = p_node->get_instance_id();
 	} else {
@@ -1759,6 +1866,7 @@ void Control::set_shortcut_context(const Node *p_node) {
 }
 
 Node *Control::get_shortcut_context() const {
+	ZoneScopedS(60);
 	Object *ctx_obj = ObjectDB::get_instance(data.shortcut_context);
 	Node *ctx_node = Object::cast_to<Node>(ctx_obj);
 
@@ -1766,6 +1874,7 @@ Node *Control::get_shortcut_context() const {
 }
 
 bool Control::is_focus_owner_in_shortcut_context() const {
+	ZoneScopedS(60);
 	if (data.shortcut_context == ObjectID()) {
 		// No context, therefore global - always "in" context.
 		return true;
@@ -1781,6 +1890,7 @@ bool Control::is_focus_owner_in_shortcut_context() const {
 // Drag and drop handling.
 
 void Control::set_drag_forwarding(Object *p_target) {
+	ZoneScopedS(60);
 	if (p_target) {
 		data.drag_owner = p_target->get_instance_id();
 	} else {
@@ -1789,6 +1899,7 @@ void Control::set_drag_forwarding(Object *p_target) {
 }
 
 Variant Control::get_drag_data(const Point2 &p_point) {
+	ZoneScopedS(60);
 	if (data.drag_owner.is_valid()) {
 		Object *obj = ObjectDB::get_instance(data.drag_owner);
 		if (obj) {
@@ -1802,6 +1913,7 @@ Variant Control::get_drag_data(const Point2 &p_point) {
 }
 
 bool Control::can_drop_data(const Point2 &p_point, const Variant &p_data) const {
+	ZoneScopedS(60);
 	if (data.drag_owner.is_valid()) {
 		Object *obj = ObjectDB::get_instance(data.drag_owner);
 		if (obj) {
@@ -1815,6 +1927,7 @@ bool Control::can_drop_data(const Point2 &p_point, const Variant &p_data) const 
 }
 
 void Control::drop_data(const Point2 &p_point, const Variant &p_data) {
+	ZoneScopedS(60);
 	if (data.drag_owner.is_valid()) {
 		Object *obj = ObjectDB::get_instance(data.drag_owner);
 		if (obj) {
@@ -1827,6 +1940,7 @@ void Control::drop_data(const Point2 &p_point, const Variant &p_data) {
 }
 
 void Control::force_drag(const Variant &p_data, Control *p_control) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!is_inside_tree());
 	ERR_FAIL_COND(p_data.get_type() == Variant::NIL);
 
@@ -1834,18 +1948,21 @@ void Control::force_drag(const Variant &p_data, Control *p_control) {
 }
 
 void Control::set_drag_preview(Control *p_control) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!is_inside_tree());
 	ERR_FAIL_COND(!get_viewport()->gui_is_dragging());
 	get_viewport()->_gui_set_drag_preview(this, p_control);
 }
 
 bool Control::is_drag_successful() const {
+	ZoneScopedS(60);
 	return is_inside_tree() && get_viewport()->gui_is_drag_successful();
 }
 
 // Focus.
 
 void Control::set_focus_mode(FocusMode p_focus_mode) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX((int)p_focus_mode, 3);
 
 	if (is_inside_tree() && p_focus_mode == FOCUS_NONE && data.focus_mode != FOCUS_NONE && has_focus()) {
@@ -1856,14 +1973,17 @@ void Control::set_focus_mode(FocusMode p_focus_mode) {
 }
 
 Control::FocusMode Control::get_focus_mode() const {
+	ZoneScopedS(60);
 	return data.focus_mode;
 }
 
 bool Control::has_focus() const {
+	ZoneScopedS(60);
 	return is_inside_tree() && get_viewport()->_gui_control_has_focus(this);
 }
 
 void Control::grab_focus() {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!is_inside_tree());
 
 	if (data.focus_mode == FOCUS_NONE) {
@@ -1875,12 +1995,14 @@ void Control::grab_focus() {
 }
 
 void Control::grab_click_focus() {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!is_inside_tree());
 
 	get_viewport()->_gui_grab_click_focus(this);
 }
 
 void Control::release_focus() {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!is_inside_tree());
 
 	if (!has_focus()) {
@@ -1891,6 +2013,7 @@ void Control::release_focus() {
 }
 
 static Control *_next_control(Control *p_from) {
+	ZoneScopedS(60);
 	if (p_from->is_set_as_top_level()) {
 		return nullptr; // Can't go above.
 	}
@@ -1917,6 +2040,7 @@ static Control *_next_control(Control *p_from) {
 }
 
 Control *Control::find_next_valid_focus() const {
+	ZoneScopedS(60);
 	Control *from = const_cast<Control *>(this);
 
 	while (true) {
@@ -1987,6 +2111,7 @@ Control *Control::find_next_valid_focus() const {
 }
 
 static Control *_prev_control(Control *p_from) {
+	ZoneScopedS(60);
 	Control *child = nullptr;
 	for (int i = p_from->get_child_count() - 1; i >= 0; i--) {
 		Control *c = Object::cast_to<Control>(p_from->get_child(i));
@@ -2007,6 +2132,7 @@ static Control *_prev_control(Control *p_from) {
 }
 
 Control *Control::find_prev_valid_focus() const {
+	ZoneScopedS(60);
 	Control *from = const_cast<Control *>(this);
 
 	while (true) {
@@ -2069,34 +2195,41 @@ Control *Control::find_prev_valid_focus() const {
 }
 
 void Control::set_focus_neighbor(Side p_side, const NodePath &p_neighbor) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX((int)p_side, 4);
 	data.focus_neighbor[p_side] = p_neighbor;
 }
 
 NodePath Control::get_focus_neighbor(Side p_side) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V((int)p_side, 4, NodePath());
 	return data.focus_neighbor[p_side];
 }
 
 void Control::set_focus_next(const NodePath &p_next) {
+	ZoneScopedS(60);
 	data.focus_next = p_next;
 }
 
 NodePath Control::get_focus_next() const {
+	ZoneScopedS(60);
 	return data.focus_next;
 }
 
 void Control::set_focus_previous(const NodePath &p_prev) {
+	ZoneScopedS(60);
 	data.focus_prev = p_prev;
 }
 
 NodePath Control::get_focus_previous() const {
+	ZoneScopedS(60);
 	return data.focus_prev;
 }
 
 #define MAX_NEIGHBOR_SEARCH_COUNT 512
 
 Control *Control::_get_focus_neighbor(Side p_side, int p_count) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V((int)p_side, 4, nullptr);
 
 	if (p_count >= MAX_NEIGHBOR_SEARCH_COUNT) {
@@ -2178,6 +2311,7 @@ Control *Control::_get_focus_neighbor(Side p_side, int p_count) {
 }
 
 void Control::_window_find_focus_neighbor(const Vector2 &p_dir, Node *p_at, const Point2 *p_points, real_t p_min, real_t &r_closest_dist, Control **r_closest) {
+	ZoneScopedS(60);
 	if (Object::cast_to<Viewport>(p_at)) {
 		return; //bye
 	}
@@ -2237,6 +2371,7 @@ void Control::_window_find_focus_neighbor(const Vector2 &p_dir, Node *p_at, cons
 // Rendering.
 
 void Control::set_default_cursor_shape(CursorShape p_shape) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(int(p_shape), CURSOR_MAX);
 
 	if (data.default_cursor == p_shape) {
@@ -2255,14 +2390,17 @@ void Control::set_default_cursor_shape(CursorShape p_shape) {
 }
 
 Control::CursorShape Control::get_default_cursor_shape() const {
+	ZoneScopedS(60);
 	return data.default_cursor;
 }
 
 Control::CursorShape Control::get_cursor_shape(const Point2 &p_pos) const {
+	ZoneScopedS(60);
 	return data.default_cursor;
 }
 
 void Control::set_disable_visibility_clip(bool p_ignore) {
+	ZoneScopedS(60);
 	if (data.disable_visibility_clip == p_ignore) {
 		return;
 	}
@@ -2271,10 +2409,12 @@ void Control::set_disable_visibility_clip(bool p_ignore) {
 }
 
 bool Control::is_visibility_clip_disabled() const {
+	ZoneScopedS(60);
 	return data.disable_visibility_clip;
 }
 
 void Control::set_clip_contents(bool p_clip) {
+	ZoneScopedS(60);
 	if (data.clip_contents == p_clip) {
 		return;
 	}
@@ -2283,24 +2423,28 @@ void Control::set_clip_contents(bool p_clip) {
 }
 
 bool Control::is_clipping_contents() {
+	ZoneScopedS(60);
 	return data.clip_contents;
 }
 
 // Theming.
 
 void Control::_theme_changed() {
+	ZoneScopedS(60);
 	if (is_inside_tree()) {
 		data.theme_owner->propagate_theme_changed(this, this, true, false);
 	}
 }
 
 void Control::_notify_theme_override_changed() {
+	ZoneScopedS(60);
 	if (!data.bulk_theme_override && is_inside_tree()) {
 		notification(NOTIFICATION_THEME_CHANGED);
 	}
 }
 
 void Control::_invalidate_theme_cache() {
+	ZoneScopedS(60);
 	data.theme_icon_cache.clear();
 	data.theme_style_cache.clear();
 	data.theme_font_cache.clear();
@@ -2313,18 +2457,22 @@ void Control::_update_theme_item_cache() {
 }
 
 void Control::set_theme_owner_node(Node *p_node) {
+	ZoneScopedS(60);
 	data.theme_owner->set_owner_node(p_node);
 }
 
 Node *Control::get_theme_owner_node() const {
+	ZoneScopedS(60);
 	return data.theme_owner->get_owner_node();
 }
 
 bool Control::has_theme_owner_node() const {
+	ZoneScopedS(60);
 	return data.theme_owner->has_owner_node();
 }
 
 void Control::set_theme(const Ref<Theme> &p_theme) {
+	ZoneScopedS(60);
 	if (data.theme == p_theme) {
 		return;
 	}
@@ -2356,10 +2504,12 @@ void Control::set_theme(const Ref<Theme> &p_theme) {
 }
 
 Ref<Theme> Control::get_theme() const {
+	ZoneScopedS(60);
 	return data.theme;
 }
 
 void Control::set_theme_type_variation(const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	if (data.theme_type_variation == p_theme_type) {
 		return;
 	}
@@ -2370,12 +2520,14 @@ void Control::set_theme_type_variation(const StringName &p_theme_type) {
 }
 
 StringName Control::get_theme_type_variation() const {
+	ZoneScopedS(60);
 	return data.theme_type_variation;
 }
 
 /// Theme property lookup.
 
 Ref<Texture2D> Control::get_theme_icon(const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	if (p_theme_type == StringName() || p_theme_type == get_class_name() || p_theme_type == data.theme_type_variation) {
 		const Ref<Texture2D> *tex = data.icon_override.getptr(p_name);
 		if (tex) {
@@ -2395,6 +2547,7 @@ Ref<Texture2D> Control::get_theme_icon(const StringName &p_name, const StringNam
 }
 
 Ref<StyleBox> Control::get_theme_stylebox(const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	if (p_theme_type == StringName() || p_theme_type == get_class_name() || p_theme_type == data.theme_type_variation) {
 		const Ref<StyleBox> *style = data.style_override.getptr(p_name);
 		if (style) {
@@ -2414,6 +2567,7 @@ Ref<StyleBox> Control::get_theme_stylebox(const StringName &p_name, const String
 }
 
 Ref<Font> Control::get_theme_font(const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	if (p_theme_type == StringName() || p_theme_type == get_class_name() || p_theme_type == data.theme_type_variation) {
 		const Ref<Font> *font = data.font_override.getptr(p_name);
 		if (font) {
@@ -2433,6 +2587,7 @@ Ref<Font> Control::get_theme_font(const StringName &p_name, const StringName &p_
 }
 
 int Control::get_theme_font_size(const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	if (p_theme_type == StringName() || p_theme_type == get_class_name() || p_theme_type == data.theme_type_variation) {
 		const int *font_size = data.font_size_override.getptr(p_name);
 		if (font_size && (*font_size) > 0) {
@@ -2452,6 +2607,7 @@ int Control::get_theme_font_size(const StringName &p_name, const StringName &p_t
 }
 
 Color Control::get_theme_color(const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	if (p_theme_type == StringName() || p_theme_type == get_class_name() || p_theme_type == data.theme_type_variation) {
 		const Color *color = data.color_override.getptr(p_name);
 		if (color) {
@@ -2471,6 +2627,7 @@ Color Control::get_theme_color(const StringName &p_name, const StringName &p_the
 }
 
 int Control::get_theme_constant(const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	if (p_theme_type == StringName() || p_theme_type == get_class_name() || p_theme_type == data.theme_type_variation) {
 		const int *constant = data.constant_override.getptr(p_name);
 		if (constant) {
@@ -2490,6 +2647,7 @@ int Control::get_theme_constant(const StringName &p_name, const StringName &p_th
 }
 
 bool Control::has_theme_icon(const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	if (p_theme_type == StringName() || p_theme_type == get_class_name() || p_theme_type == data.theme_type_variation) {
 		if (has_theme_icon_override(p_name)) {
 			return true;
@@ -2502,6 +2660,7 @@ bool Control::has_theme_icon(const StringName &p_name, const StringName &p_theme
 }
 
 bool Control::has_theme_stylebox(const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	if (p_theme_type == StringName() || p_theme_type == get_class_name() || p_theme_type == data.theme_type_variation) {
 		if (has_theme_stylebox_override(p_name)) {
 			return true;
@@ -2514,6 +2673,7 @@ bool Control::has_theme_stylebox(const StringName &p_name, const StringName &p_t
 }
 
 bool Control::has_theme_font(const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	if (p_theme_type == StringName() || p_theme_type == get_class_name() || p_theme_type == data.theme_type_variation) {
 		if (has_theme_font_override(p_name)) {
 			return true;
@@ -2526,6 +2686,7 @@ bool Control::has_theme_font(const StringName &p_name, const StringName &p_theme
 }
 
 bool Control::has_theme_font_size(const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	if (p_theme_type == StringName() || p_theme_type == get_class_name() || p_theme_type == data.theme_type_variation) {
 		if (has_theme_font_size_override(p_name)) {
 			return true;
@@ -2538,6 +2699,7 @@ bool Control::has_theme_font_size(const StringName &p_name, const StringName &p_
 }
 
 bool Control::has_theme_color(const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	if (p_theme_type == StringName() || p_theme_type == get_class_name() || p_theme_type == data.theme_type_variation) {
 		if (has_theme_color_override(p_name)) {
 			return true;
@@ -2550,6 +2712,7 @@ bool Control::has_theme_color(const StringName &p_name, const StringName &p_them
 }
 
 bool Control::has_theme_constant(const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	if (p_theme_type == StringName() || p_theme_type == get_class_name() || p_theme_type == data.theme_type_variation) {
 		if (has_theme_constant_override(p_name)) {
 			return true;
@@ -2564,6 +2727,7 @@ bool Control::has_theme_constant(const StringName &p_name, const StringName &p_t
 /// Local property overrides.
 
 void Control::add_theme_icon_override(const StringName &p_name, const Ref<Texture2D> &p_icon) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!p_icon.is_valid());
 
 	if (data.icon_override.has(p_name)) {
@@ -2576,6 +2740,7 @@ void Control::add_theme_icon_override(const StringName &p_name, const Ref<Textur
 }
 
 void Control::add_theme_style_override(const StringName &p_name, const Ref<StyleBox> &p_style) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!p_style.is_valid());
 
 	if (data.style_override.has(p_name)) {
@@ -2588,6 +2753,7 @@ void Control::add_theme_style_override(const StringName &p_name, const Ref<Style
 }
 
 void Control::add_theme_font_override(const StringName &p_name, const Ref<Font> &p_font) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!p_font.is_valid());
 
 	if (data.font_override.has(p_name)) {
@@ -2600,21 +2766,25 @@ void Control::add_theme_font_override(const StringName &p_name, const Ref<Font> 
 }
 
 void Control::add_theme_font_size_override(const StringName &p_name, int p_font_size) {
+	ZoneScopedS(60);
 	data.font_size_override[p_name] = p_font_size;
 	_notify_theme_override_changed();
 }
 
 void Control::add_theme_color_override(const StringName &p_name, const Color &p_color) {
+	ZoneScopedS(60);
 	data.color_override[p_name] = p_color;
 	_notify_theme_override_changed();
 }
 
 void Control::add_theme_constant_override(const StringName &p_name, int p_constant) {
+	ZoneScopedS(60);
 	data.constant_override[p_name] = p_constant;
 	_notify_theme_override_changed();
 }
 
 void Control::remove_theme_icon_override(const StringName &p_name) {
+	ZoneScopedS(60);
 	if (data.icon_override.has(p_name)) {
 		data.icon_override[p_name]->disconnect("changed", callable_mp(this, &Control::_notify_theme_override_changed));
 	}
@@ -2624,6 +2794,7 @@ void Control::remove_theme_icon_override(const StringName &p_name) {
 }
 
 void Control::remove_theme_style_override(const StringName &p_name) {
+	ZoneScopedS(60);
 	if (data.style_override.has(p_name)) {
 		data.style_override[p_name]->disconnect("changed", callable_mp(this, &Control::_notify_theme_override_changed));
 	}
@@ -2633,6 +2804,7 @@ void Control::remove_theme_style_override(const StringName &p_name) {
 }
 
 void Control::remove_theme_font_override(const StringName &p_name) {
+	ZoneScopedS(60);
 	if (data.font_override.has(p_name)) {
 		data.font_override[p_name]->disconnect("changed", callable_mp(this, &Control::_notify_theme_override_changed));
 	}
@@ -2642,46 +2814,55 @@ void Control::remove_theme_font_override(const StringName &p_name) {
 }
 
 void Control::remove_theme_font_size_override(const StringName &p_name) {
+	ZoneScopedS(60);
 	data.font_size_override.erase(p_name);
 	_notify_theme_override_changed();
 }
 
 void Control::remove_theme_color_override(const StringName &p_name) {
+	ZoneScopedS(60);
 	data.color_override.erase(p_name);
 	_notify_theme_override_changed();
 }
 
 void Control::remove_theme_constant_override(const StringName &p_name) {
+	ZoneScopedS(60);
 	data.constant_override.erase(p_name);
 	_notify_theme_override_changed();
 }
 
 bool Control::has_theme_icon_override(const StringName &p_name) const {
+	ZoneScopedS(60);
 	const Ref<Texture2D> *tex = data.icon_override.getptr(p_name);
 	return tex != nullptr;
 }
 
 bool Control::has_theme_stylebox_override(const StringName &p_name) const {
+	ZoneScopedS(60);
 	const Ref<StyleBox> *style = data.style_override.getptr(p_name);
 	return style != nullptr;
 }
 
 bool Control::has_theme_font_override(const StringName &p_name) const {
+	ZoneScopedS(60);
 	const Ref<Font> *font = data.font_override.getptr(p_name);
 	return font != nullptr;
 }
 
 bool Control::has_theme_font_size_override(const StringName &p_name) const {
+	ZoneScopedS(60);
 	const int *font_size = data.font_size_override.getptr(p_name);
 	return font_size != nullptr;
 }
 
 bool Control::has_theme_color_override(const StringName &p_name) const {
+	ZoneScopedS(60);
 	const Color *color = data.color_override.getptr(p_name);
 	return color != nullptr;
 }
 
 bool Control::has_theme_constant_override(const StringName &p_name) const {
+	ZoneScopedS(60);
 	const int *constant = data.constant_override.getptr(p_name);
 	return constant != nullptr;
 }
@@ -2689,24 +2870,29 @@ bool Control::has_theme_constant_override(const StringName &p_name) const {
 /// Default theme properties.
 
 float Control::get_theme_default_base_scale() const {
+	ZoneScopedS(60);
 	return data.theme_owner->get_theme_default_base_scale();
 }
 
 Ref<Font> Control::get_theme_default_font() const {
+	ZoneScopedS(60);
 	return data.theme_owner->get_theme_default_font();
 }
 
 int Control::get_theme_default_font_size() const {
+	ZoneScopedS(60);
 	return data.theme_owner->get_theme_default_font_size();
 }
 
 /// Bulk actions.
 
 void Control::begin_bulk_theme_override() {
+	ZoneScopedS(60);
 	data.bulk_theme_override = true;
 }
 
 void Control::end_bulk_theme_override() {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!data.bulk_theme_override);
 
 	data.bulk_theme_override = false;
@@ -2716,6 +2902,7 @@ void Control::end_bulk_theme_override() {
 // Internationalization.
 
 TypedArray<Vector2i> Control::structured_text_parser(TextServer::StructuredTextParser p_parser_type, const Array &p_args, const String &p_text) const {
+	ZoneScopedS(60);
 	if (p_parser_type == TextServer::STRUCTURED_TEXT_CUSTOM) {
 		TypedArray<Vector2i> ret;
 		GDVIRTUAL_CALL(_structured_text_parser, p_args, p_text, ret);
@@ -2726,6 +2913,7 @@ TypedArray<Vector2i> Control::structured_text_parser(TextServer::StructuredTextP
 }
 
 void Control::set_layout_direction(Control::LayoutDirection p_direction) {
+	ZoneScopedS(60);
 	if (data.layout_dir == p_direction) {
 		return;
 	}
@@ -2738,10 +2926,12 @@ void Control::set_layout_direction(Control::LayoutDirection p_direction) {
 }
 
 Control::LayoutDirection Control::get_layout_direction() const {
+	ZoneScopedS(60);
 	return data.layout_dir;
 }
 
 bool Control::is_layout_rtl() const {
+	ZoneScopedS(60);
 	if (data.is_rtl_dirty) {
 		const_cast<Control *>(this)->data.is_rtl_dirty = false;
 		if (data.layout_dir == LAYOUT_DIRECTION_INHERITED) {
@@ -2774,6 +2964,7 @@ bool Control::is_layout_rtl() const {
 }
 
 void Control::set_auto_translate(bool p_enable) {
+	ZoneScopedS(60);
 	if (p_enable == data.auto_translate) {
 		return;
 	}
@@ -2784,25 +2975,30 @@ void Control::set_auto_translate(bool p_enable) {
 }
 
 bool Control::is_auto_translating() const {
+	ZoneScopedS(60);
 	return data.auto_translate;
 }
 
 // Extra properties.
 
 void Control::set_tooltip_text(const String &p_hint) {
+	ZoneScopedS(60);
 	data.tooltip = p_hint;
 	update_configuration_warnings();
 }
 
 String Control::get_tooltip_text() const {
+	ZoneScopedS(60);
 	return data.tooltip;
 }
 
 String Control::get_tooltip(const Point2 &p_pos) const {
+	ZoneScopedS(60);
 	return data.tooltip;
 }
 
 Control *Control::make_custom_tooltip(const String &p_text) const {
+	ZoneScopedS(60);
 	Object *ret = nullptr;
 	GDVIRTUAL_CALL(_make_custom_tooltip, p_text, ret);
 	return Object::cast_to<Control>(ret);
@@ -2811,6 +3007,7 @@ Control *Control::make_custom_tooltip(const String &p_text) const {
 // Base object overrides.
 
 void Control::_notification(int p_notification) {
+	ZoneScopedS(60);
 	switch (p_notification) {
 		case NOTIFICATION_POSTINITIALIZE: {
 			_invalidate_theme_cache();
@@ -2986,6 +3183,7 @@ void Control::_notification(int p_notification) {
 }
 
 void Control::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("_update_minimum_size"), &Control::_update_minimum_size);
 
 	ClassDB::bind_method(D_METHOD("accept_event"), &Control::accept_event);
@@ -3330,10 +3528,12 @@ void Control::_bind_methods() {
 }
 
 Control::Control() {
+	ZoneScopedS(60);
 	data.theme_owner = memnew(ThemeOwner);
 }
 
 Control::~Control() {
+	ZoneScopedS(60);
 	memdelete(data.theme_owner);
 
 	// Resources need to be disconnected.

@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  popup.cpp                                                            */
 /*************************************************************************/
@@ -35,6 +36,7 @@
 #include "scene/gui/panel.h"
 
 void Popup::_input_from_window(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	Ref<InputEventKey> key = p_event;
 	if (key.is_valid() && key->is_pressed() && key->get_keycode() == Key::ESCAPE) {
 		_close_pressed();
@@ -42,6 +44,7 @@ void Popup::_input_from_window(const Ref<InputEvent> &p_event) {
 }
 
 void Popup::_initialize_visible_parents() {
+	ZoneScopedS(60);
 	if (is_embedded()) {
 		visible_parents.clear();
 
@@ -58,6 +61,7 @@ void Popup::_initialize_visible_parents() {
 }
 
 void Popup::_deinitialize_visible_parents() {
+	ZoneScopedS(60);
 	if (is_embedded()) {
 		for (uint32_t i = 0; i < visible_parents.size(); ++i) {
 			visible_parents[i]->disconnect("focus_entered", callable_mp(this, &Popup::_parent_focused));
@@ -69,12 +73,14 @@ void Popup::_deinitialize_visible_parents() {
 }
 
 void Popup::_update_theme_item_cache() {
+	ZoneScopedS(60);
 	Window::_update_theme_item_cache();
 
 	theme_cache.panel_style = get_theme_stylebox(SNAME("panel"));
 }
 
 void Popup::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_VISIBILITY_CHANGED: {
 			if (!is_in_edited_scene_root()) {
@@ -112,12 +118,14 @@ void Popup::_notification(int p_what) {
 }
 
 void Popup::_parent_focused() {
+	ZoneScopedS(60);
 	if (popped_up && get_flag(FLAG_POPUP)) {
 		_close_pressed();
 	}
 }
 
 void Popup::_close_pressed() {
+	ZoneScopedS(60);
 	popped_up = false;
 
 	_deinitialize_visible_parents();
@@ -126,15 +134,18 @@ void Popup::_close_pressed() {
 }
 
 void Popup::_post_popup() {
+	ZoneScopedS(60);
 	Window::_post_popup();
 	popped_up = true;
 }
 
 void Popup::_bind_methods() {
+	ZoneScopedS(60);
 	ADD_SIGNAL(MethodInfo("popup_hide"));
 }
 
 void Popup::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (
 			p_property.name == "transient" ||
 			p_property.name == "exclusive" ||
@@ -145,6 +156,7 @@ void Popup::_validate_property(PropertyInfo &p_property) const {
 }
 
 Rect2i Popup::_popup_adjust_rect() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!is_inside_tree(), Rect2());
 	Rect2i parent_rect = get_usable_parent_rect();
 
@@ -196,6 +208,7 @@ Rect2i Popup::_popup_adjust_rect() const {
 }
 
 Popup::Popup() {
+	ZoneScopedS(60);
 	set_wrap_controls(true);
 	set_visible(false);
 	set_transient(true);
@@ -210,6 +223,7 @@ Popup::~Popup() {
 }
 
 Size2 PopupPanel::_get_contents_minimum_size() const {
+	ZoneScopedS(60);
 	Size2 ms;
 
 	for (int i = 0; i < get_child_count(); i++) {
@@ -231,6 +245,7 @@ Size2 PopupPanel::_get_contents_minimum_size() const {
 }
 
 void PopupPanel::_update_child_rects() {
+	ZoneScopedS(60);
 	Vector2 cpos(theme_cache.panel_style->get_offset());
 	Vector2 csize(get_size() - theme_cache.panel_style->get_minimum_size());
 
@@ -255,12 +270,14 @@ void PopupPanel::_update_child_rects() {
 }
 
 void PopupPanel::_update_theme_item_cache() {
+	ZoneScopedS(60);
 	Popup::_update_theme_item_cache();
 
 	theme_cache.panel_style = get_theme_stylebox(SNAME("panel"));
 }
 
 void PopupPanel::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_READY:
 		case NOTIFICATION_THEME_CHANGED: {
@@ -275,6 +292,7 @@ void PopupPanel::_notification(int p_what) {
 }
 
 PopupPanel::PopupPanel() {
+	ZoneScopedS(60);
 	panel = memnew(Panel);
 	add_child(panel, false, INTERNAL_MODE_FRONT);
 }

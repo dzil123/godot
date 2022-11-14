@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  os_unix.cpp                                                          */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "os_unix.h"
 
 #ifdef UNIX_ENABLED
@@ -84,6 +115,7 @@ static uint64_t _clock_start = 0;
 #if defined(__APPLE__)
 static double _clock_scale = 0;
 static void _setup_clock() {
+	ZoneScopedS(60);
 	mach_timebase_info_data_t info;
 	kern_return_t ret = mach_timebase_info(&info);
 	ERR_FAIL_COND_MSG(ret != 0, "OS CLOCK IS NOT WORKING!");
@@ -97,6 +129,7 @@ static void _setup_clock() {
 #define GODOT_CLOCK CLOCK_MONOTONIC
 #endif
 static void _setup_clock() {
+	ZoneScopedS(60);
 	struct timespec tv_now = { 0, 0 };
 	ERR_FAIL_COND_MSG(clock_gettime(GODOT_CLOCK, &tv_now) != 0, "OS CLOCK IS NOT WORKING!");
 	_clock_start = ((uint64_t)tv_now.tv_nsec / 1000L) + (uint64_t)tv_now.tv_sec * 1000000L;
@@ -104,6 +137,7 @@ static void _setup_clock() {
 #endif
 
 static void handle_interrupt(int sig) {
+	ZoneScopedS(60);
 	if (!EngineDebugger::is_active()) {
 		return;
 	}
@@ -113,6 +147,7 @@ static void handle_interrupt(int sig) {
 }
 
 void OS_Unix::initialize_debugging() {
+	ZoneScopedS(60);
 	if (EngineDebugger::is_active()) {
 		struct sigaction action;
 		memset(&action, 0, sizeof(action));
@@ -122,10 +157,12 @@ void OS_Unix::initialize_debugging() {
 }
 
 int OS_Unix::unix_initialize_audio(int p_audio_driver) {
+	ZoneScopedS(60);
 	return 0;
 }
 
 void OS_Unix::initialize_core() {
+	ZoneScopedS(60);
 	init_thread_posix();
 
 	FileAccess::make_default<FileAccessUnix>(FileAccess::ACCESS_RESOURCES);
@@ -142,14 +179,17 @@ void OS_Unix::initialize_core() {
 }
 
 void OS_Unix::finalize_core() {
+	ZoneScopedS(60);
 	NetSocketPosix::cleanup();
 }
 
 Vector<String> OS_Unix::get_video_adapter_driver_info() const {
+	ZoneScopedS(60);
 	return Vector<String>();
 }
 
 String OS_Unix::get_stdin_string(bool p_block) {
+	ZoneScopedS(60);
 	if (p_block) {
 		char buff[1024];
 		String ret = stdin_buf + fgets(buff, 1024, stdin);
@@ -187,24 +227,29 @@ Error OS_Unix::get_entropy(uint8_t *r_buffer, int p_bytes) {
 }
 
 String OS_Unix::get_name() const {
+	ZoneScopedS(60);
 	return "Unix";
 }
 
 String OS_Unix::get_distribution_name() const {
+	ZoneScopedS(60);
 	return "";
 }
 
 String OS_Unix::get_version() const {
+	ZoneScopedS(60);
 	return "";
 }
 
 double OS_Unix::get_unix_time() const {
+	ZoneScopedS(60);
 	struct timeval tv_now;
 	gettimeofday(&tv_now, nullptr);
 	return (double)tv_now.tv_sec + double(tv_now.tv_usec) / 1000000;
 }
 
 OS::DateTime OS_Unix::get_datetime(bool p_utc) const {
+	ZoneScopedS(60);
 	time_t t = time(nullptr);
 	struct tm lt;
 	if (p_utc) {
@@ -229,6 +274,7 @@ OS::DateTime OS_Unix::get_datetime(bool p_utc) const {
 }
 
 OS::TimeZoneInfo OS_Unix::get_time_zone_info() const {
+	ZoneScopedS(60);
 	time_t t = time(nullptr);
 	struct tm lt;
 	localtime_r(&t, &lt);
@@ -257,6 +303,7 @@ OS::TimeZoneInfo OS_Unix::get_time_zone_info() const {
 }
 
 void OS_Unix::delay_usec(uint32_t p_usec) const {
+	ZoneScopedS(60);
 	struct timespec requested = { static_cast<time_t>(p_usec / 1000000), (static_cast<long>(p_usec) % 1000000) * 1000 };
 	struct timespec remaining;
 	while (nanosleep(&requested, &remaining) == -1 && errno == EINTR) {
@@ -395,6 +442,7 @@ Error OS_Unix::create_process(const String &p_path, const List<String> &p_argume
 }
 
 Error OS_Unix::kill(const ProcessID &p_pid) {
+	ZoneScopedS(60);
 	int ret = ::kill(p_pid, SIGKILL);
 	if (!ret) {
 		//avoid zombie process
@@ -405,10 +453,12 @@ Error OS_Unix::kill(const ProcessID &p_pid) {
 }
 
 int OS_Unix::get_process_id() const {
+	ZoneScopedS(60);
 	return getpid();
 }
 
 bool OS_Unix::is_process_running(const ProcessID &p_pid) const {
+	ZoneScopedS(60);
 	int status = 0;
 	if (waitpid(p_pid, &status, WNOHANG) != 0) {
 		return false;
@@ -418,10 +468,12 @@ bool OS_Unix::is_process_running(const ProcessID &p_pid) const {
 }
 
 bool OS_Unix::has_environment(const String &p_var) const {
+	ZoneScopedS(60);
 	return getenv(p_var.utf8().get_data()) != nullptr;
 }
 
 String OS_Unix::get_locale() const {
+	ZoneScopedS(60);
 	if (!has_environment("LANG")) {
 		return "en";
 	}
@@ -435,6 +487,7 @@ String OS_Unix::get_locale() const {
 }
 
 Error OS_Unix::open_dynamic_library(const String p_path, void *&p_library_handle, bool p_also_set_library_path, String *r_resolved_path) {
+	ZoneScopedS(60);
 	String path = p_path;
 
 	if (FileAccess::exists(path) && path.is_relative_path()) {
@@ -464,6 +517,7 @@ Error OS_Unix::open_dynamic_library(const String p_path, void *&p_library_handle
 }
 
 Error OS_Unix::close_dynamic_library(void *p_library_handle) {
+	ZoneScopedS(60);
 	if (dlclose(p_library_handle)) {
 		return FAILED;
 	}
@@ -471,6 +525,7 @@ Error OS_Unix::close_dynamic_library(void *p_library_handle) {
 }
 
 Error OS_Unix::get_dynamic_library_symbol_handle(void *p_library_handle, const String p_name, void *&p_symbol_handle, bool p_optional) {
+	ZoneScopedS(60);
 	const char *error;
 	dlerror(); // Clear existing errors
 
@@ -486,6 +541,7 @@ Error OS_Unix::get_dynamic_library_symbol_handle(void *p_library_handle, const S
 }
 
 Error OS_Unix::set_cwd(const String &p_cwd) {
+	ZoneScopedS(60);
 	if (chdir(p_cwd.utf8().get_data()) != 0) {
 		return ERR_CANT_OPEN;
 	}
@@ -494,6 +550,7 @@ Error OS_Unix::set_cwd(const String &p_cwd) {
 }
 
 String OS_Unix::get_environment(const String &p_var) const {
+	ZoneScopedS(60);
 	if (getenv(p_var.utf8().get_data())) {
 		return getenv(p_var.utf8().get_data());
 	}
@@ -501,10 +558,12 @@ String OS_Unix::get_environment(const String &p_var) const {
 }
 
 bool OS_Unix::set_environment(const String &p_var, const String &p_value) const {
+	ZoneScopedS(60);
 	return setenv(p_var.utf8().get_data(), p_value.utf8().get_data(), /* overwrite: */ true) == 0;
 }
 
 String OS_Unix::get_user_data_dir() const {
+	ZoneScopedS(60);
 	String appname = get_safe_dir_name(GLOBAL_GET("application/config/name"));
 	if (!appname.is_empty()) {
 		bool use_custom_dir = GLOBAL_GET("application/config/use_custom_user_dir");
@@ -576,6 +635,7 @@ String OS_Unix::get_executable_path() const {
 }
 
 void UnixTerminalLogger::log_error(const char *p_function, const char *p_file, int p_line, const char *p_code, const char *p_rationale, bool p_editor_notify, ErrorType p_type) {
+	ZoneScopedS(60);
 	if (!should_log(true)) {
 		return;
 	}
@@ -626,6 +686,7 @@ void UnixTerminalLogger::log_error(const char *p_function, const char *p_file, i
 UnixTerminalLogger::~UnixTerminalLogger() {}
 
 OS_Unix::OS_Unix() {
+	ZoneScopedS(60);
 	Vector<Logger *> loggers;
 	loggers.push_back(memnew(UnixTerminalLogger));
 	_set_logger(memnew(CompositeLogger(loggers)));

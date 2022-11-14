@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  voxel_gi.cpp                                                         */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "voxel_gi.h"
 
 #include "core/config/project_settings.h"
@@ -38,6 +69,7 @@
 #include "voxelizer.h"
 
 void VoxelGIData::_set_data(const Dictionary &p_data) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!p_data.has("bounds"));
 	ERR_FAIL_COND(!p_data.has("octree_size"));
 	ERR_FAIL_COND(!p_data.has("octree_cells"));
@@ -70,6 +102,7 @@ void VoxelGIData::_set_data(const Dictionary &p_data) {
 }
 
 Dictionary VoxelGIData::_get_data() const {
+	ZoneScopedS(60);
 	Dictionary d;
 	d["bounds"] = get_bounds();
 	Vector3i otsize = get_octree_size();
@@ -91,6 +124,7 @@ Dictionary VoxelGIData::_get_data() const {
 }
 
 void VoxelGIData::allocate(const Transform3D &p_to_cell_xform, const AABB &p_aabb, const Vector3 &p_octree_size, const Vector<uint8_t> &p_octree_cells, const Vector<uint8_t> &p_data_cells, const Vector<uint8_t> &p_distance_field, const Vector<int> &p_level_counts) {
+	ZoneScopedS(60);
 	RS::get_singleton()->voxel_gi_allocate_data(probe, p_to_cell_xform, p_aabb, p_octree_size, p_octree_cells, p_data_cells, p_distance_field, p_level_counts);
 	bounds = p_aabb;
 	to_cell_xform = p_to_cell_xform;
@@ -98,101 +132,124 @@ void VoxelGIData::allocate(const Transform3D &p_to_cell_xform, const AABB &p_aab
 }
 
 AABB VoxelGIData::get_bounds() const {
+	ZoneScopedS(60);
 	return bounds;
 }
 
 Vector3 VoxelGIData::get_octree_size() const {
+	ZoneScopedS(60);
 	return octree_size;
 }
 
 Vector<uint8_t> VoxelGIData::get_octree_cells() const {
+	ZoneScopedS(60);
 	return RS::get_singleton()->voxel_gi_get_octree_cells(probe);
 }
 
 Vector<uint8_t> VoxelGIData::get_data_cells() const {
+	ZoneScopedS(60);
 	return RS::get_singleton()->voxel_gi_get_data_cells(probe);
 }
 
 Vector<uint8_t> VoxelGIData::get_distance_field() const {
+	ZoneScopedS(60);
 	return RS::get_singleton()->voxel_gi_get_distance_field(probe);
 }
 
 Vector<int> VoxelGIData::get_level_counts() const {
+	ZoneScopedS(60);
 	return RS::get_singleton()->voxel_gi_get_level_counts(probe);
 }
 
 Transform3D VoxelGIData::get_to_cell_xform() const {
+	ZoneScopedS(60);
 	return to_cell_xform;
 }
 
 void VoxelGIData::set_dynamic_range(float p_range) {
+	ZoneScopedS(60);
 	RS::get_singleton()->voxel_gi_set_dynamic_range(probe, p_range);
 	dynamic_range = p_range;
 }
 
 float VoxelGIData::get_dynamic_range() const {
+	ZoneScopedS(60);
 	return dynamic_range;
 }
 
 void VoxelGIData::set_propagation(float p_propagation) {
+	ZoneScopedS(60);
 	RS::get_singleton()->voxel_gi_set_propagation(probe, p_propagation);
 	propagation = p_propagation;
 }
 
 float VoxelGIData::get_propagation() const {
+	ZoneScopedS(60);
 	return propagation;
 }
 
 void VoxelGIData::set_energy(float p_energy) {
+	ZoneScopedS(60);
 	RS::get_singleton()->voxel_gi_set_energy(probe, p_energy);
 	energy = p_energy;
 }
 
 float VoxelGIData::get_energy() const {
+	ZoneScopedS(60);
 	return energy;
 }
 
 void VoxelGIData::set_bias(float p_bias) {
+	ZoneScopedS(60);
 	RS::get_singleton()->voxel_gi_set_bias(probe, p_bias);
 	bias = p_bias;
 }
 
 float VoxelGIData::get_bias() const {
+	ZoneScopedS(60);
 	return bias;
 }
 
 void VoxelGIData::set_normal_bias(float p_normal_bias) {
+	ZoneScopedS(60);
 	RS::get_singleton()->voxel_gi_set_normal_bias(probe, p_normal_bias);
 	normal_bias = p_normal_bias;
 }
 
 float VoxelGIData::get_normal_bias() const {
+	ZoneScopedS(60);
 	return normal_bias;
 }
 
 void VoxelGIData::set_interior(bool p_enable) {
+	ZoneScopedS(60);
 	RS::get_singleton()->voxel_gi_set_interior(probe, p_enable);
 	interior = p_enable;
 }
 
 bool VoxelGIData::is_interior() const {
+	ZoneScopedS(60);
 	return interior;
 }
 
 void VoxelGIData::set_use_two_bounces(bool p_enable) {
+	ZoneScopedS(60);
 	RS::get_singleton()->voxel_gi_set_use_two_bounces(probe, p_enable);
 	use_two_bounces = p_enable;
 }
 
 bool VoxelGIData::is_using_two_bounces() const {
+	ZoneScopedS(60);
 	return use_two_bounces;
 }
 
 RID VoxelGIData::get_rid() const {
+	ZoneScopedS(60);
 	return probe;
 }
 
 void VoxelGIData::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("allocate", "to_cell_xform", "aabb", "octree_size", "octree_cells", "data_cells", "distance_field", "level_counts"), &VoxelGIData::allocate);
 
 	ClassDB::bind_method(D_METHOD("get_bounds"), &VoxelGIData::get_bounds);
@@ -238,10 +295,12 @@ void VoxelGIData::_bind_methods() {
 }
 
 VoxelGIData::VoxelGIData() {
+	ZoneScopedS(60);
 	probe = RS::get_singleton()->voxel_gi_create();
 }
 
 VoxelGIData::~VoxelGIData() {
+	ZoneScopedS(60);
 	RS::get_singleton()->free(probe);
 }
 
@@ -249,6 +308,7 @@ VoxelGIData::~VoxelGIData() {
 //////////////////////
 
 void VoxelGI::set_probe_data(const Ref<VoxelGIData> &p_data) {
+	ZoneScopedS(60);
 	if (p_data.is_valid()) {
 		RS::get_singleton()->instance_set_base(get_instance(), p_data->get_rid());
 	} else {
@@ -259,38 +319,46 @@ void VoxelGI::set_probe_data(const Ref<VoxelGIData> &p_data) {
 }
 
 Ref<VoxelGIData> VoxelGI::get_probe_data() const {
+	ZoneScopedS(60);
 	return probe_data;
 }
 
 void VoxelGI::set_subdiv(Subdiv p_subdiv) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_subdiv, SUBDIV_MAX);
 	subdiv = p_subdiv;
 	update_gizmos();
 }
 
 VoxelGI::Subdiv VoxelGI::get_subdiv() const {
+	ZoneScopedS(60);
 	return subdiv;
 }
 
 void VoxelGI::set_extents(const Vector3 &p_extents) {
+	ZoneScopedS(60);
 	// Prevent very small extents as these break baking if other extents are set very high.
 	extents = Vector3(MAX(1.0, p_extents.x), MAX(1.0, p_extents.y), MAX(1.0, p_extents.z));
 	update_gizmos();
 }
 
 Vector3 VoxelGI::get_extents() const {
+	ZoneScopedS(60);
 	return extents;
 }
 
 void VoxelGI::set_camera_attributes(const Ref<CameraAttributes> &p_camera_attributes) {
+	ZoneScopedS(60);
 	camera_attributes = p_camera_attributes;
 }
 
 Ref<CameraAttributes> VoxelGI::get_camera_attributes() const {
+	ZoneScopedS(60);
 	return camera_attributes;
 }
 
 void VoxelGI::_find_meshes(Node *p_at_node, List<PlotMesh> &plot_meshes) {
+	ZoneScopedS(60);
 	MeshInstance3D *mi = Object::cast_to<MeshInstance3D>(p_at_node);
 	if (mi && mi->get_gi_mode() == GeometryInstance3D::GI_MODE_STATIC && mi->is_visible_in_tree()) {
 		Ref<Mesh> mesh = mi->get_mesh();
@@ -348,6 +416,7 @@ VoxelGI::BakeStepFunc VoxelGI::bake_step_function = nullptr;
 VoxelGI::BakeEndFunc VoxelGI::bake_end_function = nullptr;
 
 Vector3i VoxelGI::get_estimated_cell_size() const {
+	ZoneScopedS(60);
 	static const int subdiv_value[SUBDIV_MAX] = { 6, 7, 8, 9 };
 	int cell_subdiv = subdiv_value[subdiv];
 	int axis_cell_size[3];
@@ -374,6 +443,7 @@ Vector3i VoxelGI::get_estimated_cell_size() const {
 }
 
 void VoxelGI::bake(Node *p_from_node, bool p_create_visual_debug) {
+	ZoneScopedS(60);
 	static const int subdiv_value[SUBDIV_MAX] = { 6, 7, 8, 9 };
 
 	p_from_node = p_from_node ? p_from_node : get_parent();
@@ -463,14 +533,17 @@ void VoxelGI::bake(Node *p_from_node, bool p_create_visual_debug) {
 }
 
 void VoxelGI::_debug_bake() {
+	ZoneScopedS(60);
 	bake(nullptr, true);
 }
 
 AABB VoxelGI::get_aabb() const {
+	ZoneScopedS(60);
 	return AABB(-extents, extents * 2);
 }
 
 PackedStringArray VoxelGI::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (RenderingServer::get_singleton()->is_low_end()) {
@@ -482,6 +555,7 @@ PackedStringArray VoxelGI::get_configuration_warnings() const {
 }
 
 void VoxelGI::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_probe_data", "data"), &VoxelGI::set_probe_data);
 	ClassDB::bind_method(D_METHOD("get_probe_data"), &VoxelGI::get_probe_data);
 
@@ -511,10 +585,12 @@ void VoxelGI::_bind_methods() {
 }
 
 VoxelGI::VoxelGI() {
+	ZoneScopedS(60);
 	voxel_gi = RS::get_singleton()->voxel_gi_create();
 	set_disable_scale(true);
 }
 
 VoxelGI::~VoxelGI() {
+	ZoneScopedS(60);
 	RS::get_singleton()->free(voxel_gi);
 }

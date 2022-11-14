@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  rich_text_label.cpp                                                  */
 /*************************************************************************/
@@ -44,6 +45,7 @@
 #endif
 
 RichTextLabel::Item *RichTextLabel::_get_next_item(Item *p_item, bool p_free) const {
+	ZoneScopedS(60);
 	if (p_free) {
 		if (p_item->subitems.size()) {
 			return p_item->subitems.front()->get();
@@ -87,6 +89,7 @@ RichTextLabel::Item *RichTextLabel::_get_next_item(Item *p_item, bool p_free) co
 }
 
 RichTextLabel::Item *RichTextLabel::_get_prev_item(Item *p_item, bool p_free) const {
+	ZoneScopedS(60);
 	if (p_free) {
 		if (p_item->subitems.size()) {
 			return p_item->subitems.back()->get();
@@ -130,10 +133,12 @@ RichTextLabel::Item *RichTextLabel::_get_prev_item(Item *p_item, bool p_free) co
 }
 
 Rect2 RichTextLabel::_get_text_rect() {
+	ZoneScopedS(60);
 	return Rect2(theme_cache.normal_style->get_offset(), get_size() - theme_cache.normal_style->get_minimum_size());
 }
 
 RichTextLabel::Item *RichTextLabel::_get_item_at_pos(RichTextLabel::Item *p_item_from, RichTextLabel::Item *p_item_to, int p_position) {
+	ZoneScopedS(60);
 	int offset = 0;
 	for (Item *it = p_item_from; it && it != p_item_to; it = _get_next_item(it)) {
 		switch (it->type) {
@@ -162,6 +167,7 @@ RichTextLabel::Item *RichTextLabel::_get_item_at_pos(RichTextLabel::Item *p_item
 }
 
 String RichTextLabel::_roman(int p_num, bool p_capitalize) const {
+	ZoneScopedS(60);
 	if (p_num > 3999) {
 		return "ERR";
 	};
@@ -183,6 +189,7 @@ String RichTextLabel::_roman(int p_num, bool p_capitalize) const {
 }
 
 String RichTextLabel::_letters(int p_num, bool p_capitalize) const {
+	ZoneScopedS(60);
 	int64_t n = p_num;
 
 	int chars = 0;
@@ -208,6 +215,7 @@ String RichTextLabel::_letters(int p_num, bool p_capitalize) const {
 }
 
 void RichTextLabel::_update_line_font(ItemFrame *p_frame, int p_line, const Ref<Font> &p_base_font, int p_base_font_size) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_frame == nullptr);
 	ERR_FAIL_COND(p_line < 0 || p_line >= (int)p_frame->lines.size());
 
@@ -262,6 +270,7 @@ void RichTextLabel::_update_line_font(ItemFrame *p_frame, int p_line, const Ref<
 }
 
 float RichTextLabel::_resize_line(ItemFrame *p_frame, int p_line, const Ref<Font> &p_base_font, int p_base_font_size, int p_width, float p_h) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_frame == nullptr, p_h);
 	ERR_FAIL_COND_V(p_line < 0 || p_line >= (int)p_frame->lines.size(), p_h);
 
@@ -426,6 +435,7 @@ float RichTextLabel::_resize_line(ItemFrame *p_frame, int p_line, const Ref<Font
 }
 
 float RichTextLabel::_shape_line(ItemFrame *p_frame, int p_line, const Ref<Font> &p_base_font, int p_base_font_size, int p_width, float p_h, int *r_char_offset) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_frame == nullptr, p_h);
 	ERR_FAIL_COND_V(p_line < 0 || p_line >= (int)p_frame->lines.size(), p_h);
 
@@ -710,6 +720,7 @@ float RichTextLabel::_shape_line(ItemFrame *p_frame, int p_line, const Ref<Font>
 }
 
 int RichTextLabel::_draw_line(ItemFrame *p_frame, int p_line, const Vector2 &p_ofs, int p_width, const Color &p_base_color, int p_outline_size, const Color &p_outline_color, const Color &p_font_shadow_color, int p_shadow_outline_size, const Point2 &p_shadow_ofs, int &r_processed_glyphs) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_frame == nullptr, 0);
 	ERR_FAIL_COND_V(p_line < 0 || p_line >= (int)p_frame->lines.size(), 0);
 
@@ -1344,6 +1355,7 @@ int RichTextLabel::_draw_line(ItemFrame *p_frame, int p_line, const Vector2 &p_o
 }
 
 void RichTextLabel::_find_click(ItemFrame *p_frame, const Point2i &p_click, ItemFrame **r_click_frame, int *r_click_line, Item **r_click_item, int *r_click_char, bool *r_outside, bool p_meta) {
+	ZoneScopedS(60);
 	if (r_click_item) {
 		*r_click_item = nullptr;
 	}
@@ -1379,6 +1391,7 @@ void RichTextLabel::_find_click(ItemFrame *p_frame, const Point2i &p_click, Item
 }
 
 float RichTextLabel::_find_click_in_line(ItemFrame *p_frame, int p_line, const Vector2 &p_ofs, int p_width, const Point2i &p_click, ItemFrame **r_click_frame, int *r_click_line, Item **r_click_item, int *r_click_char, bool p_table, bool p_meta) {
+	ZoneScopedS(60);
 	Vector2 off;
 
 	bool line_clicked = false;
@@ -1603,6 +1616,7 @@ float RichTextLabel::_find_click_in_line(ItemFrame *p_frame, int p_line, const V
 }
 
 void RichTextLabel::_scroll_changed(double) {
+	ZoneScopedS(60);
 	if (updating_scroll) {
 		return;
 	}
@@ -1619,6 +1633,7 @@ void RichTextLabel::_scroll_changed(double) {
 }
 
 void RichTextLabel::_update_fx(RichTextLabel::ItemFrame *p_frame, double p_delta_time) {
+	ZoneScopedS(60);
 	Item *it = p_frame;
 	while (it) {
 		ItemFX *ifx = nullptr;
@@ -1653,6 +1668,7 @@ void RichTextLabel::_update_fx(RichTextLabel::ItemFrame *p_frame, double p_delta
 }
 
 int RichTextLabel::_find_first_line(int p_from, int p_to, int p_vofs) const {
+	ZoneScopedS(60);
 	int l = p_from;
 	int r = p_to;
 	while (l < r) {
@@ -1669,10 +1685,12 @@ int RichTextLabel::_find_first_line(int p_from, int p_to, int p_vofs) const {
 }
 
 _FORCE_INLINE_ float RichTextLabel::_calculate_line_vertical_offset(const RichTextLabel::Line &line) const {
+	ZoneScopedS(60);
 	return line.get_height(theme_cache.line_separation);
 }
 
 void RichTextLabel::_update_theme_item_cache() {
+	ZoneScopedS(60);
 	Control::_update_theme_item_cache();
 
 	theme_cache.normal_style = get_theme_stylebox(SNAME("normal"));
@@ -1715,6 +1733,7 @@ void RichTextLabel::_update_theme_item_cache() {
 }
 
 void RichTextLabel::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_MOUSE_EXIT: {
 			if (meta_hovering) {
@@ -1849,6 +1868,7 @@ void RichTextLabel::_notification(int p_what) {
 }
 
 Control::CursorShape RichTextLabel::get_cursor_shape(const Point2 &p_pos) const {
+	ZoneScopedS(60);
 	if (!underline_meta) {
 		return get_default_cursor_shape();
 	}
@@ -1868,6 +1888,7 @@ Control::CursorShape RichTextLabel::get_cursor_shape(const Point2 &p_pos) const 
 }
 
 void RichTextLabel::gui_input(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_event.is_null());
 
 	Ref<InputEventMouseButton> b = p_event;
@@ -2133,6 +2154,7 @@ void RichTextLabel::gui_input(const Ref<InputEvent> &p_event) {
 }
 
 String RichTextLabel::get_tooltip(const Point2 &p_pos) const {
+	ZoneScopedS(60);
 	Item *c_item = nullptr;
 	bool outside;
 
@@ -2147,6 +2169,7 @@ String RichTextLabel::get_tooltip(const Point2 &p_pos) const {
 }
 
 void RichTextLabel::_find_frame(Item *p_item, ItemFrame **r_frame, int *r_line) {
+	ZoneScopedS(60);
 	if (r_frame != nullptr) {
 		*r_frame = nullptr;
 	}
@@ -2172,6 +2195,7 @@ void RichTextLabel::_find_frame(Item *p_item, ItemFrame **r_frame, int *r_line) 
 }
 
 RichTextLabel::Item *RichTextLabel::_find_indentable(Item *p_item) {
+	ZoneScopedS(60);
 	Item *indentable = p_item;
 
 	while (indentable) {
@@ -2185,6 +2209,7 @@ RichTextLabel::Item *RichTextLabel::_find_indentable(Item *p_item) {
 }
 
 RichTextLabel::ItemFont *RichTextLabel::_find_font(Item *p_item) {
+	ZoneScopedS(60);
 	Item *fontitem = p_item;
 
 	while (fontitem) {
@@ -2269,6 +2294,7 @@ RichTextLabel::ItemFont *RichTextLabel::_find_font(Item *p_item) {
 }
 
 RichTextLabel::ItemFontSize *RichTextLabel::_find_font_size(Item *p_item) {
+	ZoneScopedS(60);
 	Item *sizeitem = p_item;
 
 	while (sizeitem) {
@@ -2284,6 +2310,7 @@ RichTextLabel::ItemFontSize *RichTextLabel::_find_font_size(Item *p_item) {
 }
 
 int RichTextLabel::_find_outline_size(Item *p_item, int p_default) {
+	ZoneScopedS(60);
 	Item *sizeitem = p_item;
 
 	while (sizeitem) {
@@ -2299,6 +2326,7 @@ int RichTextLabel::_find_outline_size(Item *p_item, int p_default) {
 }
 
 RichTextLabel::ItemDropcap *RichTextLabel::_find_dc_item(Item *p_item) {
+	ZoneScopedS(60);
 	Item *item = p_item;
 
 	while (item) {
@@ -2312,6 +2340,7 @@ RichTextLabel::ItemDropcap *RichTextLabel::_find_dc_item(Item *p_item) {
 }
 
 RichTextLabel::ItemList *RichTextLabel::_find_list_item(Item *p_item) {
+	ZoneScopedS(60);
 	Item *item = p_item;
 
 	while (item) {
@@ -2325,6 +2354,7 @@ RichTextLabel::ItemList *RichTextLabel::_find_list_item(Item *p_item) {
 }
 
 int RichTextLabel::_find_list(Item *p_item, Vector<int> &r_index, Vector<ItemList *> &r_list) {
+	ZoneScopedS(60);
 	Item *item = p_item;
 	Item *prev_item = p_item;
 
@@ -2360,6 +2390,7 @@ int RichTextLabel::_find_list(Item *p_item, Vector<int> &r_index, Vector<ItemLis
 }
 
 int RichTextLabel::_find_margin(Item *p_item, const Ref<Font> &p_base_font, int p_base_font_size) {
+	ZoneScopedS(60);
 	Item *item = p_item;
 
 	float margin = 0.0;
@@ -2411,6 +2442,7 @@ int RichTextLabel::_find_margin(Item *p_item, const Ref<Font> &p_base_font, int 
 }
 
 HorizontalAlignment RichTextLabel::_find_alignment(Item *p_item) {
+	ZoneScopedS(60);
 	Item *item = p_item;
 
 	while (item) {
@@ -2426,6 +2458,7 @@ HorizontalAlignment RichTextLabel::_find_alignment(Item *p_item) {
 }
 
 TextServer::Direction RichTextLabel::_find_direction(Item *p_item) {
+	ZoneScopedS(60);
 	Item *item = p_item;
 
 	while (item) {
@@ -2447,6 +2480,7 @@ TextServer::Direction RichTextLabel::_find_direction(Item *p_item) {
 }
 
 TextServer::StructuredTextParser RichTextLabel::_find_stt(Item *p_item) {
+	ZoneScopedS(60);
 	Item *item = p_item;
 
 	while (item) {
@@ -2462,6 +2496,7 @@ TextServer::StructuredTextParser RichTextLabel::_find_stt(Item *p_item) {
 }
 
 String RichTextLabel::_find_language(Item *p_item) {
+	ZoneScopedS(60);
 	Item *item = p_item;
 
 	while (item) {
@@ -2477,6 +2512,7 @@ String RichTextLabel::_find_language(Item *p_item) {
 }
 
 Color RichTextLabel::_find_color(Item *p_item, const Color &p_default_color) {
+	ZoneScopedS(60);
 	Item *item = p_item;
 
 	while (item) {
@@ -2492,6 +2528,7 @@ Color RichTextLabel::_find_color(Item *p_item, const Color &p_default_color) {
 }
 
 Color RichTextLabel::_find_outline_color(Item *p_item, const Color &p_default_color) {
+	ZoneScopedS(60);
 	Item *item = p_item;
 
 	while (item) {
@@ -2507,6 +2544,7 @@ Color RichTextLabel::_find_outline_color(Item *p_item, const Color &p_default_co
 }
 
 bool RichTextLabel::_find_underline(Item *p_item) {
+	ZoneScopedS(60);
 	Item *item = p_item;
 
 	while (item) {
@@ -2521,6 +2559,7 @@ bool RichTextLabel::_find_underline(Item *p_item) {
 }
 
 bool RichTextLabel::_find_strikethrough(Item *p_item) {
+	ZoneScopedS(60);
 	Item *item = p_item;
 
 	while (item) {
@@ -2535,6 +2574,7 @@ bool RichTextLabel::_find_strikethrough(Item *p_item) {
 }
 
 void RichTextLabel::_fetch_item_fx_stack(Item *p_item, Vector<ItemFX *> &r_stack) {
+	ZoneScopedS(60);
 	Item *item = p_item;
 	while (item) {
 		if (item->type == ITEM_CUSTOMFX || item->type == ITEM_SHAKE || item->type == ITEM_WAVE || item->type == ITEM_TORNADO || item->type == ITEM_RAINBOW) {
@@ -2546,6 +2586,7 @@ void RichTextLabel::_fetch_item_fx_stack(Item *p_item, Vector<ItemFX *> &r_stack
 }
 
 bool RichTextLabel::_find_meta(Item *p_item, Variant *r_meta, ItemMeta **r_item) {
+	ZoneScopedS(60);
 	Item *item = p_item;
 
 	while (item) {
@@ -2567,6 +2608,7 @@ bool RichTextLabel::_find_meta(Item *p_item, Variant *r_meta, ItemMeta **r_item)
 }
 
 bool RichTextLabel::_find_hint(Item *p_item, String *r_description) {
+	ZoneScopedS(60);
 	Item *item = p_item;
 
 	while (item) {
@@ -2585,6 +2627,7 @@ bool RichTextLabel::_find_hint(Item *p_item, String *r_description) {
 }
 
 Color RichTextLabel::_find_bgcolor(Item *p_item) {
+	ZoneScopedS(60);
 	Item *item = p_item;
 
 	while (item) {
@@ -2600,6 +2643,7 @@ Color RichTextLabel::_find_bgcolor(Item *p_item) {
 }
 
 Color RichTextLabel::_find_fgcolor(Item *p_item) {
+	ZoneScopedS(60);
 	Item *item = p_item;
 
 	while (item) {
@@ -2615,6 +2659,7 @@ Color RichTextLabel::_find_fgcolor(Item *p_item) {
 }
 
 bool RichTextLabel::_find_layout_subitem(Item *from, Item *to) {
+	ZoneScopedS(60);
 	if (from && from != to) {
 		if (from->type != ITEM_FONT && from->type != ITEM_COLOR && from->type != ITEM_UNDERLINE && from->type != ITEM_STRIKETHROUGH) {
 			return true;
@@ -2633,6 +2678,7 @@ bool RichTextLabel::_find_layout_subitem(Item *from, Item *to) {
 }
 
 void RichTextLabel::_thread_function(void *self) {
+	ZoneScopedS(60);
 	RichTextLabel *rtl = reinterpret_cast<RichTextLabel *>(self);
 	rtl->set_physics_process_internal(true);
 	rtl->_process_line_caches();
@@ -2642,6 +2688,7 @@ void RichTextLabel::_thread_function(void *self) {
 }
 
 void RichTextLabel::_stop_thread() {
+	ZoneScopedS(60);
 	if (threaded) {
 		stop_thread.store(true);
 		thread.wait_to_finish();
@@ -2649,6 +2696,7 @@ void RichTextLabel::_stop_thread() {
 }
 
 bool RichTextLabel::is_ready() const {
+	ZoneScopedS(60);
 	if (updating.load()) {
 		return false;
 	}
@@ -2656,6 +2704,7 @@ bool RichTextLabel::is_ready() const {
 }
 
 void RichTextLabel::set_threaded(bool p_threaded) {
+	ZoneScopedS(60);
 	if (threaded != p_threaded) {
 		_stop_thread();
 		threaded = p_threaded;
@@ -2664,18 +2713,22 @@ void RichTextLabel::set_threaded(bool p_threaded) {
 }
 
 bool RichTextLabel::is_threaded() const {
+	ZoneScopedS(60);
 	return threaded;
 }
 
 void RichTextLabel::set_progress_bar_delay(int p_delay_ms) {
+	ZoneScopedS(60);
 	progress_delay = p_delay_ms;
 }
 
 int RichTextLabel::get_progress_bar_delay() const {
+	ZoneScopedS(60);
 	return progress_delay;
 }
 
 bool RichTextLabel::_validate_line_caches() {
+	ZoneScopedS(60);
 	if (updating.load()) {
 		return false;
 	}
@@ -2761,6 +2814,7 @@ bool RichTextLabel::_validate_line_caches() {
 }
 
 void RichTextLabel::_process_line_caches() {
+	ZoneScopedS(60);
 	// Shape invalid lines.
 	if (!is_inside_tree()) {
 		return;
@@ -2832,12 +2886,14 @@ void RichTextLabel::_process_line_caches() {
 }
 
 void RichTextLabel::_invalidate_current_line(ItemFrame *p_frame) {
+	ZoneScopedS(60);
 	if ((int)p_frame->lines.size() - 1 <= p_frame->first_invalid_line) {
 		p_frame->first_invalid_line = (int)p_frame->lines.size() - 1;
 	}
 }
 
 void RichTextLabel::add_text(const String &p_text) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -2895,6 +2951,7 @@ void RichTextLabel::add_text(const String &p_text) {
 }
 
 void RichTextLabel::_add_item(Item *p_item, bool p_enter, bool p_ensure_newline) {
+	ZoneScopedS(60);
 	p_item->parent = current;
 	p_item->E = current->subitems.push_back(p_item);
 	p_item->index = current_idx++;
@@ -2933,6 +2990,7 @@ void RichTextLabel::_add_item(Item *p_item, bool p_enter, bool p_ensure_newline)
 }
 
 void RichTextLabel::_remove_item(Item *p_item, const int p_line, const int p_subitem_line) {
+	ZoneScopedS(60);
 	int size = p_item->subitems.size();
 	if (size == 0) {
 		p_item->parent->subitems.erase(p_item);
@@ -2957,6 +3015,7 @@ void RichTextLabel::_remove_item(Item *p_item, const int p_line, const int p_sub
 }
 
 void RichTextLabel::add_image(const Ref<Texture2D> &p_image, const int p_width, const int p_height, const Color &p_color, InlineAlignment p_alignment, const Rect2 &p_region) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3020,6 +3079,7 @@ void RichTextLabel::add_image(const Ref<Texture2D> &p_image, const int p_width, 
 }
 
 void RichTextLabel::add_newline() {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3035,6 +3095,7 @@ void RichTextLabel::add_newline() {
 }
 
 bool RichTextLabel::remove_line(const int p_line) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3076,6 +3137,7 @@ bool RichTextLabel::remove_line(const int p_line) {
 }
 
 void RichTextLabel::push_dropcap(const String &p_string, const Ref<Font> &p_font, int p_size, const Rect2 &p_dropcap_margins, const Color &p_color, int p_ol_size, const Color &p_ol_color) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3097,6 +3159,7 @@ void RichTextLabel::push_dropcap(const String &p_string, const Ref<Font> &p_font
 }
 
 void RichTextLabel::_push_def_font_var(DefaultFont p_def_font, const Ref<Font> &p_font, int p_size) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3112,6 +3175,7 @@ void RichTextLabel::_push_def_font_var(DefaultFont p_def_font, const Ref<Font> &
 }
 
 void RichTextLabel::_push_def_font(DefaultFont p_def_font) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3124,6 +3188,7 @@ void RichTextLabel::_push_def_font(DefaultFont p_def_font) {
 }
 
 void RichTextLabel::push_font(const Ref<Font> &p_font, int p_size) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3137,36 +3202,42 @@ void RichTextLabel::push_font(const Ref<Font> &p_font, int p_size) {
 }
 
 void RichTextLabel::push_normal() {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(theme_cache.normal_font.is_null());
 
 	_push_def_font(NORMAL_FONT);
 }
 
 void RichTextLabel::push_bold() {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(theme_cache.bold_font.is_null());
 
 	_push_def_font(BOLD_FONT);
 }
 
 void RichTextLabel::push_bold_italics() {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(theme_cache.bold_italics_font.is_null());
 
 	_push_def_font(BOLD_ITALICS_FONT);
 }
 
 void RichTextLabel::push_italics() {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(theme_cache.italics_font.is_null());
 
 	_push_def_font(ITALICS_FONT);
 }
 
 void RichTextLabel::push_mono() {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(theme_cache.mono_font.is_null());
 
 	_push_def_font(MONO_FONT);
 }
 
 void RichTextLabel::push_font_size(int p_font_size) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3178,6 +3249,7 @@ void RichTextLabel::push_font_size(int p_font_size) {
 }
 
 void RichTextLabel::push_outline_size(int p_ol_size) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3189,6 +3261,7 @@ void RichTextLabel::push_outline_size(int p_ol_size) {
 }
 
 void RichTextLabel::push_color(const Color &p_color) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3200,6 +3273,7 @@ void RichTextLabel::push_color(const Color &p_color) {
 }
 
 void RichTextLabel::push_outline_color(const Color &p_color) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3211,6 +3285,7 @@ void RichTextLabel::push_outline_color(const Color &p_color) {
 }
 
 void RichTextLabel::push_underline() {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3221,6 +3296,7 @@ void RichTextLabel::push_underline() {
 }
 
 void RichTextLabel::push_strikethrough() {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3231,6 +3307,7 @@ void RichTextLabel::push_strikethrough() {
 }
 
 void RichTextLabel::push_paragraph(HorizontalAlignment p_alignment, Control::TextDirection p_direction, const String &p_language, TextServer::StructuredTextParser p_st_parser) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3245,6 +3322,7 @@ void RichTextLabel::push_paragraph(HorizontalAlignment p_alignment, Control::Tex
 }
 
 void RichTextLabel::push_indent(int p_level) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3257,6 +3335,7 @@ void RichTextLabel::push_indent(int p_level) {
 }
 
 void RichTextLabel::push_list(int p_level, ListType p_list, bool p_capitalize) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3272,6 +3351,7 @@ void RichTextLabel::push_list(int p_level, ListType p_list, bool p_capitalize) {
 }
 
 void RichTextLabel::push_meta(const Variant &p_meta) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3283,6 +3363,7 @@ void RichTextLabel::push_meta(const Variant &p_meta) {
 }
 
 void RichTextLabel::push_hint(const String &p_string) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3294,6 +3375,7 @@ void RichTextLabel::push_hint(const String &p_string) {
 }
 
 void RichTextLabel::push_table(int p_columns, InlineAlignment p_alignment) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3311,6 +3393,7 @@ void RichTextLabel::push_table(int p_columns, InlineAlignment p_alignment) {
 }
 
 void RichTextLabel::push_fade(int p_start_index, int p_length) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3321,6 +3404,7 @@ void RichTextLabel::push_fade(int p_start_index, int p_length) {
 }
 
 void RichTextLabel::push_shake(int p_strength = 10, float p_rate = 24.0f, bool p_connected = true) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3332,6 +3416,7 @@ void RichTextLabel::push_shake(int p_strength = 10, float p_rate = 24.0f, bool p
 }
 
 void RichTextLabel::push_wave(float p_frequency = 1.0f, float p_amplitude = 10.0f, bool p_connected = true) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3343,6 +3428,7 @@ void RichTextLabel::push_wave(float p_frequency = 1.0f, float p_amplitude = 10.0
 }
 
 void RichTextLabel::push_tornado(float p_frequency = 1.0f, float p_radius = 10.0f, bool p_connected = true) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3354,6 +3440,7 @@ void RichTextLabel::push_tornado(float p_frequency = 1.0f, float p_radius = 10.0
 }
 
 void RichTextLabel::push_rainbow(float p_saturation, float p_value, float p_frequency) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3365,6 +3452,7 @@ void RichTextLabel::push_rainbow(float p_saturation, float p_value, float p_freq
 }
 
 void RichTextLabel::push_bgcolor(const Color &p_color) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3376,6 +3464,7 @@ void RichTextLabel::push_bgcolor(const Color &p_color) {
 }
 
 void RichTextLabel::push_fgcolor(const Color &p_color) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3387,6 +3476,7 @@ void RichTextLabel::push_fgcolor(const Color &p_color) {
 }
 
 void RichTextLabel::push_customfx(Ref<RichTextEffect> p_custom_effect, Dictionary p_environment) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3397,6 +3487,7 @@ void RichTextLabel::push_customfx(Ref<RichTextEffect> p_custom_effect, Dictionar
 }
 
 void RichTextLabel::set_table_column_expand(int p_column, bool p_expand, int p_ratio) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3409,6 +3500,7 @@ void RichTextLabel::set_table_column_expand(int p_column, bool p_expand, int p_r
 }
 
 void RichTextLabel::set_cell_row_background_color(const Color &p_odd_row_bg, const Color &p_even_row_bg) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3421,6 +3513,7 @@ void RichTextLabel::set_cell_row_background_color(const Color &p_odd_row_bg, con
 }
 
 void RichTextLabel::set_cell_border_color(const Color &p_color) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3432,6 +3525,7 @@ void RichTextLabel::set_cell_border_color(const Color &p_color) {
 }
 
 void RichTextLabel::set_cell_size_override(const Size2 &p_min_size, const Size2 &p_max_size) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3444,6 +3538,7 @@ void RichTextLabel::set_cell_size_override(const Size2 &p_min_size, const Size2 
 }
 
 void RichTextLabel::set_cell_padding(const Rect2 &p_padding) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3455,6 +3550,7 @@ void RichTextLabel::set_cell_padding(const Rect2 &p_padding) {
 }
 
 void RichTextLabel::push_cell() {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3471,6 +3567,7 @@ void RichTextLabel::push_cell() {
 }
 
 int RichTextLabel::get_current_table_column() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(current->type != ITEM_TABLE, -1);
 
 	ItemTable *table = static_cast<ItemTable *>(current);
@@ -3478,6 +3575,7 @@ int RichTextLabel::get_current_table_column() const {
 }
 
 void RichTextLabel::pop() {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3490,6 +3588,7 @@ void RichTextLabel::pop() {
 }
 
 void RichTextLabel::clear() {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -3516,6 +3615,7 @@ void RichTextLabel::clear() {
 }
 
 void RichTextLabel::set_tab_size(int p_spaces) {
+	ZoneScopedS(60);
 	if (tab_size == p_spaces) {
 		return;
 	}
@@ -3528,10 +3628,12 @@ void RichTextLabel::set_tab_size(int p_spaces) {
 }
 
 int RichTextLabel::get_tab_size() const {
+	ZoneScopedS(60);
 	return tab_size;
 }
 
 void RichTextLabel::set_fit_content_height(bool p_enabled) {
+	ZoneScopedS(60);
 	if (p_enabled != fit_content_height) {
 		fit_content_height = p_enabled;
 		update_minimum_size();
@@ -3539,10 +3641,12 @@ void RichTextLabel::set_fit_content_height(bool p_enabled) {
 }
 
 bool RichTextLabel::is_fit_content_height_enabled() const {
+	ZoneScopedS(60);
 	return fit_content_height;
 }
 
 void RichTextLabel::set_meta_underline(bool p_underline) {
+	ZoneScopedS(60);
 	if (underline_meta == p_underline) {
 		return;
 	}
@@ -3552,23 +3656,28 @@ void RichTextLabel::set_meta_underline(bool p_underline) {
 }
 
 bool RichTextLabel::is_meta_underlined() const {
+	ZoneScopedS(60);
 	return underline_meta;
 }
 
 void RichTextLabel::set_hint_underline(bool p_underline) {
+	ZoneScopedS(60);
 	underline_hint = p_underline;
 	queue_redraw();
 }
 
 bool RichTextLabel::is_hint_underlined() const {
+	ZoneScopedS(60);
 	return underline_hint;
 }
 
 void RichTextLabel::set_offset(int p_pixel) {
+	ZoneScopedS(60);
 	vscroll->set_value(p_pixel);
 }
 
 void RichTextLabel::set_scroll_active(bool p_active) {
+	ZoneScopedS(60);
 	if (scroll_active == p_active) {
 		return;
 	}
@@ -3579,10 +3688,12 @@ void RichTextLabel::set_scroll_active(bool p_active) {
 }
 
 bool RichTextLabel::is_scroll_active() const {
+	ZoneScopedS(60);
 	return scroll_active;
 }
 
 void RichTextLabel::set_scroll_follow(bool p_follow) {
+	ZoneScopedS(60);
 	scroll_follow = p_follow;
 	if (!vscroll->is_visible_in_tree() || vscroll->get_value() >= (vscroll->get_max() - vscroll->get_page())) {
 		scroll_following = true;
@@ -3590,15 +3701,18 @@ void RichTextLabel::set_scroll_follow(bool p_follow) {
 }
 
 bool RichTextLabel::is_scroll_following() const {
+	ZoneScopedS(60);
 	return scroll_follow;
 }
 
 void RichTextLabel::parse_bbcode(const String &p_bbcode) {
+	ZoneScopedS(60);
 	clear();
 	append_text(p_bbcode);
 }
 
 void RichTextLabel::append_text(const String &p_bbcode) {
+	ZoneScopedS(60);
 	_stop_thread();
 	MutexLock data_lock(data_mutex);
 
@@ -4516,6 +4630,7 @@ void RichTextLabel::append_text(const String &p_bbcode) {
 }
 
 void RichTextLabel::scroll_to_paragraph(int p_paragraph) {
+	ZoneScopedS(60);
 	_validate_line_caches();
 
 	if (p_paragraph <= 0) {
@@ -4528,10 +4643,12 @@ void RichTextLabel::scroll_to_paragraph(int p_paragraph) {
 }
 
 int RichTextLabel::get_paragraph_count() const {
+	ZoneScopedS(60);
 	return current_frame->lines.size();
 }
 
 int RichTextLabel::get_visible_paragraph_count() const {
+	ZoneScopedS(60);
 	if (!is_visible()) {
 		return 0;
 	}
@@ -4541,6 +4658,7 @@ int RichTextLabel::get_visible_paragraph_count() const {
 }
 
 void RichTextLabel::scroll_to_line(int p_line) {
+	ZoneScopedS(60);
 	if (p_line <= 0) {
 		vscroll->set_value(0);
 		return;
@@ -4565,6 +4683,7 @@ void RichTextLabel::scroll_to_line(int p_line) {
 }
 
 float RichTextLabel::get_line_offset(int p_line) {
+	ZoneScopedS(60);
 	_validate_line_caches();
 
 	int line_count = 0;
@@ -4584,6 +4703,7 @@ float RichTextLabel::get_line_offset(int p_line) {
 }
 
 float RichTextLabel::get_paragraph_offset(int p_paragraph) {
+	ZoneScopedS(60);
 	_validate_line_caches();
 
 	int to_line = main->first_invalid_line.load();
@@ -4594,6 +4714,7 @@ float RichTextLabel::get_paragraph_offset(int p_paragraph) {
 }
 
 int RichTextLabel::get_line_count() const {
+	ZoneScopedS(60);
 	const_cast<RichTextLabel *>(this)->_validate_line_caches();
 
 	int line_count = 0;
@@ -4606,6 +4727,7 @@ int RichTextLabel::get_line_count() const {
 }
 
 int RichTextLabel::get_visible_line_count() const {
+	ZoneScopedS(60);
 	if (!is_visible()) {
 		return 0;
 	}
@@ -4615,6 +4737,7 @@ int RichTextLabel::get_visible_line_count() const {
 }
 
 void RichTextLabel::set_selection_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	if (selection.enabled == p_enabled) {
 		return;
 	}
@@ -4631,6 +4754,7 @@ void RichTextLabel::set_selection_enabled(bool p_enabled) {
 }
 
 void RichTextLabel::set_deselect_on_focus_loss_enabled(const bool p_enabled) {
+	ZoneScopedS(60);
 	if (deselect_on_focus_loss_enabled == p_enabled) {
 		return;
 	}
@@ -4642,6 +4766,7 @@ void RichTextLabel::set_deselect_on_focus_loss_enabled(const bool p_enabled) {
 }
 
 Variant RichTextLabel::get_drag_data(const Point2 &p_point) {
+	ZoneScopedS(60);
 	if (selection.drag_attempt && selection.enabled) {
 		String t = get_selected_text();
 		Label *l = memnew(Label);
@@ -4654,6 +4779,7 @@ Variant RichTextLabel::get_drag_data(const Point2 &p_point) {
 }
 
 bool RichTextLabel::_is_click_inside_selection() const {
+	ZoneScopedS(60);
 	if (selection.active && selection.enabled && selection.click_frame && selection.from_frame && selection.to_frame) {
 		const Line &l_click = selection.click_frame->lines[selection.click_line];
 		const Line &l_from = selection.from_frame->lines[selection.from_line];
@@ -4665,6 +4791,7 @@ bool RichTextLabel::_is_click_inside_selection() const {
 }
 
 bool RichTextLabel::_search_table(ItemTable *p_table, List<Item *>::Element *p_from, const String &p_string, bool p_reverse_search) {
+	ZoneScopedS(60);
 	List<Item *>::Element *E = p_from;
 	while (E != nullptr) {
 		ERR_CONTINUE(E->get()->type != ITEM_FRAME); // Children should all be frames.
@@ -4688,6 +4815,7 @@ bool RichTextLabel::_search_table(ItemTable *p_table, List<Item *>::Element *p_f
 }
 
 bool RichTextLabel::_search_line(ItemFrame *p_frame, int p_line, const String &p_string, int p_char_idx, bool p_reverse_search) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_frame == nullptr, false);
 	ERR_FAIL_COND_V(p_line < 0 || p_line >= (int)p_frame->lines.size(), false);
 
@@ -4743,6 +4871,7 @@ bool RichTextLabel::_search_line(ItemFrame *p_frame, int p_line, const String &p
 }
 
 bool RichTextLabel::search(const String &p_string, bool p_from_selection, bool p_search_previous) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!selection.enabled, false);
 
 	if (p_string.size() == 0) {
@@ -4827,6 +4956,7 @@ bool RichTextLabel::search(const String &p_string, bool p_from_selection, bool p
 }
 
 String RichTextLabel::_get_line_text(ItemFrame *p_frame, int p_line, Selection p_selection) const {
+	ZoneScopedS(60);
 	String txt;
 
 	ERR_FAIL_COND_V(p_frame == nullptr, txt);
@@ -4882,32 +5012,39 @@ String RichTextLabel::_get_line_text(ItemFrame *p_frame, int p_line, Selection p
 }
 
 void RichTextLabel::set_context_menu_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	context_menu_enabled = p_enabled;
 }
 
 bool RichTextLabel::is_context_menu_enabled() const {
+	ZoneScopedS(60);
 	return context_menu_enabled;
 }
 
 void RichTextLabel::set_shortcut_keys_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	shortcut_keys_enabled = p_enabled;
 }
 
 bool RichTextLabel::is_shortcut_keys_enabled() const {
+	ZoneScopedS(60);
 	return shortcut_keys_enabled;
 }
 
 // Context menu.
 PopupMenu *RichTextLabel::get_menu() const {
+	ZoneScopedS(60);
 	const_cast<RichTextLabel *>(this)->_generate_context_menu();
 	return menu;
 }
 
 bool RichTextLabel::is_menu_visible() const {
+	ZoneScopedS(60);
 	return menu && menu->is_visible();
 }
 
 String RichTextLabel::get_selected_text() const {
+	ZoneScopedS(60);
 	if (!selection.active || !selection.enabled) {
 		return "";
 	}
@@ -4921,11 +5058,13 @@ String RichTextLabel::get_selected_text() const {
 }
 
 void RichTextLabel::deselect() {
+	ZoneScopedS(60);
 	selection.active = false;
 	queue_redraw();
 }
 
 void RichTextLabel::selection_copy() {
+	ZoneScopedS(60);
 	String txt = get_selected_text();
 
 	if (!txt.is_empty()) {
@@ -4934,6 +5073,7 @@ void RichTextLabel::selection_copy() {
 }
 
 void RichTextLabel::select_all() {
+	ZoneScopedS(60);
 	if (!selection.enabled) {
 		return;
 	}
@@ -4981,14 +5121,17 @@ void RichTextLabel::select_all() {
 }
 
 bool RichTextLabel::is_selection_enabled() const {
+	ZoneScopedS(60);
 	return selection.enabled;
 }
 
 bool RichTextLabel::is_deselect_on_focus_loss_enabled() const {
+	ZoneScopedS(60);
 	return deselect_on_focus_loss_enabled;
 }
 
 int RichTextLabel::get_selection_from() const {
+	ZoneScopedS(60);
 	if (!selection.active || !selection.enabled) {
 		return -1;
 	}
@@ -4997,6 +5140,7 @@ int RichTextLabel::get_selection_from() const {
 }
 
 int RichTextLabel::get_selection_to() const {
+	ZoneScopedS(60);
 	if (!selection.active || !selection.enabled) {
 		return -1;
 	}
@@ -5005,6 +5149,7 @@ int RichTextLabel::get_selection_to() const {
 }
 
 void RichTextLabel::set_text(const String &p_bbcode) {
+	ZoneScopedS(60);
 	if (text == p_bbcode) {
 		return;
 	}
@@ -5019,10 +5164,12 @@ void RichTextLabel::set_text(const String &p_bbcode) {
 }
 
 String RichTextLabel::get_text() const {
+	ZoneScopedS(60);
 	return text;
 }
 
 void RichTextLabel::set_use_bbcode(bool p_enable) {
+	ZoneScopedS(60);
 	if (use_bbcode == p_enable) {
 		return;
 	}
@@ -5039,10 +5186,12 @@ void RichTextLabel::set_use_bbcode(bool p_enable) {
 }
 
 bool RichTextLabel::is_using_bbcode() const {
+	ZoneScopedS(60);
 	return use_bbcode;
 }
 
 String RichTextLabel::get_parsed_text() const {
+	ZoneScopedS(60);
 	String txt = "";
 	Item *it = main;
 	while (it) {
@@ -5065,6 +5214,7 @@ String RichTextLabel::get_parsed_text() const {
 }
 
 void RichTextLabel::set_text_direction(Control::TextDirection p_text_direction) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND((int)p_text_direction < -1 || (int)p_text_direction > 3);
 	_stop_thread();
 
@@ -5077,6 +5227,7 @@ void RichTextLabel::set_text_direction(Control::TextDirection p_text_direction) 
 }
 
 void RichTextLabel::set_structured_text_bidi_override(TextServer::StructuredTextParser p_parser) {
+	ZoneScopedS(60);
 	if (st_parser != p_parser) {
 		_stop_thread();
 
@@ -5088,10 +5239,12 @@ void RichTextLabel::set_structured_text_bidi_override(TextServer::StructuredText
 }
 
 TextServer::StructuredTextParser RichTextLabel::get_structured_text_bidi_override() const {
+	ZoneScopedS(60);
 	return st_parser;
 }
 
 void RichTextLabel::set_structured_text_bidi_override_options(Array p_args) {
+	ZoneScopedS(60);
 	if (st_args != p_args) {
 		_stop_thread();
 
@@ -5103,14 +5256,17 @@ void RichTextLabel::set_structured_text_bidi_override_options(Array p_args) {
 }
 
 Array RichTextLabel::get_structured_text_bidi_override_options() const {
+	ZoneScopedS(60);
 	return st_args;
 }
 
 Control::TextDirection RichTextLabel::get_text_direction() const {
+	ZoneScopedS(60);
 	return text_direction;
 }
 
 void RichTextLabel::set_language(const String &p_language) {
+	ZoneScopedS(60);
 	if (language != p_language) {
 		_stop_thread();
 
@@ -5122,10 +5278,12 @@ void RichTextLabel::set_language(const String &p_language) {
 }
 
 String RichTextLabel::get_language() const {
+	ZoneScopedS(60);
 	return language;
 }
 
 void RichTextLabel::set_autowrap_mode(TextServer::AutowrapMode p_mode) {
+	ZoneScopedS(60);
 	if (autowrap_mode != p_mode) {
 		_stop_thread();
 
@@ -5137,10 +5295,12 @@ void RichTextLabel::set_autowrap_mode(TextServer::AutowrapMode p_mode) {
 }
 
 TextServer::AutowrapMode RichTextLabel::get_autowrap_mode() const {
+	ZoneScopedS(60);
 	return autowrap_mode;
 }
 
 void RichTextLabel::set_visible_ratio(float p_ratio) {
+	ZoneScopedS(60);
 	if (visible_ratio != p_ratio) {
 		_stop_thread();
 
@@ -5164,10 +5324,12 @@ void RichTextLabel::set_visible_ratio(float p_ratio) {
 }
 
 float RichTextLabel::get_visible_ratio() const {
+	ZoneScopedS(60);
 	return visible_ratio;
 }
 
 void RichTextLabel::set_effects(Array p_effects) {
+	ZoneScopedS(60);
 	custom_effects = p_effects;
 	if ((!text.is_empty()) && use_bbcode) {
 		parse_bbcode(text);
@@ -5175,10 +5337,12 @@ void RichTextLabel::set_effects(Array p_effects) {
 }
 
 Array RichTextLabel::get_effects() {
+	ZoneScopedS(60);
 	return custom_effects;
 }
 
 void RichTextLabel::install_effect(const Variant effect) {
+	ZoneScopedS(60);
 	Ref<RichTextEffect> rteffect;
 	rteffect = effect;
 
@@ -5190,6 +5354,7 @@ void RichTextLabel::install_effect(const Variant effect) {
 }
 
 int RichTextLabel::get_content_height() const {
+	ZoneScopedS(60);
 	const_cast<RichTextLabel *>(this)->_validate_line_caches();
 
 	int total_height = 0;
@@ -5207,6 +5372,7 @@ int RichTextLabel::get_content_height() const {
 }
 
 int RichTextLabel::get_content_width() const {
+	ZoneScopedS(60);
 	const_cast<RichTextLabel *>(this)->_validate_line_caches();
 
 	int total_width = 0;
@@ -5222,6 +5388,7 @@ int RichTextLabel::get_content_width() const {
 // People will be very angry, if their texts get erased, because of #39148. (3.x -> 4.0)
 // Although some people may not used bbcode_text, so we only overwrite, if bbcode_text is not empty.
 bool RichTextLabel::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	if (p_name == "bbcode_text" && !((String)p_value).is_empty()) {
 		set_text(p_value);
 		return true;
@@ -5231,6 +5398,7 @@ bool RichTextLabel::_set(const StringName &p_name, const Variant &p_value) {
 #endif
 
 void RichTextLabel::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_parsed_text"), &RichTextLabel::get_parsed_text);
 	ClassDB::bind_method(D_METHOD("add_text", "text"), &RichTextLabel::add_text);
 	ClassDB::bind_method(D_METHOD("set_text", "text"), &RichTextLabel::set_text);
@@ -5450,10 +5618,12 @@ void RichTextLabel::_bind_methods() {
 }
 
 TextServer::VisibleCharactersBehavior RichTextLabel::get_visible_characters_behavior() const {
+	ZoneScopedS(60);
 	return visible_chars_behavior;
 }
 
 void RichTextLabel::set_visible_characters_behavior(TextServer::VisibleCharactersBehavior p_behavior) {
+	ZoneScopedS(60);
 	if (visible_chars_behavior != p_behavior) {
 		_stop_thread();
 
@@ -5465,6 +5635,7 @@ void RichTextLabel::set_visible_characters_behavior(TextServer::VisibleCharacter
 }
 
 void RichTextLabel::set_visible_characters(int p_visible) {
+	ZoneScopedS(60);
 	if (visible_characters != p_visible) {
 		_stop_thread();
 
@@ -5486,10 +5657,12 @@ void RichTextLabel::set_visible_characters(int p_visible) {
 }
 
 int RichTextLabel::get_visible_characters() const {
+	ZoneScopedS(60);
 	return visible_characters;
 }
 
 int RichTextLabel::get_character_line(int p_char) {
+	ZoneScopedS(60);
 	_validate_line_caches();
 
 	int line_count = 0;
@@ -5512,6 +5685,7 @@ int RichTextLabel::get_character_line(int p_char) {
 }
 
 int RichTextLabel::get_character_paragraph(int p_char) {
+	ZoneScopedS(60);
 	_validate_line_caches();
 
 	int para_count = 0;
@@ -5527,6 +5701,7 @@ int RichTextLabel::get_character_paragraph(int p_char) {
 }
 
 int RichTextLabel::get_total_character_count() const {
+	ZoneScopedS(60);
 	// Note: Do not use line buffer "char_count", it includes only visible characters.
 	int tc = 0;
 	Item *it = main;
@@ -5545,6 +5720,7 @@ int RichTextLabel::get_total_character_count() const {
 }
 
 int RichTextLabel::get_total_glyph_count() const {
+	ZoneScopedS(60);
 	const_cast<RichTextLabel *>(this)->_validate_line_caches();
 
 	int tg = 0;
@@ -5564,6 +5740,7 @@ int RichTextLabel::get_total_glyph_count() const {
 }
 
 void RichTextLabel::set_fixed_size_to_width(int p_width) {
+	ZoneScopedS(60);
 	if (fixed_width == p_width) {
 		return;
 	}
@@ -5573,6 +5750,7 @@ void RichTextLabel::set_fixed_size_to_width(int p_width) {
 }
 
 Size2 RichTextLabel::get_minimum_size() const {
+	ZoneScopedS(60);
 	Size2 size = theme_cache.normal_style->get_minimum_size();
 
 	if (fixed_width != -1) {
@@ -5588,6 +5766,7 @@ Size2 RichTextLabel::get_minimum_size() const {
 
 // Context menu.
 void RichTextLabel::_generate_context_menu() {
+	ZoneScopedS(60);
 	if (!menu) {
 		menu = memnew(PopupMenu);
 		add_child(menu, false, INTERNAL_MODE_FRONT);
@@ -5604,6 +5783,7 @@ void RichTextLabel::_generate_context_menu() {
 }
 
 Key RichTextLabel::_get_menu_action_accelerator(const String &p_action) {
+	ZoneScopedS(60);
 	const List<Ref<InputEvent>> *events = InputMap::get_singleton()->action_get_events(p_action);
 	if (!events) {
 		return Key::NONE;
@@ -5629,6 +5809,7 @@ Key RichTextLabel::_get_menu_action_accelerator(const String &p_action) {
 }
 
 void RichTextLabel::_menu_option(int p_option) {
+	ZoneScopedS(60);
 	switch (p_option) {
 		case MENU_COPY: {
 			selection_copy();
@@ -5640,6 +5821,7 @@ void RichTextLabel::_menu_option(int p_option) {
 }
 
 void RichTextLabel::_draw_fbg_boxes(RID p_ci, RID p_rid, Vector2 line_off, Item *it_from, Item *it_to, int start, int end, int fbg_flag) {
+	ZoneScopedS(60);
 	Vector2i fbg_index = Vector2i(end, start);
 	Color last_color = Color(0, 0, 0, 0);
 	bool draw_box = false;
@@ -5701,6 +5883,7 @@ void RichTextLabel::_draw_fbg_boxes(RID p_ci, RID p_rid, Vector2 line_off, Item 
 }
 
 Ref<RichTextEffect> RichTextLabel::_get_custom_effect_by_code(String p_bbcode_identifier) {
+	ZoneScopedS(60);
 	for (int i = 0; i < custom_effects.size(); i++) {
 		Ref<RichTextEffect> effect = custom_effects[i];
 		if (!effect.is_valid()) {
@@ -5716,6 +5899,7 @@ Ref<RichTextEffect> RichTextLabel::_get_custom_effect_by_code(String p_bbcode_id
 }
 
 Dictionary RichTextLabel::parse_expressions_for_values(Vector<String> p_expressions) {
+	ZoneScopedS(60);
 	Dictionary d = Dictionary();
 	for (int i = 0; i < p_expressions.size(); i++) {
 		String expression = p_expressions[i];
@@ -5775,6 +5959,7 @@ Dictionary RichTextLabel::parse_expressions_for_values(Vector<String> p_expressi
 }
 
 RichTextLabel::RichTextLabel(const String &p_text) {
+	ZoneScopedS(60);
 	main = memnew(ItemFrame);
 	main->index = 0;
 	current = main;
@@ -5804,6 +5989,7 @@ RichTextLabel::RichTextLabel(const String &p_text) {
 }
 
 RichTextLabel::~RichTextLabel() {
+	ZoneScopedS(60);
 	_stop_thread();
 	memdelete(main);
 }

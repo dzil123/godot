@@ -28,37 +28,75 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  touch_screen_button.cpp                                              */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "touch_screen_button.h"
 
 #include "scene/main/window.h"
 
 void TouchScreenButton::set_texture_normal(const Ref<Texture2D> &p_texture) {
+	ZoneScopedS(60);
 	texture_normal = p_texture;
 	queue_redraw();
 }
 
 Ref<Texture2D> TouchScreenButton::get_texture_normal() const {
+	ZoneScopedS(60);
 	return texture_normal;
 }
 
 void TouchScreenButton::set_texture_pressed(const Ref<Texture2D> &p_texture_pressed) {
+	ZoneScopedS(60);
 	texture_pressed = p_texture_pressed;
 	queue_redraw();
 }
 
 Ref<Texture2D> TouchScreenButton::get_texture_pressed() const {
+	ZoneScopedS(60);
 	return texture_pressed;
 }
 
 void TouchScreenButton::set_bitmask(const Ref<BitMap> &p_bitmask) {
+	ZoneScopedS(60);
 	bitmask = p_bitmask;
 }
 
 Ref<BitMap> TouchScreenButton::get_bitmask() const {
+	ZoneScopedS(60);
 	return bitmask;
 }
 
 void TouchScreenButton::set_shape(const Ref<Shape2D> &p_shape) {
+	ZoneScopedS(60);
 	if (shape.is_valid()) {
 		shape->disconnect("changed", callable_mp((CanvasItem *)this, &CanvasItem::queue_redraw));
 	}
@@ -73,28 +111,34 @@ void TouchScreenButton::set_shape(const Ref<Shape2D> &p_shape) {
 }
 
 Ref<Shape2D> TouchScreenButton::get_shape() const {
+	ZoneScopedS(60);
 	return shape;
 }
 
 void TouchScreenButton::set_shape_centered(bool p_shape_centered) {
+	ZoneScopedS(60);
 	shape_centered = p_shape_centered;
 	queue_redraw();
 }
 
 bool TouchScreenButton::is_shape_visible() const {
+	ZoneScopedS(60);
 	return shape_visible;
 }
 
 void TouchScreenButton::set_shape_visible(bool p_shape_visible) {
+	ZoneScopedS(60);
 	shape_visible = p_shape_visible;
 	queue_redraw();
 }
 
 bool TouchScreenButton::is_shape_centered() const {
+	ZoneScopedS(60);
 	return shape_centered;
 }
 
 void TouchScreenButton::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
 			if (!is_inside_tree()) {
@@ -176,18 +220,22 @@ void TouchScreenButton::_notification(int p_what) {
 }
 
 bool TouchScreenButton::is_pressed() const {
+	ZoneScopedS(60);
 	return finger_pressed != -1;
 }
 
 void TouchScreenButton::set_action(const String &p_action) {
+	ZoneScopedS(60);
 	action = p_action;
 }
 
 String TouchScreenButton::get_action() const {
+	ZoneScopedS(60);
 	return action;
 }
 
 void TouchScreenButton::input(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_event.is_null());
 
 	if (!is_visible_in_tree()) {
@@ -245,6 +293,7 @@ void TouchScreenButton::input(const Ref<InputEvent> &p_event) {
 }
 
 bool TouchScreenButton::_is_point_inside(const Point2 &p_point) {
+	ZoneScopedS(60);
 	Point2 coord = (get_global_transform_with_canvas()).affine_inverse().xform(p_point);
 
 	bool touched = false;
@@ -280,6 +329,7 @@ bool TouchScreenButton::_is_point_inside(const Point2 &p_point) {
 }
 
 void TouchScreenButton::_press(int p_finger_pressed) {
+	ZoneScopedS(60);
 	finger_pressed = p_finger_pressed;
 
 	if (action != StringName()) {
@@ -296,6 +346,7 @@ void TouchScreenButton::_press(int p_finger_pressed) {
 }
 
 void TouchScreenButton::_release(bool p_exiting_tree) {
+	ZoneScopedS(60);
 	finger_pressed = -1;
 
 	if (action != StringName()) {
@@ -317,6 +368,7 @@ void TouchScreenButton::_release(bool p_exiting_tree) {
 
 #ifdef TOOLS_ENABLED
 Rect2 TouchScreenButton::_edit_get_rect() const {
+	ZoneScopedS(60);
 	if (texture_normal.is_null()) {
 		return CanvasItem::_edit_get_rect();
 	}
@@ -325,11 +377,13 @@ Rect2 TouchScreenButton::_edit_get_rect() const {
 }
 
 bool TouchScreenButton::_edit_use_rect() const {
+	ZoneScopedS(60);
 	return !texture_normal.is_null();
 }
 #endif
 
 Rect2 TouchScreenButton::get_anchorable_rect() const {
+	ZoneScopedS(60);
 	if (texture_normal.is_null()) {
 		return CanvasItem::get_anchorable_rect();
 	}
@@ -338,23 +392,28 @@ Rect2 TouchScreenButton::get_anchorable_rect() const {
 }
 
 void TouchScreenButton::set_visibility_mode(VisibilityMode p_mode) {
+	ZoneScopedS(60);
 	visibility = p_mode;
 	queue_redraw();
 }
 
 TouchScreenButton::VisibilityMode TouchScreenButton::get_visibility_mode() const {
+	ZoneScopedS(60);
 	return visibility;
 }
 
 void TouchScreenButton::set_passby_press(bool p_enable) {
+	ZoneScopedS(60);
 	passby_press = p_enable;
 }
 
 bool TouchScreenButton::is_passby_press_enabled() const {
+	ZoneScopedS(60);
 	return passby_press;
 }
 
 void TouchScreenButton::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_texture_normal", "texture"), &TouchScreenButton::set_texture_normal);
 	ClassDB::bind_method(D_METHOD("get_texture_normal"), &TouchScreenButton::get_texture_normal);
 
@@ -402,6 +461,7 @@ void TouchScreenButton::_bind_methods() {
 }
 
 TouchScreenButton::TouchScreenButton() {
+	ZoneScopedS(60);
 	unit_rect = Ref<RectangleShape2D>(memnew(RectangleShape2D));
 	unit_rect->set_size(Vector2(1, 1));
 }

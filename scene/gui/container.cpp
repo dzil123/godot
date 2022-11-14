@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  container.cpp                                                        */
 /*************************************************************************/
@@ -34,6 +35,7 @@
 #include "scene/scene_string_names.h"
 
 void Container::_child_minsize_changed() {
+	ZoneScopedS(60);
 	//Size2 ms = get_combined_minimum_size();
 	//if (ms.width > get_size().width || ms.height > get_size().height) {
 	update_minimum_size();
@@ -41,6 +43,7 @@ void Container::_child_minsize_changed() {
 }
 
 void Container::add_child_notify(Node *p_child) {
+	ZoneScopedS(60);
 	Control::add_child_notify(p_child);
 
 	Control *control = Object::cast_to<Control>(p_child);
@@ -57,6 +60,7 @@ void Container::add_child_notify(Node *p_child) {
 }
 
 void Container::move_child_notify(Node *p_child) {
+	ZoneScopedS(60);
 	Control::move_child_notify(p_child);
 
 	if (!Object::cast_to<Control>(p_child)) {
@@ -68,6 +72,7 @@ void Container::move_child_notify(Node *p_child) {
 }
 
 void Container::remove_child_notify(Node *p_child) {
+	ZoneScopedS(60);
 	Control::remove_child_notify(p_child);
 
 	Control *control = Object::cast_to<Control>(p_child);
@@ -84,6 +89,7 @@ void Container::remove_child_notify(Node *p_child) {
 }
 
 void Container::_sort_children() {
+	ZoneScopedS(60);
 	if (!is_inside_tree()) {
 		return;
 	}
@@ -97,6 +103,7 @@ void Container::_sort_children() {
 }
 
 void Container::fit_child_in_rect(Control *p_child, const Rect2 &p_rect) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!p_child);
 	ERR_FAIL_COND(p_child->get_parent() != this);
 
@@ -132,6 +139,7 @@ void Container::fit_child_in_rect(Control *p_child, const Rect2 &p_rect) {
 }
 
 void Container::queue_sort() {
+	ZoneScopedS(60);
 	if (!is_inside_tree()) {
 		return;
 	}
@@ -145,6 +153,7 @@ void Container::queue_sort() {
 }
 
 Vector<int> Container::get_allowed_size_flags_horizontal() const {
+	ZoneScopedS(60);
 	Vector<int> flags;
 	if (GDVIRTUAL_CALL(_get_allowed_size_flags_horizontal, flags)) {
 		return flags;
@@ -159,6 +168,7 @@ Vector<int> Container::get_allowed_size_flags_horizontal() const {
 }
 
 Vector<int> Container::get_allowed_size_flags_vertical() const {
+	ZoneScopedS(60);
 	Vector<int> flags;
 	if (GDVIRTUAL_CALL(_get_allowed_size_flags_vertical, flags)) {
 		return flags;
@@ -173,6 +183,7 @@ Vector<int> Container::get_allowed_size_flags_vertical() const {
 }
 
 void Container::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			pending_sort = false;
@@ -193,6 +204,7 @@ void Container::_notification(int p_what) {
 }
 
 PackedStringArray Container::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Control::get_configuration_warnings();
 
 	if (get_class() == "Container" && get_script().is_null()) {
@@ -203,6 +215,7 @@ PackedStringArray Container::get_configuration_warnings() const {
 }
 
 void Container::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("queue_sort"), &Container::queue_sort);
 	ClassDB::bind_method(D_METHOD("fit_child_in_rect", "child", "rect"), &Container::fit_child_in_rect);
 
@@ -217,6 +230,7 @@ void Container::_bind_methods() {
 }
 
 Container::Container() {
+	ZoneScopedS(60);
 	// All containers should let mouse events pass by default.
 	set_mouse_filter(MOUSE_FILTER_PASS);
 }

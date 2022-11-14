@@ -28,111 +28,165 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  area_2d.cpp                                                          */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "area_2d.h"
 
 #include "scene/scene_string_names.h"
 #include "servers/audio_server.h"
 
 void Area2D::set_gravity_space_override_mode(SpaceOverride p_mode) {
+	ZoneScopedS(60);
 	gravity_space_override = p_mode;
 	PhysicsServer2D::get_singleton()->area_set_param(get_rid(), PhysicsServer2D::AREA_PARAM_GRAVITY_OVERRIDE_MODE, p_mode);
 }
 
 Area2D::SpaceOverride Area2D::get_gravity_space_override_mode() const {
+	ZoneScopedS(60);
 	return gravity_space_override;
 }
 
 void Area2D::set_gravity_is_point(bool p_enabled) {
+	ZoneScopedS(60);
 	gravity_is_point = p_enabled;
 	PhysicsServer2D::get_singleton()->area_set_param(get_rid(), PhysicsServer2D::AREA_PARAM_GRAVITY_IS_POINT, p_enabled);
 }
 
 bool Area2D::is_gravity_a_point() const {
+	ZoneScopedS(60);
 	return gravity_is_point;
 }
 
 void Area2D::set_gravity_point_distance_scale(real_t p_scale) {
+	ZoneScopedS(60);
 	gravity_distance_scale = p_scale;
 	PhysicsServer2D::get_singleton()->area_set_param(get_rid(), PhysicsServer2D::AREA_PARAM_GRAVITY_DISTANCE_SCALE, p_scale);
 }
 
 real_t Area2D::get_gravity_point_distance_scale() const {
+	ZoneScopedS(60);
 	return gravity_distance_scale;
 }
 
 void Area2D::set_gravity_point_center(const Vector2 &p_center) {
+	ZoneScopedS(60);
 	gravity_vec = p_center;
 	PhysicsServer2D::get_singleton()->area_set_param(get_rid(), PhysicsServer2D::AREA_PARAM_GRAVITY_VECTOR, p_center);
 }
 
 const Vector2 &Area2D::get_gravity_point_center() const {
+	ZoneScopedS(60);
 	return gravity_vec;
 }
 
 void Area2D::set_gravity_direction(const Vector2 &p_direction) {
+	ZoneScopedS(60);
 	gravity_vec = p_direction;
 	PhysicsServer2D::get_singleton()->area_set_param(get_rid(), PhysicsServer2D::AREA_PARAM_GRAVITY_VECTOR, p_direction);
 }
 
 const Vector2 &Area2D::get_gravity_direction() const {
+	ZoneScopedS(60);
 	return gravity_vec;
 }
 
 void Area2D::set_gravity(real_t p_gravity) {
+	ZoneScopedS(60);
 	gravity = p_gravity;
 	PhysicsServer2D::get_singleton()->area_set_param(get_rid(), PhysicsServer2D::AREA_PARAM_GRAVITY, p_gravity);
 }
 
 real_t Area2D::get_gravity() const {
+	ZoneScopedS(60);
 	return gravity;
 }
 
 void Area2D::set_linear_damp_space_override_mode(SpaceOverride p_mode) {
+	ZoneScopedS(60);
 	linear_damp_space_override = p_mode;
 	PhysicsServer2D::get_singleton()->area_set_param(get_rid(), PhysicsServer2D::AREA_PARAM_LINEAR_DAMP_OVERRIDE_MODE, p_mode);
 }
 
 Area2D::SpaceOverride Area2D::get_linear_damp_space_override_mode() const {
+	ZoneScopedS(60);
 	return linear_damp_space_override;
 }
 
 void Area2D::set_angular_damp_space_override_mode(SpaceOverride p_mode) {
+	ZoneScopedS(60);
 	angular_damp_space_override = p_mode;
 	PhysicsServer2D::get_singleton()->area_set_param(get_rid(), PhysicsServer2D::AREA_PARAM_ANGULAR_DAMP_OVERRIDE_MODE, p_mode);
 }
 
 Area2D::SpaceOverride Area2D::get_angular_damp_space_override_mode() const {
+	ZoneScopedS(60);
 	return angular_damp_space_override;
 }
 
 void Area2D::set_linear_damp(real_t p_linear_damp) {
+	ZoneScopedS(60);
 	linear_damp = p_linear_damp;
 	PhysicsServer2D::get_singleton()->area_set_param(get_rid(), PhysicsServer2D::AREA_PARAM_LINEAR_DAMP, p_linear_damp);
 }
 
 real_t Area2D::get_linear_damp() const {
+	ZoneScopedS(60);
 	return linear_damp;
 }
 
 void Area2D::set_angular_damp(real_t p_angular_damp) {
+	ZoneScopedS(60);
 	angular_damp = p_angular_damp;
 	PhysicsServer2D::get_singleton()->area_set_param(get_rid(), PhysicsServer2D::AREA_PARAM_ANGULAR_DAMP, p_angular_damp);
 }
 
 real_t Area2D::get_angular_damp() const {
+	ZoneScopedS(60);
 	return angular_damp;
 }
 
 void Area2D::set_priority(real_t p_priority) {
+	ZoneScopedS(60);
 	priority = p_priority;
 	PhysicsServer2D::get_singleton()->area_set_param(get_rid(), PhysicsServer2D::AREA_PARAM_PRIORITY, p_priority);
 }
 
 real_t Area2D::get_priority() const {
+	ZoneScopedS(60);
 	return priority;
 }
 
 void Area2D::_body_enter_tree(ObjectID p_id) {
+	ZoneScopedS(60);
 	Object *obj = ObjectDB::get_instance(p_id);
 	Node *node = Object::cast_to<Node>(obj);
 	ERR_FAIL_COND(!node);
@@ -149,6 +203,7 @@ void Area2D::_body_enter_tree(ObjectID p_id) {
 }
 
 void Area2D::_body_exit_tree(ObjectID p_id) {
+	ZoneScopedS(60);
 	Object *obj = ObjectDB::get_instance(p_id);
 	Node *node = Object::cast_to<Node>(obj);
 	ERR_FAIL_COND(!node);
@@ -163,6 +218,7 @@ void Area2D::_body_exit_tree(ObjectID p_id) {
 }
 
 void Area2D::_body_inout(int p_status, const RID &p_body, ObjectID p_instance, int p_body_shape, int p_area_shape) {
+	ZoneScopedS(60);
 	bool body_in = p_status == PhysicsServer2D::AREA_BODY_ADDED;
 	ObjectID objid = p_instance;
 
@@ -227,6 +283,7 @@ void Area2D::_body_inout(int p_status, const RID &p_body, ObjectID p_instance, i
 }
 
 void Area2D::_area_enter_tree(ObjectID p_id) {
+	ZoneScopedS(60);
 	Object *obj = ObjectDB::get_instance(p_id);
 	Node *node = Object::cast_to<Node>(obj);
 	ERR_FAIL_COND(!node);
@@ -243,6 +300,7 @@ void Area2D::_area_enter_tree(ObjectID p_id) {
 }
 
 void Area2D::_area_exit_tree(ObjectID p_id) {
+	ZoneScopedS(60);
 	Object *obj = ObjectDB::get_instance(p_id);
 	Node *node = Object::cast_to<Node>(obj);
 	ERR_FAIL_COND(!node);
@@ -257,6 +315,7 @@ void Area2D::_area_exit_tree(ObjectID p_id) {
 }
 
 void Area2D::_area_inout(int p_status, const RID &p_area, ObjectID p_instance, int p_area_shape, int p_self_shape) {
+	ZoneScopedS(60);
 	bool area_in = p_status == PhysicsServer2D::AREA_BODY_ADDED;
 	ObjectID objid = p_instance;
 
@@ -320,6 +379,7 @@ void Area2D::_area_inout(int p_status, const RID &p_area, ObjectID p_instance, i
 }
 
 void Area2D::_clear_monitoring() {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(locked, "This function can't be used during the in/out signal.");
 
 	{
@@ -380,6 +440,7 @@ void Area2D::_clear_monitoring() {
 }
 
 void Area2D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_EXIT_TREE: {
 			_clear_monitoring();
@@ -388,6 +449,7 @@ void Area2D::_notification(int p_what) {
 }
 
 void Area2D::set_monitoring(bool p_enable) {
+	ZoneScopedS(60);
 	if (p_enable == monitoring) {
 		return;
 	}
@@ -406,10 +468,12 @@ void Area2D::set_monitoring(bool p_enable) {
 }
 
 bool Area2D::is_monitoring() const {
+	ZoneScopedS(60);
 	return monitoring;
 }
 
 void Area2D::set_monitorable(bool p_enable) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(locked || (is_inside_tree() && PhysicsServer2D::get_singleton()->is_flushing_queries()), "Function blocked during in/out signal. Use set_deferred(\"monitorable\", true/false).");
 
 	if (p_enable == monitorable) {
@@ -422,10 +486,12 @@ void Area2D::set_monitorable(bool p_enable) {
 }
 
 bool Area2D::is_monitorable() const {
+	ZoneScopedS(60);
 	return monitorable;
 }
 
 TypedArray<Node2D> Area2D::get_overlapping_bodies() const {
+	ZoneScopedS(60);
 	TypedArray<Node2D> ret;
 	ERR_FAIL_COND_V_MSG(!monitoring, ret, "Can't find overlapping bodies when monitoring is off.");
 	ret.resize(body_map.size());
@@ -443,6 +509,7 @@ TypedArray<Node2D> Area2D::get_overlapping_bodies() const {
 }
 
 TypedArray<Area2D> Area2D::get_overlapping_areas() const {
+	ZoneScopedS(60);
 	TypedArray<Area2D> ret;
 	ERR_FAIL_COND_V_MSG(!monitoring, ret, "Can't find overlapping areas when monitoring is off.");
 	ret.resize(area_map.size());
@@ -460,16 +527,19 @@ TypedArray<Area2D> Area2D::get_overlapping_areas() const {
 }
 
 bool Area2D::has_overlapping_bodies() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!monitoring, false, "Can't find overlapping bodies when monitoring is off.");
 	return !body_map.is_empty();
 }
 
 bool Area2D::has_overlapping_areas() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!monitoring, false, "Can't find overlapping areas when monitoring is off.");
 	return !area_map.is_empty();
 }
 
 bool Area2D::overlaps_area(Node *p_area) const {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL_V(p_area, false);
 	HashMap<ObjectID, AreaState>::ConstIterator E = area_map.find(p_area->get_instance_id());
 	if (!E) {
@@ -479,6 +549,7 @@ bool Area2D::overlaps_area(Node *p_area) const {
 }
 
 bool Area2D::overlaps_body(Node *p_body) const {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL_V(p_body, false);
 	HashMap<ObjectID, BodyState>::ConstIterator E = body_map.find(p_body->get_instance_id());
 	if (!E) {
@@ -488,18 +559,22 @@ bool Area2D::overlaps_body(Node *p_body) const {
 }
 
 void Area2D::set_audio_bus_override(bool p_override) {
+	ZoneScopedS(60);
 	audio_bus_override = p_override;
 }
 
 bool Area2D::is_overriding_audio_bus() const {
+	ZoneScopedS(60);
 	return audio_bus_override;
 }
 
 void Area2D::set_audio_bus_name(const StringName &p_audio_bus) {
+	ZoneScopedS(60);
 	audio_bus = p_audio_bus;
 }
 
 StringName Area2D::get_audio_bus_name() const {
+	ZoneScopedS(60);
 	for (int i = 0; i < AudioServer::get_singleton()->get_bus_count(); i++) {
 		if (AudioServer::get_singleton()->get_bus_name(i) == audio_bus) {
 			return audio_bus;
@@ -509,6 +584,7 @@ StringName Area2D::get_audio_bus_name() const {
 }
 
 void Area2D::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (p_property.name == "audio_bus_name") {
 		String options;
 		for (int i = 0; i < AudioServer::get_singleton()->get_bus_count(); i++) {
@@ -546,6 +622,7 @@ void Area2D::_validate_property(PropertyInfo &p_property) const {
 }
 
 void Area2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_gravity_space_override_mode", "space_override_mode"), &Area2D::set_gravity_space_override_mode);
 	ClassDB::bind_method(D_METHOD("get_gravity_space_override_mode"), &Area2D::get_gravity_space_override_mode);
 

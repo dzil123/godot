@@ -28,111 +28,165 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  area_3d.cpp                                                          */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "area_3d.h"
 
 #include "scene/scene_string_names.h"
 #include "servers/audio_server.h"
 
 void Area3D::set_gravity_space_override_mode(SpaceOverride p_mode) {
+	ZoneScopedS(60);
 	gravity_space_override = p_mode;
 	PhysicsServer3D::get_singleton()->area_set_param(get_rid(), PhysicsServer3D::AREA_PARAM_GRAVITY_OVERRIDE_MODE, p_mode);
 }
 
 Area3D::SpaceOverride Area3D::get_gravity_space_override_mode() const {
+	ZoneScopedS(60);
 	return gravity_space_override;
 }
 
 void Area3D::set_gravity_is_point(bool p_enabled) {
+	ZoneScopedS(60);
 	gravity_is_point = p_enabled;
 	PhysicsServer3D::get_singleton()->area_set_param(get_rid(), PhysicsServer3D::AREA_PARAM_GRAVITY_IS_POINT, p_enabled);
 }
 
 bool Area3D::is_gravity_a_point() const {
+	ZoneScopedS(60);
 	return gravity_is_point;
 }
 
 void Area3D::set_gravity_point_distance_scale(real_t p_scale) {
+	ZoneScopedS(60);
 	gravity_distance_scale = p_scale;
 	PhysicsServer3D::get_singleton()->area_set_param(get_rid(), PhysicsServer3D::AREA_PARAM_GRAVITY_DISTANCE_SCALE, p_scale);
 }
 
 real_t Area3D::get_gravity_point_distance_scale() const {
+	ZoneScopedS(60);
 	return gravity_distance_scale;
 }
 
 void Area3D::set_gravity_point_center(const Vector3 &p_center) {
+	ZoneScopedS(60);
 	gravity_vec = p_center;
 	PhysicsServer3D::get_singleton()->area_set_param(get_rid(), PhysicsServer3D::AREA_PARAM_GRAVITY_VECTOR, p_center);
 }
 
 const Vector3 &Area3D::get_gravity_point_center() const {
+	ZoneScopedS(60);
 	return gravity_vec;
 }
 
 void Area3D::set_gravity_direction(const Vector3 &p_direction) {
+	ZoneScopedS(60);
 	gravity_vec = p_direction;
 	PhysicsServer3D::get_singleton()->area_set_param(get_rid(), PhysicsServer3D::AREA_PARAM_GRAVITY_VECTOR, p_direction);
 }
 
 const Vector3 &Area3D::get_gravity_direction() const {
+	ZoneScopedS(60);
 	return gravity_vec;
 }
 
 void Area3D::set_gravity(real_t p_gravity) {
+	ZoneScopedS(60);
 	gravity = p_gravity;
 	PhysicsServer3D::get_singleton()->area_set_param(get_rid(), PhysicsServer3D::AREA_PARAM_GRAVITY, p_gravity);
 }
 
 real_t Area3D::get_gravity() const {
+	ZoneScopedS(60);
 	return gravity;
 }
 
 void Area3D::set_linear_damp_space_override_mode(SpaceOverride p_mode) {
+	ZoneScopedS(60);
 	linear_damp_space_override = p_mode;
 	PhysicsServer3D::get_singleton()->area_set_param(get_rid(), PhysicsServer3D::AREA_PARAM_LINEAR_DAMP_OVERRIDE_MODE, p_mode);
 }
 
 Area3D::SpaceOverride Area3D::get_linear_damp_space_override_mode() const {
+	ZoneScopedS(60);
 	return linear_damp_space_override;
 }
 
 void Area3D::set_angular_damp_space_override_mode(SpaceOverride p_mode) {
+	ZoneScopedS(60);
 	angular_damp_space_override = p_mode;
 	PhysicsServer3D::get_singleton()->area_set_param(get_rid(), PhysicsServer3D::AREA_PARAM_ANGULAR_DAMP_OVERRIDE_MODE, p_mode);
 }
 
 Area3D::SpaceOverride Area3D::get_angular_damp_space_override_mode() const {
+	ZoneScopedS(60);
 	return angular_damp_space_override;
 }
 
 void Area3D::set_linear_damp(real_t p_linear_damp) {
+	ZoneScopedS(60);
 	linear_damp = p_linear_damp;
 	PhysicsServer3D::get_singleton()->area_set_param(get_rid(), PhysicsServer3D::AREA_PARAM_LINEAR_DAMP, p_linear_damp);
 }
 
 real_t Area3D::get_linear_damp() const {
+	ZoneScopedS(60);
 	return linear_damp;
 }
 
 void Area3D::set_angular_damp(real_t p_angular_damp) {
+	ZoneScopedS(60);
 	angular_damp = p_angular_damp;
 	PhysicsServer3D::get_singleton()->area_set_param(get_rid(), PhysicsServer3D::AREA_PARAM_ANGULAR_DAMP, p_angular_damp);
 }
 
 real_t Area3D::get_angular_damp() const {
+	ZoneScopedS(60);
 	return angular_damp;
 }
 
 void Area3D::set_priority(real_t p_priority) {
+	ZoneScopedS(60);
 	priority = p_priority;
 	PhysicsServer3D::get_singleton()->area_set_param(get_rid(), PhysicsServer3D::AREA_PARAM_PRIORITY, p_priority);
 }
 
 real_t Area3D::get_priority() const {
+	ZoneScopedS(60);
 	return priority;
 }
 
 void Area3D::set_wind_force_magnitude(real_t p_wind_force_magnitude) {
+	ZoneScopedS(60);
 	wind_force_magnitude = p_wind_force_magnitude;
 	if (is_inside_tree()) {
 		_initialize_wind();
@@ -140,10 +194,12 @@ void Area3D::set_wind_force_magnitude(real_t p_wind_force_magnitude) {
 }
 
 real_t Area3D::get_wind_force_magnitude() const {
+	ZoneScopedS(60);
 	return wind_force_magnitude;
 }
 
 void Area3D::set_wind_attenuation_factor(real_t p_wind_force_attenuation_factor) {
+	ZoneScopedS(60);
 	wind_attenuation_factor = p_wind_force_attenuation_factor;
 	if (is_inside_tree()) {
 		_initialize_wind();
@@ -151,10 +207,12 @@ void Area3D::set_wind_attenuation_factor(real_t p_wind_force_attenuation_factor)
 }
 
 real_t Area3D::get_wind_attenuation_factor() const {
+	ZoneScopedS(60);
 	return wind_attenuation_factor;
 }
 
 void Area3D::set_wind_source_path(const NodePath &p_wind_source_path) {
+	ZoneScopedS(60);
 	wind_source_path = p_wind_source_path;
 	if (is_inside_tree()) {
 		_initialize_wind();
@@ -162,10 +220,12 @@ void Area3D::set_wind_source_path(const NodePath &p_wind_source_path) {
 }
 
 const NodePath &Area3D::get_wind_source_path() const {
+	ZoneScopedS(60);
 	return wind_source_path;
 }
 
 void Area3D::_initialize_wind() {
+	ZoneScopedS(60);
 	real_t temp_magnitude = 0.0;
 	Vector3 wind_direction(0., 0., 0.);
 	Vector3 wind_source(0., 0., 0.);
@@ -188,6 +248,7 @@ void Area3D::_initialize_wind() {
 }
 
 void Area3D::_body_enter_tree(ObjectID p_id) {
+	ZoneScopedS(60);
 	Object *obj = ObjectDB::get_instance(p_id);
 	Node *node = Object::cast_to<Node>(obj);
 	ERR_FAIL_COND(!node);
@@ -204,6 +265,7 @@ void Area3D::_body_enter_tree(ObjectID p_id) {
 }
 
 void Area3D::_body_exit_tree(ObjectID p_id) {
+	ZoneScopedS(60);
 	Object *obj = ObjectDB::get_instance(p_id);
 	Node *node = Object::cast_to<Node>(obj);
 	ERR_FAIL_COND(!node);
@@ -218,6 +280,7 @@ void Area3D::_body_exit_tree(ObjectID p_id) {
 }
 
 void Area3D::_body_inout(int p_status, const RID &p_body, ObjectID p_instance, int p_body_shape, int p_area_shape) {
+	ZoneScopedS(60);
 	bool body_in = p_status == PhysicsServer3D::AREA_BODY_ADDED;
 	ObjectID objid = p_instance;
 
@@ -282,6 +345,7 @@ void Area3D::_body_inout(int p_status, const RID &p_body, ObjectID p_instance, i
 }
 
 void Area3D::_clear_monitoring() {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(locked, "This function can't be used during the in/out signal.");
 
 	{
@@ -344,6 +408,7 @@ void Area3D::_clear_monitoring() {
 }
 
 void Area3D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_EXIT_TREE: {
 			_clear_monitoring();
@@ -356,6 +421,7 @@ void Area3D::_notification(int p_what) {
 }
 
 void Area3D::set_monitoring(bool p_enable) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(locked, "Function blocked during in/out signal. Use set_deferred(\"monitoring\", true/false).");
 
 	if (p_enable == monitoring) {
@@ -375,6 +441,7 @@ void Area3D::set_monitoring(bool p_enable) {
 }
 
 void Area3D::_area_enter_tree(ObjectID p_id) {
+	ZoneScopedS(60);
 	Object *obj = ObjectDB::get_instance(p_id);
 	Node *node = Object::cast_to<Node>(obj);
 	ERR_FAIL_COND(!node);
@@ -391,6 +458,7 @@ void Area3D::_area_enter_tree(ObjectID p_id) {
 }
 
 void Area3D::_area_exit_tree(ObjectID p_id) {
+	ZoneScopedS(60);
 	Object *obj = ObjectDB::get_instance(p_id);
 	Node *node = Object::cast_to<Node>(obj);
 	ERR_FAIL_COND(!node);
@@ -405,6 +473,7 @@ void Area3D::_area_exit_tree(ObjectID p_id) {
 }
 
 void Area3D::_area_inout(int p_status, const RID &p_area, ObjectID p_instance, int p_area_shape, int p_self_shape) {
+	ZoneScopedS(60);
 	bool area_in = p_status == PhysicsServer3D::AREA_BODY_ADDED;
 	ObjectID objid = p_instance;
 
@@ -469,10 +538,12 @@ void Area3D::_area_inout(int p_status, const RID &p_area, ObjectID p_instance, i
 }
 
 bool Area3D::is_monitoring() const {
+	ZoneScopedS(60);
 	return monitoring;
 }
 
 TypedArray<Node3D> Area3D::get_overlapping_bodies() const {
+	ZoneScopedS(60);
 	TypedArray<Node3D> ret;
 	ERR_FAIL_COND_V_MSG(!monitoring, ret, "Can't find overlapping bodies when monitoring is off.");
 	ret.resize(body_map.size());
@@ -490,11 +561,13 @@ TypedArray<Node3D> Area3D::get_overlapping_bodies() const {
 }
 
 bool Area3D::has_overlapping_bodies() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!monitoring, false, "Can't find overlapping bodies when monitoring is off.");
 	return !body_map.is_empty();
 }
 
 void Area3D::set_monitorable(bool p_enable) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(locked || (is_inside_tree() && PhysicsServer3D::get_singleton()->is_flushing_queries()), "Function blocked during in/out signal. Use set_deferred(\"monitorable\", true/false).");
 
 	if (p_enable == monitorable) {
@@ -507,10 +580,12 @@ void Area3D::set_monitorable(bool p_enable) {
 }
 
 bool Area3D::is_monitorable() const {
+	ZoneScopedS(60);
 	return monitorable;
 }
 
 TypedArray<Area3D> Area3D::get_overlapping_areas() const {
+	ZoneScopedS(60);
 	TypedArray<Area3D> ret;
 	ERR_FAIL_COND_V_MSG(!monitoring, ret, "Can't find overlapping areas when monitoring is off.");
 	ret.resize(area_map.size());
@@ -527,11 +602,13 @@ TypedArray<Area3D> Area3D::get_overlapping_areas() const {
 }
 
 bool Area3D::has_overlapping_areas() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!monitoring, false, "Can't find overlapping areas when monitoring is off.");
 	return !area_map.is_empty();
 }
 
 bool Area3D::overlaps_area(Node *p_area) const {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL_V(p_area, false);
 	HashMap<ObjectID, AreaState>::ConstIterator E = area_map.find(p_area->get_instance_id());
 	if (!E) {
@@ -541,6 +618,7 @@ bool Area3D::overlaps_area(Node *p_area) const {
 }
 
 bool Area3D::overlaps_body(Node *p_body) const {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL_V(p_body, false);
 	HashMap<ObjectID, BodyState>::ConstIterator E = body_map.find(p_body->get_instance_id());
 	if (!E) {
@@ -550,18 +628,22 @@ bool Area3D::overlaps_body(Node *p_body) const {
 }
 
 void Area3D::set_audio_bus_override(bool p_override) {
+	ZoneScopedS(60);
 	audio_bus_override = p_override;
 }
 
 bool Area3D::is_overriding_audio_bus() const {
+	ZoneScopedS(60);
 	return audio_bus_override;
 }
 
 void Area3D::set_audio_bus_name(const StringName &p_audio_bus) {
+	ZoneScopedS(60);
 	audio_bus = p_audio_bus;
 }
 
 StringName Area3D::get_audio_bus_name() const {
+	ZoneScopedS(60);
 	for (int i = 0; i < AudioServer::get_singleton()->get_bus_count(); i++) {
 		if (AudioServer::get_singleton()->get_bus_name(i) == audio_bus) {
 			return audio_bus;
@@ -571,18 +653,22 @@ StringName Area3D::get_audio_bus_name() const {
 }
 
 void Area3D::set_use_reverb_bus(bool p_enable) {
+	ZoneScopedS(60);
 	use_reverb_bus = p_enable;
 }
 
 bool Area3D::is_using_reverb_bus() const {
+	ZoneScopedS(60);
 	return use_reverb_bus;
 }
 
 void Area3D::set_reverb_bus_name(const StringName &p_audio_bus) {
+	ZoneScopedS(60);
 	reverb_bus = p_audio_bus;
 }
 
 StringName Area3D::get_reverb_bus_name() const {
+	ZoneScopedS(60);
 	for (int i = 0; i < AudioServer::get_singleton()->get_bus_count(); i++) {
 		if (AudioServer::get_singleton()->get_bus_name(i) == reverb_bus) {
 			return reverb_bus;
@@ -592,22 +678,27 @@ StringName Area3D::get_reverb_bus_name() const {
 }
 
 void Area3D::set_reverb_amount(float p_amount) {
+	ZoneScopedS(60);
 	reverb_amount = p_amount;
 }
 
 float Area3D::get_reverb_amount() const {
+	ZoneScopedS(60);
 	return reverb_amount;
 }
 
 void Area3D::set_reverb_uniformity(float p_uniformity) {
+	ZoneScopedS(60);
 	reverb_uniformity = p_uniformity;
 }
 
 float Area3D::get_reverb_uniformity() const {
+	ZoneScopedS(60);
 	return reverb_uniformity;
 }
 
 void Area3D::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (p_property.name == "audio_bus_name" || p_property.name == "reverb_bus_name") {
 		String options;
 		for (int i = 0; i < AudioServer::get_singleton()->get_bus_count(); i++) {
@@ -645,6 +736,7 @@ void Area3D::_validate_property(PropertyInfo &p_property) const {
 }
 
 void Area3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_gravity_space_override_mode", "space_override_mode"), &Area3D::set_gravity_space_override_mode);
 	ClassDB::bind_method(D_METHOD("get_gravity_space_override_mode"), &Area3D::get_gravity_space_override_mode);
 

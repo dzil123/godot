@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  gpu_particles_collision_3d.cpp                                       */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "gpu_particles_collision_3d.h"
 
 #include "core/object/worker_thread_pool.h"
@@ -36,15 +67,18 @@
 #include "scene/main/viewport.h"
 
 void GPUParticlesCollision3D::set_cull_mask(uint32_t p_cull_mask) {
+	ZoneScopedS(60);
 	cull_mask = p_cull_mask;
 	RS::get_singleton()->particles_collision_set_cull_mask(collision, p_cull_mask);
 }
 
 uint32_t GPUParticlesCollision3D::get_cull_mask() const {
+	ZoneScopedS(60);
 	return cull_mask;
 }
 
 void GPUParticlesCollision3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_cull_mask", "mask"), &GPUParticlesCollision3D::set_cull_mask);
 	ClassDB::bind_method(D_METHOD("get_cull_mask"), &GPUParticlesCollision3D::get_cull_mask);
 
@@ -52,18 +86,21 @@ void GPUParticlesCollision3D::_bind_methods() {
 }
 
 GPUParticlesCollision3D::GPUParticlesCollision3D(RS::ParticlesCollisionType p_type) {
+	ZoneScopedS(60);
 	collision = RS::get_singleton()->particles_collision_create();
 	RS::get_singleton()->particles_collision_set_collision_type(collision, p_type);
 	set_base(collision);
 }
 
 GPUParticlesCollision3D::~GPUParticlesCollision3D() {
+	ZoneScopedS(60);
 	RS::get_singleton()->free(collision);
 }
 
 /////////////////////////////////
 
 void GPUParticlesCollisionSphere3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_radius", "radius"), &GPUParticlesCollisionSphere3D::set_radius);
 	ClassDB::bind_method(D_METHOD("get_radius"), &GPUParticlesCollisionSphere3D::get_radius);
 
@@ -71,16 +108,19 @@ void GPUParticlesCollisionSphere3D::_bind_methods() {
 }
 
 void GPUParticlesCollisionSphere3D::set_radius(real_t p_radius) {
+	ZoneScopedS(60);
 	radius = p_radius;
 	RS::get_singleton()->particles_collision_set_sphere_radius(_get_collision(), radius);
 	update_gizmos();
 }
 
 real_t GPUParticlesCollisionSphere3D::get_radius() const {
+	ZoneScopedS(60);
 	return radius;
 }
 
 AABB GPUParticlesCollisionSphere3D::get_aabb() const {
+	ZoneScopedS(60);
 	return AABB(Vector3(-radius, -radius, -radius), Vector3(radius * 2, radius * 2, radius * 2));
 }
 
@@ -94,6 +134,7 @@ GPUParticlesCollisionSphere3D::~GPUParticlesCollisionSphere3D() {
 ///////////////////////////
 
 void GPUParticlesCollisionBox3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_extents", "extents"), &GPUParticlesCollisionBox3D::set_extents);
 	ClassDB::bind_method(D_METHOD("get_extents"), &GPUParticlesCollisionBox3D::get_extents);
 
@@ -101,16 +142,19 @@ void GPUParticlesCollisionBox3D::_bind_methods() {
 }
 
 void GPUParticlesCollisionBox3D::set_extents(const Vector3 &p_extents) {
+	ZoneScopedS(60);
 	extents = p_extents;
 	RS::get_singleton()->particles_collision_set_box_extents(_get_collision(), extents);
 	update_gizmos();
 }
 
 Vector3 GPUParticlesCollisionBox3D::get_extents() const {
+	ZoneScopedS(60);
 	return extents;
 }
 
 AABB GPUParticlesCollisionBox3D::get_aabb() const {
+	ZoneScopedS(60);
 	return AABB(-extents, extents * 2);
 }
 
@@ -125,6 +169,7 @@ GPUParticlesCollisionBox3D::~GPUParticlesCollisionBox3D() {
 ///////////////////////////
 
 void GPUParticlesCollisionSDF3D::_find_meshes(const AABB &p_aabb, Node *p_at_node, List<PlotMesh> &plot_meshes) {
+	ZoneScopedS(60);
 	MeshInstance3D *mi = Object::cast_to<MeshInstance3D>(p_at_node);
 	if (mi && mi->is_visible_in_tree()) {
 		if ((mi->get_layer_mask() & bake_mask) == 0) {
@@ -178,6 +223,7 @@ void GPUParticlesCollisionSDF3D::_find_meshes(const AABB &p_aabb, Node *p_at_nod
 }
 
 uint32_t GPUParticlesCollisionSDF3D::_create_bvh(LocalVector<BVH> &bvh_tree, FacePos *p_faces, uint32_t p_face_count, const Face3 *p_triangles, float p_thickness) {
+	ZoneScopedS(60);
 	if (p_face_count == 1) {
 		return BVH::LEAF_BIT | p_faces[0].index;
 	}
@@ -222,10 +268,12 @@ uint32_t GPUParticlesCollisionSDF3D::_create_bvh(LocalVector<BVH> &bvh_tree, Fac
 }
 
 static _FORCE_INLINE_ real_t Vector3_dot2(const Vector3 &p_vec3) {
+	ZoneScopedS(60);
 	return p_vec3.dot(p_vec3);
 }
 
 void GPUParticlesCollisionSDF3D::_find_closest_distance(const Vector3 &p_pos, const BVH *p_bvh, uint32_t p_bvh_cell, const Face3 *p_triangles, float p_thickness, float &r_closest_distance) {
+	ZoneScopedS(60);
 	if (p_bvh_cell & BVH::LEAF_BIT) {
 		p_bvh_cell &= BVH::LEAF_MASK; //remove bit
 
@@ -327,6 +375,7 @@ void GPUParticlesCollisionSDF3D::_find_closest_distance(const Vector3 &p_pos, co
 }
 
 void GPUParticlesCollisionSDF3D::_compute_sdf_z(uint32_t p_z, ComputeSDFParams *params) {
+	ZoneScopedS(60);
 	int32_t z_ofs = p_z * params->size.y * params->size.x;
 	for (int32_t y = 0; y < params->size.y; y++) {
 		int32_t y_ofs = z_ofs + y * params->size.x;
@@ -344,6 +393,7 @@ void GPUParticlesCollisionSDF3D::_compute_sdf_z(uint32_t p_z, ComputeSDFParams *
 }
 
 void GPUParticlesCollisionSDF3D::_compute_sdf(ComputeSDFParams *params) {
+	ZoneScopedS(60);
 	WorkerThreadPool::GroupID group_task = WorkerThreadPool::get_singleton()->add_template_group_task(this, &GPUParticlesCollisionSDF3D::_compute_sdf_z, params, params->size.z);
 	while (!WorkerThreadPool::get_singleton()->is_group_task_completed(group_task)) {
 		OS::get_singleton()->delay_usec(10000);
@@ -353,6 +403,7 @@ void GPUParticlesCollisionSDF3D::_compute_sdf(ComputeSDFParams *params) {
 }
 
 Vector3i GPUParticlesCollisionSDF3D::get_estimated_cell_size() const {
+	ZoneScopedS(60);
 	static const int subdivs[RESOLUTION_MAX] = { 16, 32, 64, 128, 256, 512 };
 	int subdiv = subdivs[get_resolution()];
 
@@ -368,6 +419,7 @@ Vector3i GPUParticlesCollisionSDF3D::get_estimated_cell_size() const {
 }
 
 Ref<Image> GPUParticlesCollisionSDF3D::bake() {
+	ZoneScopedS(60);
 	static const int subdivs[RESOLUTION_MAX] = { 16, 32, 64, 128, 256, 512 };
 	int subdiv = subdivs[get_resolution()];
 
@@ -502,6 +554,7 @@ Ref<Image> GPUParticlesCollisionSDF3D::bake() {
 }
 
 PackedStringArray GPUParticlesCollisionSDF3D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (bake_mask == 0) {
@@ -512,6 +565,7 @@ PackedStringArray GPUParticlesCollisionSDF3D::get_configuration_warnings() const
 }
 
 void GPUParticlesCollisionSDF3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_extents", "extents"), &GPUParticlesCollisionSDF3D::set_extents);
 	ClassDB::bind_method(D_METHOD("get_extents"), &GPUParticlesCollisionSDF3D::get_extents);
 
@@ -545,42 +599,51 @@ void GPUParticlesCollisionSDF3D::_bind_methods() {
 }
 
 void GPUParticlesCollisionSDF3D::set_thickness(float p_thickness) {
+	ZoneScopedS(60);
 	thickness = p_thickness;
 }
 
 float GPUParticlesCollisionSDF3D::get_thickness() const {
+	ZoneScopedS(60);
 	return thickness;
 }
 
 void GPUParticlesCollisionSDF3D::set_extents(const Vector3 &p_extents) {
+	ZoneScopedS(60);
 	extents = p_extents;
 	RS::get_singleton()->particles_collision_set_box_extents(_get_collision(), extents);
 	update_gizmos();
 }
 
 Vector3 GPUParticlesCollisionSDF3D::get_extents() const {
+	ZoneScopedS(60);
 	return extents;
 }
 
 void GPUParticlesCollisionSDF3D::set_resolution(Resolution p_resolution) {
+	ZoneScopedS(60);
 	resolution = p_resolution;
 	update_gizmos();
 }
 
 GPUParticlesCollisionSDF3D::Resolution GPUParticlesCollisionSDF3D::get_resolution() const {
+	ZoneScopedS(60);
 	return resolution;
 }
 
 void GPUParticlesCollisionSDF3D::set_bake_mask(uint32_t p_mask) {
+	ZoneScopedS(60);
 	bake_mask = p_mask;
 	update_configuration_warnings();
 }
 
 uint32_t GPUParticlesCollisionSDF3D::get_bake_mask() const {
+	ZoneScopedS(60);
 	return bake_mask;
 }
 
 void GPUParticlesCollisionSDF3D::set_bake_mask_value(int p_layer_number, bool p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_layer_number < 1 || p_layer_number > 20, vformat("The render layer number (%d) must be between 1 and 20 (inclusive).", p_layer_number));
 	uint32_t mask = get_bake_mask();
 	if (p_value) {
@@ -592,21 +655,25 @@ void GPUParticlesCollisionSDF3D::set_bake_mask_value(int p_layer_number, bool p_
 }
 
 bool GPUParticlesCollisionSDF3D::get_bake_mask_value(int p_layer_number) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(p_layer_number < 1 || p_layer_number > 20, false, vformat("The render layer number (%d) must be between 1 and 20 (inclusive).", p_layer_number));
 	return bake_mask & (1 << (p_layer_number - 1));
 }
 
 void GPUParticlesCollisionSDF3D::set_texture(const Ref<Texture3D> &p_texture) {
+	ZoneScopedS(60);
 	texture = p_texture;
 	RID tex = texture.is_valid() ? texture->get_rid() : RID();
 	RS::get_singleton()->particles_collision_set_field_texture(_get_collision(), tex);
 }
 
 Ref<Texture3D> GPUParticlesCollisionSDF3D::get_texture() const {
+	ZoneScopedS(60);
 	return texture;
 }
 
 AABB GPUParticlesCollisionSDF3D::get_aabb() const {
+	ZoneScopedS(60);
 	return AABB(-extents, extents * 2);
 }
 
@@ -625,6 +692,7 @@ GPUParticlesCollisionSDF3D::~GPUParticlesCollisionSDF3D() {
 ////////////////////////////
 
 void GPUParticlesCollisionHeightField3D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_INTERNAL_PROCESS: {
 			if (update_mode == UPDATE_MODE_ALWAYS) {
@@ -672,6 +740,7 @@ void GPUParticlesCollisionHeightField3D::_notification(int p_what) {
 }
 
 void GPUParticlesCollisionHeightField3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_extents", "extents"), &GPUParticlesCollisionHeightField3D::set_extents);
 	ClassDB::bind_method(D_METHOD("get_extents"), &GPUParticlesCollisionHeightField3D::get_extents);
 
@@ -702,6 +771,7 @@ void GPUParticlesCollisionHeightField3D::_bind_methods() {
 }
 
 void GPUParticlesCollisionHeightField3D::set_extents(const Vector3 &p_extents) {
+	ZoneScopedS(60);
 	extents = p_extents;
 	RS::get_singleton()->particles_collision_set_box_extents(_get_collision(), extents);
 	update_gizmos();
@@ -709,10 +779,12 @@ void GPUParticlesCollisionHeightField3D::set_extents(const Vector3 &p_extents) {
 }
 
 Vector3 GPUParticlesCollisionHeightField3D::get_extents() const {
+	ZoneScopedS(60);
 	return extents;
 }
 
 void GPUParticlesCollisionHeightField3D::set_resolution(Resolution p_resolution) {
+	ZoneScopedS(60);
 	resolution = p_resolution;
 	RS::get_singleton()->particles_collision_set_height_field_resolution(_get_collision(), RS::ParticlesCollisionHeightfieldResolution(resolution));
 	update_gizmos();
@@ -720,28 +792,34 @@ void GPUParticlesCollisionHeightField3D::set_resolution(Resolution p_resolution)
 }
 
 GPUParticlesCollisionHeightField3D::Resolution GPUParticlesCollisionHeightField3D::get_resolution() const {
+	ZoneScopedS(60);
 	return resolution;
 }
 
 void GPUParticlesCollisionHeightField3D::set_update_mode(UpdateMode p_update_mode) {
+	ZoneScopedS(60);
 	update_mode = p_update_mode;
 	set_process_internal(follow_camera_mode || update_mode == UPDATE_MODE_ALWAYS);
 }
 
 GPUParticlesCollisionHeightField3D::UpdateMode GPUParticlesCollisionHeightField3D::get_update_mode() const {
+	ZoneScopedS(60);
 	return update_mode;
 }
 
 void GPUParticlesCollisionHeightField3D::set_follow_camera_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	follow_camera_mode = p_enabled;
 	set_process_internal(follow_camera_mode || update_mode == UPDATE_MODE_ALWAYS);
 }
 
 bool GPUParticlesCollisionHeightField3D::is_follow_camera_enabled() const {
+	ZoneScopedS(60);
 	return follow_camera_mode;
 }
 
 AABB GPUParticlesCollisionHeightField3D::get_aabb() const {
+	ZoneScopedS(60);
 	return AABB(-extents, extents * 2);
 }
 
@@ -756,43 +834,52 @@ GPUParticlesCollisionHeightField3D::~GPUParticlesCollisionHeightField3D() {
 ////////////////////////////
 
 void GPUParticlesAttractor3D::set_cull_mask(uint32_t p_cull_mask) {
+	ZoneScopedS(60);
 	cull_mask = p_cull_mask;
 	RS::get_singleton()->particles_collision_set_cull_mask(collision, p_cull_mask);
 }
 
 uint32_t GPUParticlesAttractor3D::get_cull_mask() const {
+	ZoneScopedS(60);
 	return cull_mask;
 }
 
 void GPUParticlesAttractor3D::set_strength(real_t p_strength) {
+	ZoneScopedS(60);
 	strength = p_strength;
 	RS::get_singleton()->particles_collision_set_attractor_strength(collision, p_strength);
 }
 
 real_t GPUParticlesAttractor3D::get_strength() const {
+	ZoneScopedS(60);
 	return strength;
 }
 
 void GPUParticlesAttractor3D::set_attenuation(real_t p_attenuation) {
+	ZoneScopedS(60);
 	attenuation = p_attenuation;
 	RS::get_singleton()->particles_collision_set_attractor_attenuation(collision, p_attenuation);
 }
 
 real_t GPUParticlesAttractor3D::get_attenuation() const {
+	ZoneScopedS(60);
 	return attenuation;
 }
 
 void GPUParticlesAttractor3D::set_directionality(real_t p_directionality) {
+	ZoneScopedS(60);
 	directionality = p_directionality;
 	RS::get_singleton()->particles_collision_set_attractor_directionality(collision, p_directionality);
 	update_gizmos();
 }
 
 real_t GPUParticlesAttractor3D::get_directionality() const {
+	ZoneScopedS(60);
 	return directionality;
 }
 
 void GPUParticlesAttractor3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_cull_mask", "mask"), &GPUParticlesAttractor3D::set_cull_mask);
 	ClassDB::bind_method(D_METHOD("get_cull_mask"), &GPUParticlesAttractor3D::get_cull_mask);
 
@@ -812,17 +899,20 @@ void GPUParticlesAttractor3D::_bind_methods() {
 }
 
 GPUParticlesAttractor3D::GPUParticlesAttractor3D(RS::ParticlesCollisionType p_type) {
+	ZoneScopedS(60);
 	collision = RS::get_singleton()->particles_collision_create();
 	RS::get_singleton()->particles_collision_set_collision_type(collision, p_type);
 	set_base(collision);
 }
 GPUParticlesAttractor3D::~GPUParticlesAttractor3D() {
+	ZoneScopedS(60);
 	RS::get_singleton()->free(collision);
 }
 
 /////////////////////////////////
 
 void GPUParticlesAttractorSphere3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_radius", "radius"), &GPUParticlesAttractorSphere3D::set_radius);
 	ClassDB::bind_method(D_METHOD("get_radius"), &GPUParticlesAttractorSphere3D::get_radius);
 
@@ -830,16 +920,19 @@ void GPUParticlesAttractorSphere3D::_bind_methods() {
 }
 
 void GPUParticlesAttractorSphere3D::set_radius(real_t p_radius) {
+	ZoneScopedS(60);
 	radius = p_radius;
 	RS::get_singleton()->particles_collision_set_sphere_radius(_get_collision(), radius);
 	update_gizmos();
 }
 
 real_t GPUParticlesAttractorSphere3D::get_radius() const {
+	ZoneScopedS(60);
 	return radius;
 }
 
 AABB GPUParticlesAttractorSphere3D::get_aabb() const {
+	ZoneScopedS(60);
 	return AABB(Vector3(-radius, -radius, -radius), Vector3(radius * 2, radius * 2, radius * 2));
 }
 
@@ -853,6 +946,7 @@ GPUParticlesAttractorSphere3D::~GPUParticlesAttractorSphere3D() {
 ///////////////////////////
 
 void GPUParticlesAttractorBox3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_extents", "extents"), &GPUParticlesAttractorBox3D::set_extents);
 	ClassDB::bind_method(D_METHOD("get_extents"), &GPUParticlesAttractorBox3D::get_extents);
 
@@ -860,16 +954,19 @@ void GPUParticlesAttractorBox3D::_bind_methods() {
 }
 
 void GPUParticlesAttractorBox3D::set_extents(const Vector3 &p_extents) {
+	ZoneScopedS(60);
 	extents = p_extents;
 	RS::get_singleton()->particles_collision_set_box_extents(_get_collision(), extents);
 	update_gizmos();
 }
 
 Vector3 GPUParticlesAttractorBox3D::get_extents() const {
+	ZoneScopedS(60);
 	return extents;
 }
 
 AABB GPUParticlesAttractorBox3D::get_aabb() const {
+	ZoneScopedS(60);
 	return AABB(-extents, extents * 2);
 }
 
@@ -883,6 +980,7 @@ GPUParticlesAttractorBox3D::~GPUParticlesAttractorBox3D() {
 ///////////////////////////
 
 void GPUParticlesAttractorVectorField3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_extents", "extents"), &GPUParticlesAttractorVectorField3D::set_extents);
 	ClassDB::bind_method(D_METHOD("get_extents"), &GPUParticlesAttractorVectorField3D::get_extents);
 
@@ -894,26 +992,31 @@ void GPUParticlesAttractorVectorField3D::_bind_methods() {
 }
 
 void GPUParticlesAttractorVectorField3D::set_extents(const Vector3 &p_extents) {
+	ZoneScopedS(60);
 	extents = p_extents;
 	RS::get_singleton()->particles_collision_set_box_extents(_get_collision(), extents);
 	update_gizmos();
 }
 
 Vector3 GPUParticlesAttractorVectorField3D::get_extents() const {
+	ZoneScopedS(60);
 	return extents;
 }
 
 void GPUParticlesAttractorVectorField3D::set_texture(const Ref<Texture3D> &p_texture) {
+	ZoneScopedS(60);
 	texture = p_texture;
 	RID tex = texture.is_valid() ? texture->get_rid() : RID();
 	RS::get_singleton()->particles_collision_set_field_texture(_get_collision(), tex);
 }
 
 Ref<Texture3D> GPUParticlesAttractorVectorField3D::get_texture() const {
+	ZoneScopedS(60);
 	return texture;
 }
 
 AABB GPUParticlesAttractorVectorField3D::get_aabb() const {
+	ZoneScopedS(60);
 	return AABB(-extents, extents * 2);
 }
 

@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  resource_format_text.cpp                                             */
 /*************************************************************************/
@@ -50,14 +51,17 @@
 ///
 
 void ResourceLoaderText::set_local_path(const String &p_local_path) {
+	ZoneScopedS(60);
 	res_path = p_local_path;
 }
 
 Ref<Resource> ResourceLoaderText::get_resource() {
+	ZoneScopedS(60);
 	return resource;
 }
 
 Error ResourceLoaderText::_parse_sub_resource_dummy(DummyReadData *p_data, VariantParser::Stream *p_stream, Ref<Resource> &r_res, int &line, String &r_err_str) {
+	ZoneScopedS(60);
 	VariantParser::Token token;
 	VariantParser::get_token(p_stream, token, line, r_err_str);
 	if (token.type != VariantParser::TK_NUMBER && token.type != VariantParser::TK_STRING) {
@@ -88,6 +92,7 @@ Error ResourceLoaderText::_parse_sub_resource_dummy(DummyReadData *p_data, Varia
 }
 
 Error ResourceLoaderText::_parse_ext_resource_dummy(DummyReadData *p_data, VariantParser::Stream *p_stream, Ref<Resource> &r_res, int &line, String &r_err_str) {
+	ZoneScopedS(60);
 	VariantParser::Token token;
 	VariantParser::get_token(p_stream, token, line, r_err_str);
 	if (token.type != VariantParser::TK_NUMBER && token.type != VariantParser::TK_STRING) {
@@ -115,6 +120,7 @@ Error ResourceLoaderText::_parse_ext_resource_dummy(DummyReadData *p_data, Varia
 }
 
 Error ResourceLoaderText::_parse_sub_resource(VariantParser::Stream *p_stream, Ref<Resource> &r_res, int &line, String &r_err_str) {
+	ZoneScopedS(60);
 	VariantParser::Token token;
 	VariantParser::get_token(p_stream, token, line, r_err_str);
 	if (token.type != VariantParser::TK_NUMBER && token.type != VariantParser::TK_STRING) {
@@ -136,6 +142,7 @@ Error ResourceLoaderText::_parse_sub_resource(VariantParser::Stream *p_stream, R
 }
 
 Error ResourceLoaderText::_parse_ext_resource(VariantParser::Stream *p_stream, Ref<Resource> &r_res, int &line, String &r_err_str) {
+	ZoneScopedS(60);
 	VariantParser::Token token;
 	VariantParser::get_token(p_stream, token, line, r_err_str);
 	if (token.type != VariantParser::TK_NUMBER && token.type != VariantParser::TK_STRING) {
@@ -191,6 +198,7 @@ Error ResourceLoaderText::_parse_ext_resource(VariantParser::Stream *p_stream, R
 }
 
 Ref<PackedScene> ResourceLoaderText::_parse_node_tag(VariantParser::ResourceParser &parser) {
+	ZoneScopedS(60);
 	Ref<PackedScene> packed_scene;
 	packed_scene.instantiate();
 
@@ -404,6 +412,7 @@ Ref<PackedScene> ResourceLoaderText::_parse_node_tag(VariantParser::ResourcePars
 }
 
 Error ResourceLoaderText::load() {
+	ZoneScopedS(60);
 	if (error != OK) {
 		return error;
 	}
@@ -819,20 +828,24 @@ Error ResourceLoaderText::load() {
 }
 
 int ResourceLoaderText::get_stage() const {
+	ZoneScopedS(60);
 	return resource_current;
 }
 
 int ResourceLoaderText::get_stage_count() const {
+	ZoneScopedS(60);
 	return resources_total; //+ext_resources;
 }
 
 void ResourceLoaderText::set_translation_remapped(bool p_remapped) {
+	ZoneScopedS(60);
 	translation_remapped = p_remapped;
 }
 
 ResourceLoaderText::ResourceLoaderText() {}
 
 void ResourceLoaderText::get_dependencies(Ref<FileAccess> p_f, List<String> *p_dependencies, bool p_add_types) {
+	ZoneScopedS(60);
 	open(p_f);
 	ignore_resource_parsing = true;
 	ERR_FAIL_COND(error != OK);
@@ -889,6 +902,7 @@ void ResourceLoaderText::get_dependencies(Ref<FileAccess> p_f, List<String> *p_d
 }
 
 Error ResourceLoaderText::rename_dependencies(Ref<FileAccess> p_f, const String &p_path, const HashMap<String, String> &p_map) {
+	ZoneScopedS(60);
 	open(p_f, true);
 	ERR_FAIL_COND_V(error != OK, error);
 	ignore_resource_parsing = true;
@@ -995,6 +1009,7 @@ Error ResourceLoaderText::rename_dependencies(Ref<FileAccess> p_f, const String 
 }
 
 void ResourceLoaderText::open(Ref<FileAccess> p_f, bool p_skip_first_tag) {
+	ZoneScopedS(60);
 	error = OK;
 
 	lines = 1;
@@ -1072,6 +1087,7 @@ void ResourceLoaderText::open(Ref<FileAccess> p_f, bool p_skip_first_tag) {
 }
 
 static void bs_save_unicode_string(Ref<FileAccess> p_f, const String &p_string, bool p_bit_on_len = false) {
+	ZoneScopedS(60);
 	CharString utf8 = p_string.utf8();
 	if (p_bit_on_len) {
 		p_f->store_32((utf8.length() + 1) | 0x80000000);
@@ -1082,6 +1098,7 @@ static void bs_save_unicode_string(Ref<FileAccess> p_f, const String &p_string, 
 }
 
 Error ResourceLoaderText::save_as_binary(const String &p_path) {
+	ZoneScopedS(60);
 	if (error) {
 		return error;
 	}
@@ -1362,6 +1379,7 @@ Error ResourceLoaderText::save_as_binary(const String &p_path) {
 }
 
 Error ResourceLoaderText::get_classes_used(HashSet<StringName> *r_classes) {
+	ZoneScopedS(60);
 	if (error) {
 		return error;
 	}
@@ -1482,6 +1500,7 @@ Error ResourceLoaderText::get_classes_used(HashSet<StringName> *r_classes) {
 }
 
 String ResourceLoaderText::recognize(Ref<FileAccess> p_f) {
+	ZoneScopedS(60);
 	error = OK;
 
 	lines = 1;
@@ -1526,6 +1545,7 @@ String ResourceLoaderText::recognize(Ref<FileAccess> p_f) {
 }
 
 ResourceUID::ID ResourceLoaderText::get_uid(Ref<FileAccess> p_f) {
+	ZoneScopedS(60);
 	error = OK;
 
 	lines = 1;
@@ -1554,6 +1574,7 @@ ResourceUID::ID ResourceLoaderText::get_uid(Ref<FileAccess> p_f) {
 /////////////////////
 
 Ref<Resource> ResourceFormatLoaderText::load(const String &p_path, const String &p_original_path, Error *r_error, bool p_use_sub_threads, float *r_progress, CacheMode p_cache_mode) {
+	ZoneScopedS(60);
 	if (r_error) {
 		*r_error = ERR_CANT_OPEN;
 	}
@@ -1584,6 +1605,7 @@ Ref<Resource> ResourceFormatLoaderText::load(const String &p_path, const String 
 }
 
 void ResourceFormatLoaderText::get_recognized_extensions_for_type(const String &p_type, List<String> *p_extensions) const {
+	ZoneScopedS(60);
 	if (p_type.is_empty()) {
 		get_recognized_extensions(p_extensions);
 		return;
@@ -1600,15 +1622,18 @@ void ResourceFormatLoaderText::get_recognized_extensions_for_type(const String &
 }
 
 void ResourceFormatLoaderText::get_recognized_extensions(List<String> *p_extensions) const {
+	ZoneScopedS(60);
 	p_extensions->push_back("tscn");
 	p_extensions->push_back("tres");
 }
 
 bool ResourceFormatLoaderText::handles_type(const String &p_type) const {
+	ZoneScopedS(60);
 	return true;
 }
 
 void ResourceFormatLoaderText::get_classes_used(const String &p_path, HashSet<StringName> *r_classes) {
+	ZoneScopedS(60);
 	String ext = p_path.get_extension().to_lower();
 	if (ext == "tscn") {
 		r_classes->insert("PackedScene");
@@ -1629,6 +1654,7 @@ void ResourceFormatLoaderText::get_classes_used(const String &p_path, HashSet<St
 }
 
 String ResourceFormatLoaderText::get_resource_type(const String &p_path) const {
+	ZoneScopedS(60);
 	String ext = p_path.get_extension().to_lower();
 	if (ext == "tscn") {
 		return "PackedScene";
@@ -1651,6 +1677,7 @@ String ResourceFormatLoaderText::get_resource_type(const String &p_path) const {
 }
 
 ResourceUID::ID ResourceFormatLoaderText::get_resource_uid(const String &p_path) const {
+	ZoneScopedS(60);
 	String ext = p_path.get_extension().to_lower();
 
 	if (ext != "tscn" && ext != "tres") {
@@ -1669,6 +1696,7 @@ ResourceUID::ID ResourceFormatLoaderText::get_resource_uid(const String &p_path)
 }
 
 void ResourceFormatLoaderText::get_dependencies(const String &p_path, List<String> *p_dependencies, bool p_add_types) {
+	ZoneScopedS(60);
 	Ref<FileAccess> f = FileAccess::open(p_path, FileAccess::READ);
 	if (f.is_null()) {
 		ERR_FAIL();
@@ -1681,6 +1709,7 @@ void ResourceFormatLoaderText::get_dependencies(const String &p_path, List<Strin
 }
 
 Error ResourceFormatLoaderText::rename_dependencies(const String &p_path, const HashMap<String, String> &p_map) {
+	ZoneScopedS(60);
 	Error err = OK;
 	{
 		Ref<FileAccess> f = FileAccess::open(p_path, FileAccess::READ);
@@ -1706,6 +1735,7 @@ Error ResourceFormatLoaderText::rename_dependencies(const String &p_path, const 
 ResourceFormatLoaderText *ResourceFormatLoaderText::singleton = nullptr;
 
 Error ResourceFormatLoaderText::convert_file_to_binary(const String &p_src_path, const String &p_dst_path) {
+	ZoneScopedS(60);
 	Error err;
 	Ref<FileAccess> f = FileAccess::open(p_src_path, FileAccess::READ, &err);
 
@@ -1731,11 +1761,13 @@ Error ResourceFormatLoaderText::convert_file_to_binary(const String &p_src_path,
 /*****************************************************************************************************/
 
 String ResourceFormatSaverTextInstance::_write_resources(void *ud, const Ref<Resource> &p_resource) {
+	ZoneScopedS(60);
 	ResourceFormatSaverTextInstance *rsi = static_cast<ResourceFormatSaverTextInstance *>(ud);
 	return rsi->_write_resource(p_resource);
 }
 
 String ResourceFormatSaverTextInstance::_write_resource(const Ref<Resource> &res) {
+	ZoneScopedS(60);
 	if (external_resources.has(res)) {
 		return "ExtResource(\"" + external_resources[res] + "\")";
 	} else {
@@ -1756,6 +1788,7 @@ String ResourceFormatSaverTextInstance::_write_resource(const Ref<Resource> &res
 }
 
 void ResourceFormatSaverTextInstance::_find_resources(const Variant &p_variant, bool p_main) {
+	ZoneScopedS(60);
 	switch (p_variant.get_type()) {
 		case Variant::OBJECT: {
 			Ref<Resource> res = p_variant;
@@ -1840,6 +1873,7 @@ void ResourceFormatSaverTextInstance::_find_resources(const Variant &p_variant, 
 }
 
 static String _resource_get_class(Ref<Resource> p_resource) {
+	ZoneScopedS(60);
 	Ref<MissingResource> missing_resource = p_resource;
 	if (missing_resource.is_valid()) {
 		return missing_resource->get_original_class();
@@ -1849,6 +1883,7 @@ static String _resource_get_class(Ref<Resource> p_resource) {
 }
 
 Error ResourceFormatSaverTextInstance::save(const String &p_path, const Ref<Resource> &p_resource, uint32_t p_flags) {
+	ZoneScopedS(60);
 	if (p_path.ends_with(".tscn")) {
 		packed_scene = p_resource;
 	}
@@ -2219,6 +2254,7 @@ Error ResourceFormatSaverTextInstance::save(const String &p_path, const Ref<Reso
 }
 
 Error ResourceFormatSaverText::save(const Ref<Resource> &p_resource, const String &p_path, uint32_t p_flags) {
+	ZoneScopedS(60);
 	if (p_path.ends_with(".tscn") && !Ref<PackedScene>(p_resource).is_valid()) {
 		return ERR_FILE_UNRECOGNIZED;
 	}
@@ -2228,10 +2264,12 @@ Error ResourceFormatSaverText::save(const Ref<Resource> &p_resource, const Strin
 }
 
 bool ResourceFormatSaverText::recognize(const Ref<Resource> &p_resource) const {
+	ZoneScopedS(60);
 	return true; // All resources recognized!
 }
 
 void ResourceFormatSaverText::get_recognized_extensions(const Ref<Resource> &p_resource, List<String> *p_extensions) const {
+	ZoneScopedS(60);
 	if (Ref<PackedScene>(p_resource).is_valid()) {
 		p_extensions->push_back("tscn"); // Text scene.
 	} else {
@@ -2241,5 +2279,6 @@ void ResourceFormatSaverText::get_recognized_extensions(const Ref<Resource> &p_r
 
 ResourceFormatSaverText *ResourceFormatSaverText::singleton = nullptr;
 ResourceFormatSaverText::ResourceFormatSaverText() {
+	ZoneScopedS(60);
 	singleton = this;
 }

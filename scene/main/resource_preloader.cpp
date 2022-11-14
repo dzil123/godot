@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  resource_preloader.cpp                                               */
 /*************************************************************************/
@@ -28,9 +29,10 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "resource_preloader.h"
 #include "core/templates/rb_set.h"
+#include "resource_preloader.h"
 void ResourcePreloader::_set_resources(const Array &p_data) {
+	ZoneScopedS(60);
 	resources.clear();
 
 	ERR_FAIL_COND(p_data.size() != 2);
@@ -50,6 +52,7 @@ void ResourcePreloader::_set_resources(const Array &p_data) {
 }
 
 Array ResourcePreloader::_get_resources() const {
+	ZoneScopedS(60);
 	Vector<String> names;
 	Array arr;
 	arr.resize(resources.size());
@@ -75,6 +78,7 @@ Array ResourcePreloader::_get_resources() const {
 }
 
 void ResourcePreloader::add_resource(const StringName &p_name, const Ref<Resource> &p_resource) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_resource.is_null());
 	if (resources.has(p_name)) {
 		StringName new_name;
@@ -97,11 +101,13 @@ void ResourcePreloader::add_resource(const StringName &p_name, const Ref<Resourc
 }
 
 void ResourcePreloader::remove_resource(const StringName &p_name) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!resources.has(p_name));
 	resources.erase(p_name);
 }
 
 void ResourcePreloader::rename_resource(const StringName &p_from_name, const StringName &p_to_name) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!resources.has(p_from_name));
 
 	Ref<Resource> res = resources[p_from_name];
@@ -111,15 +117,18 @@ void ResourcePreloader::rename_resource(const StringName &p_from_name, const Str
 }
 
 bool ResourcePreloader::has_resource(const StringName &p_name) const {
+	ZoneScopedS(60);
 	return resources.has(p_name);
 }
 
 Ref<Resource> ResourcePreloader::get_resource(const StringName &p_name) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!resources.has(p_name), Ref<Resource>());
 	return resources[p_name];
 }
 
 Vector<String> ResourcePreloader::_get_resource_list() const {
+	ZoneScopedS(60);
 	Vector<String> res;
 	res.resize(resources.size());
 	int i = 0;
@@ -132,12 +141,14 @@ Vector<String> ResourcePreloader::_get_resource_list() const {
 }
 
 void ResourcePreloader::get_resource_list(List<StringName> *p_list) {
+	ZoneScopedS(60);
 	for (const KeyValue<StringName, Ref<Resource>> &E : resources) {
 		p_list->push_back(E.key);
 	}
 }
 
 void ResourcePreloader::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("_set_resources", "resources"), &ResourcePreloader::_set_resources);
 	ClassDB::bind_method(D_METHOD("_get_resources"), &ResourcePreloader::_get_resources);
 

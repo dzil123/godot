@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  shape_3d.cpp                                                         */
 /*************************************************************************/
@@ -36,6 +37,7 @@
 #include "servers/physics_server_3d.h"
 
 void Shape3D::add_vertices_to_array(Vector<Vector3> &array, const Transform3D &p_xform) {
+	ZoneScopedS(60);
 	Vector<Vector3> toadd = get_debug_mesh_lines();
 
 	if (toadd.size()) {
@@ -49,24 +51,29 @@ void Shape3D::add_vertices_to_array(Vector<Vector3> &array, const Transform3D &p
 }
 
 void Shape3D::set_custom_solver_bias(real_t p_bias) {
+	ZoneScopedS(60);
 	custom_bias = p_bias;
 	PhysicsServer3D::get_singleton()->shape_set_custom_solver_bias(shape, custom_bias);
 }
 
 real_t Shape3D::get_custom_solver_bias() const {
+	ZoneScopedS(60);
 	return custom_bias;
 }
 
 real_t Shape3D::get_margin() const {
+	ZoneScopedS(60);
 	return margin;
 }
 
 void Shape3D::set_margin(real_t p_margin) {
+	ZoneScopedS(60);
 	margin = p_margin;
 	PhysicsServer3D::get_singleton()->shape_set_margin(shape, margin);
 }
 
 Ref<ArrayMesh> Shape3D::get_debug_mesh() {
+	ZoneScopedS(60);
 	if (debug_mesh_cache.is_valid()) {
 		return debug_mesh_cache;
 	}
@@ -103,11 +110,13 @@ Ref<ArrayMesh> Shape3D::get_debug_mesh() {
 }
 
 void Shape3D::_update_shape() {
+	ZoneScopedS(60);
 	emit_changed();
 	debug_mesh_cache.unref();
 }
 
 void Shape3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_custom_solver_bias", "bias"), &Shape3D::set_custom_solver_bias);
 	ClassDB::bind_method(D_METHOD("get_custom_solver_bias"), &Shape3D::get_custom_solver_bias);
 
@@ -121,6 +130,7 @@ void Shape3D::_bind_methods() {
 }
 
 Shape3D::Shape3D() {
+	ZoneScopedS(60);
 	ERR_PRINT("Default constructor must not be called!");
 }
 
@@ -128,5 +138,6 @@ Shape3D::Shape3D(RID p_shape) :
 		shape(p_shape) {}
 
 Shape3D::~Shape3D() {
+	ZoneScopedS(60);
 	PhysicsServer3D::get_singleton()->free(shape);
 }

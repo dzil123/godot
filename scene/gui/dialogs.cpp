@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  dialogs.cpp                                                          */
 /*************************************************************************/
@@ -38,6 +39,7 @@
 // AcceptDialog
 
 void AcceptDialog::_input_from_window(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	Ref<InputEventKey> key = p_event;
 	if (close_on_escape && key.is_valid() && key->is_pressed() && key->get_keycode() == Key::ESCAPE) {
 		_cancel_pressed();
@@ -45,12 +47,14 @@ void AcceptDialog::_input_from_window(const Ref<InputEvent> &p_event) {
 }
 
 void AcceptDialog::_parent_focused() {
+	ZoneScopedS(60);
 	if (close_on_escape && !is_exclusive()) {
 		_cancel_pressed();
 	}
 }
 
 void AcceptDialog::_update_theme_item_cache() {
+	ZoneScopedS(60);
 	Window::_update_theme_item_cache();
 
 	theme_cache.panel_style = get_theme_stylebox(SNAME("panel"));
@@ -58,6 +62,7 @@ void AcceptDialog::_update_theme_item_cache() {
 }
 
 void AcceptDialog::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_POST_ENTER_TREE: {
 			if (is_visible()) {
@@ -113,6 +118,7 @@ void AcceptDialog::_notification(int p_what) {
 }
 
 void AcceptDialog::_text_submitted(const String &p_text) {
+	ZoneScopedS(60);
 	if (get_ok_button() && get_ok_button()->is_disabled()) {
 		return; // Do not allow submission if OK button is disabled.
 	}
@@ -120,6 +126,7 @@ void AcceptDialog::_text_submitted(const String &p_text) {
 }
 
 void AcceptDialog::_ok_pressed() {
+	ZoneScopedS(60);
 	if (hide_on_ok) {
 		set_visible(false);
 	}
@@ -128,6 +135,7 @@ void AcceptDialog::_ok_pressed() {
 }
 
 void AcceptDialog::_cancel_pressed() {
+	ZoneScopedS(60);
 	Window *parent_window = parent_visible;
 	if (parent_visible) {
 		parent_visible->disconnect("focus_entered", callable_mp(this, &AcceptDialog::_parent_focused));
@@ -146,10 +154,12 @@ void AcceptDialog::_cancel_pressed() {
 }
 
 String AcceptDialog::get_text() const {
+	ZoneScopedS(60);
 	return message_label->get_text();
 }
 
 void AcceptDialog::set_text(String p_text) {
+	ZoneScopedS(60);
 	if (message_label->get_text() == p_text) {
 		return;
 	}
@@ -163,30 +173,37 @@ void AcceptDialog::set_text(String p_text) {
 }
 
 void AcceptDialog::set_hide_on_ok(bool p_hide) {
+	ZoneScopedS(60);
 	hide_on_ok = p_hide;
 }
 
 bool AcceptDialog::get_hide_on_ok() const {
+	ZoneScopedS(60);
 	return hide_on_ok;
 }
 
 void AcceptDialog::set_close_on_escape(bool p_hide) {
+	ZoneScopedS(60);
 	close_on_escape = p_hide;
 }
 
 bool AcceptDialog::get_close_on_escape() const {
+	ZoneScopedS(60);
 	return close_on_escape;
 }
 
 void AcceptDialog::set_autowrap(bool p_autowrap) {
+	ZoneScopedS(60);
 	message_label->set_autowrap_mode(p_autowrap ? TextServer::AUTOWRAP_WORD : TextServer::AUTOWRAP_OFF);
 }
 
 bool AcceptDialog::has_autowrap() {
+	ZoneScopedS(60);
 	return message_label->get_autowrap_mode() != TextServer::AUTOWRAP_OFF;
 }
 
 void AcceptDialog::set_ok_button_text(String p_ok_button_text) {
+	ZoneScopedS(60);
 	ok_button->set_text(p_ok_button_text);
 
 	child_controls_changed();
@@ -196,10 +213,12 @@ void AcceptDialog::set_ok_button_text(String p_ok_button_text) {
 }
 
 String AcceptDialog::get_ok_button_text() const {
+	ZoneScopedS(60);
 	return ok_button->get_text();
 }
 
 void AcceptDialog::register_text_enter(Control *p_line_edit) {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_line_edit);
 	LineEdit *line_edit = Object::cast_to<LineEdit>(p_line_edit);
 	if (line_edit) {
@@ -208,6 +227,7 @@ void AcceptDialog::register_text_enter(Control *p_line_edit) {
 }
 
 void AcceptDialog::_update_child_rects() {
+	ZoneScopedS(60);
 	Size2 dlg_size = get_size();
 	float h_margins = theme_cache.panel_style->get_margin(SIDE_LEFT) + theme_cache.panel_style->get_margin(SIDE_RIGHT);
 	float v_margins = theme_cache.panel_style->get_margin(SIDE_TOP) + theme_cache.panel_style->get_margin(SIDE_BOTTOM);
@@ -242,6 +262,7 @@ void AcceptDialog::_update_child_rects() {
 }
 
 Size2 AcceptDialog::_get_contents_minimum_size() const {
+	ZoneScopedS(60);
 	// First, we then iterate over the label and any other custom controls
 	// to try and find the size that encompasses all content.
 	Size2 content_minsize;
@@ -284,11 +305,13 @@ Size2 AcceptDialog::_get_contents_minimum_size() const {
 }
 
 void AcceptDialog::_custom_action(const String &p_action) {
+	ZoneScopedS(60);
 	emit_signal(SNAME("custom_action"), p_action);
 	custom_action(p_action);
 }
 
 Button *AcceptDialog::add_button(const String &p_text, bool p_right, const String &p_action) {
+	ZoneScopedS(60);
 	Button *button = memnew(Button);
 	button->set_text(p_text);
 
@@ -314,6 +337,7 @@ Button *AcceptDialog::add_button(const String &p_text, bool p_right, const Strin
 }
 
 Button *AcceptDialog::add_cancel_button(const String &p_cancel) {
+	ZoneScopedS(60);
 	String c = p_cancel;
 	if (p_cancel.is_empty()) {
 		c = "Cancel";
@@ -327,6 +351,7 @@ Button *AcceptDialog::add_cancel_button(const String &p_cancel) {
 }
 
 void AcceptDialog::remove_button(Control *p_button) {
+	ZoneScopedS(60);
 	Button *button = Object::cast_to<Button>(p_button);
 	ERR_FAIL_NULL(button);
 	ERR_FAIL_COND_MSG(button->get_parent() != buttons_hbox, vformat("Cannot remove button %s as it does not belong to this dialog.", button->get_name()));
@@ -354,6 +379,7 @@ void AcceptDialog::remove_button(Control *p_button) {
 }
 
 void AcceptDialog::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_ok_button"), &AcceptDialog::get_ok_button);
 	ClassDB::bind_method(D_METHOD("get_label"), &AcceptDialog::get_label);
 	ClassDB::bind_method(D_METHOD("set_hide_on_ok", "enabled"), &AcceptDialog::set_hide_on_ok);
@@ -386,10 +412,12 @@ void AcceptDialog::_bind_methods() {
 
 bool AcceptDialog::swap_cancel_ok = false;
 void AcceptDialog::set_swap_cancel_ok(bool p_swap) {
+	ZoneScopedS(60);
 	swap_cancel_ok = p_swap;
 }
 
 AcceptDialog::AcceptDialog() {
+	ZoneScopedS(60);
 	set_wrap_controls(true);
 	set_visible(false);
 	set_transient(true);
@@ -427,14 +455,17 @@ AcceptDialog::~AcceptDialog() {
 // ConfirmationDialog
 
 void ConfirmationDialog::set_cancel_button_text(String p_cancel_button_text) {
+	ZoneScopedS(60);
 	cancel->set_text(p_cancel_button_text);
 }
 
 String ConfirmationDialog::get_cancel_button_text() const {
+	ZoneScopedS(60);
 	return cancel->get_text();
 }
 
 void ConfirmationDialog::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_cancel_button"), &ConfirmationDialog::get_cancel_button);
 	ClassDB::bind_method(D_METHOD("set_cancel_button_text", "text"), &ConfirmationDialog::set_cancel_button_text);
 	ClassDB::bind_method(D_METHOD("get_cancel_button_text"), &ConfirmationDialog::get_cancel_button_text);
@@ -443,10 +474,12 @@ void ConfirmationDialog::_bind_methods() {
 }
 
 Button *ConfirmationDialog::get_cancel_button() {
+	ZoneScopedS(60);
 	return cancel;
 }
 
 ConfirmationDialog::ConfirmationDialog() {
+	ZoneScopedS(60);
 	set_title(TTRC("Please Confirm..."));
 	set_min_size(Size2(200, 70));
 

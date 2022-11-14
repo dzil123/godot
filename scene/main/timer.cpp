@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  timer.cpp                                                            */
 /*************************************************************************/
@@ -31,6 +32,7 @@
 #include "timer.h"
 
 void Timer::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_READY: {
 			if (autostart) {
@@ -80,32 +82,39 @@ void Timer::_notification(int p_what) {
 }
 
 void Timer::set_wait_time(double p_time) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_time <= 0, "Time should be greater than zero.");
 	wait_time = p_time;
 	update_configuration_warnings();
 }
 
 double Timer::get_wait_time() const {
+	ZoneScopedS(60);
 	return wait_time;
 }
 
 void Timer::set_one_shot(bool p_one_shot) {
+	ZoneScopedS(60);
 	one_shot = p_one_shot;
 }
 
 bool Timer::is_one_shot() const {
+	ZoneScopedS(60);
 	return one_shot;
 }
 
 void Timer::set_autostart(bool p_start) {
+	ZoneScopedS(60);
 	autostart = p_start;
 }
 
 bool Timer::has_autostart() const {
+	ZoneScopedS(60);
 	return autostart;
 }
 
 void Timer::start(double p_time) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!is_inside_tree(), "Timer was not added to the SceneTree. Either add it or set autostart to true.");
 
 	if (p_time > 0) {
@@ -116,12 +125,14 @@ void Timer::start(double p_time) {
 }
 
 void Timer::stop() {
+	ZoneScopedS(60);
 	time_left = -1;
 	_set_process(false);
 	autostart = false;
 }
 
 void Timer::set_paused(bool p_paused) {
+	ZoneScopedS(60);
 	if (paused == p_paused) {
 		return;
 	}
@@ -131,18 +142,22 @@ void Timer::set_paused(bool p_paused) {
 }
 
 bool Timer::is_paused() const {
+	ZoneScopedS(60);
 	return paused;
 }
 
 bool Timer::is_stopped() const {
+	ZoneScopedS(60);
 	return get_time_left() <= 0;
 }
 
 double Timer::get_time_left() const {
+	ZoneScopedS(60);
 	return time_left > 0 ? time_left : 0;
 }
 
 void Timer::set_timer_process_callback(TimerProcessCallback p_callback) {
+	ZoneScopedS(60);
 	if (timer_process_callback == p_callback) {
 		return;
 	}
@@ -165,10 +180,12 @@ void Timer::set_timer_process_callback(TimerProcessCallback p_callback) {
 }
 
 Timer::TimerProcessCallback Timer::get_timer_process_callback() const {
+	ZoneScopedS(60);
 	return timer_process_callback;
 }
 
 void Timer::_set_process(bool p_process, bool p_force) {
+	ZoneScopedS(60);
 	switch (timer_process_callback) {
 		case TIMER_PROCESS_PHYSICS:
 			set_physics_process_internal(p_process && !paused);
@@ -181,6 +198,7 @@ void Timer::_set_process(bool p_process, bool p_force) {
 }
 
 PackedStringArray Timer::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (wait_time < 0.05 - CMP_EPSILON) {
@@ -191,6 +209,7 @@ PackedStringArray Timer::get_configuration_warnings() const {
 }
 
 void Timer::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_wait_time", "time_sec"), &Timer::set_wait_time);
 	ClassDB::bind_method(D_METHOD("get_wait_time"), &Timer::get_wait_time);
 

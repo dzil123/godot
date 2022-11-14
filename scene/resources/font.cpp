@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  font.cpp                                                             */
 /*************************************************************************/
@@ -46,6 +47,7 @@
 /*************************************************************************/
 
 void Font::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_fallbacks", "fallbacks"), &Font::set_fallbacks);
 	ClassDB::bind_method(D_METHOD("get_fallbacks"), &Font::get_fallbacks);
 
@@ -97,6 +99,7 @@ void Font::_bind_methods() {
 }
 
 void Font::_update_rids_fb(const Ref<Font> &p_f, int p_depth) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_depth > MAX_FALLBACK_DEPTH);
 	if (p_f.is_valid()) {
 		RID rid = p_f->_get_rid();
@@ -111,12 +114,14 @@ void Font::_update_rids_fb(const Ref<Font> &p_f, int p_depth) const {
 }
 
 void Font::_update_rids() const {
+	ZoneScopedS(60);
 	rids.clear();
 	_update_rids_fb(const_cast<Font *>(this), 0);
 	dirty_rids = false;
 }
 
 void Font::_invalidate_rids() {
+	ZoneScopedS(60);
 	rids.clear();
 	dirty_rids = true;
 
@@ -127,6 +132,7 @@ void Font::_invalidate_rids() {
 }
 
 bool Font::_is_cyclic(const Ref<Font> &p_f, int p_depth) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_depth > MAX_FALLBACK_DEPTH, true);
 	if (p_f.is_null()) {
 		return false;
@@ -144,11 +150,13 @@ bool Font::_is_cyclic(const Ref<Font> &p_f, int p_depth) const {
 }
 
 void Font::reset_state() {
+	ZoneScopedS(60);
 	_invalidate_rids();
 }
 
 // Fallbacks.
 void Font::set_fallbacks(const TypedArray<Font> &p_fallbacks) {
+	ZoneScopedS(60);
 	for (int i = 0; i < p_fallbacks.size(); i++) {
 		const Ref<Font> &f = p_fallbacks[i];
 		ERR_FAIL_COND_MSG(_is_cyclic(f, 0), "Cyclic font fallback.");
@@ -170,11 +178,13 @@ void Font::set_fallbacks(const TypedArray<Font> &p_fallbacks) {
 }
 
 TypedArray<Font> Font::get_fallbacks() const {
+	ZoneScopedS(60);
 	return fallbacks;
 }
 
 // Output.
 TypedArray<RID> Font::get_rids() const {
+	ZoneScopedS(60);
 	if (dirty_rids) {
 		_update_rids();
 	}
@@ -183,6 +193,7 @@ TypedArray<RID> Font::get_rids() const {
 
 // Drawing string.
 real_t Font::get_height(int p_font_size) const {
+	ZoneScopedS(60);
 	if (dirty_rids) {
 		_update_rids();
 	}
@@ -194,6 +205,7 @@ real_t Font::get_height(int p_font_size) const {
 }
 
 real_t Font::get_ascent(int p_font_size) const {
+	ZoneScopedS(60);
 	if (dirty_rids) {
 		_update_rids();
 	}
@@ -205,6 +217,7 @@ real_t Font::get_ascent(int p_font_size) const {
 }
 
 real_t Font::get_descent(int p_font_size) const {
+	ZoneScopedS(60);
 	if (dirty_rids) {
 		_update_rids();
 	}
@@ -216,6 +229,7 @@ real_t Font::get_descent(int p_font_size) const {
 }
 
 real_t Font::get_underline_position(int p_font_size) const {
+	ZoneScopedS(60);
 	if (dirty_rids) {
 		_update_rids();
 	}
@@ -227,6 +241,7 @@ real_t Font::get_underline_position(int p_font_size) const {
 }
 
 real_t Font::get_underline_thickness(int p_font_size) const {
+	ZoneScopedS(60);
 	if (dirty_rids) {
 		_update_rids();
 	}
@@ -238,28 +253,34 @@ real_t Font::get_underline_thickness(int p_font_size) const {
 }
 
 String Font::get_font_name() const {
+	ZoneScopedS(60);
 	return TS->font_get_name(_get_rid());
 }
 
 String Font::get_font_style_name() const {
+	ZoneScopedS(60);
 	return TS->font_get_style_name(_get_rid());
 }
 
 BitField<TextServer::FontStyle> Font::get_font_style() const {
+	ZoneScopedS(60);
 	return TS->font_get_style(_get_rid());
 }
 
 Dictionary Font::get_opentype_features() const {
+	ZoneScopedS(60);
 	return Dictionary();
 }
 
 // Drawing string.
 void Font::set_cache_capacity(int p_single_line, int p_multi_line) {
+	ZoneScopedS(60);
 	cache.set_capacity(p_single_line);
 	cache_wrap.set_capacity(p_multi_line);
 }
 
 Size2 Font::get_string_size(const String &p_text, HorizontalAlignment p_alignment, float p_width, int p_font_size, BitField<TextServer::JustificationFlag> p_jst_flags, TextServer::Direction p_direction, TextServer::Orientation p_orientation) const {
+	ZoneScopedS(60);
 	uint64_t hash = p_text.hash64();
 	hash = hash_djb2_one_64(p_font_size, hash);
 	if (p_alignment == HORIZONTAL_ALIGNMENT_FILL) {
@@ -290,6 +311,7 @@ Size2 Font::get_string_size(const String &p_text, HorizontalAlignment p_alignmen
 }
 
 Size2 Font::get_multiline_string_size(const String &p_text, HorizontalAlignment p_alignment, float p_width, int p_font_size, int p_max_lines, BitField<TextServer::LineBreakFlag> p_brk_flags, BitField<TextServer::JustificationFlag> p_jst_flags, TextServer::Direction p_direction, TextServer::Orientation p_orientation) const {
+	ZoneScopedS(60);
 	uint64_t hash = p_text.hash64();
 	hash = hash_djb2_one_64(p_font_size, hash);
 	hash = hash_djb2_one_64(hash_murmur3_one_float(p_width), hash);
@@ -319,6 +341,7 @@ Size2 Font::get_multiline_string_size(const String &p_text, HorizontalAlignment 
 }
 
 void Font::draw_string(RID p_canvas_item, const Point2 &p_pos, const String &p_text, HorizontalAlignment p_alignment, float p_width, int p_font_size, const Color &p_modulate, BitField<TextServer::JustificationFlag> p_jst_flags, TextServer::Direction p_direction, TextServer::Orientation p_orientation) const {
+	ZoneScopedS(60);
 	uint64_t hash = p_text.hash64();
 	hash = hash_djb2_one_64(p_font_size, hash);
 	if (p_alignment == HORIZONTAL_ALIGNMENT_FILL) {
@@ -356,6 +379,7 @@ void Font::draw_string(RID p_canvas_item, const Point2 &p_pos, const String &p_t
 }
 
 void Font::draw_multiline_string(RID p_canvas_item, const Point2 &p_pos, const String &p_text, HorizontalAlignment p_alignment, float p_width, int p_font_size, int p_max_lines, const Color &p_modulate, BitField<TextServer::LineBreakFlag> p_brk_flags, BitField<TextServer::JustificationFlag> p_jst_flags, TextServer::Direction p_direction, TextServer::Orientation p_orientation) const {
+	ZoneScopedS(60);
 	uint64_t hash = p_text.hash64();
 	hash = hash_djb2_one_64(p_font_size, hash);
 	hash = hash_djb2_one_64(hash_murmur3_one_float(p_width), hash);
@@ -392,6 +416,7 @@ void Font::draw_multiline_string(RID p_canvas_item, const Point2 &p_pos, const S
 }
 
 void Font::draw_string_outline(RID p_canvas_item, const Point2 &p_pos, const String &p_text, HorizontalAlignment p_alignment, float p_width, int p_font_size, int p_size, const Color &p_modulate, BitField<TextServer::JustificationFlag> p_jst_flags, TextServer::Direction p_direction, TextServer::Orientation p_orientation) const {
+	ZoneScopedS(60);
 	uint64_t hash = p_text.hash64();
 	hash = hash_djb2_one_64(p_font_size, hash);
 	if (p_alignment == HORIZONTAL_ALIGNMENT_FILL) {
@@ -429,6 +454,7 @@ void Font::draw_string_outline(RID p_canvas_item, const Point2 &p_pos, const Str
 }
 
 void Font::draw_multiline_string_outline(RID p_canvas_item, const Point2 &p_pos, const String &p_text, HorizontalAlignment p_alignment, float p_width, int p_font_size, int p_max_lines, int p_size, const Color &p_modulate, BitField<TextServer::LineBreakFlag> p_brk_flags, BitField<TextServer::JustificationFlag> p_jst_flags, TextServer::Direction p_direction, TextServer::Orientation p_orientation) const {
+	ZoneScopedS(60);
 	uint64_t hash = p_text.hash64();
 	hash = hash_djb2_one_64(p_font_size, hash);
 	hash = hash_djb2_one_64(hash_murmur3_one_float(p_width), hash);
@@ -466,6 +492,7 @@ void Font::draw_multiline_string_outline(RID p_canvas_item, const Point2 &p_pos,
 
 // Drawing char.
 Size2 Font::get_char_size(char32_t p_char, int p_font_size) const {
+	ZoneScopedS(60);
 	if (dirty_rids) {
 		_update_rids();
 	}
@@ -479,6 +506,7 @@ Size2 Font::get_char_size(char32_t p_char, int p_font_size) const {
 }
 
 real_t Font::draw_char(RID p_canvas_item, const Point2 &p_pos, char32_t p_char, int p_font_size, const Color &p_modulate) const {
+	ZoneScopedS(60);
 	if (dirty_rids) {
 		_update_rids();
 	}
@@ -493,6 +521,7 @@ real_t Font::draw_char(RID p_canvas_item, const Point2 &p_pos, char32_t p_char, 
 }
 
 real_t Font::draw_char_outline(RID p_canvas_item, const Point2 &p_pos, char32_t p_char, int p_font_size, int p_size, const Color &p_modulate) const {
+	ZoneScopedS(60);
 	if (dirty_rids) {
 		_update_rids();
 	}
@@ -508,6 +537,7 @@ real_t Font::draw_char_outline(RID p_canvas_item, const Point2 &p_pos, char32_t 
 
 // Helper functions.
 bool Font::has_char(char32_t p_char) const {
+	ZoneScopedS(60);
 	if (dirty_rids) {
 		_update_rids();
 	}
@@ -520,6 +550,7 @@ bool Font::has_char(char32_t p_char) const {
 }
 
 String Font::get_supported_chars() const {
+	ZoneScopedS(60);
 	if (dirty_rids) {
 		_update_rids();
 	}
@@ -536,26 +567,32 @@ String Font::get_supported_chars() const {
 }
 
 bool Font::is_language_supported(const String &p_language) const {
+	ZoneScopedS(60);
 	return TS->font_is_language_supported(_get_rid(), p_language);
 }
 
 bool Font::is_script_supported(const String &p_script) const {
+	ZoneScopedS(60);
 	return TS->font_is_script_supported(_get_rid(), p_script);
 }
 
 Dictionary Font::get_supported_feature_list() const {
+	ZoneScopedS(60);
 	return TS->font_supported_feature_list(_get_rid());
 }
 
 Dictionary Font::get_supported_variation_list() const {
+	ZoneScopedS(60);
 	return TS->font_supported_variation_list(_get_rid());
 }
 
 int64_t Font::get_face_count() const {
+	ZoneScopedS(60);
 	return TS->font_get_face_count(_get_rid());
 }
 
 Font::Font() {
+	ZoneScopedS(60);
 	cache.set_capacity(64);
 	cache_wrap.set_capacity(16);
 }
@@ -568,6 +605,7 @@ Font::~Font() {
 /*************************************************************************/
 
 _FORCE_INLINE_ void FontFile::_clear_cache() {
+	ZoneScopedS(60);
 	for (int i = 0; i < cache.size(); i++) {
 		if (cache[i].is_valid()) {
 			TS->free_rid(cache[i]);
@@ -577,6 +615,7 @@ _FORCE_INLINE_ void FontFile::_clear_cache() {
 }
 
 _FORCE_INLINE_ void FontFile::_ensure_rid(int p_cache_index) const {
+	ZoneScopedS(60);
 	if (unlikely(p_cache_index >= cache.size())) {
 		cache.resize(p_cache_index + 1);
 	}
@@ -597,6 +636,7 @@ _FORCE_INLINE_ void FontFile::_ensure_rid(int p_cache_index) const {
 }
 
 void FontFile::_convert_packed_8bit(Ref<Image> &p_source, int p_page, int p_sz) {
+	ZoneScopedS(60);
 	int w = p_source->get_width();
 	int h = p_source->get_height();
 
@@ -644,6 +684,7 @@ void FontFile::_convert_packed_8bit(Ref<Image> &p_source, int p_page, int p_sz) 
 }
 
 void FontFile::_convert_packed_4bit(Ref<Image> &p_source, int p_page, int p_sz) {
+	ZoneScopedS(60);
 	int w = p_source->get_width();
 	int h = p_source->get_height();
 
@@ -744,6 +785,7 @@ void FontFile::_convert_packed_4bit(Ref<Image> &p_source, int p_page, int p_sz) 
 }
 
 void FontFile::_convert_rgba_4bit(Ref<Image> &p_source, int p_page, int p_sz) {
+	ZoneScopedS(60);
 	int w = p_source->get_width();
 	int h = p_source->get_height();
 
@@ -800,6 +842,7 @@ void FontFile::_convert_rgba_4bit(Ref<Image> &p_source, int p_page, int p_sz) {
 }
 
 void FontFile::_convert_mono_8bit(Ref<Image> &p_source, int p_page, int p_ch, int p_sz, int p_ol) {
+	ZoneScopedS(60);
 	int w = p_source->get_width();
 	int h = p_source->get_height();
 
@@ -829,6 +872,7 @@ void FontFile::_convert_mono_8bit(Ref<Image> &p_source, int p_page, int p_ch, in
 }
 
 void FontFile::_convert_mono_4bit(Ref<Image> &p_source, int p_page, int p_ch, int p_sz, int p_ol) {
+	ZoneScopedS(60);
 	int w = p_source->get_width();
 	int h = p_source->get_height();
 
@@ -872,6 +916,7 @@ void FontFile::_convert_mono_4bit(Ref<Image> &p_source, int p_page, int p_ch, in
 }
 
 void FontFile::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("load_bitmap_font", "path"), &FontFile::load_bitmap_font);
 	ClassDB::bind_method(D_METHOD("load_dynamic_font", "path"), &FontFile::load_dynamic_font);
 
@@ -1020,6 +1065,7 @@ void FontFile::_bind_methods() {
 }
 
 bool FontFile::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	Vector<String> tokens = p_name.operator String().split("/");
 
 #ifndef DISABLE_DEPRECATED
@@ -1185,6 +1231,7 @@ bool FontFile::_set(const StringName &p_name, const Variant &p_value) {
 }
 
 bool FontFile::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	Vector<String> tokens = p_name.operator String().split("/");
 	if (tokens.size() == 2 && tokens[0] == "language_support_override") {
 		String lang_code = tokens[1];
@@ -1264,6 +1311,7 @@ bool FontFile::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void FontFile::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	Vector<String> lang_over = get_language_support_overrides();
 	for (int i = 0; i < lang_over.size(); i++) {
 		p_list->push_back(PropertyInfo(Variant::BOOL, "language_support_override/" + lang_over[i], PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE));
@@ -1319,6 +1367,7 @@ void FontFile::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 void FontFile::reset_state() {
+	ZoneScopedS(60);
 	_clear_cache();
 	data.clear();
 	data_ptr = nullptr;
@@ -1355,6 +1404,7 @@ static const char32_t _oem_to_unicode[][129] = {
 };
 
 Error FontFile::load_bitmap_font(const String &p_path) {
+	ZoneScopedS(60);
 	reset_state();
 
 	antialiasing = TextServer::FONT_ANTIALIASING_NONE;
@@ -1938,6 +1988,7 @@ Error FontFile::load_bitmap_font(const String &p_path) {
 }
 
 Error FontFile::load_dynamic_font(const String &p_path) {
+	ZoneScopedS(60);
 	reset_state();
 
 	Vector<uint8_t> font_data = FileAccess::get_file_as_array(p_path);
@@ -1947,6 +1998,7 @@ Error FontFile::load_dynamic_font(const String &p_path) {
 }
 
 void FontFile::set_data_ptr(const uint8_t *p_data, size_t p_size) {
+	ZoneScopedS(60);
 	data.clear();
 	data_ptr = p_data;
 	data_size = p_size;
@@ -1959,6 +2011,7 @@ void FontFile::set_data_ptr(const uint8_t *p_data, size_t p_size) {
 }
 
 void FontFile::set_data(const PackedByteArray &p_data) {
+	ZoneScopedS(60);
 	data = p_data;
 	data_ptr = data.ptr();
 	data_size = data.size();
@@ -1971,6 +2024,7 @@ void FontFile::set_data(const PackedByteArray &p_data) {
 }
 
 PackedByteArray FontFile::get_data() const {
+	ZoneScopedS(60);
 	if (unlikely((size_t)data.size() != data_size)) {
 		PackedByteArray *data_w = const_cast<PackedByteArray *>(&data);
 		data_w->resize(data_size);
@@ -1980,21 +2034,25 @@ PackedByteArray FontFile::get_data() const {
 }
 
 void FontFile::set_font_name(const String &p_name) {
+	ZoneScopedS(60);
 	_ensure_rid(0);
 	TS->font_set_name(cache[0], p_name);
 }
 
 void FontFile::set_font_style_name(const String &p_name) {
+	ZoneScopedS(60);
 	_ensure_rid(0);
 	TS->font_set_style_name(cache[0], p_name);
 }
 
 void FontFile::set_font_style(BitField<TextServer::FontStyle> p_style) {
+	ZoneScopedS(60);
 	_ensure_rid(0);
 	TS->font_set_style(cache[0], p_style);
 }
 
 void FontFile::set_antialiasing(TextServer::FontAntialiasing p_antialiasing) {
+	ZoneScopedS(60);
 	if (antialiasing != p_antialiasing) {
 		antialiasing = p_antialiasing;
 		for (int i = 0; i < cache.size(); i++) {
@@ -2006,10 +2064,12 @@ void FontFile::set_antialiasing(TextServer::FontAntialiasing p_antialiasing) {
 }
 
 TextServer::FontAntialiasing FontFile::get_antialiasing() const {
+	ZoneScopedS(60);
 	return antialiasing;
 }
 
 void FontFile::set_generate_mipmaps(bool p_generate_mipmaps) {
+	ZoneScopedS(60);
 	if (mipmaps != p_generate_mipmaps) {
 		mipmaps = p_generate_mipmaps;
 		for (int i = 0; i < cache.size(); i++) {
@@ -2021,10 +2081,12 @@ void FontFile::set_generate_mipmaps(bool p_generate_mipmaps) {
 }
 
 bool FontFile::get_generate_mipmaps() const {
+	ZoneScopedS(60);
 	return mipmaps;
 }
 
 void FontFile::set_multichannel_signed_distance_field(bool p_msdf) {
+	ZoneScopedS(60);
 	if (msdf != p_msdf) {
 		msdf = p_msdf;
 		for (int i = 0; i < cache.size(); i++) {
@@ -2036,10 +2098,12 @@ void FontFile::set_multichannel_signed_distance_field(bool p_msdf) {
 }
 
 bool FontFile::is_multichannel_signed_distance_field() const {
+	ZoneScopedS(60);
 	return msdf;
 }
 
 void FontFile::set_msdf_pixel_range(int p_msdf_pixel_range) {
+	ZoneScopedS(60);
 	if (msdf_pixel_range != p_msdf_pixel_range) {
 		msdf_pixel_range = p_msdf_pixel_range;
 		for (int i = 0; i < cache.size(); i++) {
@@ -2051,10 +2115,12 @@ void FontFile::set_msdf_pixel_range(int p_msdf_pixel_range) {
 }
 
 int FontFile::get_msdf_pixel_range() const {
+	ZoneScopedS(60);
 	return msdf_pixel_range;
 }
 
 void FontFile::set_msdf_size(int p_msdf_size) {
+	ZoneScopedS(60);
 	if (msdf_size != p_msdf_size) {
 		msdf_size = p_msdf_size;
 		for (int i = 0; i < cache.size(); i++) {
@@ -2066,10 +2132,12 @@ void FontFile::set_msdf_size(int p_msdf_size) {
 }
 
 int FontFile::get_msdf_size() const {
+	ZoneScopedS(60);
 	return msdf_size;
 }
 
 void FontFile::set_fixed_size(int p_fixed_size) {
+	ZoneScopedS(60);
 	if (fixed_size != p_fixed_size) {
 		fixed_size = p_fixed_size;
 		for (int i = 0; i < cache.size(); i++) {
@@ -2081,10 +2149,12 @@ void FontFile::set_fixed_size(int p_fixed_size) {
 }
 
 int FontFile::get_fixed_size() const {
+	ZoneScopedS(60);
 	return fixed_size;
 }
 
 void FontFile::set_force_autohinter(bool p_force_autohinter) {
+	ZoneScopedS(60);
 	if (force_autohinter != p_force_autohinter) {
 		force_autohinter = p_force_autohinter;
 		for (int i = 0; i < cache.size(); i++) {
@@ -2096,10 +2166,12 @@ void FontFile::set_force_autohinter(bool p_force_autohinter) {
 }
 
 bool FontFile::is_force_autohinter() const {
+	ZoneScopedS(60);
 	return force_autohinter;
 }
 
 void FontFile::set_hinting(TextServer::Hinting p_hinting) {
+	ZoneScopedS(60);
 	if (hinting != p_hinting) {
 		hinting = p_hinting;
 		for (int i = 0; i < cache.size(); i++) {
@@ -2111,10 +2183,12 @@ void FontFile::set_hinting(TextServer::Hinting p_hinting) {
 }
 
 TextServer::Hinting FontFile::get_hinting() const {
+	ZoneScopedS(60);
 	return hinting;
 }
 
 void FontFile::set_subpixel_positioning(TextServer::SubpixelPositioning p_subpixel) {
+	ZoneScopedS(60);
 	if (subpixel_positioning != p_subpixel) {
 		subpixel_positioning = p_subpixel;
 		for (int i = 0; i < cache.size(); i++) {
@@ -2126,10 +2200,12 @@ void FontFile::set_subpixel_positioning(TextServer::SubpixelPositioning p_subpix
 }
 
 TextServer::SubpixelPositioning FontFile::get_subpixel_positioning() const {
+	ZoneScopedS(60);
 	return subpixel_positioning;
 }
 
 void FontFile::set_oversampling(real_t p_oversampling) {
+	ZoneScopedS(60);
 	if (oversampling != p_oversampling) {
 		oversampling = p_oversampling;
 		for (int i = 0; i < cache.size(); i++) {
@@ -2141,10 +2217,12 @@ void FontFile::set_oversampling(real_t p_oversampling) {
 }
 
 real_t FontFile::get_oversampling() const {
+	ZoneScopedS(60);
 	return oversampling;
 }
 
 RID FontFile::find_variation(const Dictionary &p_variation_coordinates, int p_face_index, float p_strength, Transform2D p_transform) const {
+	ZoneScopedS(60);
 	// Find existing variation cache.
 	const Dictionary &supported_coords = get_supported_variation_list();
 	for (int i = 0; i < cache.size(); i++) {
@@ -2196,21 +2274,25 @@ RID FontFile::find_variation(const Dictionary &p_variation_coordinates, int p_fa
 }
 
 RID FontFile::_get_rid() const {
+	ZoneScopedS(60);
 	_ensure_rid(0);
 	return cache[0];
 }
 
 int FontFile::get_cache_count() const {
+	ZoneScopedS(60);
 	return cache.size();
 }
 
 void FontFile::clear_cache() {
+	ZoneScopedS(60);
 	_clear_cache();
 	cache.clear();
 	emit_changed();
 }
 
 void FontFile::remove_cache(int p_cache_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_cache_index, cache.size());
 	if (cache[p_cache_index].is_valid()) {
 		TS->free_rid(cache.write[p_cache_index]);
@@ -2220,60 +2302,70 @@ void FontFile::remove_cache(int p_cache_index) {
 }
 
 TypedArray<Vector2i> FontFile::get_size_cache_list(int p_cache_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_cache_index < 0, Array());
 	_ensure_rid(p_cache_index);
 	return TS->font_get_size_cache_list(cache[p_cache_index]);
 }
 
 void FontFile::clear_size_cache(int p_cache_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_cache_index < 0);
 	_ensure_rid(p_cache_index);
 	TS->font_clear_size_cache(cache[p_cache_index]);
 }
 
 void FontFile::remove_size_cache(int p_cache_index, const Vector2i &p_size) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_cache_index < 0);
 	_ensure_rid(p_cache_index);
 	TS->font_remove_size_cache(cache[p_cache_index], p_size);
 }
 
 void FontFile::set_variation_coordinates(int p_cache_index, const Dictionary &p_variation_coordinates) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_cache_index < 0);
 	_ensure_rid(p_cache_index);
 	TS->font_set_variation_coordinates(cache[p_cache_index], p_variation_coordinates);
 }
 
 Dictionary FontFile::get_variation_coordinates(int p_cache_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_cache_index < 0, Dictionary());
 	_ensure_rid(p_cache_index);
 	return TS->font_get_variation_coordinates(cache[p_cache_index]);
 }
 
 void FontFile::set_embolden(int p_cache_index, float p_strength) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_cache_index < 0);
 	_ensure_rid(p_cache_index);
 	TS->font_set_embolden(cache[p_cache_index], p_strength);
 }
 
 float FontFile::get_embolden(int p_cache_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_cache_index < 0, 0.f);
 	_ensure_rid(p_cache_index);
 	return TS->font_get_embolden(cache[p_cache_index]);
 }
 
 void FontFile::set_transform(int p_cache_index, Transform2D p_transform) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_cache_index < 0);
 	_ensure_rid(p_cache_index);
 	TS->font_set_transform(cache[p_cache_index], p_transform);
 }
 
 Transform2D FontFile::get_transform(int p_cache_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_cache_index < 0, Transform2D());
 	_ensure_rid(p_cache_index);
 	return TS->font_get_transform(cache[p_cache_index]);
 }
 
 void FontFile::set_face_index(int p_cache_index, int64_t p_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_cache_index < 0);
 	ERR_FAIL_COND(p_index < 0);
 	ERR_FAIL_COND(p_index >= 0x7FFF);
@@ -2283,284 +2375,333 @@ void FontFile::set_face_index(int p_cache_index, int64_t p_index) {
 }
 
 int64_t FontFile::get_face_index(int p_cache_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_cache_index < 0, 0);
 	_ensure_rid(p_cache_index);
 	return TS->font_get_face_index(cache[p_cache_index]);
 }
 
 void FontFile::set_cache_ascent(int p_cache_index, int p_size, real_t p_ascent) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_cache_index < 0);
 	_ensure_rid(p_cache_index);
 	TS->font_set_ascent(cache[p_cache_index], p_size, p_ascent);
 }
 
 real_t FontFile::get_cache_ascent(int p_cache_index, int p_size) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_cache_index < 0, 0.f);
 	_ensure_rid(p_cache_index);
 	return TS->font_get_ascent(cache[p_cache_index], p_size);
 }
 
 void FontFile::set_cache_descent(int p_cache_index, int p_size, real_t p_descent) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_cache_index < 0);
 	_ensure_rid(p_cache_index);
 	TS->font_set_descent(cache[p_cache_index], p_size, p_descent);
 }
 
 real_t FontFile::get_cache_descent(int p_cache_index, int p_size) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_cache_index < 0, 0.f);
 	_ensure_rid(p_cache_index);
 	return TS->font_get_descent(cache[p_cache_index], p_size);
 }
 
 void FontFile::set_cache_underline_position(int p_cache_index, int p_size, real_t p_underline_position) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_cache_index < 0);
 	_ensure_rid(p_cache_index);
 	TS->font_set_underline_position(cache[p_cache_index], p_size, p_underline_position);
 }
 
 real_t FontFile::get_cache_underline_position(int p_cache_index, int p_size) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_cache_index < 0, 0.f);
 	_ensure_rid(p_cache_index);
 	return TS->font_get_underline_position(cache[p_cache_index], p_size);
 }
 
 void FontFile::set_cache_underline_thickness(int p_cache_index, int p_size, real_t p_underline_thickness) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_cache_index < 0);
 	_ensure_rid(p_cache_index);
 	TS->font_set_underline_thickness(cache[p_cache_index], p_size, p_underline_thickness);
 }
 
 real_t FontFile::get_cache_underline_thickness(int p_cache_index, int p_size) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_cache_index < 0, 0.f);
 	_ensure_rid(p_cache_index);
 	return TS->font_get_underline_thickness(cache[p_cache_index], p_size);
 }
 
 void FontFile::set_cache_scale(int p_cache_index, int p_size, real_t p_scale) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_cache_index < 0);
 	_ensure_rid(p_cache_index);
 	TS->font_set_scale(cache[p_cache_index], p_size, p_scale);
 }
 
 real_t FontFile::get_cache_scale(int p_cache_index, int p_size) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_cache_index < 0, 0.f);
 	_ensure_rid(p_cache_index);
 	return TS->font_get_scale(cache[p_cache_index], p_size);
 }
 
 int FontFile::get_texture_count(int p_cache_index, const Vector2i &p_size) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_cache_index < 0, 0);
 	_ensure_rid(p_cache_index);
 	return TS->font_get_texture_count(cache[p_cache_index], p_size);
 }
 
 void FontFile::clear_textures(int p_cache_index, const Vector2i &p_size) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_cache_index < 0);
 	_ensure_rid(p_cache_index);
 	TS->font_clear_textures(cache[p_cache_index], p_size);
 }
 
 void FontFile::remove_texture(int p_cache_index, const Vector2i &p_size, int p_texture_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_cache_index < 0);
 	_ensure_rid(p_cache_index);
 	TS->font_remove_texture(cache[p_cache_index], p_size, p_texture_index);
 }
 
 void FontFile::set_texture_image(int p_cache_index, const Vector2i &p_size, int p_texture_index, const Ref<Image> &p_image) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_cache_index < 0);
 	_ensure_rid(p_cache_index);
 	TS->font_set_texture_image(cache[p_cache_index], p_size, p_texture_index, p_image);
 }
 
 Ref<Image> FontFile::get_texture_image(int p_cache_index, const Vector2i &p_size, int p_texture_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_cache_index < 0, Ref<Image>());
 	_ensure_rid(p_cache_index);
 	return TS->font_get_texture_image(cache[p_cache_index], p_size, p_texture_index);
 }
 
 void FontFile::set_texture_offsets(int p_cache_index, const Vector2i &p_size, int p_texture_index, const PackedInt32Array &p_offset) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_cache_index < 0);
 	_ensure_rid(p_cache_index);
 	TS->font_set_texture_offsets(cache[p_cache_index], p_size, p_texture_index, p_offset);
 }
 
 PackedInt32Array FontFile::get_texture_offsets(int p_cache_index, const Vector2i &p_size, int p_texture_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_cache_index < 0, PackedInt32Array());
 	_ensure_rid(p_cache_index);
 	return TS->font_get_texture_offsets(cache[p_cache_index], p_size, p_texture_index);
 }
 
 PackedInt32Array FontFile::get_glyph_list(int p_cache_index, const Vector2i &p_size) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_cache_index < 0, PackedInt32Array());
 	_ensure_rid(p_cache_index);
 	return TS->font_get_glyph_list(cache[p_cache_index], p_size);
 }
 
 void FontFile::clear_glyphs(int p_cache_index, const Vector2i &p_size) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_cache_index < 0);
 	_ensure_rid(p_cache_index);
 	TS->font_clear_glyphs(cache[p_cache_index], p_size);
 }
 
 void FontFile::remove_glyph(int p_cache_index, const Vector2i &p_size, int32_t p_glyph) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_cache_index < 0);
 	_ensure_rid(p_cache_index);
 	TS->font_remove_glyph(cache[p_cache_index], p_size, p_glyph);
 }
 
 void FontFile::set_glyph_advance(int p_cache_index, int p_size, int32_t p_glyph, const Vector2 &p_advance) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_cache_index < 0);
 	_ensure_rid(p_cache_index);
 	TS->font_set_glyph_advance(cache[p_cache_index], p_size, p_glyph, p_advance);
 }
 
 Vector2 FontFile::get_glyph_advance(int p_cache_index, int p_size, int32_t p_glyph) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_cache_index < 0, Vector2());
 	_ensure_rid(p_cache_index);
 	return TS->font_get_glyph_advance(cache[p_cache_index], p_size, p_glyph);
 }
 
 void FontFile::set_glyph_offset(int p_cache_index, const Vector2i &p_size, int32_t p_glyph, const Vector2 &p_offset) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_cache_index < 0);
 	_ensure_rid(p_cache_index);
 	TS->font_set_glyph_offset(cache[p_cache_index], p_size, p_glyph, p_offset);
 }
 
 Vector2 FontFile::get_glyph_offset(int p_cache_index, const Vector2i &p_size, int32_t p_glyph) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_cache_index < 0, Vector2());
 	_ensure_rid(p_cache_index);
 	return TS->font_get_glyph_offset(cache[p_cache_index], p_size, p_glyph);
 }
 
 void FontFile::set_glyph_size(int p_cache_index, const Vector2i &p_size, int32_t p_glyph, const Vector2 &p_gl_size) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_cache_index < 0);
 	_ensure_rid(p_cache_index);
 	TS->font_set_glyph_size(cache[p_cache_index], p_size, p_glyph, p_gl_size);
 }
 
 Vector2 FontFile::get_glyph_size(int p_cache_index, const Vector2i &p_size, int32_t p_glyph) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_cache_index < 0, Vector2());
 	_ensure_rid(p_cache_index);
 	return TS->font_get_glyph_size(cache[p_cache_index], p_size, p_glyph);
 }
 
 void FontFile::set_glyph_uv_rect(int p_cache_index, const Vector2i &p_size, int32_t p_glyph, const Rect2 &p_uv_rect) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_cache_index < 0);
 	_ensure_rid(p_cache_index);
 	TS->font_set_glyph_uv_rect(cache[p_cache_index], p_size, p_glyph, p_uv_rect);
 }
 
 Rect2 FontFile::get_glyph_uv_rect(int p_cache_index, const Vector2i &p_size, int32_t p_glyph) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_cache_index < 0, Rect2());
 	_ensure_rid(p_cache_index);
 	return TS->font_get_glyph_uv_rect(cache[p_cache_index], p_size, p_glyph);
 }
 
 void FontFile::set_glyph_texture_idx(int p_cache_index, const Vector2i &p_size, int32_t p_glyph, int p_texture_idx) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_cache_index < 0);
 	_ensure_rid(p_cache_index);
 	TS->font_set_glyph_texture_idx(cache[p_cache_index], p_size, p_glyph, p_texture_idx);
 }
 
 int FontFile::get_glyph_texture_idx(int p_cache_index, const Vector2i &p_size, int32_t p_glyph) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_cache_index < 0, 0);
 	_ensure_rid(p_cache_index);
 	return TS->font_get_glyph_texture_idx(cache[p_cache_index], p_size, p_glyph);
 }
 
 TypedArray<Vector2i> FontFile::get_kerning_list(int p_cache_index, int p_size) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_cache_index < 0, Array());
 	_ensure_rid(p_cache_index);
 	return TS->font_get_kerning_list(cache[p_cache_index], p_size);
 }
 
 void FontFile::clear_kerning_map(int p_cache_index, int p_size) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_cache_index < 0);
 	_ensure_rid(p_cache_index);
 	TS->font_clear_kerning_map(cache[p_cache_index], p_size);
 }
 
 void FontFile::remove_kerning(int p_cache_index, int p_size, const Vector2i &p_glyph_pair) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_cache_index < 0);
 	_ensure_rid(p_cache_index);
 	TS->font_remove_kerning(cache[p_cache_index], p_size, p_glyph_pair);
 }
 
 void FontFile::set_kerning(int p_cache_index, int p_size, const Vector2i &p_glyph_pair, const Vector2 &p_kerning) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_cache_index < 0);
 	_ensure_rid(p_cache_index);
 	TS->font_set_kerning(cache[p_cache_index], p_size, p_glyph_pair, p_kerning);
 }
 
 Vector2 FontFile::get_kerning(int p_cache_index, int p_size, const Vector2i &p_glyph_pair) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_cache_index < 0, Vector2());
 	_ensure_rid(p_cache_index);
 	return TS->font_get_kerning(cache[p_cache_index], p_size, p_glyph_pair);
 }
 
 void FontFile::render_range(int p_cache_index, const Vector2i &p_size, char32_t p_start, char32_t p_end) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_cache_index < 0);
 	_ensure_rid(p_cache_index);
 	TS->font_render_range(cache[p_cache_index], p_size, p_start, p_end);
 }
 
 void FontFile::render_glyph(int p_cache_index, const Vector2i &p_size, int32_t p_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_cache_index < 0);
 	_ensure_rid(p_cache_index);
 	TS->font_render_glyph(cache[p_cache_index], p_size, p_index);
 }
 
 void FontFile::set_language_support_override(const String &p_language, bool p_supported) {
+	ZoneScopedS(60);
 	_ensure_rid(0);
 	TS->font_set_language_support_override(cache[0], p_language, p_supported);
 }
 
 bool FontFile::get_language_support_override(const String &p_language) const {
+	ZoneScopedS(60);
 	_ensure_rid(0);
 	return TS->font_get_language_support_override(cache[0], p_language);
 }
 
 void FontFile::remove_language_support_override(const String &p_language) {
+	ZoneScopedS(60);
 	_ensure_rid(0);
 	TS->font_remove_language_support_override(cache[0], p_language);
 }
 
 Vector<String> FontFile::get_language_support_overrides() const {
+	ZoneScopedS(60);
 	_ensure_rid(0);
 	return TS->font_get_language_support_overrides(cache[0]);
 }
 
 void FontFile::set_script_support_override(const String &p_script, bool p_supported) {
+	ZoneScopedS(60);
 	_ensure_rid(0);
 	TS->font_set_script_support_override(cache[0], p_script, p_supported);
 }
 
 bool FontFile::get_script_support_override(const String &p_script) const {
+	ZoneScopedS(60);
 	_ensure_rid(0);
 	return TS->font_get_script_support_override(cache[0], p_script);
 }
 
 void FontFile::remove_script_support_override(const String &p_script) {
+	ZoneScopedS(60);
 	_ensure_rid(0);
 	TS->font_remove_script_support_override(cache[0], p_script);
 }
 
 Vector<String> FontFile::get_script_support_overrides() const {
+	ZoneScopedS(60);
 	_ensure_rid(0);
 	return TS->font_get_script_support_overrides(cache[0]);
 }
 
 void FontFile::set_opentype_feature_overrides(const Dictionary &p_overrides) {
+	ZoneScopedS(60);
 	_ensure_rid(0);
 	TS->font_set_opentype_feature_overrides(cache[0], p_overrides);
 }
 
 Dictionary FontFile::get_opentype_feature_overrides() const {
+	ZoneScopedS(60);
 	_ensure_rid(0);
 	return TS->font_get_opentype_feature_overrides(cache[0]);
 }
 
 int32_t FontFile::get_glyph_index(int p_size, char32_t p_char, char32_t p_variation_selector) const {
+	ZoneScopedS(60);
 	_ensure_rid(0);
 	return TS->font_get_glyph_index(cache[0], p_size, p_char, p_variation_selector);
 }
@@ -2569,6 +2710,7 @@ FontFile::FontFile() {
 }
 
 FontFile::~FontFile() {
+	ZoneScopedS(60);
 	_clear_cache();
 }
 
@@ -2577,6 +2719,7 @@ FontFile::~FontFile() {
 /*************************************************************************/
 
 void FontVariation::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_base_font", "font"), &FontVariation::set_base_font);
 	ClassDB::bind_method(D_METHOD("get_base_font"), &FontVariation::get_base_font);
 
@@ -2616,6 +2759,7 @@ void FontVariation::_bind_methods() {
 }
 
 void FontVariation::_update_rids() const {
+	ZoneScopedS(60);
 	Ref<Font> f = _get_base_font_or_default();
 
 	rids.clear();
@@ -2636,6 +2780,7 @@ void FontVariation::_update_rids() const {
 }
 
 void FontVariation::reset_state() {
+	ZoneScopedS(60);
 	if (base_font.is_valid()) {
 		base_font->disconnect(CoreStringNames::get_singleton()->changed, callable_mp(reinterpret_cast<Font *>(this), &Font::_invalidate_rids));
 		base_font.unref();
@@ -2657,6 +2802,7 @@ void FontVariation::reset_state() {
 }
 
 void FontVariation::set_base_font(const Ref<Font> &p_font) {
+	ZoneScopedS(60);
 	if (base_font != p_font) {
 		if (base_font.is_valid()) {
 			base_font->disconnect(CoreStringNames::get_singleton()->changed, callable_mp(reinterpret_cast<Font *>(this), &Font::_invalidate_rids));
@@ -2671,10 +2817,12 @@ void FontVariation::set_base_font(const Ref<Font> &p_font) {
 }
 
 Ref<Font> FontVariation::get_base_font() const {
+	ZoneScopedS(60);
 	return base_font;
 }
 
 Ref<Font> FontVariation::_get_base_font_or_default() const {
+	ZoneScopedS(60);
 	if (theme_font.is_valid()) {
 		theme_font->disconnect(CoreStringNames::get_singleton()->changed, callable_mp(reinterpret_cast<Font *>(const_cast<FontVariation *>(this)), &Font::_invalidate_rids));
 		theme_font.unref();
@@ -2730,6 +2878,7 @@ Ref<Font> FontVariation::_get_base_font_or_default() const {
 }
 
 void FontVariation::set_variation_opentype(const Dictionary &p_coords) {
+	ZoneScopedS(60);
 	if (variation.opentype != p_coords) {
 		variation.opentype = p_coords;
 		_invalidate_rids();
@@ -2737,10 +2886,12 @@ void FontVariation::set_variation_opentype(const Dictionary &p_coords) {
 }
 
 Dictionary FontVariation::get_variation_opentype() const {
+	ZoneScopedS(60);
 	return variation.opentype;
 }
 
 void FontVariation::set_variation_embolden(float p_strength) {
+	ZoneScopedS(60);
 	if (variation.embolden != p_strength) {
 		variation.embolden = p_strength;
 		_invalidate_rids();
@@ -2748,10 +2899,12 @@ void FontVariation::set_variation_embolden(float p_strength) {
 }
 
 float FontVariation::get_variation_embolden() const {
+	ZoneScopedS(60);
 	return variation.embolden;
 }
 
 void FontVariation::set_variation_transform(Transform2D p_transform) {
+	ZoneScopedS(60);
 	if (variation.transform != p_transform) {
 		variation.transform = p_transform;
 		_invalidate_rids();
@@ -2759,10 +2912,12 @@ void FontVariation::set_variation_transform(Transform2D p_transform) {
 }
 
 Transform2D FontVariation::get_variation_transform() const {
+	ZoneScopedS(60);
 	return variation.transform;
 }
 
 void FontVariation::set_variation_face_index(int p_face_index) {
+	ZoneScopedS(60);
 	if (variation.face_index != p_face_index) {
 		variation.face_index = p_face_index;
 		_invalidate_rids();
@@ -2770,10 +2925,12 @@ void FontVariation::set_variation_face_index(int p_face_index) {
 }
 
 int FontVariation::get_variation_face_index() const {
+	ZoneScopedS(60);
 	return variation.face_index;
 }
 
 void FontVariation::set_opentype_features(const Dictionary &p_features) {
+	ZoneScopedS(60);
 	if (opentype_features != p_features) {
 		opentype_features = p_features;
 		_invalidate_rids();
@@ -2781,10 +2938,12 @@ void FontVariation::set_opentype_features(const Dictionary &p_features) {
 }
 
 Dictionary FontVariation::get_opentype_features() const {
+	ZoneScopedS(60);
 	return opentype_features;
 }
 
 void FontVariation::set_spacing(TextServer::SpacingType p_spacing, int p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX((int)p_spacing, TextServer::SPACING_MAX);
 	if (extra_spacing[p_spacing] != p_value) {
 		extra_spacing[p_spacing] = p_value;
@@ -2793,11 +2952,13 @@ void FontVariation::set_spacing(TextServer::SpacingType p_spacing, int p_value) 
 }
 
 int FontVariation::get_spacing(TextServer::SpacingType p_spacing) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V((int)p_spacing, TextServer::SPACING_MAX, 0);
 	return extra_spacing[p_spacing];
 }
 
 RID FontVariation::find_variation(const Dictionary &p_variation_coordinates, int p_face_index, float p_strength, Transform2D p_transform) const {
+	ZoneScopedS(60);
 	Ref<Font> f = _get_base_font_or_default();
 	if (f.is_valid()) {
 		return f->find_variation(p_variation_coordinates, p_face_index, p_strength, p_transform);
@@ -2806,6 +2967,7 @@ RID FontVariation::find_variation(const Dictionary &p_variation_coordinates, int
 }
 
 RID FontVariation::_get_rid() const {
+	ZoneScopedS(60);
 	Ref<Font> f = _get_base_font_or_default();
 	if (f.is_valid()) {
 		return f->find_variation(variation.opentype, variation.face_index, variation.embolden, variation.transform);
@@ -2814,6 +2976,7 @@ RID FontVariation::_get_rid() const {
 }
 
 FontVariation::FontVariation() {
+	ZoneScopedS(60);
 	for (int i = 0; i < TextServer::SPACING_MAX; i++) {
 		extra_spacing[i] = 0;
 	}
@@ -2827,6 +2990,7 @@ FontVariation::~FontVariation() {
 /*************************************************************************/
 
 void SystemFont::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_antialiasing", "antialiasing"), &SystemFont::set_antialiasing);
 	ClassDB::bind_method(D_METHOD("get_antialiasing"), &SystemFont::get_antialiasing);
 
@@ -2866,6 +3030,7 @@ void SystemFont::_bind_methods() {
 }
 
 void SystemFont::_update_rids() const {
+	ZoneScopedS(60);
 	Ref<Font> f = _get_base_font_or_default();
 
 	rids.clear();
@@ -2886,6 +3051,7 @@ void SystemFont::_update_rids() const {
 }
 
 void SystemFont::_update_base_font() {
+	ZoneScopedS(60);
 	if (base_font.is_valid()) {
 		base_font->disconnect(CoreStringNames::get_singleton()->changed, callable_mp(reinterpret_cast<Font *>(this), &Font::_invalidate_rids));
 		base_font.unref();
@@ -2954,6 +3120,7 @@ void SystemFont::_update_base_font() {
 }
 
 void SystemFont::reset_state() {
+	ZoneScopedS(60);
 	if (base_font.is_valid()) {
 		base_font->disconnect(CoreStringNames::get_singleton()->changed, callable_mp(reinterpret_cast<Font *>(this), &Font::_invalidate_rids));
 		base_font.unref();
@@ -2981,6 +3148,7 @@ void SystemFont::reset_state() {
 }
 
 Ref<Font> SystemFont::_get_base_font_or_default() const {
+	ZoneScopedS(60);
 	if (theme_font.is_valid()) {
 		theme_font->disconnect(CoreStringNames::get_singleton()->changed, callable_mp(reinterpret_cast<Font *>(const_cast<SystemFont *>(this)), &Font::_invalidate_rids));
 		theme_font.unref();
@@ -3036,6 +3204,7 @@ Ref<Font> SystemFont::_get_base_font_or_default() const {
 }
 
 void SystemFont::set_antialiasing(TextServer::FontAntialiasing p_antialiasing) {
+	ZoneScopedS(60);
 	if (antialiasing != p_antialiasing) {
 		antialiasing = p_antialiasing;
 		if (base_font.is_valid()) {
@@ -3046,10 +3215,12 @@ void SystemFont::set_antialiasing(TextServer::FontAntialiasing p_antialiasing) {
 }
 
 TextServer::FontAntialiasing SystemFont::get_antialiasing() const {
+	ZoneScopedS(60);
 	return antialiasing;
 }
 
 void SystemFont::set_generate_mipmaps(bool p_generate_mipmaps) {
+	ZoneScopedS(60);
 	if (mipmaps != p_generate_mipmaps) {
 		mipmaps = p_generate_mipmaps;
 		if (base_font.is_valid()) {
@@ -3060,10 +3231,12 @@ void SystemFont::set_generate_mipmaps(bool p_generate_mipmaps) {
 }
 
 bool SystemFont::get_generate_mipmaps() const {
+	ZoneScopedS(60);
 	return mipmaps;
 }
 
 void SystemFont::set_force_autohinter(bool p_force_autohinter) {
+	ZoneScopedS(60);
 	if (force_autohinter != p_force_autohinter) {
 		force_autohinter = p_force_autohinter;
 		if (base_font.is_valid()) {
@@ -3074,10 +3247,12 @@ void SystemFont::set_force_autohinter(bool p_force_autohinter) {
 }
 
 bool SystemFont::is_force_autohinter() const {
+	ZoneScopedS(60);
 	return force_autohinter;
 }
 
 void SystemFont::set_hinting(TextServer::Hinting p_hinting) {
+	ZoneScopedS(60);
 	if (hinting != p_hinting) {
 		hinting = p_hinting;
 		if (base_font.is_valid()) {
@@ -3088,10 +3263,12 @@ void SystemFont::set_hinting(TextServer::Hinting p_hinting) {
 }
 
 TextServer::Hinting SystemFont::get_hinting() const {
+	ZoneScopedS(60);
 	return hinting;
 }
 
 void SystemFont::set_subpixel_positioning(TextServer::SubpixelPositioning p_subpixel) {
+	ZoneScopedS(60);
 	if (subpixel_positioning != p_subpixel) {
 		subpixel_positioning = p_subpixel;
 		if (base_font.is_valid()) {
@@ -3102,10 +3279,12 @@ void SystemFont::set_subpixel_positioning(TextServer::SubpixelPositioning p_subp
 }
 
 TextServer::SubpixelPositioning SystemFont::get_subpixel_positioning() const {
+	ZoneScopedS(60);
 	return subpixel_positioning;
 }
 
 void SystemFont::set_multichannel_signed_distance_field(bool p_msdf) {
+	ZoneScopedS(60);
 	if (msdf != p_msdf) {
 		msdf = p_msdf;
 		if (base_font.is_valid()) {
@@ -3116,10 +3295,12 @@ void SystemFont::set_multichannel_signed_distance_field(bool p_msdf) {
 }
 
 bool SystemFont::is_multichannel_signed_distance_field() const {
+	ZoneScopedS(60);
 	return msdf;
 }
 
 void SystemFont::set_oversampling(real_t p_oversampling) {
+	ZoneScopedS(60);
 	if (oversampling != p_oversampling) {
 		oversampling = p_oversampling;
 		if (base_font.is_valid()) {
@@ -3130,10 +3311,12 @@ void SystemFont::set_oversampling(real_t p_oversampling) {
 }
 
 real_t SystemFont::get_oversampling() const {
+	ZoneScopedS(60);
 	return oversampling;
 }
 
 void SystemFont::set_font_names(const PackedStringArray &p_names) {
+	ZoneScopedS(60);
 	if (names != p_names) {
 		names = p_names;
 		_update_base_font();
@@ -3141,10 +3324,12 @@ void SystemFont::set_font_names(const PackedStringArray &p_names) {
 }
 
 PackedStringArray SystemFont::get_font_names() const {
+	ZoneScopedS(60);
 	return names;
 }
 
 void SystemFont::set_font_style(BitField<TextServer::FontStyle> p_style) {
+	ZoneScopedS(60);
 	if (style != p_style) {
 		style = p_style;
 		_update_base_font();
@@ -3152,10 +3337,12 @@ void SystemFont::set_font_style(BitField<TextServer::FontStyle> p_style) {
 }
 
 BitField<TextServer::FontStyle> SystemFont::get_font_style() const {
+	ZoneScopedS(60);
 	return style;
 }
 
 int SystemFont::get_spacing(TextServer::SpacingType p_spacing) const {
+	ZoneScopedS(60);
 	if (base_font.is_valid()) {
 		return base_font->get_spacing(p_spacing);
 	} else {
@@ -3164,6 +3351,7 @@ int SystemFont::get_spacing(TextServer::SpacingType p_spacing) const {
 }
 
 RID SystemFont::find_variation(const Dictionary &p_variation_coordinates, int p_face_index, float p_strength, Transform2D p_transform) const {
+	ZoneScopedS(60);
 	Ref<Font> f = _get_base_font_or_default();
 	if (f.is_valid()) {
 		Dictionary var = p_variation_coordinates;
@@ -3185,6 +3373,7 @@ RID SystemFont::find_variation(const Dictionary &p_variation_coordinates, int p_
 }
 
 RID SystemFont::_get_rid() const {
+	ZoneScopedS(60);
 	Ref<Font> f = _get_base_font_or_default();
 	if (f.is_valid()) {
 		if (!face_indeces.is_empty()) {
@@ -3204,10 +3393,12 @@ RID SystemFont::_get_rid() const {
 }
 
 int64_t SystemFont::get_face_count() const {
+	ZoneScopedS(60);
 	return face_indeces.size();
 }
 
 SystemFont::SystemFont() {
+	ZoneScopedS(60);
 	/* NOP */
 }
 

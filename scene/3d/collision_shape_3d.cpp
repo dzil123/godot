@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  collision_shape_3d.cpp                                               */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "collision_shape_3d.h"
 
 #include "mesh_instance_3d.h"
@@ -36,6 +67,7 @@
 #include "scene/resources/convex_polygon_shape_3d.h"
 
 void CollisionShape3D::make_convex_from_siblings() {
+	ZoneScopedS(60);
 	Node *p = get_parent();
 	if (!p) {
 		return;
@@ -68,6 +100,7 @@ void CollisionShape3D::make_convex_from_siblings() {
 }
 
 void CollisionShape3D::_update_in_shape_owner(bool p_xform_only) {
+	ZoneScopedS(60);
 	parent->shape_owner_set_transform(owner_id, get_transform());
 	if (p_xform_only) {
 		return;
@@ -76,6 +109,7 @@ void CollisionShape3D::_update_in_shape_owner(bool p_xform_only) {
 }
 
 void CollisionShape3D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_PARENTED: {
 			parent = Object::cast_to<CollisionObject3D>(get_parent());
@@ -111,10 +145,12 @@ void CollisionShape3D::_notification(int p_what) {
 }
 
 void CollisionShape3D::resource_changed(Ref<Resource> res) {
+	ZoneScopedS(60);
 	update_gizmos();
 }
 
 PackedStringArray CollisionShape3D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (!Object::cast_to<CollisionObject3D>(get_parent())) {
@@ -135,6 +171,7 @@ PackedStringArray CollisionShape3D::get_configuration_warnings() const {
 }
 
 void CollisionShape3D::_bind_methods() {
+	ZoneScopedS(60);
 	//not sure if this should do anything
 	ClassDB::bind_method(D_METHOD("resource_changed", "resource"), &CollisionShape3D::resource_changed);
 	ClassDB::bind_method(D_METHOD("set_shape", "shape"), &CollisionShape3D::set_shape);
@@ -149,6 +186,7 @@ void CollisionShape3D::_bind_methods() {
 }
 
 void CollisionShape3D::set_shape(const Ref<Shape3D> &p_shape) {
+	ZoneScopedS(60);
 	if (p_shape == shape) {
 		return;
 	}
@@ -175,10 +213,12 @@ void CollisionShape3D::set_shape(const Ref<Shape3D> &p_shape) {
 }
 
 Ref<Shape3D> CollisionShape3D::get_shape() const {
+	ZoneScopedS(60);
 	return shape;
 }
 
 void CollisionShape3D::set_disabled(bool p_disabled) {
+	ZoneScopedS(60);
 	disabled = p_disabled;
 	update_gizmos();
 	if (parent) {
@@ -187,15 +227,18 @@ void CollisionShape3D::set_disabled(bool p_disabled) {
 }
 
 bool CollisionShape3D::is_disabled() const {
+	ZoneScopedS(60);
 	return disabled;
 }
 
 CollisionShape3D::CollisionShape3D() {
+	ZoneScopedS(60);
 	//indicator = RenderingServer::get_singleton()->mesh_create();
 	set_notify_local_transform(true);
 }
 
 CollisionShape3D::~CollisionShape3D() {
+	ZoneScopedS(60);
 	if (!shape.is_null()) {
 		shape->unregister_owner(this);
 	}

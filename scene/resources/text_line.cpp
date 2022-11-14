@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  text_line.cpp                                                        */
 /*************************************************************************/
@@ -31,6 +32,7 @@
 #include "text_line.h"
 
 void TextLine::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("clear"), &TextLine::clear);
 
 	ClassDB::bind_method(D_METHOD("set_direction", "direction"), &TextLine::set_direction);
@@ -101,6 +103,7 @@ void TextLine::_bind_methods() {
 }
 
 void TextLine::_shape() {
+	ZoneScopedS(60);
 	if (dirty) {
 		if (!tab_stops.is_empty()) {
 			TS->shaped_text_tab_align(rid, tab_stops);
@@ -144,55 +147,67 @@ void TextLine::_shape() {
 }
 
 RID TextLine::get_rid() const {
+	ZoneScopedS(60);
 	return rid;
 }
 
 void TextLine::clear() {
+	ZoneScopedS(60);
 	TS->shaped_text_clear(rid);
 }
 
 void TextLine::set_preserve_invalid(bool p_enabled) {
+	ZoneScopedS(60);
 	TS->shaped_text_set_preserve_invalid(rid, p_enabled);
 	dirty = true;
 }
 
 bool TextLine::get_preserve_invalid() const {
+	ZoneScopedS(60);
 	return TS->shaped_text_get_preserve_invalid(rid);
 }
 
 void TextLine::set_preserve_control(bool p_enabled) {
+	ZoneScopedS(60);
 	TS->shaped_text_set_preserve_control(rid, p_enabled);
 	dirty = true;
 }
 
 bool TextLine::get_preserve_control() const {
+	ZoneScopedS(60);
 	return TS->shaped_text_get_preserve_control(rid);
 }
 
 void TextLine::set_direction(TextServer::Direction p_direction) {
+	ZoneScopedS(60);
 	TS->shaped_text_set_direction(rid, p_direction);
 	dirty = true;
 }
 
 TextServer::Direction TextLine::get_direction() const {
+	ZoneScopedS(60);
 	return TS->shaped_text_get_direction(rid);
 }
 
 void TextLine::set_orientation(TextServer::Orientation p_orientation) {
+	ZoneScopedS(60);
 	TS->shaped_text_set_orientation(rid, p_orientation);
 	dirty = true;
 }
 
 TextServer::Orientation TextLine::get_orientation() const {
+	ZoneScopedS(60);
 	return TS->shaped_text_get_orientation(rid);
 }
 
 void TextLine::set_bidi_override(const Array &p_override) {
+	ZoneScopedS(60);
 	TS->shaped_text_set_bidi_override(rid, p_override);
 	dirty = true;
 }
 
 bool TextLine::add_string(const String &p_text, const Ref<Font> &p_font, int p_font_size, const String &p_language, const Variant &p_meta) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_font.is_null(), false);
 	bool res = TS->shaped_text_add_string(rid, p_text, p_font->get_rids(), p_font_size, p_font->get_opentype_features(), p_language, p_meta);
 	for (int i = 0; i < TextServer::SPACING_MAX; i++) {
@@ -203,21 +218,25 @@ bool TextLine::add_string(const String &p_text, const Ref<Font> &p_font, int p_f
 }
 
 bool TextLine::add_object(Variant p_key, const Size2 &p_size, InlineAlignment p_inline_align, int p_length) {
+	ZoneScopedS(60);
 	bool res = TS->shaped_text_add_object(rid, p_key, p_size, p_inline_align, p_length);
 	dirty = true;
 	return res;
 }
 
 bool TextLine::resize_object(Variant p_key, const Size2 &p_size, InlineAlignment p_inline_align) {
+	ZoneScopedS(60);
 	const_cast<TextLine *>(this)->_shape();
 	return TS->shaped_text_resize_object(rid, p_key, p_size, p_inline_align);
 }
 
 Array TextLine::get_objects() const {
+	ZoneScopedS(60);
 	return TS->shaped_text_get_objects(rid);
 }
 
 Rect2 TextLine::get_object_rect(Variant p_key) const {
+	ZoneScopedS(60);
 	Vector2 ofs;
 
 	float length = TS->shaped_text_get_width(rid);
@@ -263,6 +282,7 @@ Rect2 TextLine::get_object_rect(Variant p_key) const {
 }
 
 void TextLine::set_horizontal_alignment(HorizontalAlignment p_alignment) {
+	ZoneScopedS(60);
 	if (alignment != p_alignment) {
 		if (alignment == HORIZONTAL_ALIGNMENT_FILL || p_alignment == HORIZONTAL_ALIGNMENT_FILL) {
 			alignment = p_alignment;
@@ -274,15 +294,18 @@ void TextLine::set_horizontal_alignment(HorizontalAlignment p_alignment) {
 }
 
 HorizontalAlignment TextLine::get_horizontal_alignment() const {
+	ZoneScopedS(60);
 	return alignment;
 }
 
 void TextLine::tab_align(const Vector<float> &p_tab_stops) {
+	ZoneScopedS(60);
 	tab_stops = p_tab_stops;
 	dirty = true;
 }
 
 void TextLine::set_flags(BitField<TextServer::JustificationFlag> p_flags) {
+	ZoneScopedS(60);
 	if (flags != p_flags) {
 		flags = p_flags;
 		dirty = true;
@@ -290,10 +313,12 @@ void TextLine::set_flags(BitField<TextServer::JustificationFlag> p_flags) {
 }
 
 BitField<TextServer::JustificationFlag> TextLine::get_flags() const {
+	ZoneScopedS(60);
 	return flags;
 }
 
 void TextLine::set_text_overrun_behavior(TextServer::OverrunBehavior p_behavior) {
+	ZoneScopedS(60);
 	if (overrun_behavior != p_behavior) {
 		overrun_behavior = p_behavior;
 		dirty = true;
@@ -301,10 +326,12 @@ void TextLine::set_text_overrun_behavior(TextServer::OverrunBehavior p_behavior)
 }
 
 TextServer::OverrunBehavior TextLine::get_text_overrun_behavior() const {
+	ZoneScopedS(60);
 	return overrun_behavior;
 }
 
 void TextLine::set_width(float p_width) {
+	ZoneScopedS(60);
 	width = p_width;
 	if (alignment == HORIZONTAL_ALIGNMENT_FILL || overrun_behavior != TextServer::OVERRUN_NO_TRIMMING) {
 		dirty = true;
@@ -312,40 +339,48 @@ void TextLine::set_width(float p_width) {
 }
 
 float TextLine::get_width() const {
+	ZoneScopedS(60);
 	return width;
 }
 
 Size2 TextLine::get_size() const {
+	ZoneScopedS(60);
 	const_cast<TextLine *>(this)->_shape();
 	return TS->shaped_text_get_size(rid);
 }
 
 float TextLine::get_line_ascent() const {
+	ZoneScopedS(60);
 	const_cast<TextLine *>(this)->_shape();
 	return TS->shaped_text_get_ascent(rid);
 }
 
 float TextLine::get_line_descent() const {
+	ZoneScopedS(60);
 	const_cast<TextLine *>(this)->_shape();
 	return TS->shaped_text_get_descent(rid);
 }
 
 float TextLine::get_line_width() const {
+	ZoneScopedS(60);
 	const_cast<TextLine *>(this)->_shape();
 	return TS->shaped_text_get_width(rid);
 }
 
 float TextLine::get_line_underline_position() const {
+	ZoneScopedS(60);
 	const_cast<TextLine *>(this)->_shape();
 	return TS->shaped_text_get_underline_position(rid);
 }
 
 float TextLine::get_line_underline_thickness() const {
+	ZoneScopedS(60);
 	const_cast<TextLine *>(this)->_shape();
 	return TS->shaped_text_get_underline_thickness(rid);
 }
 
 void TextLine::draw(RID p_canvas, const Vector2 &p_pos, const Color &p_color) const {
+	ZoneScopedS(60);
 	const_cast<TextLine *>(this)->_shape();
 
 	Vector2 ofs = p_pos;
@@ -393,6 +428,7 @@ void TextLine::draw(RID p_canvas, const Vector2 &p_pos, const Color &p_color) co
 }
 
 void TextLine::draw_outline(RID p_canvas, const Vector2 &p_pos, int p_outline_size, const Color &p_color) const {
+	ZoneScopedS(60);
 	const_cast<TextLine *>(this)->_shape();
 
 	Vector2 ofs = p_pos;
@@ -440,12 +476,14 @@ void TextLine::draw_outline(RID p_canvas, const Vector2 &p_pos, int p_outline_si
 }
 
 int TextLine::hit_test(float p_coords) const {
+	ZoneScopedS(60);
 	const_cast<TextLine *>(this)->_shape();
 
 	return TS->shaped_text_hit_test_position(rid, p_coords);
 }
 
 TextLine::TextLine(const String &p_text, const Ref<Font> &p_font, int p_font_size, const String &p_language, TextServer::Direction p_direction, TextServer::Orientation p_orientation) {
+	ZoneScopedS(60);
 	rid = TS->create_shaped_text(p_direction, p_orientation);
 	if (p_font.is_valid()) {
 		TS->shaped_text_add_string(rid, p_text, p_font->get_rids(), p_font_size, p_font->get_opentype_features(), p_language);
@@ -456,9 +494,11 @@ TextLine::TextLine(const String &p_text, const Ref<Font> &p_font, int p_font_siz
 }
 
 TextLine::TextLine() {
+	ZoneScopedS(60);
 	rid = TS->create_shaped_text();
 }
 
 TextLine::~TextLine() {
+	ZoneScopedS(60);
 	TS->free_rid(rid);
 }

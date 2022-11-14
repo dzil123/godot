@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  progress_bar.cpp                                                     */
 /*************************************************************************/
@@ -33,6 +34,7 @@
 #include "scene/resources/text_line.h"
 
 Size2 ProgressBar::get_minimum_size() const {
+	ZoneScopedS(60);
 	Size2 minimum_size = theme_cache.background_style->get_minimum_size();
 	minimum_size.height = MAX(minimum_size.height, theme_cache.fill_style->get_minimum_size().height);
 	minimum_size.width = MAX(minimum_size.width, theme_cache.fill_style->get_minimum_size().width);
@@ -48,6 +50,7 @@ Size2 ProgressBar::get_minimum_size() const {
 }
 
 void ProgressBar::_update_theme_item_cache() {
+	ZoneScopedS(60);
 	Range::_update_theme_item_cache();
 
 	theme_cache.background_style = get_theme_stylebox(SNAME("background"));
@@ -61,6 +64,7 @@ void ProgressBar::_update_theme_item_cache() {
 }
 
 void ProgressBar::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
 			draw_style_box(theme_cache.background_style, Rect2(Point2(), get_size()));
@@ -118,16 +122,19 @@ void ProgressBar::_notification(int p_what) {
 }
 
 void ProgressBar::set_fill_mode(int p_fill) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_fill, FILL_MODE_MAX);
 	mode = (FillMode)p_fill;
 	queue_redraw();
 }
 
 int ProgressBar::get_fill_mode() {
+	ZoneScopedS(60);
 	return mode;
 }
 
 void ProgressBar::set_show_percentage(bool p_visible) {
+	ZoneScopedS(60);
 	if (show_percentage == p_visible) {
 		return;
 	}
@@ -137,10 +144,12 @@ void ProgressBar::set_show_percentage(bool p_visible) {
 }
 
 bool ProgressBar::is_percentage_shown() const {
+	ZoneScopedS(60);
 	return show_percentage;
 }
 
 void ProgressBar::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_fill_mode", "mode"), &ProgressBar::set_fill_mode);
 	ClassDB::bind_method(D_METHOD("get_fill_mode"), &ProgressBar::get_fill_mode);
 	ClassDB::bind_method(D_METHOD("set_show_percentage", "visible"), &ProgressBar::set_show_percentage);
@@ -156,6 +165,7 @@ void ProgressBar::_bind_methods() {
 }
 
 ProgressBar::ProgressBar() {
+	ZoneScopedS(60);
 	set_v_size_flags(0);
 	set_step(0.01);
 }

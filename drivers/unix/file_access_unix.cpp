@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  file_access_unix.cpp                                                 */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "file_access_unix.h"
 
 #if defined(UNIX_ENABLED)
@@ -53,6 +84,7 @@
 #endif
 
 void FileAccessUnix::check_errors() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!f, "File must be opened before use.");
 
 	if (feof(f)) {
@@ -61,6 +93,7 @@ void FileAccessUnix::check_errors() const {
 }
 
 Error FileAccessUnix::open_internal(const String &p_path, int p_mode_flags) {
+	ZoneScopedS(60);
 	_close();
 
 	path_src = p_path;
@@ -131,6 +164,7 @@ Error FileAccessUnix::open_internal(const String &p_path, int p_mode_flags) {
 }
 
 void FileAccessUnix::_close() {
+	ZoneScopedS(60);
 	if (!f) {
 		return;
 	}
@@ -155,18 +189,22 @@ void FileAccessUnix::_close() {
 }
 
 bool FileAccessUnix::is_open() const {
+	ZoneScopedS(60);
 	return (f != nullptr);
 }
 
 String FileAccessUnix::get_path() const {
+	ZoneScopedS(60);
 	return path_src;
 }
 
 String FileAccessUnix::get_path_absolute() const {
+	ZoneScopedS(60);
 	return path;
 }
 
 void FileAccessUnix::seek(uint64_t p_position) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!f, "File must be opened before use.");
 
 	last_error = OK;
@@ -176,6 +214,7 @@ void FileAccessUnix::seek(uint64_t p_position) {
 }
 
 void FileAccessUnix::seek_end(int64_t p_position) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!f, "File must be opened before use.");
 
 	if (fseeko(f, p_position, SEEK_END)) {
@@ -184,6 +223,7 @@ void FileAccessUnix::seek_end(int64_t p_position) {
 }
 
 uint64_t FileAccessUnix::get_position() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!f, 0, "File must be opened before use.");
 
 	int64_t pos = ftello(f);
@@ -195,6 +235,7 @@ uint64_t FileAccessUnix::get_position() const {
 }
 
 uint64_t FileAccessUnix::get_length() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!f, 0, "File must be opened before use.");
 
 	int64_t pos = ftello(f);
@@ -208,10 +249,12 @@ uint64_t FileAccessUnix::get_length() const {
 }
 
 bool FileAccessUnix::eof_reached() const {
+	ZoneScopedS(60);
 	return last_error == ERR_FILE_EOF;
 }
 
 uint8_t FileAccessUnix::get_8() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!f, 0, "File must be opened before use.");
 	uint8_t b;
 	if (fread(&b, 1, 1, f) == 0) {
@@ -222,6 +265,7 @@ uint8_t FileAccessUnix::get_8() const {
 }
 
 uint64_t FileAccessUnix::get_buffer(uint8_t *p_dst, uint64_t p_length) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!p_dst && p_length > 0, -1);
 	ERR_FAIL_COND_V_MSG(!f, -1, "File must be opened before use.");
 
@@ -231,26 +275,31 @@ uint64_t FileAccessUnix::get_buffer(uint8_t *p_dst, uint64_t p_length) const {
 }
 
 Error FileAccessUnix::get_error() const {
+	ZoneScopedS(60);
 	return last_error;
 }
 
 void FileAccessUnix::flush() {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!f, "File must be opened before use.");
 	fflush(f);
 }
 
 void FileAccessUnix::store_8(uint8_t p_dest) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!f, "File must be opened before use.");
 	ERR_FAIL_COND(fwrite(&p_dest, 1, 1, f) != 1);
 }
 
 void FileAccessUnix::store_buffer(const uint8_t *p_src, uint64_t p_length) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!f, "File must be opened before use.");
 	ERR_FAIL_COND(!p_src && p_length > 0);
 	ERR_FAIL_COND(fwrite(p_src, 1, p_length, f) != p_length);
 }
 
 bool FileAccessUnix::file_exists(const String &p_path) {
+	ZoneScopedS(60);
 	int err;
 	struct stat st = {};
 	String filename = fix_path(p_path);
@@ -283,6 +332,7 @@ bool FileAccessUnix::file_exists(const String &p_path) {
 }
 
 uint64_t FileAccessUnix::_get_modified_time(const String &p_file) {
+	ZoneScopedS(60);
 	String file = fix_path(p_file);
 	struct stat flags = {};
 	int err = stat(file.utf8().get_data(), &flags);
@@ -296,6 +346,7 @@ uint64_t FileAccessUnix::_get_modified_time(const String &p_file) {
 }
 
 uint32_t FileAccessUnix::_get_unix_permissions(const String &p_file) {
+	ZoneScopedS(60);
 	String file = fix_path(p_file);
 	struct stat flags = {};
 	int err = stat(file.utf8().get_data(), &flags);
@@ -308,6 +359,7 @@ uint32_t FileAccessUnix::_get_unix_permissions(const String &p_file) {
 }
 
 Error FileAccessUnix::_set_unix_permissions(const String &p_file, uint32_t p_permissions) {
+	ZoneScopedS(60);
 	String file = fix_path(p_file);
 
 	int err = chmod(file.utf8().get_data(), p_permissions);
@@ -321,6 +373,7 @@ Error FileAccessUnix::_set_unix_permissions(const String &p_file, uint32_t p_per
 CloseNotificationFunc FileAccessUnix::close_notification_func = nullptr;
 
 FileAccessUnix::~FileAccessUnix() {
+	ZoneScopedS(60);
 	_close();
 }
 

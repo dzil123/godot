@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  texture_progress_bar.cpp                                             */
 /*************************************************************************/
@@ -33,6 +34,7 @@
 #include "core/config/engine.h"
 
 void TextureProgressBar::set_under_texture(const Ref<Texture2D> &p_texture) {
+	ZoneScopedS(60);
 	if (under == p_texture) {
 		return;
 	}
@@ -43,10 +45,12 @@ void TextureProgressBar::set_under_texture(const Ref<Texture2D> &p_texture) {
 }
 
 Ref<Texture2D> TextureProgressBar::get_under_texture() const {
+	ZoneScopedS(60);
 	return under;
 }
 
 void TextureProgressBar::set_over_texture(const Ref<Texture2D> &p_texture) {
+	ZoneScopedS(60);
 	if (over == p_texture) {
 		return;
 	}
@@ -59,10 +63,12 @@ void TextureProgressBar::set_over_texture(const Ref<Texture2D> &p_texture) {
 }
 
 Ref<Texture2D> TextureProgressBar::get_over_texture() const {
+	ZoneScopedS(60);
 	return over;
 }
 
 void TextureProgressBar::set_stretch_margin(Side p_side, int p_size) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX((int)p_side, 4);
 
 	if (stretch_margin[p_side] == p_size) {
@@ -75,11 +81,13 @@ void TextureProgressBar::set_stretch_margin(Side p_side, int p_size) {
 }
 
 int TextureProgressBar::get_stretch_margin(Side p_side) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V((int)p_side, 4, 0);
 	return stretch_margin[p_side];
 }
 
 void TextureProgressBar::set_nine_patch_stretch(bool p_stretch) {
+	ZoneScopedS(60);
 	if (nine_patch_stretch == p_stretch) {
 		return;
 	}
@@ -90,10 +98,12 @@ void TextureProgressBar::set_nine_patch_stretch(bool p_stretch) {
 }
 
 bool TextureProgressBar::get_nine_patch_stretch() const {
+	ZoneScopedS(60);
 	return nine_patch_stretch;
 }
 
 Size2 TextureProgressBar::get_minimum_size() const {
+	ZoneScopedS(60);
 	if (nine_patch_stretch) {
 		return Size2(stretch_margin[SIDE_LEFT] + stretch_margin[SIDE_RIGHT], stretch_margin[SIDE_TOP] + stretch_margin[SIDE_BOTTOM]);
 	} else if (under.is_valid()) {
@@ -108,6 +118,7 @@ Size2 TextureProgressBar::get_minimum_size() const {
 }
 
 void TextureProgressBar::set_progress_texture(const Ref<Texture2D> &p_texture) {
+	ZoneScopedS(60);
 	if (progress == p_texture) {
 		return;
 	}
@@ -118,10 +129,12 @@ void TextureProgressBar::set_progress_texture(const Ref<Texture2D> &p_texture) {
 }
 
 Ref<Texture2D> TextureProgressBar::get_progress_texture() const {
+	ZoneScopedS(60);
 	return progress;
 }
 
 void TextureProgressBar::set_progress_offset(Point2 p_offset) {
+	ZoneScopedS(60);
 	if (progress_offset == p_offset) {
 		return;
 	}
@@ -131,10 +144,12 @@ void TextureProgressBar::set_progress_offset(Point2 p_offset) {
 }
 
 Point2 TextureProgressBar::get_progress_offset() const {
+	ZoneScopedS(60);
 	return progress_offset;
 }
 
 void TextureProgressBar::set_tint_under(const Color &p_tint) {
+	ZoneScopedS(60);
 	if (tint_under == p_tint) {
 		return;
 	}
@@ -144,10 +159,12 @@ void TextureProgressBar::set_tint_under(const Color &p_tint) {
 }
 
 Color TextureProgressBar::get_tint_under() const {
+	ZoneScopedS(60);
 	return tint_under;
 }
 
 void TextureProgressBar::set_tint_progress(const Color &p_tint) {
+	ZoneScopedS(60);
 	if (tint_progress == p_tint) {
 		return;
 	}
@@ -157,10 +174,12 @@ void TextureProgressBar::set_tint_progress(const Color &p_tint) {
 }
 
 Color TextureProgressBar::get_tint_progress() const {
+	ZoneScopedS(60);
 	return tint_progress;
 }
 
 void TextureProgressBar::set_tint_over(const Color &p_tint) {
+	ZoneScopedS(60);
 	if (tint_over == p_tint) {
 		return;
 	}
@@ -170,10 +189,12 @@ void TextureProgressBar::set_tint_over(const Color &p_tint) {
 }
 
 Color TextureProgressBar::get_tint_over() const {
+	ZoneScopedS(60);
 	return tint_over;
 }
 
 Point2 TextureProgressBar::unit_val_to_uv(float val) {
+	ZoneScopedS(60);
 	if (progress.is_null()) {
 		return Point2();
 	}
@@ -238,6 +259,7 @@ Point2 TextureProgressBar::unit_val_to_uv(float val) {
 }
 
 Point2 TextureProgressBar::get_relative_center() {
+	ZoneScopedS(60);
 	if (progress.is_null()) {
 		return Point2();
 	}
@@ -251,6 +273,7 @@ Point2 TextureProgressBar::get_relative_center() {
 }
 
 void TextureProgressBar::draw_nine_patch_stretched(const Ref<Texture2D> &p_texture, FillMode p_mode, double p_ratio, const Color &p_modulate) {
+	ZoneScopedS(60);
 	Vector2 texture_size = p_texture->get_size();
 	Vector2 topleft = Vector2(stretch_margin[SIDE_LEFT], stretch_margin[SIDE_TOP]);
 	Vector2 bottomright = Vector2(stretch_margin[SIDE_RIGHT], stretch_margin[SIDE_BOTTOM]);
@@ -424,6 +447,7 @@ void TextureProgressBar::draw_nine_patch_stretched(const Ref<Texture2D> &p_textu
 }
 
 void TextureProgressBar::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
 			if (nine_patch_stretch && (mode == FILL_LEFT_TO_RIGHT || mode == FILL_RIGHT_TO_LEFT || mode == FILL_TOP_TO_BOTTOM || mode == FILL_BOTTOM_TO_TOP || mode == FILL_BILINEAR_LEFT_AND_RIGHT || mode == FILL_BILINEAR_TOP_AND_BOTTOM)) {
@@ -604,6 +628,7 @@ void TextureProgressBar::_notification(int p_what) {
 }
 
 void TextureProgressBar::set_fill_mode(int p_fill) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_fill, FILL_MODE_MAX);
 
 	if (mode == (FillMode)p_fill) {
@@ -615,10 +640,12 @@ void TextureProgressBar::set_fill_mode(int p_fill) {
 }
 
 int TextureProgressBar::get_fill_mode() {
+	ZoneScopedS(60);
 	return mode;
 }
 
 void TextureProgressBar::set_radial_initial_angle(float p_angle) {
+	ZoneScopedS(60);
 	while (p_angle > 360) {
 		p_angle -= 360;
 	}
@@ -635,10 +662,12 @@ void TextureProgressBar::set_radial_initial_angle(float p_angle) {
 }
 
 float TextureProgressBar::get_radial_initial_angle() {
+	ZoneScopedS(60);
 	return rad_init_angle;
 }
 
 void TextureProgressBar::set_fill_degrees(float p_angle) {
+	ZoneScopedS(60);
 	float angle_clamped = CLAMP(p_angle, 0, 360);
 
 	if (rad_max_degrees == angle_clamped) {
@@ -650,10 +679,12 @@ void TextureProgressBar::set_fill_degrees(float p_angle) {
 }
 
 float TextureProgressBar::get_fill_degrees() {
+	ZoneScopedS(60);
 	return rad_max_degrees;
 }
 
 void TextureProgressBar::set_radial_center_offset(const Point2 &p_off) {
+	ZoneScopedS(60);
 	if (rad_center_off == p_off) {
 		return;
 	}
@@ -663,10 +694,12 @@ void TextureProgressBar::set_radial_center_offset(const Point2 &p_off) {
 }
 
 Point2 TextureProgressBar::get_radial_center_offset() {
+	ZoneScopedS(60);
 	return rad_center_off;
 }
 
 void TextureProgressBar::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_under_texture", "tex"), &TextureProgressBar::set_under_texture);
 	ClassDB::bind_method(D_METHOD("get_under_texture"), &TextureProgressBar::get_under_texture);
 
@@ -743,5 +776,6 @@ void TextureProgressBar::_bind_methods() {
 }
 
 TextureProgressBar::TextureProgressBar() {
+	ZoneScopedS(60);
 	set_mouse_filter(MOUSE_FILTER_PASS);
 }

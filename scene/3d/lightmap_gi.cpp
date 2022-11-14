@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  lightmap_gi.cpp                                                      */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "lightmap_gi.h"
 
 #include "core/config/project_settings.h"
@@ -40,6 +71,7 @@
 #include "scene/resources/sky.h"
 
 void LightmapGIData::add_user(const NodePath &p_path, const Rect2 &p_uv_scale, int p_slice_index, int32_t p_sub_instance) {
+	ZoneScopedS(60);
 	User user;
 	user.path = p_path;
 	user.uv_scale = p_uv_scale;
@@ -49,34 +81,41 @@ void LightmapGIData::add_user(const NodePath &p_path, const Rect2 &p_uv_scale, i
 }
 
 int LightmapGIData::get_user_count() const {
+	ZoneScopedS(60);
 	return users.size();
 }
 
 NodePath LightmapGIData::get_user_path(int p_user) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_user, users.size(), NodePath());
 	return users[p_user].path;
 }
 
 int32_t LightmapGIData::get_user_sub_instance(int p_user) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_user, users.size(), -1);
 	return users[p_user].sub_instance;
 }
 
 Rect2 LightmapGIData::get_user_lightmap_uv_scale(int p_user) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_user, users.size(), Rect2());
 	return users[p_user].uv_scale;
 }
 
 int LightmapGIData::get_user_lightmap_slice_index(int p_user) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_user, users.size(), -1);
 	return users[p_user].slice_index;
 }
 
 void LightmapGIData::clear_users() {
+	ZoneScopedS(60);
 	users.clear();
 }
 
 void LightmapGIData::_set_user_data(const Array &p_data) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_data.is_empty());
 	ERR_FAIL_COND((p_data.size() % 4) != 0);
 
@@ -86,6 +125,7 @@ void LightmapGIData::_set_user_data(const Array &p_data) {
 }
 
 Array LightmapGIData::_get_user_data() const {
+	ZoneScopedS(60);
 	Array ret;
 	for (int i = 0; i < users.size(); i++) {
 		ret.push_back(users[i].path);
@@ -97,6 +137,7 @@ Array LightmapGIData::_get_user_data() const {
 }
 
 void LightmapGIData::_set_light_textures_data(const Array &p_data) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_data.is_empty());
 
 	if (p_data.size() == 1) {
@@ -120,6 +161,7 @@ void LightmapGIData::_set_light_textures_data(const Array &p_data) {
 }
 
 Array LightmapGIData::_get_light_textures_data() const {
+	ZoneScopedS(60);
 	Array ret;
 	if (light_texture.is_null() || light_texture->get_layers() == 0) {
 		return ret;
@@ -184,32 +226,39 @@ Array LightmapGIData::_get_light_textures_data() const {
 }
 
 RID LightmapGIData::get_rid() const {
+	ZoneScopedS(60);
 	return lightmap;
 }
 
 void LightmapGIData::clear() {
+	ZoneScopedS(60);
 	users.clear();
 }
 
 void LightmapGIData::set_light_texture(const Ref<TextureLayered> &p_light_texture) {
+	ZoneScopedS(60);
 	light_texture = p_light_texture;
 	RS::get_singleton()->lightmap_set_textures(lightmap, light_texture.is_valid() ? light_texture->get_rid() : RID(), uses_spherical_harmonics);
 }
 
 Ref<TextureLayered> LightmapGIData::get_light_texture() const {
+	ZoneScopedS(60);
 	return light_texture;
 }
 
 void LightmapGIData::set_uses_spherical_harmonics(bool p_enable) {
+	ZoneScopedS(60);
 	uses_spherical_harmonics = p_enable;
 	RS::get_singleton()->lightmap_set_textures(lightmap, light_texture.is_valid() ? light_texture->get_rid() : RID(), uses_spherical_harmonics);
 }
 
 bool LightmapGIData::is_using_spherical_harmonics() const {
+	ZoneScopedS(60);
 	return uses_spherical_harmonics;
 }
 
 void LightmapGIData::set_capture_data(const AABB &p_bounds, bool p_interior, const PackedVector3Array &p_points, const PackedColorArray &p_point_sh, const PackedInt32Array &p_tetrahedra, const PackedInt32Array &p_bsp_tree, float p_baked_exposure) {
+	ZoneScopedS(60);
 	if (p_points.size()) {
 		int pc = p_points.size();
 		ERR_FAIL_COND(pc * 9 != p_point_sh.size());
@@ -230,34 +279,42 @@ void LightmapGIData::set_capture_data(const AABB &p_bounds, bool p_interior, con
 }
 
 PackedVector3Array LightmapGIData::get_capture_points() const {
+	ZoneScopedS(60);
 	return RS::get_singleton()->lightmap_get_probe_capture_points(lightmap);
 }
 
 PackedColorArray LightmapGIData::get_capture_sh() const {
+	ZoneScopedS(60);
 	return RS::get_singleton()->lightmap_get_probe_capture_sh(lightmap);
 }
 
 PackedInt32Array LightmapGIData::get_capture_tetrahedra() const {
+	ZoneScopedS(60);
 	return RS::get_singleton()->lightmap_get_probe_capture_tetrahedra(lightmap);
 }
 
 PackedInt32Array LightmapGIData::get_capture_bsp_tree() const {
+	ZoneScopedS(60);
 	return RS::get_singleton()->lightmap_get_probe_capture_bsp_tree(lightmap);
 }
 
 AABB LightmapGIData::get_capture_bounds() const {
+	ZoneScopedS(60);
 	return bounds;
 }
 
 bool LightmapGIData::is_interior() const {
+	ZoneScopedS(60);
 	return interior;
 }
 
 float LightmapGIData::get_baked_exposure() const {
+	ZoneScopedS(60);
 	return baked_exposure;
 }
 
 void LightmapGIData::_set_probe_data(const Dictionary &p_data) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!p_data.has("bounds"));
 	ERR_FAIL_COND(!p_data.has("points"));
 	ERR_FAIL_COND(!p_data.has("tetrahedra"));
@@ -269,6 +326,7 @@ void LightmapGIData::_set_probe_data(const Dictionary &p_data) {
 }
 
 Dictionary LightmapGIData::_get_probe_data() const {
+	ZoneScopedS(60);
 	Dictionary d;
 	d["bounds"] = get_capture_bounds();
 	d["points"] = get_capture_points();
@@ -281,6 +339,7 @@ Dictionary LightmapGIData::_get_probe_data() const {
 }
 
 void LightmapGIData::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("_set_user_data", "data"), &LightmapGIData::_set_user_data);
 	ClassDB::bind_method(D_METHOD("_get_user_data"), &LightmapGIData::_get_user_data);
 
@@ -309,16 +368,19 @@ void LightmapGIData::_bind_methods() {
 }
 
 LightmapGIData::LightmapGIData() {
+	ZoneScopedS(60);
 	lightmap = RS::get_singleton()->lightmap_create();
 }
 
 LightmapGIData::~LightmapGIData() {
+	ZoneScopedS(60);
 	RS::get_singleton()->free(lightmap);
 }
 
 ///////////////////////////
 
 void LightmapGI::_find_meshes_and_lights(Node *p_at_node, Vector<MeshesFound> &meshes, Vector<LightsFound> &lights, Vector<Vector3> &probes) {
+	ZoneScopedS(60);
 	MeshInstance3D *mi = Object::cast_to<MeshInstance3D>(p_at_node);
 	if (mi && mi->get_gi_mode() == GeometryInstance3D::GI_MODE_STATIC && mi->is_visible_in_tree()) {
 		Ref<Mesh> mesh = mi->get_mesh();
@@ -419,6 +481,7 @@ void LightmapGI::_find_meshes_and_lights(Node *p_at_node, Vector<MeshesFound> &m
 }
 
 int LightmapGI::_bsp_get_simplex_side(const Vector<Vector3> &p_points, const LocalVector<BSPSimplex> &p_simplices, const Plane &p_plane, uint32_t p_simplex) const {
+	ZoneScopedS(60);
 	int over = 0;
 	int under = 0;
 	const BSPSimplex &s = p_simplices[p_simplex];
@@ -446,6 +509,7 @@ int LightmapGI::_bsp_get_simplex_side(const Vector<Vector3> &p_points, const Loc
 //#define DEBUG_BSP
 
 int32_t LightmapGI::_compute_bsp_tree(const Vector<Vector3> &p_points, const LocalVector<Plane> &p_planes, LocalVector<int32_t> &planes_tested, const LocalVector<BSPSimplex> &p_simplices, const LocalVector<int32_t> &p_simplex_indices, LocalVector<BSPNode> &bsp_nodes) {
+	ZoneScopedS(60);
 	//if we reach here, it means there is more than one simplex
 	int32_t node_index = (int32_t)bsp_nodes.size();
 	bsp_nodes.push_back(BSPNode());
@@ -631,6 +695,7 @@ int32_t LightmapGI::_compute_bsp_tree(const Vector<Vector3> &p_points, const Loc
 }
 
 bool LightmapGI::_lightmap_bake_step_function(float p_completion, const String &p_text, void *ud, bool p_refresh) {
+	ZoneScopedS(60);
 	BakeStepUD *bsud = (BakeStepUD *)ud;
 	bool ret = false;
 	if (bsud->func) {
@@ -640,6 +705,7 @@ bool LightmapGI::_lightmap_bake_step_function(float p_completion, const String &
 }
 
 void LightmapGI::_plot_triangle_into_octree(GenProbesOctree *p_cell, float p_cell_size, const Vector3 *p_triangle) {
+	ZoneScopedS(60);
 	for (int i = 0; i < 8; i++) {
 		Vector3i pos = p_cell->offset;
 		uint32_t half_size = p_cell->size / 2;
@@ -676,6 +742,7 @@ void LightmapGI::_plot_triangle_into_octree(GenProbesOctree *p_cell, float p_cel
 }
 
 void LightmapGI::_gen_new_positions_from_octree(const GenProbesOctree *p_cell, float p_cell_size, const Vector<Vector3> &probe_positions, LocalVector<Vector3> &new_probe_positions, HashMap<Vector3i, bool> &positions_used, const AABB &p_bounds) {
+	ZoneScopedS(60);
 	for (int i = 0; i < 8; i++) {
 		Vector3i pos = p_cell->offset;
 		if (i & 1) {
@@ -716,6 +783,7 @@ void LightmapGI::_gen_new_positions_from_octree(const GenProbesOctree *p_cell, f
 }
 
 LightmapGI::BakeError LightmapGI::bake(Node *p_from_node, String p_image_data_path, Lightmapper::BakeStepFunc p_bake_step, void *p_bake_userdata) {
+	ZoneScopedS(60);
 	if (p_image_data_path.is_empty()) {
 		if (get_light_data().is_null()) {
 			return BAKE_ERROR_NO_SAVE_PATH;
@@ -1261,6 +1329,7 @@ LightmapGI::BakeError LightmapGI::bake(Node *p_from_node, String p_image_data_pa
 }
 
 void LightmapGI::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_POST_ENTER_TREE: {
 			if (light_data.is_valid()) {
@@ -1277,6 +1346,7 @@ void LightmapGI::_notification(int p_what) {
 }
 
 void LightmapGI::_assign_lightmaps() {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!light_data.is_valid());
 
 	for (int i = 0; i < light_data->get_user_count(); i++) {
@@ -1296,6 +1366,7 @@ void LightmapGI::_assign_lightmaps() {
 }
 
 void LightmapGI::_clear_lightmaps() {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!light_data.is_valid());
 	for (int i = 0; i < light_data->get_user_count(); i++) {
 		Node *node = get_node(light_data->get_user_path(i));
@@ -1314,6 +1385,7 @@ void LightmapGI::_clear_lightmaps() {
 }
 
 void LightmapGI::set_light_data(const Ref<LightmapGIData> &p_data) {
+	ZoneScopedS(60);
 	if (light_data.is_valid()) {
 		if (is_inside_tree()) {
 			_clear_lightmaps();
@@ -1333,123 +1405,152 @@ void LightmapGI::set_light_data(const Ref<LightmapGIData> &p_data) {
 }
 
 Ref<LightmapGIData> LightmapGI::get_light_data() const {
+	ZoneScopedS(60);
 	return light_data;
 }
 
 void LightmapGI::set_bake_quality(BakeQuality p_quality) {
+	ZoneScopedS(60);
 	bake_quality = p_quality;
 }
 
 LightmapGI::BakeQuality LightmapGI::get_bake_quality() const {
+	ZoneScopedS(60);
 	return bake_quality;
 }
 
 AABB LightmapGI::get_aabb() const {
+	ZoneScopedS(60);
 	return AABB();
 }
 
 void LightmapGI::set_use_denoiser(bool p_enable) {
+	ZoneScopedS(60);
 	use_denoiser = p_enable;
 }
 
 bool LightmapGI::is_using_denoiser() const {
+	ZoneScopedS(60);
 	return use_denoiser;
 }
 
 void LightmapGI::set_directional(bool p_enable) {
+	ZoneScopedS(60);
 	directional = p_enable;
 }
 
 bool LightmapGI::is_directional() const {
+	ZoneScopedS(60);
 	return directional;
 }
 
 void LightmapGI::set_interior(bool p_enable) {
+	ZoneScopedS(60);
 	interior = p_enable;
 }
 
 bool LightmapGI::is_interior() const {
+	ZoneScopedS(60);
 	return interior;
 }
 
 void LightmapGI::set_environment_mode(EnvironmentMode p_mode) {
+	ZoneScopedS(60);
 	environment_mode = p_mode;
 	notify_property_list_changed();
 }
 
 LightmapGI::EnvironmentMode LightmapGI::get_environment_mode() const {
+	ZoneScopedS(60);
 	return environment_mode;
 }
 
 void LightmapGI::set_environment_custom_sky(const Ref<Sky> &p_sky) {
+	ZoneScopedS(60);
 	environment_custom_sky = p_sky;
 }
 
 Ref<Sky> LightmapGI::get_environment_custom_sky() const {
+	ZoneScopedS(60);
 	return environment_custom_sky;
 }
 
 void LightmapGI::set_environment_custom_color(const Color &p_color) {
+	ZoneScopedS(60);
 	environment_custom_color = p_color;
 }
 
 Color LightmapGI::get_environment_custom_color() const {
+	ZoneScopedS(60);
 	return environment_custom_color;
 }
 
 void LightmapGI::set_environment_custom_energy(float p_energy) {
+	ZoneScopedS(60);
 	environment_custom_energy = p_energy;
 }
 
 float LightmapGI::get_environment_custom_energy() const {
+	ZoneScopedS(60);
 	return environment_custom_energy;
 }
 
 void LightmapGI::set_bounces(int p_bounces) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_bounces < 0 || p_bounces > 16);
 	bounces = p_bounces;
 }
 
 int LightmapGI::get_bounces() const {
+	ZoneScopedS(60);
 	return bounces;
 }
 
 void LightmapGI::set_bias(float p_bias) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_bias < 0.00001);
 	bias = p_bias;
 }
 
 float LightmapGI::get_bias() const {
+	ZoneScopedS(60);
 	return bias;
 }
 
 void LightmapGI::set_max_texture_size(int p_size) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_size < 2048, vformat("The LightmapGI maximum texture size supplied (%d) is too small. The minimum allowed value is 2048.", p_size));
 	ERR_FAIL_COND_MSG(p_size > 16384, vformat("The LightmapGI maximum texture size supplied (%d) is too large. The maximum allowed value is 16384.", p_size));
 	max_texture_size = p_size;
 }
 
 int LightmapGI::get_max_texture_size() const {
+	ZoneScopedS(60);
 	return max_texture_size;
 }
 
 void LightmapGI::set_generate_probes(GenerateProbes p_generate_probes) {
+	ZoneScopedS(60);
 	gen_probes = p_generate_probes;
 }
 
 LightmapGI::GenerateProbes LightmapGI::get_generate_probes() const {
+	ZoneScopedS(60);
 	return gen_probes;
 }
 
 void LightmapGI::set_camera_attributes(const Ref<CameraAttributes> &p_camera_attributes) {
+	ZoneScopedS(60);
 	camera_attributes = p_camera_attributes;
 }
 
 Ref<CameraAttributes> LightmapGI::get_camera_attributes() const {
+	ZoneScopedS(60);
 	return camera_attributes;
 }
 
 void LightmapGI::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (p_property.name == "environment_custom_sky" && environment_mode != ENVIRONMENT_MODE_CUSTOM_SKY) {
 		p_property.usage = PROPERTY_USAGE_NONE;
 	}
@@ -1462,6 +1563,7 @@ void LightmapGI::_validate_property(PropertyInfo &p_property) const {
 }
 
 void LightmapGI::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_light_data", "data"), &LightmapGI::set_light_data);
 	ClassDB::bind_method(D_METHOD("get_light_data"), &LightmapGI::get_light_data);
 

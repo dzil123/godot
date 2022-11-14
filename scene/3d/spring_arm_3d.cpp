@@ -28,11 +28,43 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  spring_arm_3d.cpp                                                    */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "spring_arm_3d.h"
 
 #include "scene/3d/camera_3d.h"
 
 void SpringArm3D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			if (!Engine::get_singleton()->is_editor_hint()) {
@@ -53,6 +85,7 @@ void SpringArm3D::_notification(int p_what) {
 }
 
 void SpringArm3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_hit_length"), &SpringArm3D::get_hit_length);
 
 	ClassDB::bind_method(D_METHOD("set_length", "length"), &SpringArm3D::set_length);
@@ -78,10 +111,12 @@ void SpringArm3D::_bind_methods() {
 }
 
 real_t SpringArm3D::get_length() const {
+	ZoneScopedS(60);
 	return spring_length;
 }
 
 void SpringArm3D::set_length(real_t p_length) {
+	ZoneScopedS(60);
 	if (is_inside_tree() && (Engine::get_singleton()->is_editor_hint() || get_tree()->is_debugging_collisions_hint())) {
 		update_gizmos();
 	}
@@ -90,46 +125,57 @@ void SpringArm3D::set_length(real_t p_length) {
 }
 
 void SpringArm3D::set_shape(Ref<Shape3D> p_shape) {
+	ZoneScopedS(60);
 	shape = p_shape;
 }
 
 Ref<Shape3D> SpringArm3D::get_shape() const {
+	ZoneScopedS(60);
 	return shape;
 }
 
 void SpringArm3D::set_mask(uint32_t p_mask) {
+	ZoneScopedS(60);
 	mask = p_mask;
 }
 
 uint32_t SpringArm3D::get_mask() {
+	ZoneScopedS(60);
 	return mask;
 }
 
 real_t SpringArm3D::get_margin() {
+	ZoneScopedS(60);
 	return margin;
 }
 
 void SpringArm3D::set_margin(real_t p_margin) {
+	ZoneScopedS(60);
 	margin = p_margin;
 }
 
 void SpringArm3D::add_excluded_object(RID p_rid) {
+	ZoneScopedS(60);
 	excluded_objects.insert(p_rid);
 }
 
 bool SpringArm3D::remove_excluded_object(RID p_rid) {
+	ZoneScopedS(60);
 	return excluded_objects.erase(p_rid);
 }
 
 void SpringArm3D::clear_excluded_objects() {
+	ZoneScopedS(60);
 	excluded_objects.clear();
 }
 
 real_t SpringArm3D::get_hit_length() {
+	ZoneScopedS(60);
 	return current_spring_length;
 }
 
 void SpringArm3D::process_spring() {
+	ZoneScopedS(60);
 	// From
 	real_t motion_delta(1);
 	real_t motion_delta_unsafe(1);

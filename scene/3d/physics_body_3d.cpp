@@ -28,12 +28,44 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  physics_body_3d.cpp                                                  */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "physics_body_3d.h"
 
 #include "core/core_string_names.h"
 #include "scene/scene_string_names.h"
 
 void PhysicsBody3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("move_and_collide", "distance", "test_only", "safe_margin", "recovery_as_collision", "max_collisions"), &PhysicsBody3D::_move, DEFVAL(false), DEFVAL(0.001), DEFVAL(false), DEFVAL(1));
 	ClassDB::bind_method(D_METHOD("test_move", "from", "distance", "collision", "safe_margin", "recovery_as_collision", "max_collisions"), &PhysicsBody3D::test_move, DEFVAL(Variant()), DEFVAL(0.001), DEFVAL(false), DEFVAL(1));
 
@@ -59,12 +91,14 @@ PhysicsBody3D::PhysicsBody3D(PhysicsServer3D::BodyMode p_mode) :
 }
 
 PhysicsBody3D::~PhysicsBody3D() {
+	ZoneScopedS(60);
 	if (motion_cache.is_valid()) {
 		motion_cache->owner = nullptr;
 	}
 }
 
 TypedArray<PhysicsBody3D> PhysicsBody3D::get_collision_exceptions() {
+	ZoneScopedS(60);
 	List<RID> exceptions;
 	PhysicsServer3D::get_singleton()->body_get_collision_exceptions(get_rid(), &exceptions);
 	Array ret;
@@ -78,6 +112,7 @@ TypedArray<PhysicsBody3D> PhysicsBody3D::get_collision_exceptions() {
 }
 
 void PhysicsBody3D::add_collision_exception_with(Node *p_node) {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_node);
 	CollisionObject3D *collision_object = Object::cast_to<CollisionObject3D>(p_node);
 	ERR_FAIL_COND_MSG(!collision_object, "Collision exception only works between two CollisionObject3Ds.");
@@ -85,6 +120,7 @@ void PhysicsBody3D::add_collision_exception_with(Node *p_node) {
 }
 
 void PhysicsBody3D::remove_collision_exception_with(Node *p_node) {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_node);
 	CollisionObject3D *collision_object = Object::cast_to<CollisionObject3D>(p_node);
 	ERR_FAIL_COND_MSG(!collision_object, "Collision exception only works between two CollisionObject3Ds.");
@@ -92,6 +128,7 @@ void PhysicsBody3D::remove_collision_exception_with(Node *p_node) {
 }
 
 Ref<KinematicCollision3D> PhysicsBody3D::_move(const Vector3 &p_distance, bool p_test_only, real_t p_margin, bool p_recovery_as_collision, int p_max_collisions) {
+	ZoneScopedS(60);
 	PhysicsServer3D::MotionParameters parameters(get_global_transform(), p_distance, p_margin);
 	parameters.max_collisions = p_max_collisions;
 	parameters.recovery_as_collision = p_recovery_as_collision;
@@ -114,6 +151,7 @@ Ref<KinematicCollision3D> PhysicsBody3D::_move(const Vector3 &p_distance, bool p
 }
 
 bool PhysicsBody3D::move_and_collide(const PhysicsServer3D::MotionParameters &p_parameters, PhysicsServer3D::MotionResult &r_result, bool p_test_only, bool p_cancel_sliding) {
+	ZoneScopedS(60);
 	bool colliding = PhysicsServer3D::get_singleton()->body_test_motion(get_rid(), p_parameters, &r_result);
 
 	// Restore direction of motion to be along original motion,
@@ -170,6 +208,7 @@ bool PhysicsBody3D::move_and_collide(const PhysicsServer3D::MotionParameters &p_
 }
 
 bool PhysicsBody3D::test_move(const Transform3D &p_from, const Vector3 &p_distance, const Ref<KinematicCollision3D> &r_collision, real_t p_margin, bool p_recovery_as_collision, int p_max_collisions) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!is_inside_tree(), false);
 
 	PhysicsServer3D::MotionResult *r = nullptr;
@@ -188,6 +227,7 @@ bool PhysicsBody3D::test_move(const Transform3D &p_from, const Vector3 &p_distan
 }
 
 void PhysicsBody3D::set_axis_lock(PhysicsServer3D::BodyAxis p_axis, bool p_lock) {
+	ZoneScopedS(60);
 	if (p_lock) {
 		locked_axis |= p_axis;
 	} else {
@@ -197,22 +237,27 @@ void PhysicsBody3D::set_axis_lock(PhysicsServer3D::BodyAxis p_axis, bool p_lock)
 }
 
 bool PhysicsBody3D::get_axis_lock(PhysicsServer3D::BodyAxis p_axis) const {
+	ZoneScopedS(60);
 	return (locked_axis & p_axis);
 }
 
 Vector3 PhysicsBody3D::get_linear_velocity() const {
+	ZoneScopedS(60);
 	return Vector3();
 }
 
 Vector3 PhysicsBody3D::get_angular_velocity() const {
+	ZoneScopedS(60);
 	return Vector3();
 }
 
 real_t PhysicsBody3D::get_inverse_mass() const {
+	ZoneScopedS(60);
 	return 0;
 }
 
 void StaticBody3D::set_physics_material_override(const Ref<PhysicsMaterial> &p_physics_material_override) {
+	ZoneScopedS(60);
 	if (physics_material_override.is_valid()) {
 		if (physics_material_override->is_connected(CoreStringNames::get_singleton()->changed, callable_mp(this, &StaticBody3D::_reload_physics_characteristics))) {
 			physics_material_override->disconnect(CoreStringNames::get_singleton()->changed, callable_mp(this, &StaticBody3D::_reload_physics_characteristics));
@@ -228,30 +273,36 @@ void StaticBody3D::set_physics_material_override(const Ref<PhysicsMaterial> &p_p
 }
 
 Ref<PhysicsMaterial> StaticBody3D::get_physics_material_override() const {
+	ZoneScopedS(60);
 	return physics_material_override;
 }
 
 void StaticBody3D::set_constant_linear_velocity(const Vector3 &p_vel) {
+	ZoneScopedS(60);
 	constant_linear_velocity = p_vel;
 
 	PhysicsServer3D::get_singleton()->body_set_state(get_rid(), PhysicsServer3D::BODY_STATE_LINEAR_VELOCITY, constant_linear_velocity);
 }
 
 void StaticBody3D::set_constant_angular_velocity(const Vector3 &p_vel) {
+	ZoneScopedS(60);
 	constant_angular_velocity = p_vel;
 
 	PhysicsServer3D::get_singleton()->body_set_state(get_rid(), PhysicsServer3D::BODY_STATE_ANGULAR_VELOCITY, constant_angular_velocity);
 }
 
 Vector3 StaticBody3D::get_constant_linear_velocity() const {
+	ZoneScopedS(60);
 	return constant_linear_velocity;
 }
 
 Vector3 StaticBody3D::get_constant_angular_velocity() const {
+	ZoneScopedS(60);
 	return constant_angular_velocity;
 }
 
 void StaticBody3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_constant_linear_velocity", "vel"), &StaticBody3D::set_constant_linear_velocity);
 	ClassDB::bind_method(D_METHOD("set_constant_angular_velocity", "vel"), &StaticBody3D::set_constant_angular_velocity);
 	ClassDB::bind_method(D_METHOD("get_constant_linear_velocity"), &StaticBody3D::get_constant_linear_velocity);
@@ -270,6 +321,7 @@ StaticBody3D::StaticBody3D(PhysicsServer3D::BodyMode p_mode) :
 }
 
 void StaticBody3D::_reload_physics_characteristics() {
+	ZoneScopedS(60);
 	if (physics_material_override.is_null()) {
 		PhysicsServer3D::get_singleton()->body_set_param(get_rid(), PhysicsServer3D::BODY_PARAM_BOUNCE, 0);
 		PhysicsServer3D::get_singleton()->body_set_param(get_rid(), PhysicsServer3D::BODY_PARAM_FRICTION, 1);
@@ -280,14 +332,17 @@ void StaticBody3D::_reload_physics_characteristics() {
 }
 
 Vector3 AnimatableBody3D::get_linear_velocity() const {
+	ZoneScopedS(60);
 	return linear_velocity;
 }
 
 Vector3 AnimatableBody3D::get_angular_velocity() const {
+	ZoneScopedS(60);
 	return angular_velocity;
 }
 
 void AnimatableBody3D::set_sync_to_physics(bool p_enable) {
+	ZoneScopedS(60);
 	if (sync_to_physics == p_enable) {
 		return;
 	}
@@ -298,6 +353,7 @@ void AnimatableBody3D::set_sync_to_physics(bool p_enable) {
 }
 
 bool AnimatableBody3D::is_sync_to_physics_enabled() const {
+	ZoneScopedS(60);
 	return sync_to_physics;
 }
 
@@ -318,6 +374,7 @@ void AnimatableBody3D::_update_kinematic_motion() {
 }
 
 void AnimatableBody3D::_body_state_changed(PhysicsDirectBodyState3D *p_state) {
+	ZoneScopedS(60);
 	linear_velocity = p_state->get_linear_velocity();
 	angular_velocity = p_state->get_angular_velocity();
 
@@ -333,6 +390,7 @@ void AnimatableBody3D::_body_state_changed(PhysicsDirectBodyState3D *p_state) {
 }
 
 void AnimatableBody3D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			last_valid_transform = get_global_transform();
@@ -360,6 +418,7 @@ void AnimatableBody3D::_notification(int p_what) {
 }
 
 void AnimatableBody3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_sync_to_physics", "enable"), &AnimatableBody3D::set_sync_to_physics);
 	ClassDB::bind_method(D_METHOD("is_sync_to_physics_enabled"), &AnimatableBody3D::is_sync_to_physics_enabled);
 
@@ -372,6 +431,7 @@ AnimatableBody3D::AnimatableBody3D() :
 }
 
 void RigidBody3D::_body_enter_tree(ObjectID p_id) {
+	ZoneScopedS(60);
 	Object *obj = ObjectDB::get_instance(p_id);
 	Node *node = Object::cast_to<Node>(obj);
 	ERR_FAIL_COND(!node);
@@ -395,6 +455,7 @@ void RigidBody3D::_body_enter_tree(ObjectID p_id) {
 }
 
 void RigidBody3D::_body_exit_tree(ObjectID p_id) {
+	ZoneScopedS(60);
 	Object *obj = ObjectDB::get_instance(p_id);
 	Node *node = Object::cast_to<Node>(obj);
 	ERR_FAIL_COND(!node);
@@ -416,6 +477,7 @@ void RigidBody3D::_body_exit_tree(ObjectID p_id) {
 }
 
 void RigidBody3D::_body_inout(int p_status, const RID &p_body, ObjectID p_instance, int p_body_shape, int p_local_shape) {
+	ZoneScopedS(60);
 	bool body_in = p_status == 1;
 	ObjectID objid = p_instance;
 
@@ -484,6 +546,7 @@ struct _RigidBodyInOut {
 };
 
 void RigidBody3D::_body_state_changed(PhysicsDirectBodyState3D *p_state) {
+	ZoneScopedS(60);
 	set_ignore_transform_notification(true);
 	set_global_transform(p_state->get_transform());
 
@@ -599,6 +662,7 @@ void RigidBody3D::_notification(int p_what) {
 }
 
 void RigidBody3D::_apply_body_mode() {
+	ZoneScopedS(60);
 	if (freeze) {
 		switch (freeze_mode) {
 			case FREEZE_MODE_STATIC: {
@@ -616,6 +680,7 @@ void RigidBody3D::_apply_body_mode() {
 }
 
 void RigidBody3D::set_lock_rotation_enabled(bool p_lock_rotation) {
+	ZoneScopedS(60);
 	if (p_lock_rotation == lock_rotation) {
 		return;
 	}
@@ -625,10 +690,12 @@ void RigidBody3D::set_lock_rotation_enabled(bool p_lock_rotation) {
 }
 
 bool RigidBody3D::is_lock_rotation_enabled() const {
+	ZoneScopedS(60);
 	return lock_rotation;
 }
 
 void RigidBody3D::set_freeze_enabled(bool p_freeze) {
+	ZoneScopedS(60);
 	if (p_freeze == freeze) {
 		return;
 	}
@@ -638,10 +705,12 @@ void RigidBody3D::set_freeze_enabled(bool p_freeze) {
 }
 
 bool RigidBody3D::is_freeze_enabled() const {
+	ZoneScopedS(60);
 	return freeze;
 }
 
 void RigidBody3D::set_freeze_mode(FreezeMode p_freeze_mode) {
+	ZoneScopedS(60);
 	if (p_freeze_mode == freeze_mode) {
 		return;
 	}
@@ -651,20 +720,24 @@ void RigidBody3D::set_freeze_mode(FreezeMode p_freeze_mode) {
 }
 
 RigidBody3D::FreezeMode RigidBody3D::get_freeze_mode() const {
+	ZoneScopedS(60);
 	return freeze_mode;
 }
 
 void RigidBody3D::set_mass(real_t p_mass) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_mass <= 0);
 	mass = p_mass;
 	PhysicsServer3D::get_singleton()->body_set_param(get_rid(), PhysicsServer3D::BODY_PARAM_MASS, mass);
 }
 
 real_t RigidBody3D::get_mass() const {
+	ZoneScopedS(60);
 	return mass;
 }
 
 void RigidBody3D::set_inertia(const Vector3 &p_inertia) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_inertia.x < 0);
 	ERR_FAIL_COND(p_inertia.y < 0);
 	ERR_FAIL_COND(p_inertia.z < 0);
@@ -674,10 +747,12 @@ void RigidBody3D::set_inertia(const Vector3 &p_inertia) {
 }
 
 const Vector3 &RigidBody3D::get_inertia() const {
+	ZoneScopedS(60);
 	return inertia;
 }
 
 void RigidBody3D::set_center_of_mass_mode(CenterOfMassMode p_mode) {
+	ZoneScopedS(60);
 	if (center_of_mass_mode == p_mode) {
 		return;
 	}
@@ -700,10 +775,12 @@ void RigidBody3D::set_center_of_mass_mode(CenterOfMassMode p_mode) {
 }
 
 RigidBody3D::CenterOfMassMode RigidBody3D::get_center_of_mass_mode() const {
+	ZoneScopedS(60);
 	return center_of_mass_mode;
 }
 
 void RigidBody3D::set_center_of_mass(const Vector3 &p_center_of_mass) {
+	ZoneScopedS(60);
 	if (center_of_mass == p_center_of_mass) {
 		return;
 	}
@@ -715,10 +792,12 @@ void RigidBody3D::set_center_of_mass(const Vector3 &p_center_of_mass) {
 }
 
 const Vector3 &RigidBody3D::get_center_of_mass() const {
+	ZoneScopedS(60);
 	return center_of_mass;
 }
 
 void RigidBody3D::set_physics_material_override(const Ref<PhysicsMaterial> &p_physics_material_override) {
+	ZoneScopedS(60);
 	if (physics_material_override.is_valid()) {
 		if (physics_material_override->is_connected(CoreStringNames::get_singleton()->changed, callable_mp(this, &RigidBody3D::_reload_physics_characteristics))) {
 			physics_material_override->disconnect(CoreStringNames::get_singleton()->changed, callable_mp(this, &RigidBody3D::_reload_physics_characteristics));
@@ -734,57 +813,69 @@ void RigidBody3D::set_physics_material_override(const Ref<PhysicsMaterial> &p_ph
 }
 
 Ref<PhysicsMaterial> RigidBody3D::get_physics_material_override() const {
+	ZoneScopedS(60);
 	return physics_material_override;
 }
 
 void RigidBody3D::set_gravity_scale(real_t p_gravity_scale) {
+	ZoneScopedS(60);
 	gravity_scale = p_gravity_scale;
 	PhysicsServer3D::get_singleton()->body_set_param(get_rid(), PhysicsServer3D::BODY_PARAM_GRAVITY_SCALE, gravity_scale);
 }
 
 real_t RigidBody3D::get_gravity_scale() const {
+	ZoneScopedS(60);
 	return gravity_scale;
 }
 
 void RigidBody3D::set_linear_damp_mode(DampMode p_mode) {
+	ZoneScopedS(60);
 	linear_damp_mode = p_mode;
 	PhysicsServer3D::get_singleton()->body_set_param(get_rid(), PhysicsServer3D::BODY_PARAM_LINEAR_DAMP_MODE, linear_damp_mode);
 }
 
 RigidBody3D::DampMode RigidBody3D::get_linear_damp_mode() const {
+	ZoneScopedS(60);
 	return linear_damp_mode;
 }
 
 void RigidBody3D::set_angular_damp_mode(DampMode p_mode) {
+	ZoneScopedS(60);
 	angular_damp_mode = p_mode;
 	PhysicsServer3D::get_singleton()->body_set_param(get_rid(), PhysicsServer3D::BODY_PARAM_ANGULAR_DAMP_MODE, angular_damp_mode);
 }
 
 RigidBody3D::DampMode RigidBody3D::get_angular_damp_mode() const {
+	ZoneScopedS(60);
 	return angular_damp_mode;
 }
 
 void RigidBody3D::set_linear_damp(real_t p_linear_damp) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_linear_damp < 0.0);
 	linear_damp = p_linear_damp;
 	PhysicsServer3D::get_singleton()->body_set_param(get_rid(), PhysicsServer3D::BODY_PARAM_LINEAR_DAMP, linear_damp);
 }
 
 real_t RigidBody3D::get_linear_damp() const {
+	ZoneScopedS(60);
 	return linear_damp;
 }
 
 void RigidBody3D::set_angular_damp(real_t p_angular_damp) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_angular_damp < 0.0);
 	angular_damp = p_angular_damp;
 	PhysicsServer3D::get_singleton()->body_set_param(get_rid(), PhysicsServer3D::BODY_PARAM_ANGULAR_DAMP, angular_damp);
 }
 
 real_t RigidBody3D::get_angular_damp() const {
+	ZoneScopedS(60);
 	return angular_damp;
 }
 
 void RigidBody3D::set_axis_velocity(const Vector3 &p_axis) {
+	ZoneScopedS(60);
 	Vector3 axis = p_axis.normalized();
 	linear_velocity -= axis * axis.dot(linear_velocity);
 	linear_velocity += p_axis;
@@ -792,28 +883,34 @@ void RigidBody3D::set_axis_velocity(const Vector3 &p_axis) {
 }
 
 void RigidBody3D::set_linear_velocity(const Vector3 &p_velocity) {
+	ZoneScopedS(60);
 	linear_velocity = p_velocity;
 	PhysicsServer3D::get_singleton()->body_set_state(get_rid(), PhysicsServer3D::BODY_STATE_LINEAR_VELOCITY, linear_velocity);
 }
 
 Vector3 RigidBody3D::get_linear_velocity() const {
+	ZoneScopedS(60);
 	return linear_velocity;
 }
 
 void RigidBody3D::set_angular_velocity(const Vector3 &p_velocity) {
+	ZoneScopedS(60);
 	angular_velocity = p_velocity;
 	PhysicsServer3D::get_singleton()->body_set_state(get_rid(), PhysicsServer3D::BODY_STATE_ANGULAR_VELOCITY, angular_velocity);
 }
 
 Vector3 RigidBody3D::get_angular_velocity() const {
+	ZoneScopedS(60);
 	return angular_velocity;
 }
 
 Basis RigidBody3D::get_inverse_inertia_tensor() const {
+	ZoneScopedS(60);
 	return inverse_inertia_tensor;
 }
 
 void RigidBody3D::set_use_custom_integrator(bool p_enable) {
+	ZoneScopedS(60);
 	if (custom_integrator == p_enable) {
 		return;
 	}
@@ -823,107 +920,131 @@ void RigidBody3D::set_use_custom_integrator(bool p_enable) {
 }
 
 bool RigidBody3D::is_using_custom_integrator() {
+	ZoneScopedS(60);
 	return custom_integrator;
 }
 
 void RigidBody3D::set_sleeping(bool p_sleeping) {
+	ZoneScopedS(60);
 	sleeping = p_sleeping;
 	PhysicsServer3D::get_singleton()->body_set_state(get_rid(), PhysicsServer3D::BODY_STATE_SLEEPING, sleeping);
 }
 
 void RigidBody3D::set_can_sleep(bool p_active) {
+	ZoneScopedS(60);
 	can_sleep = p_active;
 	PhysicsServer3D::get_singleton()->body_set_state(get_rid(), PhysicsServer3D::BODY_STATE_CAN_SLEEP, p_active);
 }
 
 bool RigidBody3D::is_able_to_sleep() const {
+	ZoneScopedS(60);
 	return can_sleep;
 }
 
 bool RigidBody3D::is_sleeping() const {
+	ZoneScopedS(60);
 	return sleeping;
 }
 
 void RigidBody3D::set_max_contacts_reported(int p_amount) {
+	ZoneScopedS(60);
 	max_contacts_reported = p_amount;
 	PhysicsServer3D::get_singleton()->body_set_max_contacts_reported(get_rid(), p_amount);
 }
 
 int RigidBody3D::get_max_contacts_reported() const {
+	ZoneScopedS(60);
 	return max_contacts_reported;
 }
 
 int RigidBody3D::get_contact_count() const {
+	ZoneScopedS(60);
 	PhysicsDirectBodyState3D *bs = PhysicsServer3D::get_singleton()->body_get_direct_state(get_rid());
 	ERR_FAIL_NULL_V(bs, 0);
 	return bs->get_contact_count();
 }
 
 void RigidBody3D::apply_central_impulse(const Vector3 &p_impulse) {
+	ZoneScopedS(60);
 	PhysicsServer3D::get_singleton()->body_apply_central_impulse(get_rid(), p_impulse);
 }
 
 void RigidBody3D::apply_impulse(const Vector3 &p_impulse, const Vector3 &p_position) {
+	ZoneScopedS(60);
 	PhysicsServer3D *singleton = PhysicsServer3D::get_singleton();
 	singleton->body_apply_impulse(get_rid(), p_impulse, p_position);
 }
 
 void RigidBody3D::apply_torque_impulse(const Vector3 &p_impulse) {
+	ZoneScopedS(60);
 	PhysicsServer3D::get_singleton()->body_apply_torque_impulse(get_rid(), p_impulse);
 }
 
 void RigidBody3D::apply_central_force(const Vector3 &p_force) {
+	ZoneScopedS(60);
 	PhysicsServer3D::get_singleton()->body_apply_central_force(get_rid(), p_force);
 }
 
 void RigidBody3D::apply_force(const Vector3 &p_force, const Vector3 &p_position) {
+	ZoneScopedS(60);
 	PhysicsServer3D *singleton = PhysicsServer3D::get_singleton();
 	singleton->body_apply_force(get_rid(), p_force, p_position);
 }
 
 void RigidBody3D::apply_torque(const Vector3 &p_torque) {
+	ZoneScopedS(60);
 	PhysicsServer3D::get_singleton()->body_apply_torque(get_rid(), p_torque);
 }
 
 void RigidBody3D::add_constant_central_force(const Vector3 &p_force) {
+	ZoneScopedS(60);
 	PhysicsServer3D::get_singleton()->body_add_constant_central_force(get_rid(), p_force);
 }
 
 void RigidBody3D::add_constant_force(const Vector3 &p_force, const Vector3 &p_position) {
+	ZoneScopedS(60);
 	PhysicsServer3D *singleton = PhysicsServer3D::get_singleton();
 	singleton->body_add_constant_force(get_rid(), p_force, p_position);
 }
 
 void RigidBody3D::add_constant_torque(const Vector3 &p_torque) {
+	ZoneScopedS(60);
 	PhysicsServer3D::get_singleton()->body_add_constant_torque(get_rid(), p_torque);
 }
 
 void RigidBody3D::set_constant_force(const Vector3 &p_force) {
+	ZoneScopedS(60);
 	PhysicsServer3D::get_singleton()->body_set_constant_force(get_rid(), p_force);
 }
 
 Vector3 RigidBody3D::get_constant_force() const {
+	ZoneScopedS(60);
 	return PhysicsServer3D::get_singleton()->body_get_constant_force(get_rid());
 }
 
 void RigidBody3D::set_constant_torque(const Vector3 &p_torque) {
+	ZoneScopedS(60);
 	PhysicsServer3D::get_singleton()->body_set_constant_torque(get_rid(), p_torque);
 }
 
 Vector3 RigidBody3D::get_constant_torque() const {
+	ZoneScopedS(60);
 	return PhysicsServer3D::get_singleton()->body_get_constant_torque(get_rid());
 }
 
 void RigidBody3D::set_use_continuous_collision_detection(bool p_enable) {
+	ZoneScopedS(60);
 	ccd = p_enable;
 	PhysicsServer3D::get_singleton()->body_set_enable_continuous_collision_detection(get_rid(), p_enable);
 }
 
 bool RigidBody3D::is_using_continuous_collision_detection() const {
+	ZoneScopedS(60);
 	return ccd;
 }
 
 void RigidBody3D::set_contact_monitor(bool p_enabled) {
+	ZoneScopedS(60);
 	if (p_enabled == is_contact_monitor_enabled()) {
 		return;
 	}
@@ -951,10 +1072,12 @@ void RigidBody3D::set_contact_monitor(bool p_enabled) {
 }
 
 bool RigidBody3D::is_contact_monitor_enabled() const {
+	ZoneScopedS(60);
 	return contact_monitor != nullptr;
 }
 
 TypedArray<Node3D> RigidBody3D::get_colliding_bodies() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!contact_monitor, TypedArray<Node3D>());
 
 	TypedArray<Node3D> ret;
@@ -973,6 +1096,7 @@ TypedArray<Node3D> RigidBody3D::get_colliding_bodies() const {
 }
 
 PackedStringArray RigidBody3D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	Transform3D t = get_transform();
 
 	PackedStringArray warnings = Node::get_configuration_warnings();
@@ -985,6 +1109,7 @@ PackedStringArray RigidBody3D::get_configuration_warnings() const {
 }
 
 void RigidBody3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_mass", "mass"), &RigidBody3D::set_mass);
 	ClassDB::bind_method(D_METHOD("get_mass"), &RigidBody3D::get_mass);
 
@@ -1120,6 +1245,7 @@ void RigidBody3D::_bind_methods() {
 }
 
 void RigidBody3D::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (center_of_mass_mode != CENTER_OF_MASS_MODE_CUSTOM) {
 		if (p_property.name == "center_of_mass") {
 			p_property.usage = PROPERTY_USAGE_NO_EDITOR;
@@ -1133,12 +1259,14 @@ RigidBody3D::RigidBody3D() :
 }
 
 RigidBody3D::~RigidBody3D() {
+	ZoneScopedS(60);
 	if (contact_monitor) {
 		memdelete(contact_monitor);
 	}
 }
 
 void RigidBody3D::_reload_physics_characteristics() {
+	ZoneScopedS(60);
 	if (physics_material_override.is_null()) {
 		PhysicsServer3D::get_singleton()->body_set_param(get_rid(), PhysicsServer3D::BODY_PARAM_BOUNCE, 0);
 		PhysicsServer3D::get_singleton()->body_set_param(get_rid(), PhysicsServer3D::BODY_PARAM_FRICTION, 1);
@@ -1154,6 +1282,7 @@ void RigidBody3D::_reload_physics_characteristics() {
 #define FLOOR_ANGLE_THRESHOLD 0.01
 
 bool CharacterBody3D::move_and_slide() {
+	ZoneScopedS(60);
 	// Hack in order to work with calling from _process as well as from _physics_process; calling from thread is risky
 	double delta = Engine::get_singleton()->is_in_physics_frame() ? get_physics_process_delta_time() : get_process_delta_time();
 
@@ -1239,6 +1368,7 @@ bool CharacterBody3D::move_and_slide() {
 }
 
 void CharacterBody3D::_move_and_slide_grounded(double p_delta, bool p_was_on_floor) {
+	ZoneScopedS(60);
 	Vector3 motion = velocity * p_delta;
 	Vector3 motion_slide_up = motion.slide(up_direction);
 	Vector3 prev_floor_normal = floor_normal;
@@ -1500,6 +1630,7 @@ void CharacterBody3D::_move_and_slide_grounded(double p_delta, bool p_was_on_flo
 }
 
 void CharacterBody3D::_move_and_slide_floating(double p_delta) {
+	ZoneScopedS(60);
 	Vector3 motion = velocity * p_delta;
 
 	platform_rid = RID();
@@ -1556,6 +1687,7 @@ void CharacterBody3D::_move_and_slide_floating(double p_delta) {
 }
 
 void CharacterBody3D::_snap_on_floor(bool p_was_on_floor, bool p_vel_dir_facing_up) {
+	ZoneScopedS(60);
 	if (collision_state.floor || !p_was_on_floor || p_vel_dir_facing_up) {
 		return;
 	}
@@ -1592,6 +1724,7 @@ void CharacterBody3D::_snap_on_floor(bool p_was_on_floor, bool p_vel_dir_facing_
 }
 
 bool CharacterBody3D::_on_floor_if_snapped(bool p_was_on_floor, bool p_vel_dir_facing_up) {
+	ZoneScopedS(60);
 	if (up_direction == Vector3() || collision_state.floor || !p_was_on_floor || p_vel_dir_facing_up) {
 		return false;
 	}
@@ -1617,6 +1750,7 @@ bool CharacterBody3D::_on_floor_if_snapped(bool p_was_on_floor, bool p_vel_dir_f
 }
 
 void CharacterBody3D::_set_collision_direction(const PhysicsServer3D::MotionResult &p_result, CollisionState &r_state, CollisionState p_apply_state) {
+	ZoneScopedS(60);
 	r_state.state = 0;
 
 	real_t wall_depth = -1.0;
@@ -1705,6 +1839,7 @@ void CharacterBody3D::_set_collision_direction(const PhysicsServer3D::MotionResu
 }
 
 void CharacterBody3D::_set_platform_data(const PhysicsServer3D::MotionCollision &p_collision) {
+	ZoneScopedS(60);
 	platform_rid = p_collision.collider;
 	platform_object_id = p_collision.collider_id;
 	platform_velocity = p_collision.collider_velocity;
@@ -1712,88 +1847,109 @@ void CharacterBody3D::_set_platform_data(const PhysicsServer3D::MotionCollision 
 }
 
 void CharacterBody3D::set_safe_margin(real_t p_margin) {
+	ZoneScopedS(60);
 	margin = p_margin;
 }
 
 real_t CharacterBody3D::get_safe_margin() const {
+	ZoneScopedS(60);
 	return margin;
 }
 
 const Vector3 &CharacterBody3D::get_velocity() const {
+	ZoneScopedS(60);
 	return velocity;
 }
 
 void CharacterBody3D::set_velocity(const Vector3 &p_velocity) {
+	ZoneScopedS(60);
 	velocity = p_velocity;
 }
 
 bool CharacterBody3D::is_on_floor() const {
+	ZoneScopedS(60);
 	return collision_state.floor;
 }
 
 bool CharacterBody3D::is_on_floor_only() const {
+	ZoneScopedS(60);
 	return collision_state.floor && !collision_state.wall && !collision_state.ceiling;
 }
 
 bool CharacterBody3D::is_on_wall() const {
+	ZoneScopedS(60);
 	return collision_state.wall;
 }
 
 bool CharacterBody3D::is_on_wall_only() const {
+	ZoneScopedS(60);
 	return collision_state.wall && !collision_state.floor && !collision_state.ceiling;
 }
 
 bool CharacterBody3D::is_on_ceiling() const {
+	ZoneScopedS(60);
 	return collision_state.ceiling;
 }
 
 bool CharacterBody3D::is_on_ceiling_only() const {
+	ZoneScopedS(60);
 	return collision_state.ceiling && !collision_state.floor && !collision_state.wall;
 }
 
 const Vector3 &CharacterBody3D::get_floor_normal() const {
+	ZoneScopedS(60);
 	return floor_normal;
 }
 
 const Vector3 &CharacterBody3D::get_wall_normal() const {
+	ZoneScopedS(60);
 	return wall_normal;
 }
 
 const Vector3 &CharacterBody3D::get_last_motion() const {
+	ZoneScopedS(60);
 	return last_motion;
 }
 
 Vector3 CharacterBody3D::get_position_delta() const {
+	ZoneScopedS(60);
 	return get_transform().origin - previous_position;
 }
 
 const Vector3 &CharacterBody3D::get_real_velocity() const {
+	ZoneScopedS(60);
 	return real_velocity;
 }
 
 real_t CharacterBody3D::get_floor_angle(const Vector3 &p_up_direction) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_up_direction == Vector3(), 0);
 	return Math::acos(floor_normal.dot(p_up_direction));
 }
 
 const Vector3 &CharacterBody3D::get_platform_velocity() const {
+	ZoneScopedS(60);
 	return platform_velocity;
 }
 
 Vector3 CharacterBody3D::get_linear_velocity() const {
+	ZoneScopedS(60);
 	return get_real_velocity();
 }
 
 int CharacterBody3D::get_slide_collision_count() const {
+	ZoneScopedS(60);
 	return motion_results.size();
 }
 
 PhysicsServer3D::MotionResult CharacterBody3D::get_slide_collision(int p_bounce) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_bounce, motion_results.size(), PhysicsServer3D::MotionResult());
 	return motion_results[p_bounce];
 }
 
 Ref<KinematicCollision3D> CharacterBody3D::_get_slide_collision(int p_bounce) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_bounce, motion_results.size(), Ref<KinematicCollision3D>());
 	if (p_bounce >= slide_colliders.size()) {
 		slide_colliders.resize(p_bounce + 1);
@@ -1810,6 +1966,7 @@ Ref<KinematicCollision3D> CharacterBody3D::_get_slide_collision(int p_bounce) {
 }
 
 Ref<KinematicCollision3D> CharacterBody3D::_get_last_slide_collision() {
+	ZoneScopedS(60);
 	if (motion_results.size() == 0) {
 		return Ref<KinematicCollision3D>();
 	}
@@ -1817,113 +1974,140 @@ Ref<KinematicCollision3D> CharacterBody3D::_get_last_slide_collision() {
 }
 
 bool CharacterBody3D::is_floor_stop_on_slope_enabled() const {
+	ZoneScopedS(60);
 	return floor_stop_on_slope;
 }
 
 void CharacterBody3D::set_floor_stop_on_slope_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	floor_stop_on_slope = p_enabled;
 }
 
 bool CharacterBody3D::is_floor_constant_speed_enabled() const {
+	ZoneScopedS(60);
 	return floor_constant_speed;
 }
 
 void CharacterBody3D::set_floor_constant_speed_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	floor_constant_speed = p_enabled;
 }
 
 bool CharacterBody3D::is_floor_block_on_wall_enabled() const {
+	ZoneScopedS(60);
 	return floor_block_on_wall;
 }
 
 void CharacterBody3D::set_floor_block_on_wall_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	floor_block_on_wall = p_enabled;
 }
 
 bool CharacterBody3D::is_slide_on_ceiling_enabled() const {
+	ZoneScopedS(60);
 	return slide_on_ceiling;
 }
 
 void CharacterBody3D::set_slide_on_ceiling_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	slide_on_ceiling = p_enabled;
 }
 
 uint32_t CharacterBody3D::get_platform_floor_layers() const {
+	ZoneScopedS(60);
 	return platform_floor_layers;
 }
 
 void CharacterBody3D::set_platform_floor_layers(uint32_t p_exclude_layers) {
+	ZoneScopedS(60);
 	platform_floor_layers = p_exclude_layers;
 }
 
 uint32_t CharacterBody3D::get_platform_wall_layers() const {
+	ZoneScopedS(60);
 	return platform_wall_layers;
 }
 
 void CharacterBody3D::set_platform_wall_layers(uint32_t p_exclude_layers) {
+	ZoneScopedS(60);
 	platform_wall_layers = p_exclude_layers;
 }
 
 void CharacterBody3D::set_motion_mode(MotionMode p_mode) {
+	ZoneScopedS(60);
 	motion_mode = p_mode;
 }
 
 CharacterBody3D::MotionMode CharacterBody3D::get_motion_mode() const {
+	ZoneScopedS(60);
 	return motion_mode;
 }
 
 void CharacterBody3D::set_platform_on_leave(PlatformOnLeave p_on_leave_apply_velocity) {
+	ZoneScopedS(60);
 	platform_on_leave = p_on_leave_apply_velocity;
 }
 
 CharacterBody3D::PlatformOnLeave CharacterBody3D::get_platform_on_leave() const {
+	ZoneScopedS(60);
 	return platform_on_leave;
 }
 
 int CharacterBody3D::get_max_slides() const {
+	ZoneScopedS(60);
 	return max_slides;
 }
 
 void CharacterBody3D::set_max_slides(int p_max_slides) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_max_slides < 1);
 	max_slides = p_max_slides;
 }
 
 real_t CharacterBody3D::get_floor_max_angle() const {
+	ZoneScopedS(60);
 	return floor_max_angle;
 }
 
 void CharacterBody3D::set_floor_max_angle(real_t p_radians) {
+	ZoneScopedS(60);
 	floor_max_angle = p_radians;
 }
 
 real_t CharacterBody3D::get_floor_snap_length() {
+	ZoneScopedS(60);
 	return floor_snap_length;
 }
 
 void CharacterBody3D::set_floor_snap_length(real_t p_floor_snap_length) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_floor_snap_length < 0);
 	floor_snap_length = p_floor_snap_length;
 }
 
 real_t CharacterBody3D::get_wall_min_slide_angle() const {
+	ZoneScopedS(60);
 	return wall_min_slide_angle;
 }
 
 void CharacterBody3D::set_wall_min_slide_angle(real_t p_radians) {
+	ZoneScopedS(60);
 	wall_min_slide_angle = p_radians;
 }
 
 const Vector3 &CharacterBody3D::get_up_direction() const {
+	ZoneScopedS(60);
 	return up_direction;
 }
 
 void CharacterBody3D::set_up_direction(const Vector3 &p_up_direction) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_up_direction == Vector3(), "up_direction can't be equal to Vector3.ZERO, consider using Floating motion mode instead.");
 	up_direction = p_up_direction.normalized();
 }
 
 void CharacterBody3D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			// Reset move_and_slide() data.
@@ -1937,6 +2121,7 @@ void CharacterBody3D::_notification(int p_what) {
 }
 
 void CharacterBody3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("move_and_slide"), &CharacterBody3D::move_and_slide);
 
 	ClassDB::bind_method(D_METHOD("set_velocity", "velocity"), &CharacterBody3D::set_velocity);
@@ -2021,6 +2206,7 @@ void CharacterBody3D::_bind_methods() {
 }
 
 void CharacterBody3D::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (motion_mode == MOTION_MODE_FLOATING) {
 		if (p_property.name.begins_with("floor_") || p_property.name == "up_direction" || p_property.name == "slide_on_ceiling") {
 			p_property.usage = PROPERTY_USAGE_NO_EDITOR;
@@ -2033,6 +2219,7 @@ CharacterBody3D::CharacterBody3D() :
 }
 
 CharacterBody3D::~CharacterBody3D() {
+	ZoneScopedS(60);
 	for (int i = 0; i < slide_colliders.size(); i++) {
 		if (slide_colliders[i].is_valid()) {
 			slide_colliders.write[i]->owner = nullptr;
@@ -2043,38 +2230,46 @@ CharacterBody3D::~CharacterBody3D() {
 ///////////////////////////////////////
 
 Vector3 KinematicCollision3D::get_travel() const {
+	ZoneScopedS(60);
 	return result.travel;
 }
 
 Vector3 KinematicCollision3D::get_remainder() const {
+	ZoneScopedS(60);
 	return result.remainder;
 }
 
 int KinematicCollision3D::get_collision_count() const {
+	ZoneScopedS(60);
 	return result.collision_count;
 }
 
 real_t KinematicCollision3D::get_depth() const {
+	ZoneScopedS(60);
 	return result.collision_depth;
 }
 
 Vector3 KinematicCollision3D::get_position(int p_collision_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_collision_index, result.collision_count, Vector3());
 	return result.collisions[p_collision_index].position;
 }
 
 Vector3 KinematicCollision3D::get_normal(int p_collision_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_collision_index, result.collision_count, Vector3());
 	return result.collisions[p_collision_index].normal;
 }
 
 real_t KinematicCollision3D::get_angle(int p_collision_index, const Vector3 &p_up_direction) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_collision_index, result.collision_count, 0.0);
 	ERR_FAIL_COND_V(p_up_direction == Vector3(), 0);
 	return result.collisions[p_collision_index].get_angle(p_up_direction);
 }
 
 Object *KinematicCollision3D::get_local_shape(int p_collision_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_collision_index, result.collision_count, nullptr);
 	if (!owner) {
 		return nullptr;
@@ -2084,6 +2279,7 @@ Object *KinematicCollision3D::get_local_shape(int p_collision_index) const {
 }
 
 Object *KinematicCollision3D::get_collider(int p_collision_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_collision_index, result.collision_count, nullptr);
 	if (result.collisions[p_collision_index].collider_id.is_valid()) {
 		return ObjectDB::get_instance(result.collisions[p_collision_index].collider_id);
@@ -2093,16 +2289,19 @@ Object *KinematicCollision3D::get_collider(int p_collision_index) const {
 }
 
 ObjectID KinematicCollision3D::get_collider_id(int p_collision_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_collision_index, result.collision_count, ObjectID());
 	return result.collisions[p_collision_index].collider_id;
 }
 
 RID KinematicCollision3D::get_collider_rid(int p_collision_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_collision_index, result.collision_count, RID());
 	return result.collisions[p_collision_index].collider;
 }
 
 Object *KinematicCollision3D::get_collider_shape(int p_collision_index) const {
+	ZoneScopedS(60);
 	Object *collider = get_collider(p_collision_index);
 	if (collider) {
 		CollisionObject3D *obj2d = Object::cast_to<CollisionObject3D>(collider);
@@ -2116,16 +2315,19 @@ Object *KinematicCollision3D::get_collider_shape(int p_collision_index) const {
 }
 
 int KinematicCollision3D::get_collider_shape_index(int p_collision_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_collision_index, result.collision_count, 0);
 	return result.collisions[p_collision_index].collider_shape;
 }
 
 Vector3 KinematicCollision3D::get_collider_velocity(int p_collision_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_collision_index, result.collision_count, Vector3());
 	return result.collisions[p_collision_index].collider_velocity;
 }
 
 void KinematicCollision3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_travel"), &KinematicCollision3D::get_travel);
 	ClassDB::bind_method(D_METHOD("get_remainder"), &KinematicCollision3D::get_remainder);
 	ClassDB::bind_method(D_METHOD("get_depth"), &KinematicCollision3D::get_depth);
@@ -2145,10 +2347,12 @@ void KinematicCollision3D::_bind_methods() {
 ///////////////////////////////////////
 
 bool PhysicalBone3D::JointData::_set(const StringName &p_name, const Variant &p_value, RID j) {
+	ZoneScopedS(60);
 	return false;
 }
 
 bool PhysicalBone3D::JointData::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	return false;
 }
 
@@ -2156,32 +2360,39 @@ void PhysicalBone3D::JointData::_get_property_list(List<PropertyInfo> *p_list) c
 }
 
 void PhysicalBone3D::apply_central_impulse(const Vector3 &p_impulse) {
+	ZoneScopedS(60);
 	PhysicsServer3D::get_singleton()->body_apply_central_impulse(get_rid(), p_impulse);
 }
 
 void PhysicalBone3D::apply_impulse(const Vector3 &p_impulse, const Vector3 &p_position) {
+	ZoneScopedS(60);
 	PhysicsServer3D::get_singleton()->body_apply_impulse(get_rid(), p_impulse, p_position);
 }
 
 void PhysicalBone3D::set_linear_velocity(const Vector3 &p_velocity) {
+	ZoneScopedS(60);
 	linear_velocity = p_velocity;
 	PhysicsServer3D::get_singleton()->body_set_state(get_rid(), PhysicsServer3D::BODY_STATE_LINEAR_VELOCITY, linear_velocity);
 }
 
 Vector3 PhysicalBone3D::get_linear_velocity() const {
+	ZoneScopedS(60);
 	return linear_velocity;
 }
 
 void PhysicalBone3D::set_angular_velocity(const Vector3 &p_velocity) {
+	ZoneScopedS(60);
 	angular_velocity = p_velocity;
 	PhysicsServer3D::get_singleton()->body_set_state(get_rid(), PhysicsServer3D::BODY_STATE_ANGULAR_VELOCITY, angular_velocity);
 }
 
 Vector3 PhysicalBone3D::get_angular_velocity() const {
+	ZoneScopedS(60);
 	return angular_velocity;
 }
 
 void PhysicalBone3D::set_use_custom_integrator(bool p_enable) {
+	ZoneScopedS(60);
 	if (custom_integrator == p_enable) {
 		return;
 	}
@@ -2191,10 +2402,12 @@ void PhysicalBone3D::set_use_custom_integrator(bool p_enable) {
 }
 
 bool PhysicalBone3D::is_using_custom_integrator() {
+	ZoneScopedS(60);
 	return custom_integrator;
 }
 
 void PhysicalBone3D::reset_physics_simulation_state() {
+	ZoneScopedS(60);
 	if (simulate_physics) {
 		_start_physics_simulation();
 	} else {
@@ -2203,6 +2416,7 @@ void PhysicalBone3D::reset_physics_simulation_state() {
 }
 
 void PhysicalBone3D::reset_to_rest_position() {
+	ZoneScopedS(60);
 	if (parent_skeleton) {
 		if (-1 == bone_id) {
 			set_global_transform(parent_skeleton->get_global_transform() * body_offset);
@@ -2213,6 +2427,7 @@ void PhysicalBone3D::reset_to_rest_position() {
 }
 
 bool PhysicalBone3D::PinJointData::_set(const StringName &p_name, const Variant &p_value, RID j) {
+	ZoneScopedS(60);
 	if (JointData::_set(p_name, p_value, j)) {
 		return true;
 	}
@@ -2243,6 +2458,7 @@ bool PhysicalBone3D::PinJointData::_set(const StringName &p_name, const Variant 
 }
 
 bool PhysicalBone3D::PinJointData::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	if (JointData::_get(p_name, r_ret)) {
 		return true;
 	}
@@ -2261,6 +2477,7 @@ bool PhysicalBone3D::PinJointData::_get(const StringName &p_name, Variant &r_ret
 }
 
 void PhysicalBone3D::PinJointData::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	JointData::_get_property_list(p_list);
 
 	p_list->push_back(PropertyInfo(Variant::FLOAT, PNAME("joint_constraints/bias"), PROPERTY_HINT_RANGE, "0.01,0.99,0.01"));
@@ -2269,6 +2486,7 @@ void PhysicalBone3D::PinJointData::_get_property_list(List<PropertyInfo> *p_list
 }
 
 bool PhysicalBone3D::ConeJointData::_set(const StringName &p_name, const Variant &p_value, RID j) {
+	ZoneScopedS(60);
 	if (JointData::_set(p_name, p_value, j)) {
 		return true;
 	}
@@ -2311,6 +2529,7 @@ bool PhysicalBone3D::ConeJointData::_set(const StringName &p_name, const Variant
 }
 
 bool PhysicalBone3D::ConeJointData::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	if (JointData::_get(p_name, r_ret)) {
 		return true;
 	}
@@ -2333,6 +2552,7 @@ bool PhysicalBone3D::ConeJointData::_get(const StringName &p_name, Variant &r_re
 }
 
 void PhysicalBone3D::ConeJointData::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	JointData::_get_property_list(p_list);
 
 	p_list->push_back(PropertyInfo(Variant::FLOAT, PNAME("joint_constraints/swing_span"), PROPERTY_HINT_RANGE, "-180,180,0.01"));
@@ -2343,6 +2563,7 @@ void PhysicalBone3D::ConeJointData::_get_property_list(List<PropertyInfo> *p_lis
 }
 
 bool PhysicalBone3D::HingeJointData::_set(const StringName &p_name, const Variant &p_value, RID j) {
+	ZoneScopedS(60);
 	if (JointData::_set(p_name, p_value, j)) {
 		return true;
 	}
@@ -2391,6 +2612,7 @@ bool PhysicalBone3D::HingeJointData::_set(const StringName &p_name, const Varian
 }
 
 bool PhysicalBone3D::HingeJointData::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	if (JointData::_get(p_name, r_ret)) {
 		return true;
 	}
@@ -2415,6 +2637,7 @@ bool PhysicalBone3D::HingeJointData::_get(const StringName &p_name, Variant &r_r
 }
 
 void PhysicalBone3D::HingeJointData::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	JointData::_get_property_list(p_list);
 
 	p_list->push_back(PropertyInfo(Variant::BOOL, PNAME("joint_constraints/angular_limit_enabled")));
@@ -2426,6 +2649,7 @@ void PhysicalBone3D::HingeJointData::_get_property_list(List<PropertyInfo> *p_li
 }
 
 bool PhysicalBone3D::SliderJointData::_set(const StringName &p_name, const Variant &p_value, RID j) {
+	ZoneScopedS(60);
 	if (JointData::_set(p_name, p_value, j)) {
 		return true;
 	}
@@ -2498,6 +2722,7 @@ bool PhysicalBone3D::SliderJointData::_set(const StringName &p_name, const Varia
 }
 
 bool PhysicalBone3D::SliderJointData::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	if (JointData::_get(p_name, r_ret)) {
 		return true;
 	}
@@ -2530,6 +2755,7 @@ bool PhysicalBone3D::SliderJointData::_get(const StringName &p_name, Variant &r_
 }
 
 void PhysicalBone3D::SliderJointData::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	JointData::_get_property_list(p_list);
 
 	p_list->push_back(PropertyInfo(Variant::FLOAT, PNAME("joint_constraints/linear_limit_upper")));
@@ -2546,6 +2772,7 @@ void PhysicalBone3D::SliderJointData::_get_property_list(List<PropertyInfo> *p_l
 }
 
 bool PhysicalBone3D::SixDOFJointData::_set(const StringName &p_name, const Variant &p_value, RID j) {
+	ZoneScopedS(60);
 	if (JointData::_set(p_name, p_value, j)) {
 		return true;
 	}
@@ -2706,6 +2933,7 @@ bool PhysicalBone3D::SixDOFJointData::_set(const StringName &p_name, const Varia
 }
 
 bool PhysicalBone3D::SixDOFJointData::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	if (JointData::_get(p_name, r_ret)) {
 		return true;
 	}
@@ -2782,6 +3010,7 @@ bool PhysicalBone3D::SixDOFJointData::_get(const StringName &p_name, Variant &r_
 }
 
 void PhysicalBone3D::SixDOFJointData::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	const StringName axis_names[] = { PNAME("x"), PNAME("y"), PNAME("z") };
 	for (int i = 0; i < 3; ++i) {
 		const String prefix = vformat("%s/%s/", PNAME("joint_constraints"), axis_names[i]);
@@ -2810,6 +3039,7 @@ void PhysicalBone3D::SixDOFJointData::_get_property_list(List<PropertyInfo> *p_l
 }
 
 bool PhysicalBone3D::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	if (p_name == "bone_name") {
 		set_bone_name(p_value);
 		return true;
@@ -2828,6 +3058,7 @@ bool PhysicalBone3D::_set(const StringName &p_name, const Variant &p_value) {
 }
 
 bool PhysicalBone3D::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	if (p_name == "bone_name") {
 		r_ret = get_bone_name();
 		return true;
@@ -2841,6 +3072,7 @@ bool PhysicalBone3D::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void PhysicalBone3D::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	Skeleton3D *parent = find_skeleton_parent(get_parent());
 
 	if (parent) {
@@ -2863,6 +3095,7 @@ void PhysicalBone3D::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 void PhysicalBone3D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 			parent_skeleton = find_skeleton_parent(get_parent());
@@ -2894,6 +3127,7 @@ void PhysicalBone3D::_notification(int p_what) {
 }
 
 void PhysicalBone3D::_body_state_changed(PhysicsDirectBodyState3D *p_state) {
+	ZoneScopedS(60);
 	if (!simulate_physics || !_internal_simulate_physics) {
 		return;
 	}
@@ -2921,6 +3155,7 @@ void PhysicalBone3D::_body_state_changed(PhysicsDirectBodyState3D *p_state) {
 }
 
 void PhysicalBone3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("apply_central_impulse", "impulse"), &PhysicalBone3D::apply_central_impulse);
 	ClassDB::bind_method(D_METHOD("apply_impulse", "impulse", "position"), &PhysicalBone3D::apply_impulse, Vector3());
 
@@ -3011,6 +3246,7 @@ void PhysicalBone3D::_bind_methods() {
 }
 
 Skeleton3D *PhysicalBone3D::find_skeleton_parent(Node *p_parent) {
+	ZoneScopedS(60);
 	if (!p_parent) {
 		return nullptr;
 	}
@@ -3019,6 +3255,7 @@ Skeleton3D *PhysicalBone3D::find_skeleton_parent(Node *p_parent) {
 }
 
 void PhysicalBone3D::_update_joint_offset() {
+	ZoneScopedS(60);
 	_fix_joint_offset();
 
 	set_ignore_transform_notification(true);
@@ -3031,6 +3268,7 @@ void PhysicalBone3D::_update_joint_offset() {
 }
 
 void PhysicalBone3D::_fix_joint_offset() {
+	ZoneScopedS(60);
 	// Clamp joint origin to bone origin
 	if (parent_skeleton) {
 		joint_offset.origin = body_offset.affine_inverse().origin;
@@ -3038,6 +3276,7 @@ void PhysicalBone3D::_fix_joint_offset() {
 }
 
 void PhysicalBone3D::_reload_joint() {
+	ZoneScopedS(60);
 	if (!parent_skeleton) {
 		PhysicsServer3D::get_singleton()->joint_clear(joint);
 		return;
@@ -3132,32 +3371,39 @@ void PhysicalBone3D::_reload_joint() {
 }
 
 void PhysicalBone3D::_on_bone_parent_changed() {
+	ZoneScopedS(60);
 	_reload_joint();
 }
 
 #ifdef TOOLS_ENABLED
 void PhysicalBone3D::_set_gizmo_move_joint(bool p_move_joint) {
+	ZoneScopedS(60);
 	gizmo_move_joint = p_move_joint;
 }
 
 Transform3D PhysicalBone3D::get_global_gizmo_transform() const {
+	ZoneScopedS(60);
 	return gizmo_move_joint ? get_global_transform() * joint_offset : get_global_transform();
 }
 
 Transform3D PhysicalBone3D::get_local_gizmo_transform() const {
+	ZoneScopedS(60);
 	return gizmo_move_joint ? get_transform() * joint_offset : get_transform();
 }
 #endif
 
 const PhysicalBone3D::JointData *PhysicalBone3D::get_joint_data() const {
+	ZoneScopedS(60);
 	return joint_data;
 }
 
 Skeleton3D *PhysicalBone3D::find_skeleton_parent() {
+	ZoneScopedS(60);
 	return find_skeleton_parent(this);
 }
 
 void PhysicalBone3D::set_joint_type(JointType p_joint_type) {
+	ZoneScopedS(60);
 	if (p_joint_type == get_joint_type()) {
 		return;
 	}
@@ -3195,34 +3441,41 @@ void PhysicalBone3D::set_joint_type(JointType p_joint_type) {
 }
 
 PhysicalBone3D::JointType PhysicalBone3D::get_joint_type() const {
+	ZoneScopedS(60);
 	return joint_data ? joint_data->get_joint_type() : JOINT_TYPE_NONE;
 }
 
 void PhysicalBone3D::set_joint_offset(const Transform3D &p_offset) {
+	ZoneScopedS(60);
 	joint_offset = p_offset;
 
 	_update_joint_offset();
 }
 
 const Transform3D &PhysicalBone3D::get_joint_offset() const {
+	ZoneScopedS(60);
 	return joint_offset;
 }
 
 void PhysicalBone3D::set_joint_rotation(const Vector3 &p_euler_rad) {
+	ZoneScopedS(60);
 	joint_offset.basis.set_euler_scale(p_euler_rad, joint_offset.basis.get_scale());
 
 	_update_joint_offset();
 }
 
 Vector3 PhysicalBone3D::get_joint_rotation() const {
+	ZoneScopedS(60);
 	return joint_offset.basis.get_euler_normalized();
 }
 
 const Transform3D &PhysicalBone3D::get_body_offset() const {
+	ZoneScopedS(60);
 	return body_offset;
 }
 
 void PhysicalBone3D::set_body_offset(const Transform3D &p_offset) {
+	ZoneScopedS(60);
 	body_offset = p_offset;
 	body_offset_inverse = body_offset.affine_inverse();
 
@@ -3230,6 +3483,7 @@ void PhysicalBone3D::set_body_offset(const Transform3D &p_offset) {
 }
 
 void PhysicalBone3D::set_simulate_physics(bool p_simulate) {
+	ZoneScopedS(60);
 	if (simulate_physics == p_simulate) {
 		return;
 	}
@@ -3239,14 +3493,17 @@ void PhysicalBone3D::set_simulate_physics(bool p_simulate) {
 }
 
 bool PhysicalBone3D::get_simulate_physics() {
+	ZoneScopedS(60);
 	return simulate_physics;
 }
 
 bool PhysicalBone3D::is_simulating_physics() {
+	ZoneScopedS(60);
 	return _internal_simulate_physics;
 }
 
 void PhysicalBone3D::set_bone_name(const String &p_name) {
+	ZoneScopedS(60);
 	bone_name = p_name;
 	bone_id = -1;
 
@@ -3255,20 +3512,24 @@ void PhysicalBone3D::set_bone_name(const String &p_name) {
 }
 
 const String &PhysicalBone3D::get_bone_name() const {
+	ZoneScopedS(60);
 	return bone_name;
 }
 
 void PhysicalBone3D::set_mass(real_t p_mass) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_mass <= 0);
 	mass = p_mass;
 	PhysicsServer3D::get_singleton()->body_set_param(get_rid(), PhysicsServer3D::BODY_PARAM_MASS, mass);
 }
 
 real_t PhysicalBone3D::get_mass() const {
+	ZoneScopedS(60);
 	return mass;
 }
 
 void PhysicalBone3D::set_friction(real_t p_friction) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_friction < 0 || p_friction > 1);
 
 	friction = p_friction;
@@ -3276,10 +3537,12 @@ void PhysicalBone3D::set_friction(real_t p_friction) {
 }
 
 real_t PhysicalBone3D::get_friction() const {
+	ZoneScopedS(60);
 	return friction;
 }
 
 void PhysicalBone3D::set_bounce(real_t p_bounce) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_bounce < 0 || p_bounce > 1);
 
 	bounce = p_bounce;
@@ -3287,37 +3550,45 @@ void PhysicalBone3D::set_bounce(real_t p_bounce) {
 }
 
 real_t PhysicalBone3D::get_bounce() const {
+	ZoneScopedS(60);
 	return bounce;
 }
 
 void PhysicalBone3D::set_gravity_scale(real_t p_gravity_scale) {
+	ZoneScopedS(60);
 	gravity_scale = p_gravity_scale;
 	PhysicsServer3D::get_singleton()->body_set_param(get_rid(), PhysicsServer3D::BODY_PARAM_GRAVITY_SCALE, gravity_scale);
 }
 
 real_t PhysicalBone3D::get_gravity_scale() const {
+	ZoneScopedS(60);
 	return gravity_scale;
 }
 
 void PhysicalBone3D::set_linear_damp_mode(DampMode p_mode) {
+	ZoneScopedS(60);
 	linear_damp_mode = p_mode;
 	PhysicsServer3D::get_singleton()->body_set_param(get_rid(), PhysicsServer3D::BODY_PARAM_LINEAR_DAMP_MODE, linear_damp_mode);
 }
 
 PhysicalBone3D::DampMode PhysicalBone3D::get_linear_damp_mode() const {
+	ZoneScopedS(60);
 	return linear_damp_mode;
 }
 
 void PhysicalBone3D::set_angular_damp_mode(DampMode p_mode) {
+	ZoneScopedS(60);
 	angular_damp_mode = p_mode;
 	PhysicsServer3D::get_singleton()->body_set_param(get_rid(), PhysicsServer3D::BODY_PARAM_ANGULAR_DAMP_MODE, angular_damp_mode);
 }
 
 PhysicalBone3D::DampMode PhysicalBone3D::get_angular_damp_mode() const {
+	ZoneScopedS(60);
 	return angular_damp_mode;
 }
 
 void PhysicalBone3D::set_linear_damp(real_t p_linear_damp) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_linear_damp < 0);
 
 	linear_damp = p_linear_damp;
@@ -3325,10 +3596,12 @@ void PhysicalBone3D::set_linear_damp(real_t p_linear_damp) {
 }
 
 real_t PhysicalBone3D::get_linear_damp() const {
+	ZoneScopedS(60);
 	return linear_damp;
 }
 
 void PhysicalBone3D::set_angular_damp(real_t p_angular_damp) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_angular_damp < 0);
 
 	angular_damp = p_angular_damp;
@@ -3336,15 +3609,18 @@ void PhysicalBone3D::set_angular_damp(real_t p_angular_damp) {
 }
 
 real_t PhysicalBone3D::get_angular_damp() const {
+	ZoneScopedS(60);
 	return angular_damp;
 }
 
 void PhysicalBone3D::set_can_sleep(bool p_active) {
+	ZoneScopedS(60);
 	can_sleep = p_active;
 	PhysicsServer3D::get_singleton()->body_set_state(get_rid(), PhysicsServer3D::BODY_STATE_CAN_SLEEP, p_active);
 }
 
 bool PhysicalBone3D::is_able_to_sleep() const {
+	ZoneScopedS(60);
 	return can_sleep;
 }
 
@@ -3355,6 +3631,7 @@ PhysicalBone3D::PhysicalBone3D() :
 }
 
 PhysicalBone3D::~PhysicalBone3D() {
+	ZoneScopedS(60);
 	if (joint_data) {
 		memdelete(joint_data);
 	}
@@ -3362,6 +3639,7 @@ PhysicalBone3D::~PhysicalBone3D() {
 }
 
 void PhysicalBone3D::update_bone_id() {
+	ZoneScopedS(60);
 	if (!parent_skeleton) {
 		return;
 	}
@@ -3402,6 +3680,7 @@ void PhysicalBone3D::update_offset() {
 }
 
 void PhysicalBone3D::_start_physics_simulation() {
+	ZoneScopedS(60);
 	if (_internal_simulate_physics || !parent_skeleton) {
 		return;
 	}
@@ -3416,6 +3695,7 @@ void PhysicalBone3D::_start_physics_simulation() {
 }
 
 void PhysicalBone3D::_stop_physics_simulation() {
+	ZoneScopedS(60);
 	if (!parent_skeleton) {
 		return;
 	}

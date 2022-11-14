@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  color_rect.cpp                                                       */
 /*************************************************************************/
@@ -31,6 +32,7 @@
 #include "color_rect.h"
 
 void ColorRect::set_color(const Color &p_color) {
+	ZoneScopedS(60);
 	if (color == p_color) {
 		return;
 	}
@@ -39,10 +41,12 @@ void ColorRect::set_color(const Color &p_color) {
 }
 
 Color ColorRect::get_color() const {
+	ZoneScopedS(60);
 	return color;
 }
 
 void ColorRect::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
 			draw_rect(Rect2(Point2(), get_size()), color);
@@ -51,6 +55,7 @@ void ColorRect::_notification(int p_what) {
 }
 
 void ColorRect::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_color", "color"), &ColorRect::set_color);
 	ClassDB::bind_method(D_METHOD("get_color"), &ColorRect::get_color);
 

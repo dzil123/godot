@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  fog_material.cpp                                                     */
 /*************************************************************************/
@@ -36,70 +37,85 @@ Mutex FogMaterial::shader_mutex;
 RID FogMaterial::shader;
 
 void FogMaterial::set_density(float p_density) {
+	ZoneScopedS(60);
 	density = p_density;
 	RS::get_singleton()->material_set_param(_get_material(), "density", density);
 }
 
 float FogMaterial::get_density() const {
+	ZoneScopedS(60);
 	return density;
 }
 
 void FogMaterial::set_albedo(Color p_albedo) {
+	ZoneScopedS(60);
 	albedo = p_albedo;
 	RS::get_singleton()->material_set_param(_get_material(), "albedo", albedo);
 }
 
 Color FogMaterial::get_albedo() const {
+	ZoneScopedS(60);
 	return albedo;
 }
 
 void FogMaterial::set_emission(Color p_emission) {
+	ZoneScopedS(60);
 	emission = p_emission;
 	RS::get_singleton()->material_set_param(_get_material(), "emission", emission);
 }
 
 Color FogMaterial::get_emission() const {
+	ZoneScopedS(60);
 	return emission;
 }
 
 void FogMaterial::set_height_falloff(float p_falloff) {
+	ZoneScopedS(60);
 	height_falloff = MAX(p_falloff, 0.0f);
 	RS::get_singleton()->material_set_param(_get_material(), "height_falloff", height_falloff);
 }
 
 float FogMaterial::get_height_falloff() const {
+	ZoneScopedS(60);
 	return height_falloff;
 }
 
 void FogMaterial::set_edge_fade(float p_edge_fade) {
+	ZoneScopedS(60);
 	edge_fade = MAX(p_edge_fade, 0.0f);
 	RS::get_singleton()->material_set_param(_get_material(), "edge_fade", edge_fade);
 }
 
 float FogMaterial::get_edge_fade() const {
+	ZoneScopedS(60);
 	return edge_fade;
 }
 
 void FogMaterial::set_density_texture(const Ref<Texture3D> &p_texture) {
+	ZoneScopedS(60);
 	density_texture = p_texture;
 	RID tex_rid = p_texture.is_valid() ? p_texture->get_rid() : RID();
 	RS::get_singleton()->material_set_param(_get_material(), "density_texture", tex_rid);
 }
 
 Ref<Texture3D> FogMaterial::get_density_texture() const {
+	ZoneScopedS(60);
 	return density_texture;
 }
 
 Shader::Mode FogMaterial::get_shader_mode() const {
+	ZoneScopedS(60);
 	return Shader::MODE_FOG;
 }
 
 RID FogMaterial::get_shader_rid() const {
+	ZoneScopedS(60);
 	_update_shader();
 	return shader;
 }
 
 RID FogMaterial::get_rid() const {
+	ZoneScopedS(60);
 	_update_shader();
 	if (!shader_set) {
 		RS::get_singleton()->material_set_shader(_get_material(), shader);
@@ -109,6 +125,7 @@ RID FogMaterial::get_rid() const {
 }
 
 void FogMaterial::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_density", "density"), &FogMaterial::set_density);
 	ClassDB::bind_method(D_METHOD("get_density"), &FogMaterial::get_density);
 	ClassDB::bind_method(D_METHOD("set_albedo", "albedo"), &FogMaterial::set_albedo);
@@ -131,12 +148,14 @@ void FogMaterial::_bind_methods() {
 }
 
 void FogMaterial::cleanup_shader() {
+	ZoneScopedS(60);
 	if (shader.is_valid()) {
 		RS::get_singleton()->free(shader);
 	}
 }
 
 void FogMaterial::_update_shader() {
+	ZoneScopedS(60);
 	shader_mutex.lock();
 	if (shader.is_null()) {
 		shader = RS::get_singleton()->shader_create();
@@ -168,6 +187,7 @@ void fog() {
 }
 
 FogMaterial::FogMaterial() {
+	ZoneScopedS(60);
 	set_density(1.0);
 	set_albedo(Color(1, 1, 1, 1));
 	set_emission(Color(0, 0, 0, 1));
@@ -177,5 +197,6 @@ FogMaterial::FogMaterial() {
 }
 
 FogMaterial::~FogMaterial() {
+	ZoneScopedS(60);
 	RS::get_singleton()->material_set_shader(_get_material(), RID());
 }

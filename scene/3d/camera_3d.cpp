@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  camera_3d.cpp                                                        */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "camera_3d.h"
 
 #include "collision_object_3d.h"
@@ -39,10 +70,12 @@ void Camera3D::_update_audio_listener_state() {
 }
 
 void Camera3D::_request_camera_update() {
+	ZoneScopedS(60);
 	_update_camera();
 }
 
 void Camera3D::_update_camera_mode() {
+	ZoneScopedS(60);
 	force_change = true;
 	switch (mode) {
 		case PROJECTION_PERSPECTIVE: {
@@ -59,6 +92,7 @@ void Camera3D::_update_camera_mode() {
 }
 
 void Camera3D::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (p_property.name == "fov") {
 		if (mode != PROJECTION_PERSPECTIVE) {
 			p_property.usage = PROPERTY_USAGE_NO_EDITOR;
@@ -86,6 +120,7 @@ void Camera3D::_validate_property(PropertyInfo &p_property) const {
 }
 
 void Camera3D::_update_camera() {
+	ZoneScopedS(60);
 	if (!is_inside_tree()) {
 		return;
 	}
@@ -100,6 +135,7 @@ void Camera3D::_update_camera() {
 }
 
 void Camera3D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_WORLD: {
 			// Needs to track the Viewport because it's needed on NOTIFICATION_EXIT_WORLD
@@ -153,6 +189,7 @@ void Camera3D::_notification(int p_what) {
 }
 
 Transform3D Camera3D::get_camera_transform() const {
+	ZoneScopedS(60);
 	Transform3D tr = get_global_transform().orthonormalized();
 	tr.origin += tr.basis.get_column(1) * v_offset;
 	tr.origin += tr.basis.get_column(0) * h_offset;
@@ -160,6 +197,7 @@ Transform3D Camera3D::get_camera_transform() const {
 }
 
 void Camera3D::set_perspective(real_t p_fovy_degrees, real_t p_z_near, real_t p_z_far) {
+	ZoneScopedS(60);
 	if (!force_change && fov == p_fovy_degrees && p_z_near == near && p_z_far == far && mode == PROJECTION_PERSPECTIVE) {
 		return;
 	}
@@ -175,6 +213,7 @@ void Camera3D::set_perspective(real_t p_fovy_degrees, real_t p_z_near, real_t p_
 }
 
 void Camera3D::set_orthogonal(real_t p_size, real_t p_z_near, real_t p_z_far) {
+	ZoneScopedS(60);
 	if (!force_change && size == p_size && p_z_near == near && p_z_far == far && mode == PROJECTION_ORTHOGONAL) {
 		return;
 	}
@@ -191,6 +230,7 @@ void Camera3D::set_orthogonal(real_t p_size, real_t p_z_near, real_t p_z_far) {
 }
 
 void Camera3D::set_frustum(real_t p_size, Vector2 p_offset, real_t p_z_near, real_t p_z_far) {
+	ZoneScopedS(60);
 	if (!force_change && size == p_size && frustum_offset == p_offset && p_z_near == near && p_z_far == far && mode == PROJECTION_FRUSTUM) {
 		return;
 	}
@@ -208,6 +248,7 @@ void Camera3D::set_frustum(real_t p_size, Vector2 p_offset, real_t p_z_near, rea
 }
 
 void Camera3D::set_projection(ProjectionType p_mode) {
+	ZoneScopedS(60);
 	if (p_mode == PROJECTION_PERSPECTIVE || p_mode == PROJECTION_ORTHOGONAL || p_mode == PROJECTION_FRUSTUM) {
 		mode = p_mode;
 		_update_camera_mode();
@@ -216,10 +257,12 @@ void Camera3D::set_projection(ProjectionType p_mode) {
 }
 
 RID Camera3D::get_camera() const {
+	ZoneScopedS(60);
 	return camera;
 };
 
 void Camera3D::make_current() {
+	ZoneScopedS(60);
 	current = true;
 
 	if (!is_inside_tree()) {
@@ -230,6 +273,7 @@ void Camera3D::make_current() {
 }
 
 void Camera3D::clear_current(bool p_enable_next) {
+	ZoneScopedS(60);
 	current = false;
 	if (!is_inside_tree()) {
 		return;
@@ -245,6 +289,7 @@ void Camera3D::clear_current(bool p_enable_next) {
 }
 
 void Camera3D::set_current(bool p_enabled) {
+	ZoneScopedS(60);
 	if (p_enabled) {
 		make_current();
 	} else {
@@ -253,6 +298,7 @@ void Camera3D::set_current(bool p_enabled) {
 }
 
 bool Camera3D::is_current() const {
+	ZoneScopedS(60);
 	if (is_inside_tree() && !get_tree()->is_node_being_edited(this)) {
 		return get_viewport()->get_camera_3d() == this;
 	} else {
@@ -261,11 +307,13 @@ bool Camera3D::is_current() const {
 }
 
 Vector3 Camera3D::project_ray_normal(const Point2 &p_pos) const {
+	ZoneScopedS(60);
 	Vector3 ray = project_local_ray_normal(p_pos);
 	return get_camera_transform().basis.xform(ray).normalized();
 };
 
 Vector3 Camera3D::project_local_ray_normal(const Point2 &p_pos) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!is_inside_tree(), Vector3(), "Camera is not inside scene.");
 
 	Size2 viewport_size = get_viewport()->get_camera_rect_size();
@@ -285,6 +333,7 @@ Vector3 Camera3D::project_local_ray_normal(const Point2 &p_pos) const {
 };
 
 Vector3 Camera3D::project_ray_origin(const Point2 &p_pos) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!is_inside_tree(), Vector3(), "Camera is not inside scene.");
 
 	Size2 viewport_size = get_viewport()->get_camera_rect_size();
@@ -314,12 +363,14 @@ Vector3 Camera3D::project_ray_origin(const Point2 &p_pos) const {
 };
 
 bool Camera3D::is_position_behind(const Vector3 &p_pos) const {
+	ZoneScopedS(60);
 	Transform3D t = get_global_transform();
 	Vector3 eyedir = -t.basis.get_column(2).normalized();
 	return eyedir.dot(p_pos - t.origin) < near;
 }
 
 Vector<Vector3> Camera3D::get_near_plane_points() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!is_inside_tree(), Vector<Vector3>(), "Camera is not inside scene.");
 
 	Size2 viewport_size = get_viewport()->get_visible_rect().size;
@@ -346,6 +397,7 @@ Vector<Vector3> Camera3D::get_near_plane_points() const {
 }
 
 Point2 Camera3D::unproject_position(const Vector3 &p_pos) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!is_inside_tree(), Vector2(), "Camera is not inside scene.");
 
 	Size2 viewport_size = get_viewport()->get_visible_rect().size;
@@ -371,6 +423,7 @@ Point2 Camera3D::unproject_position(const Vector3 &p_pos) const {
 }
 
 Vector3 Camera3D::project_position(const Point2 &p_point, real_t p_z_depth) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!is_inside_tree(), Vector3(), "Camera is not inside scene.");
 
 	if (p_z_depth == 0 && mode != PROJECTION_ORTHOGONAL) {
@@ -399,6 +452,7 @@ Vector3 Camera3D::project_position(const Point2 &p_point, real_t p_z_depth) cons
 }
 
 void Camera3D::set_environment(const Ref<Environment> &p_environment) {
+	ZoneScopedS(60);
 	environment = p_environment;
 	if (environment.is_valid()) {
 		RS::get_singleton()->camera_set_environment(camera, environment->get_rid());
@@ -409,10 +463,12 @@ void Camera3D::set_environment(const Ref<Environment> &p_environment) {
 }
 
 Ref<Environment> Camera3D::get_environment() const {
+	ZoneScopedS(60);
 	return environment;
 }
 
 void Camera3D::set_attributes(const Ref<CameraAttributes> &p_attributes) {
+	ZoneScopedS(60);
 	if (attributes.is_valid()) {
 		CameraAttributesPhysical *physical_attributes = Object::cast_to<CameraAttributesPhysical>(attributes.ptr());
 		if (physical_attributes) {
@@ -438,10 +494,12 @@ void Camera3D::set_attributes(const Ref<CameraAttributes> &p_attributes) {
 }
 
 Ref<CameraAttributes> Camera3D::get_attributes() const {
+	ZoneScopedS(60);
 	return attributes;
 }
 
 void Camera3D::_attributes_changed() {
+	ZoneScopedS(60);
 	CameraAttributesPhysical *physical_attributes = Object::cast_to<CameraAttributesPhysical>(attributes.ptr());
 	ERR_FAIL_COND(!physical_attributes);
 
@@ -453,6 +511,7 @@ void Camera3D::_attributes_changed() {
 }
 
 void Camera3D::set_keep_aspect_mode(KeepAspect p_aspect) {
+	ZoneScopedS(60);
 	keep_aspect = p_aspect;
 	RenderingServer::get_singleton()->camera_set_use_vertical_aspect(camera, p_aspect == KEEP_WIDTH);
 	_update_camera_mode();
@@ -460,10 +519,12 @@ void Camera3D::set_keep_aspect_mode(KeepAspect p_aspect) {
 }
 
 Camera3D::KeepAspect Camera3D::get_keep_aspect_mode() const {
+	ZoneScopedS(60);
 	return keep_aspect;
 }
 
 void Camera3D::set_doppler_tracking(DopplerTracking p_tracking) {
+	ZoneScopedS(60);
 	if (doppler_tracking == p_tracking) {
 		return;
 	}
@@ -479,10 +540,12 @@ void Camera3D::set_doppler_tracking(DopplerTracking p_tracking) {
 }
 
 Camera3D::DopplerTracking Camera3D::get_doppler_tracking() const {
+	ZoneScopedS(60);
 	return doppler_tracking;
 }
 
 void Camera3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("project_ray_normal", "screen_point"), &Camera3D::project_ray_normal);
 	ClassDB::bind_method(D_METHOD("project_local_ray_normal", "screen_point"), &Camera3D::project_local_ray_normal);
 	ClassDB::bind_method(D_METHOD("project_ray_origin", "screen_point"), &Camera3D::project_ray_origin);
@@ -561,67 +624,81 @@ void Camera3D::_bind_methods() {
 }
 
 real_t Camera3D::get_fov() const {
+	ZoneScopedS(60);
 	return fov;
 }
 
 real_t Camera3D::get_size() const {
+	ZoneScopedS(60);
 	return size;
 }
 
 real_t Camera3D::get_near() const {
+	ZoneScopedS(60);
 	return near;
 }
 
 Vector2 Camera3D::get_frustum_offset() const {
+	ZoneScopedS(60);
 	return frustum_offset;
 }
 
 real_t Camera3D::get_far() const {
+	ZoneScopedS(60);
 	return far;
 }
 
 Camera3D::ProjectionType Camera3D::get_projection() const {
+	ZoneScopedS(60);
 	return mode;
 }
 
 void Camera3D::set_fov(real_t p_fov) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_fov < 1 || p_fov > 179);
 	fov = p_fov;
 	_update_camera_mode();
 }
 
 void Camera3D::set_size(real_t p_size) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_size < 0.001 || p_size > 16384);
 	size = p_size;
 	_update_camera_mode();
 }
 
 void Camera3D::set_near(real_t p_near) {
+	ZoneScopedS(60);
 	near = p_near;
 	_update_camera_mode();
 }
 
 void Camera3D::set_frustum_offset(Vector2 p_offset) {
+	ZoneScopedS(60);
 	frustum_offset = p_offset;
 	_update_camera_mode();
 }
 
 void Camera3D::set_far(real_t p_far) {
+	ZoneScopedS(60);
 	far = p_far;
 	_update_camera_mode();
 }
 
 void Camera3D::set_cull_mask(uint32_t p_layers) {
+	ZoneScopedS(60);
 	layers = p_layers;
 	RenderingServer::get_singleton()->camera_set_cull_mask(camera, layers);
 	_update_camera_mode();
 }
 
 uint32_t Camera3D::get_cull_mask() const {
+	ZoneScopedS(60);
 	return layers;
 }
 
 void Camera3D::set_cull_mask_value(int p_layer_number, bool p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_layer_number < 1, "Render layer number must be between 1 and 20 inclusive.");
 	ERR_FAIL_COND_MSG(p_layer_number > 20, "Render layer number must be between 1 and 20 inclusive.");
 	uint32_t mask = get_cull_mask();
@@ -634,12 +711,14 @@ void Camera3D::set_cull_mask_value(int p_layer_number, bool p_value) {
 }
 
 bool Camera3D::get_cull_mask_value(int p_layer_number) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(p_layer_number < 1, false, "Render layer number must be between 1 and 20 inclusive.");
 	ERR_FAIL_COND_V_MSG(p_layer_number > 20, false, "Render layer number must be between 1 and 20 inclusive.");
 	return layers & (1 << (p_layer_number - 1));
 }
 
 Vector<Plane> Camera3D::get_frustum() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!is_inside_world(), Vector<Plane>());
 
 	Size2 viewport_size = get_viewport()->get_visible_rect().size;
@@ -654,11 +733,13 @@ Vector<Plane> Camera3D::get_frustum() const {
 }
 
 TypedArray<Plane> Camera3D::_get_frustum() const {
+	ZoneScopedS(60);
 	Variant ret = get_frustum();
 	return ret;
 }
 
 bool Camera3D::is_position_in_frustum(const Vector3 &p_position) const {
+	ZoneScopedS(60);
 	Vector<Plane> frustum = get_frustum();
 	for (int i = 0; i < frustum.size(); i++) {
 		if (frustum[i].is_point_over(p_position)) {
@@ -669,24 +750,29 @@ bool Camera3D::is_position_in_frustum(const Vector3 &p_position) const {
 }
 
 void Camera3D::set_v_offset(real_t p_offset) {
+	ZoneScopedS(60);
 	v_offset = p_offset;
 	_update_camera();
 }
 
 real_t Camera3D::get_v_offset() const {
+	ZoneScopedS(60);
 	return v_offset;
 }
 
 void Camera3D::set_h_offset(real_t p_offset) {
+	ZoneScopedS(60);
 	h_offset = p_offset;
 	_update_camera();
 }
 
 real_t Camera3D::get_h_offset() const {
+	ZoneScopedS(60);
 	return h_offset;
 }
 
 Vector3 Camera3D::get_doppler_tracked_velocity() const {
+	ZoneScopedS(60);
 	if (doppler_tracking != DOPPLER_TRACKING_DISABLED) {
 		return velocity_tracker->get_tracked_linear_velocity();
 	} else {
@@ -695,6 +781,7 @@ Vector3 Camera3D::get_doppler_tracked_velocity() const {
 }
 
 RID Camera3D::get_pyramid_shape_rid() {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!is_inside_tree(), RID(), "Camera is not inside scene.");
 	if (pyramid_shape == RID()) {
 		pyramid_shape_points = get_near_plane_points();
@@ -723,6 +810,7 @@ RID Camera3D::get_pyramid_shape_rid() {
 }
 
 Camera3D::Camera3D() {
+	ZoneScopedS(60);
 	camera = RenderingServer::get_singleton()->camera_create();
 	set_perspective(75.0, 0.05, 4000.0);
 	RenderingServer::get_singleton()->camera_set_cull_mask(camera, layers);
@@ -733,6 +821,7 @@ Camera3D::Camera3D() {
 }
 
 Camera3D::~Camera3D() {
+	ZoneScopedS(60);
 	RenderingServer::get_singleton()->free(camera);
 	if (pyramid_shape.is_valid()) {
 		PhysicsServer3D::get_singleton()->free(pyramid_shape);

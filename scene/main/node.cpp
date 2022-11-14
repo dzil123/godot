@@ -36,6 +36,7 @@
 #include "core/object/message_queue.h"
 #include "core/string/print_string.h"
 #include "instance_placeholder.h"
+#include "modules/tracy/include.h"
 #include "scene/animation/tween.h"
 #include "scene/debugger/scene_debugger.h"
 #include "scene/main/multiplayer_api.h"
@@ -51,6 +52,7 @@ VARIANT_ENUM_CAST(Node::InternalMode);
 int Node::orphan_node_count = 0;
 
 void Node::_notification(int p_notification) {
+	ZoneScopedS(60);
 	switch (p_notification) {
 		case NOTIFICATION_PROCESS: {
 			GDVIRTUAL_CALL(_process, get_process_delta_time());
@@ -173,6 +175,7 @@ void Node::_notification(int p_notification) {
 }
 
 void Node::_propagate_ready() {
+	ZoneScopedS(60);
 	data.ready_notified = true;
 	data.blocked++;
 	for (int i = 0; i < data.children.size(); i++) {
@@ -190,6 +193,7 @@ void Node::_propagate_ready() {
 }
 
 void Node::_propagate_enter_tree() {
+	ZoneScopedS(60);
 	// this needs to happen to all children before any enter_tree
 
 	if (data.parent) {
@@ -242,6 +246,7 @@ void Node::_propagate_enter_tree() {
 }
 
 void Node::_propagate_after_exit_tree() {
+	ZoneScopedS(60);
 	// Clear owner if it was not part of the pruned branch
 	if (data.owner) {
 		bool found = false;
@@ -275,6 +280,7 @@ void Node::_propagate_after_exit_tree() {
 }
 
 void Node::_propagate_exit_tree() {
+	ZoneScopedS(60);
 	//block while removing children
 
 #ifdef DEBUG_ENABLED
@@ -323,6 +329,7 @@ void Node::_propagate_exit_tree() {
 }
 
 void Node::move_child(Node *p_child, int p_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_child);
 	ERR_FAIL_COND_MSG(p_child->data.parent != this, "Child is not a child of this node.");
 
@@ -349,6 +356,7 @@ void Node::move_child(Node *p_child, int p_index) {
 }
 
 void Node::_move_child(Node *p_child, int p_index, bool p_ignore_end) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(data.blocked > 0, "Parent node is busy setting up children, move_child() failed. Consider using call_deferred(\"move_child\") instead (or \"popup\" if this is from a popup).");
 
 	// Specifying one place beyond the end
@@ -399,6 +407,7 @@ void Node::_move_child(Node *p_child, int p_index, bool p_ignore_end) {
 }
 
 void Node::_propagate_groups_dirty() {
+	ZoneScopedS(60);
 	for (const KeyValue<StringName, GroupData> &E : data.grouped) {
 		if (E.value.group) {
 			E.value.group->changed = true;
@@ -411,14 +420,17 @@ void Node::_propagate_groups_dirty() {
 }
 
 void Node::add_child_notify(Node *p_child) {
+	ZoneScopedS(60);
 	// to be used when not wanted
 }
 
 void Node::remove_child_notify(Node *p_child) {
+	ZoneScopedS(60);
 	// to be used when not wanted
 }
 
 void Node::move_child_notify(Node *p_child) {
+	ZoneScopedS(60);
 	// to be used when not wanted
 }
 
@@ -426,6 +438,7 @@ void Node::owner_changed_notify() {
 }
 
 void Node::set_physics_process(bool p_process) {
+	ZoneScopedS(60);
 	if (data.physics_process == p_process) {
 		return;
 	}
@@ -440,10 +453,12 @@ void Node::set_physics_process(bool p_process) {
 }
 
 bool Node::is_physics_processing() const {
+	ZoneScopedS(60);
 	return data.physics_process;
 }
 
 void Node::set_physics_process_internal(bool p_process_internal) {
+	ZoneScopedS(60);
 	if (data.physics_process_internal == p_process_internal) {
 		return;
 	}
@@ -458,10 +473,12 @@ void Node::set_physics_process_internal(bool p_process_internal) {
 }
 
 bool Node::is_physics_processing_internal() const {
+	ZoneScopedS(60);
 	return data.physics_process_internal;
 }
 
 void Node::set_process_mode(ProcessMode p_mode) {
+	ZoneScopedS(60);
 	if (data.process_mode == p_mode) {
 		return;
 	}
@@ -517,6 +534,7 @@ void Node::set_process_mode(ProcessMode p_mode) {
 }
 
 void Node::_propagate_pause_notification(bool p_enable) {
+	ZoneScopedS(60);
 	bool prev_can_process = _can_process(!p_enable);
 	bool next_can_process = _can_process(p_enable);
 
@@ -532,10 +550,12 @@ void Node::_propagate_pause_notification(bool p_enable) {
 }
 
 Node::ProcessMode Node::get_process_mode() const {
+	ZoneScopedS(60);
 	return data.process_mode;
 }
 
 void Node::_propagate_process_owner(Node *p_owner, int p_pause_notification, int p_enabled_notification) {
+	ZoneScopedS(60);
 	data.process_owner = p_owner;
 
 	if (p_pause_notification != 0) {
@@ -555,6 +575,7 @@ void Node::_propagate_process_owner(Node *p_owner, int p_pause_notification, int
 }
 
 void Node::set_multiplayer_authority(int p_peer_id, bool p_recursive) {
+	ZoneScopedS(60);
 	data.multiplayer_authority = p_peer_id;
 
 	if (p_recursive) {
@@ -565,10 +586,12 @@ void Node::set_multiplayer_authority(int p_peer_id, bool p_recursive) {
 }
 
 int Node::get_multiplayer_authority() const {
+	ZoneScopedS(60);
 	return data.multiplayer_authority;
 }
 
 bool Node::is_multiplayer_authority() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!is_inside_tree(), false);
 
 	return get_multiplayer()->get_unique_id() == data.multiplayer_authority;
@@ -577,6 +600,7 @@ bool Node::is_multiplayer_authority() const {
 /***** RPC CONFIG ********/
 
 void Node::rpc_config(const StringName &p_method, const Variant &p_config) {
+	ZoneScopedS(60);
 	if (data.rpc_config.get_type() != Variant::DICTIONARY) {
 		data.rpc_config = Dictionary();
 	}
@@ -590,12 +614,14 @@ void Node::rpc_config(const StringName &p_method, const Variant &p_config) {
 }
 
 const Variant Node::get_node_rpc_config() const {
+	ZoneScopedS(60);
 	return data.rpc_config;
 }
 
 /***** RPC FUNCTIONS ********/
 
 Error Node::_rpc_bind(const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+	ZoneScopedS(60);
 	if (p_argcount < 1) {
 		r_error.error = Callable::CallError::CALL_ERROR_TOO_FEW_ARGUMENTS;
 		r_error.argument = 1;
@@ -618,6 +644,7 @@ Error Node::_rpc_bind(const Variant **p_args, int p_argcount, Callable::CallErro
 }
 
 Error Node::_rpc_id_bind(const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+	ZoneScopedS(60);
 	if (p_argcount < 2) {
 		r_error.error = Callable::CallError::CALL_ERROR_TOO_FEW_ARGUMENTS;
 		r_error.argument = 2;
@@ -648,11 +675,13 @@ Error Node::_rpc_id_bind(const Variant **p_args, int p_argcount, Callable::CallE
 }
 
 Error Node::rpcp(int p_peer_id, const StringName &p_method, const Variant **p_arg, int p_argcount) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!is_inside_tree(), ERR_UNCONFIGURED);
 	return get_multiplayer()->rpcp(this, p_peer_id, p_method, p_arg, p_argcount);
 }
 
 Ref<MultiplayerAPI> Node::get_multiplayer() const {
+	ZoneScopedS(60);
 	if (!is_inside_tree()) {
 		return Ref<MultiplayerAPI>();
 	}
@@ -662,6 +691,7 @@ Ref<MultiplayerAPI> Node::get_multiplayer() const {
 //////////// end of rpc
 
 bool Node::can_process_notification(int p_what) const {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_PHYSICS_PROCESS:
 			return data.physics_process;
@@ -677,11 +707,13 @@ bool Node::can_process_notification(int p_what) const {
 }
 
 bool Node::can_process() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!is_inside_tree(), false);
 	return _can_process(get_tree()->is_paused());
 }
 
 bool Node::_can_process(bool p_paused) const {
+	ZoneScopedS(60);
 	ProcessMode process_mode;
 
 	if (data.process_mode == PROCESS_MODE_INHERIT) {
@@ -711,6 +743,7 @@ bool Node::_can_process(bool p_paused) const {
 }
 
 bool Node::_is_enabled() const {
+	ZoneScopedS(60);
 	ProcessMode process_mode;
 
 	if (data.process_mode == PROCESS_MODE_INHERIT) {
@@ -727,11 +760,13 @@ bool Node::_is_enabled() const {
 }
 
 bool Node::is_enabled() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!is_inside_tree(), false);
 	return _is_enabled();
 }
 
 double Node::get_physics_process_delta_time() const {
+	ZoneScopedS(60);
 	if (data.tree) {
 		return data.tree->get_physics_process_time();
 	} else {
@@ -740,6 +775,7 @@ double Node::get_physics_process_delta_time() const {
 }
 
 double Node::get_process_delta_time() const {
+	ZoneScopedS(60);
 	if (data.tree) {
 		return data.tree->get_process_time();
 	} else {
@@ -748,6 +784,7 @@ double Node::get_process_delta_time() const {
 }
 
 void Node::set_process(bool p_process) {
+	ZoneScopedS(60);
 	if (data.process == p_process) {
 		return;
 	}
@@ -762,10 +799,12 @@ void Node::set_process(bool p_process) {
 }
 
 bool Node::is_processing() const {
+	ZoneScopedS(60);
 	return data.process;
 }
 
 void Node::set_process_internal(bool p_process_internal) {
+	ZoneScopedS(60);
 	if (data.process_internal == p_process_internal) {
 		return;
 	}
@@ -780,10 +819,12 @@ void Node::set_process_internal(bool p_process_internal) {
 }
 
 bool Node::is_processing_internal() const {
+	ZoneScopedS(60);
 	return data.process_internal;
 }
 
 void Node::set_process_priority(int p_priority) {
+	ZoneScopedS(60);
 	data.process_priority = p_priority;
 
 	// Make sure we are in SceneTree.
@@ -809,10 +850,12 @@ void Node::set_process_priority(int p_priority) {
 }
 
 int Node::get_process_priority() const {
+	ZoneScopedS(60);
 	return data.process_priority;
 }
 
 void Node::set_process_input(bool p_enable) {
+	ZoneScopedS(60);
 	if (p_enable == data.input) {
 		return;
 	}
@@ -830,10 +873,12 @@ void Node::set_process_input(bool p_enable) {
 }
 
 bool Node::is_processing_input() const {
+	ZoneScopedS(60);
 	return data.input;
 }
 
 void Node::set_process_shortcut_input(bool p_enable) {
+	ZoneScopedS(60);
 	if (p_enable == data.shortcut_input) {
 		return;
 	}
@@ -850,10 +895,12 @@ void Node::set_process_shortcut_input(bool p_enable) {
 }
 
 bool Node::is_processing_shortcut_input() const {
+	ZoneScopedS(60);
 	return data.shortcut_input;
 }
 
 void Node::set_process_unhandled_input(bool p_enable) {
+	ZoneScopedS(60);
 	if (p_enable == data.unhandled_input) {
 		return;
 	}
@@ -870,10 +917,12 @@ void Node::set_process_unhandled_input(bool p_enable) {
 }
 
 bool Node::is_processing_unhandled_input() const {
+	ZoneScopedS(60);
 	return data.unhandled_input;
 }
 
 void Node::set_process_unhandled_key_input(bool p_enable) {
+	ZoneScopedS(60);
 	if (p_enable == data.unhandled_key_input) {
 		return;
 	}
@@ -890,18 +939,22 @@ void Node::set_process_unhandled_key_input(bool p_enable) {
 }
 
 bool Node::is_processing_unhandled_key_input() const {
+	ZoneScopedS(60);
 	return data.unhandled_key_input;
 }
 
 StringName Node::get_name() const {
+	ZoneScopedS(60);
 	return data.name;
 }
 
 void Node::_set_name_nocheck(const StringName &p_name) {
+	ZoneScopedS(60);
 	data.name = p_name;
 }
 
 void Node::set_name(const String &p_name) {
+	ZoneScopedS(60);
 	String name = p_name.validate_node_name();
 
 	ERR_FAIL_COND(name.is_empty());
@@ -931,11 +984,13 @@ void Node::set_name(const String &p_name) {
 static SafeRefCount node_hrcr_count;
 
 void Node::init_node_hrcr() {
+	ZoneScopedS(60);
 	node_hrcr_count.init(1);
 }
 
 #ifdef TOOLS_ENABLED
 String Node::validate_child_name(Node *p_child) {
+	ZoneScopedS(60);
 	StringName name = p_child->data.name;
 	_generate_serial_child_name(p_child, name);
 	return name;
@@ -943,6 +998,7 @@ String Node::validate_child_name(Node *p_child) {
 #endif
 
 String Node::adjust_name_casing(const String &p_name) {
+	ZoneScopedS(60);
 	switch (GLOBAL_GET("editor/node_naming/name_casing").operator int()) {
 		case NAME_CASING_PASCAL_CASE:
 			return p_name.to_pascal_case();
@@ -955,6 +1011,7 @@ String Node::adjust_name_casing(const String &p_name) {
 }
 
 void Node::_validate_child_name(Node *p_child, bool p_force_human_readable) {
+	ZoneScopedS(60);
 	/* Make sure the name is unique */
 
 	if (p_force_human_readable) {
@@ -999,6 +1056,7 @@ void Node::_validate_child_name(Node *p_child, bool p_force_human_readable) {
 
 // Return s + 1 as if it were an integer
 String increase_numeric_string(const String &s) {
+	ZoneScopedS(60);
 	String res = s;
 	bool carry = res.length() > 0;
 
@@ -1023,6 +1081,7 @@ String increase_numeric_string(const String &s) {
 }
 
 void Node::_generate_serial_child_name(const Node *p_child, StringName &name) const {
+	ZoneScopedS(60);
 	if (name == StringName()) {
 		// No name and a new name is needed, create one.
 
@@ -1101,6 +1160,7 @@ void Node::_generate_serial_child_name(const Node *p_child, StringName &name) co
 }
 
 void Node::_add_child_nocheck(Node *p_child, const StringName &p_name) {
+	ZoneScopedS(60);
 	//add a child node quickly, without name validation
 
 	p_child->data.name = p_name;
@@ -1124,6 +1184,7 @@ void Node::_add_child_nocheck(Node *p_child, const StringName &p_name) {
 }
 
 void Node::add_child(Node *p_child, bool p_force_readable_name, InternalMode p_internal) {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_child);
 	ERR_FAIL_COND_MSG(p_child == this, vformat("Can't add child '%s' to itself.", p_child->get_name())); // adding to itself!
 	ERR_FAIL_COND_MSG(p_child->data.parent, vformat("Can't add child '%s' to '%s', already has a parent '%s'.", p_child->get_name(), get_name(), p_child->data.parent->get_name())); //Fail if node has a parent
@@ -1147,6 +1208,7 @@ void Node::add_child(Node *p_child, bool p_force_readable_name, InternalMode p_i
 }
 
 void Node::add_sibling(Node *p_sibling, bool p_force_readable_name) {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_sibling);
 	ERR_FAIL_NULL(data.parent);
 	ERR_FAIL_COND_MSG(p_sibling == this, vformat("Can't add sibling '%s' to itself.", p_sibling->get_name())); // adding to itself!
@@ -1164,6 +1226,7 @@ void Node::add_sibling(Node *p_sibling, bool p_force_readable_name) {
 }
 
 void Node::remove_child(Node *p_child) {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_child);
 	ERR_FAIL_COND_MSG(data.blocked > 0, "Parent node is busy setting up children, remove_node() failed. Consider using call_deferred(\"remove_child\", child) instead.");
 
@@ -1222,6 +1285,7 @@ void Node::remove_child(Node *p_child) {
 }
 
 int Node::get_child_count(bool p_include_internal) const {
+	ZoneScopedS(60);
 	if (p_include_internal) {
 		return data.children.size();
 	} else {
@@ -1230,6 +1294,7 @@ int Node::get_child_count(bool p_include_internal) const {
 }
 
 Node *Node::get_child(int p_index, bool p_include_internal) const {
+	ZoneScopedS(60);
 	if (p_include_internal) {
 		if (p_index < 0) {
 			p_index += data.children.size();
@@ -1247,6 +1312,7 @@ Node *Node::get_child(int p_index, bool p_include_internal) const {
 }
 
 Node *Node::_get_child_by_name(const StringName &p_name) const {
+	ZoneScopedS(60);
 	int cc = data.children.size();
 	Node *const *cd = data.children.ptr();
 
@@ -1260,6 +1326,7 @@ Node *Node::_get_child_by_name(const StringName &p_name) const {
 }
 
 Node *Node::get_node_or_null(const NodePath &p_path) const {
+	ZoneScopedS(60);
 	if (p_path.is_empty()) {
 		return nullptr;
 	}
@@ -1338,6 +1405,7 @@ Node *Node::get_node_or_null(const NodePath &p_path) const {
 }
 
 Node *Node::get_node(const NodePath &p_path) const {
+	ZoneScopedS(60);
 	Node *node = get_node_or_null(p_path);
 
 	if (unlikely(!node)) {
@@ -1365,12 +1433,14 @@ Node *Node::get_node(const NodePath &p_path) const {
 }
 
 bool Node::has_node(const NodePath &p_path) const {
+	ZoneScopedS(60);
 	return get_node_or_null(p_path) != nullptr;
 }
 
 // Finds the first child node (in tree order) whose name matches the given pattern.
 // Can be recursive or not, and limited to owned nodes.
 Node *Node::find_child(const String &p_pattern, bool p_recursive, bool p_owned) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_pattern.is_empty(), nullptr);
 
 	Node *const *cptr = data.children.ptr();
@@ -1399,6 +1469,7 @@ Node *Node::find_child(const String &p_pattern, bool p_recursive, bool p_owned) 
 // or both (either pattern or type can be left empty).
 // Can be recursive or not, and limited to owned nodes.
 TypedArray<Node> Node::find_children(const String &p_pattern, const String &p_type, bool p_recursive, bool p_owned) const {
+	ZoneScopedS(60);
 	TypedArray<Node> ret;
 	ERR_FAIL_COND_V(p_pattern.is_empty() && p_type.is_empty(), ret);
 
@@ -1440,10 +1511,12 @@ TypedArray<Node> Node::find_children(const String &p_pattern, const String &p_ty
 }
 
 Node *Node::get_parent() const {
+	ZoneScopedS(60);
 	return data.parent;
 }
 
 Node *Node::find_parent(const String &p_pattern) const {
+	ZoneScopedS(60);
 	Node *p = data.parent;
 	while (p) {
 		if (p->data.name.operator String().match(p_pattern)) {
@@ -1456,6 +1529,7 @@ Node *Node::find_parent(const String &p_pattern) const {
 }
 
 bool Node::is_ancestor_of(const Node *p_node) const {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL_V(p_node, false);
 	Node *p = p_node->data.parent;
 	while (p) {
@@ -1469,6 +1543,7 @@ bool Node::is_ancestor_of(const Node *p_node) const {
 }
 
 bool Node::is_greater_than(const Node *p_node) const {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL_V(p_node, false);
 	ERR_FAIL_COND_V(!data.inside_tree, false);
 	ERR_FAIL_COND_V(!p_node->data.inside_tree, false);
@@ -1522,6 +1597,7 @@ bool Node::is_greater_than(const Node *p_node) const {
 }
 
 void Node::get_owned_by(Node *p_by, List<Node *> *p_owned) {
+	ZoneScopedS(60);
 	if (data.owner == p_by) {
 		p_owned->push_back(this);
 	}
@@ -1532,6 +1608,7 @@ void Node::get_owned_by(Node *p_by, List<Node *> *p_owned) {
 }
 
 void Node::_set_owner_nocheck(Node *p_owner) {
+	ZoneScopedS(60);
 	if (data.owner == p_owner) {
 		return;
 	}
@@ -1545,6 +1622,7 @@ void Node::_set_owner_nocheck(Node *p_owner) {
 }
 
 void Node::_release_unique_name_in_owner() {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(data.owner); // Sanity check.
 	StringName key = StringName(UNIQUE_NODE_PREFIX + data.name.operator String());
 	Node **which = data.owner->data.owned_unique_nodes.getptr(key);
@@ -1555,6 +1633,7 @@ void Node::_release_unique_name_in_owner() {
 }
 
 void Node::_acquire_unique_name_in_owner() {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(data.owner); // Sanity check.
 	StringName key = StringName(UNIQUE_NODE_PREFIX + data.name.operator String());
 	Node **which = data.owner->data.owned_unique_nodes.getptr(key);
@@ -1569,6 +1648,7 @@ void Node::_acquire_unique_name_in_owner() {
 }
 
 void Node::set_unique_name_in_owner(bool p_enabled) {
+	ZoneScopedS(60);
 	if (data.unique_name_in_owner == p_enabled) {
 		return;
 	}
@@ -1586,10 +1666,12 @@ void Node::set_unique_name_in_owner(bool p_enabled) {
 }
 
 bool Node::is_unique_name_in_owner() const {
+	ZoneScopedS(60);
 	return data.unique_name_in_owner;
 }
 
 void Node::set_owner(Node *p_owner) {
+	ZoneScopedS(60);
 	if (data.owner) {
 		if (data.unique_name_in_owner) {
 			_release_unique_name_in_owner();
@@ -1627,10 +1709,12 @@ void Node::set_owner(Node *p_owner) {
 }
 
 Node *Node::get_owner() const {
+	ZoneScopedS(60);
 	return data.owner;
 }
 
 Node *Node::find_common_parent_with(const Node *p_node) const {
+	ZoneScopedS(60);
 	if (this == p_node) {
 		return const_cast<Node *>(p_node);
 	}
@@ -1661,6 +1745,7 @@ Node *Node::find_common_parent_with(const Node *p_node) const {
 }
 
 NodePath Node::get_path_to(const Node *p_node) const {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL_V(p_node, NodePath());
 
 	if (this == p_node) {
@@ -1712,6 +1797,7 @@ NodePath Node::get_path_to(const Node *p_node) const {
 }
 
 NodePath Node::get_path() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!is_inside_tree(), NodePath(), "Cannot get path of node as it is not in a scene tree.");
 
 	if (data.path_cache) {
@@ -1735,10 +1821,12 @@ NodePath Node::get_path() const {
 }
 
 bool Node::is_in_group(const StringName &p_identifier) const {
+	ZoneScopedS(60);
 	return data.grouped.has(p_identifier);
 }
 
 void Node::add_to_group(const StringName &p_identifier, bool p_persistent) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!p_identifier.operator String().length());
 
 	if (data.grouped.has(p_identifier)) {
@@ -1759,6 +1847,7 @@ void Node::add_to_group(const StringName &p_identifier, bool p_persistent) {
 }
 
 void Node::remove_from_group(const StringName &p_identifier) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!data.grouped.has(p_identifier));
 
 	HashMap<StringName, GroupData>::Iterator E = data.grouped.find(p_identifier);
@@ -1773,6 +1862,7 @@ void Node::remove_from_group(const StringName &p_identifier) {
 }
 
 TypedArray<StringName> Node::_get_groups() const {
+	ZoneScopedS(60);
 	TypedArray<StringName> groups;
 	List<GroupInfo> gi;
 	get_groups(&gi);
@@ -1784,6 +1874,7 @@ TypedArray<StringName> Node::_get_groups() const {
 }
 
 void Node::get_groups(List<GroupInfo> *p_groups) const {
+	ZoneScopedS(60);
 	for (const KeyValue<StringName, GroupData> &E : data.grouped) {
 		GroupInfo gi;
 		gi.name = E.key;
@@ -1793,6 +1884,7 @@ void Node::get_groups(List<GroupInfo> *p_groups) const {
 }
 
 int Node::get_persistent_group_count() const {
+	ZoneScopedS(60);
 	int count = 0;
 
 	for (const KeyValue<StringName, GroupData> &E : data.grouped) {
@@ -1805,6 +1897,7 @@ int Node::get_persistent_group_count() const {
 }
 
 void Node::_print_tree_pretty(const String &prefix, const bool last) {
+	ZoneScopedS(60);
 	String new_prefix = last ? String::utf8(" ┖╴") : String::utf8(" ┠╴");
 	print_line(prefix + new_prefix + String(get_name()));
 	for (int i = 0; i < data.children.size(); i++) {
@@ -1814,14 +1907,17 @@ void Node::_print_tree_pretty(const String &prefix, const bool last) {
 }
 
 void Node::print_tree_pretty() {
+	ZoneScopedS(60);
 	_print_tree_pretty("", true);
 }
 
 void Node::print_tree() {
+	ZoneScopedS(60);
 	_print_tree(this);
 }
 
 void Node::_print_tree(const Node *p_node) {
+	ZoneScopedS(60);
 	print_line(String(p_node->get_path_to(this)));
 	for (int i = 0; i < data.children.size(); i++) {
 		data.children[i]->_print_tree(p_node);
@@ -1829,6 +1925,7 @@ void Node::_print_tree(const Node *p_node) {
 }
 
 void Node::_propagate_reverse_notification(int p_notification) {
+	ZoneScopedS(60);
 	data.blocked++;
 	for (int i = data.children.size() - 1; i >= 0; i--) {
 		data.children[i]->_propagate_reverse_notification(p_notification);
@@ -1839,6 +1936,7 @@ void Node::_propagate_reverse_notification(int p_notification) {
 }
 
 void Node::_propagate_deferred_notification(int p_notification, bool p_reverse) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!is_inside_tree());
 
 	data.blocked++;
@@ -1859,6 +1957,7 @@ void Node::_propagate_deferred_notification(int p_notification, bool p_reverse) 
 }
 
 void Node::propagate_notification(int p_notification) {
+	ZoneScopedS(60);
 	data.blocked++;
 	notification(p_notification);
 
@@ -1869,6 +1968,7 @@ void Node::propagate_notification(int p_notification) {
 }
 
 void Node::propagate_call(const StringName &p_method, const Array &p_args, const bool p_parent_first) {
+	ZoneScopedS(60);
 	data.blocked++;
 
 	if (p_parent_first && has_method(p_method)) {
@@ -1887,6 +1987,7 @@ void Node::propagate_call(const StringName &p_method, const Array &p_args, const
 }
 
 void Node::_propagate_replace_owner(Node *p_owner, Node *p_by_owner) {
+	ZoneScopedS(60);
 	if (get_owner() == p_owner) {
 		set_owner(p_by_owner);
 	}
@@ -1899,6 +2000,7 @@ void Node::_propagate_replace_owner(Node *p_owner, Node *p_by_owner) {
 }
 
 int Node::get_index(bool p_include_internal) const {
+	ZoneScopedS(60);
 	// p_include_internal = false doesn't make sense if the node is internal.
 	ERR_FAIL_COND_V_MSG(!p_include_internal && (_is_internal_front() || _is_internal_back()), -1, "Node is internal. Can't get index with 'include_internal' being false.");
 
@@ -1909,6 +2011,7 @@ int Node::get_index(bool p_include_internal) const {
 }
 
 Ref<Tween> Node::create_tween() {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!data.tree, nullptr, "Can't create Tween when not inside scene tree.");
 	Ref<Tween> tween = get_tree()->create_tween();
 	tween->bind_node(this);
@@ -1916,22 +2019,27 @@ Ref<Tween> Node::create_tween() {
 }
 
 void Node::set_scene_file_path(const String &p_scene_file_path) {
+	ZoneScopedS(60);
 	data.scene_file_path = p_scene_file_path;
 }
 
 String Node::get_scene_file_path() const {
+	ZoneScopedS(60);
 	return data.scene_file_path;
 }
 
 void Node::set_editor_description(const String &p_editor_description) {
+	ZoneScopedS(60);
 	data.editor_description = p_editor_description;
 }
 
 String Node::get_editor_description() const {
+	ZoneScopedS(60);
 	return data.editor_description;
 }
 
 void Node::set_editable_instance(Node *p_node, bool p_editable) {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_node);
 	ERR_FAIL_COND(!is_ancestor_of(p_node));
 	if (!p_editable) {
@@ -1945,6 +2053,7 @@ void Node::set_editable_instance(Node *p_node, bool p_editable) {
 }
 
 bool Node::is_editable_instance(const Node *p_node) const {
+	ZoneScopedS(60);
 	if (!p_node) {
 		return false; // Easier, null is never editable. :)
 	}
@@ -1953,6 +2062,7 @@ bool Node::is_editable_instance(const Node *p_node) const {
 }
 
 Node *Node::get_deepest_editable_node(Node *p_start_node) const {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL_V(p_start_node, nullptr);
 	ERR_FAIL_COND_V(!is_ancestor_of(p_start_node), p_start_node);
 
@@ -1972,6 +2082,7 @@ Node *Node::get_deepest_editable_node(Node *p_start_node) const {
 
 #ifdef TOOLS_ENABLED
 void Node::set_property_pinned(const String &p_property, bool p_pinned) {
+	ZoneScopedS(60);
 	bool current_pinned = false;
 	Array pinned = get_meta("_edit_pinned_properties_", Array());
 	StringName psa = get_property_store_alias(p_property);
@@ -1993,17 +2104,20 @@ void Node::set_property_pinned(const String &p_property, bool p_pinned) {
 }
 
 bool Node::is_property_pinned(const StringName &p_property) const {
+	ZoneScopedS(60);
 	Array pinned = get_meta("_edit_pinned_properties_", Array());
 	StringName psa = get_property_store_alias(p_property);
 	return pinned.has(psa);
 }
 
 StringName Node::get_property_store_alias(const StringName &p_property) const {
+	ZoneScopedS(60);
 	return p_property;
 }
 #endif
 
 void Node::get_storable_properties(HashSet<StringName> &r_storable_properties) const {
+	ZoneScopedS(60);
 	List<PropertyInfo> pi;
 	get_property_list(&pi);
 	for (List<PropertyInfo>::Element *E = pi.front(); E; E = E->next()) {
@@ -2014,6 +2128,7 @@ void Node::get_storable_properties(HashSet<StringName> &r_storable_properties) c
 }
 
 String Node::to_string() {
+	ZoneScopedS(60);
 	if (get_script_instance()) {
 		bool valid;
 		String ret = get_script_instance()->to_string(&valid);
@@ -2026,30 +2141,37 @@ String Node::to_string() {
 }
 
 void Node::set_scene_instance_state(const Ref<SceneState> &p_state) {
+	ZoneScopedS(60);
 	data.instance_state = p_state;
 }
 
 Ref<SceneState> Node::get_scene_instance_state() const {
+	ZoneScopedS(60);
 	return data.instance_state;
 }
 
 void Node::set_scene_inherited_state(const Ref<SceneState> &p_state) {
+	ZoneScopedS(60);
 	data.inherited_state = p_state;
 }
 
 Ref<SceneState> Node::get_scene_inherited_state() const {
+	ZoneScopedS(60);
 	return data.inherited_state;
 }
 
 void Node::set_scene_instance_load_placeholder(bool p_enable) {
+	ZoneScopedS(60);
 	data.use_placeholder = p_enable;
 }
 
 bool Node::get_scene_instance_load_placeholder() const {
+	ZoneScopedS(60);
 	return data.use_placeholder;
 }
 
 Node *Node::_duplicate(int p_flags, HashMap<const Node *, Node *> *r_duplimap) const {
+	ZoneScopedS(60);
 	Node *node = nullptr;
 
 	bool instantiated = false;
@@ -2231,6 +2353,7 @@ Node *Node::_duplicate(int p_flags, HashMap<const Node *, Node *> *r_duplimap) c
 }
 
 Node *Node::duplicate(int p_flags) const {
+	ZoneScopedS(60);
 	Node *dupe = _duplicate(p_flags);
 
 	if (dupe && (p_flags & DUPLICATE_SIGNALS)) {
@@ -2242,10 +2365,12 @@ Node *Node::duplicate(int p_flags) const {
 
 #ifdef TOOLS_ENABLED
 Node *Node::duplicate_from_editor(HashMap<const Node *, Node *> &r_duplimap) const {
+	ZoneScopedS(60);
 	return duplicate_from_editor(r_duplimap, HashMap<Ref<Resource>, Ref<Resource>>());
 }
 
 Node *Node::duplicate_from_editor(HashMap<const Node *, Node *> &r_duplimap, const HashMap<Ref<Resource>, Ref<Resource>> &p_resource_remap) const {
+	ZoneScopedS(60);
 	Node *dupe = _duplicate(DUPLICATE_SIGNALS | DUPLICATE_GROUPS | DUPLICATE_SCRIPTS | DUPLICATE_USE_INSTANCING | DUPLICATE_FROM_EDITOR, &r_duplimap);
 
 	// This is used by SceneTreeDock's paste functionality. When pasting to foreign scene, resources are duplicated.
@@ -2262,6 +2387,7 @@ Node *Node::duplicate_from_editor(HashMap<const Node *, Node *> &r_duplimap, con
 }
 
 void Node::remap_node_resources(Node *p_node, const HashMap<Ref<Resource>, Ref<Resource>> &p_resource_remap) const {
+	ZoneScopedS(60);
 	List<PropertyInfo> props;
 	p_node->get_property_list(&props);
 
@@ -2288,6 +2414,7 @@ void Node::remap_node_resources(Node *p_node, const HashMap<Ref<Resource>, Ref<R
 }
 
 void Node::remap_nested_resources(Ref<Resource> p_resource, const HashMap<Ref<Resource>, Ref<Resource>> &p_resource_remap) const {
+	ZoneScopedS(60);
 	List<PropertyInfo> props;
 	p_resource->get_property_list(&props);
 
@@ -2314,6 +2441,7 @@ void Node::remap_nested_resources(Ref<Resource> p_resource, const HashMap<Ref<Re
 // because re-targeting of connections from some descendant to another is not possible
 // if the emitter node comes later in tree order than the receiver
 void Node::_duplicate_signals(const Node *p_original, Node *p_copy) const {
+	ZoneScopedS(60);
 	if ((this != p_original) && !(p_original->is_ancestor_of(this))) {
 		return;
 	}
@@ -2365,6 +2493,7 @@ void Node::_duplicate_signals(const Node *p_original, Node *p_copy) const {
 }
 
 static void find_owned_by(Node *p_by, Node *p_node, List<Node *> *p_owned) {
+	ZoneScopedS(60);
 	if (p_node->get_owner() == p_by) {
 		p_owned->push_back(p_node);
 	}
@@ -2375,6 +2504,7 @@ static void find_owned_by(Node *p_by, Node *p_node, List<Node *> *p_owned) {
 }
 
 void Node::replace_by(Node *p_node, bool p_keep_groups) {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_node);
 	ERR_FAIL_COND(p_node->data.parent);
 
@@ -2430,6 +2560,7 @@ void Node::replace_by(Node *p_node, bool p_keep_groups) {
 }
 
 void Node::_replace_connections_target(Node *p_new_target) {
+	ZoneScopedS(60);
 	List<Connection> cl;
 	get_signals_connected_to_this(&cl);
 
@@ -2444,6 +2575,7 @@ void Node::_replace_connections_target(Node *p_new_target) {
 }
 
 bool Node::has_node_and_resource(const NodePath &p_path) const {
+	ZoneScopedS(60);
 	if (!has_node(p_path)) {
 		return false;
 	}
@@ -2455,6 +2587,7 @@ bool Node::has_node_and_resource(const NodePath &p_path) const {
 }
 
 Array Node::_get_node_and_resource(const NodePath &p_path) {
+	ZoneScopedS(60);
 	Ref<Resource> res;
 	Vector<StringName> leftover_path;
 	Node *node = get_node_and_resource(p_path, res, leftover_path, false);
@@ -2478,6 +2611,7 @@ Array Node::_get_node_and_resource(const NodePath &p_path) {
 }
 
 Node *Node::get_node_and_resource(const NodePath &p_path, Ref<Resource> &r_res, Vector<StringName> &r_leftover_subpath, bool p_last_is_property) const {
+	ZoneScopedS(60);
 	Node *node = get_node(p_path);
 	r_res = Ref<Resource>();
 	r_leftover_subpath = Vector<StringName>();
@@ -2514,6 +2648,7 @@ Node *Node::get_node_and_resource(const NodePath &p_path, Ref<Resource> &r_res, 
 }
 
 void Node::_set_tree(SceneTree *p_tree) {
+	ZoneScopedS(60);
 	SceneTree *tree_changed_a = nullptr;
 	SceneTree *tree_changed_b = nullptr;
 
@@ -2546,6 +2681,7 @@ void Node::_set_tree(SceneTree *p_tree) {
 
 #ifdef DEBUG_ENABLED
 static void _Node_debug_sn(Object *p_obj) {
+	ZoneScopedS(60);
 	Node *n = Object::cast_to<Node>(p_obj);
 	if (!n) {
 		return;
@@ -2571,6 +2707,7 @@ static void _Node_debug_sn(Object *p_obj) {
 #endif // DEBUG_ENABLED
 
 void Node::_print_orphan_nodes() {
+	ZoneScopedS(60);
 	print_orphan_nodes();
 }
 
@@ -2581,6 +2718,7 @@ void Node::print_orphan_nodes() {
 }
 
 void Node::queue_free() {
+	ZoneScopedS(60);
 	if (is_inside_tree()) {
 		get_tree()->queue_delete(this);
 	} else {
@@ -2589,6 +2727,7 @@ void Node::queue_free() {
 }
 
 TypedArray<Node> Node::_get_children(bool p_include_internal) const {
+	ZoneScopedS(60);
 	TypedArray<Node> arr;
 	int cc = get_child_count(p_include_internal);
 	arr.resize(cc);
@@ -2614,6 +2753,7 @@ NodePath Node::get_import_path() const {
 }
 
 static void _add_nodes_to_options(const Node *p_base, const Node *p_node, List<String> *r_options) {
+	ZoneScopedS(60);
 	if (p_node != p_base && !p_node->get_owner()) {
 		return;
 	}
@@ -2625,6 +2765,7 @@ static void _add_nodes_to_options(const Node *p_base, const Node *p_node, List<S
 }
 
 void Node::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+	ZoneScopedS(60);
 	String pf = p_function;
 	if ((pf == "has_node" || pf == "get_node") && p_idx == 0) {
 		_add_nodes_to_options(this, this, r_options);
@@ -2633,6 +2774,7 @@ void Node::get_argument_options(const StringName &p_function, int p_idx, List<St
 }
 
 void Node::clear_internal_tree_resource_paths() {
+	ZoneScopedS(60);
 	clear_internal_resource_paths();
 	for (int i = 0; i < data.children.size(); i++) {
 		data.children[i]->clear_internal_tree_resource_paths();
@@ -2640,6 +2782,7 @@ void Node::clear_internal_tree_resource_paths() {
 }
 
 PackedStringArray Node::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray ret;
 
 	Vector<String> warnings;
@@ -2651,6 +2794,7 @@ PackedStringArray Node::get_configuration_warnings() const {
 }
 
 String Node::get_configuration_warnings_as_string() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = get_configuration_warnings();
 	String all_warnings = String();
 	for (int i = 0; i < warnings.size(); i++) {
@@ -2676,22 +2820,27 @@ void Node::update_configuration_warnings() {
 }
 
 bool Node::is_owned_by_parent() const {
+	ZoneScopedS(60);
 	return data.parent_owned;
 }
 
 void Node::set_display_folded(bool p_folded) {
+	ZoneScopedS(60);
 	data.display_folded = p_folded;
 }
 
 bool Node::is_displayed_folded() const {
+	ZoneScopedS(60);
 	return data.display_folded;
 }
 
 void Node::request_ready() {
+	ZoneScopedS(60);
 	data.ready_first = true;
 }
 
 void Node::_call_input(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	GDVIRTUAL_CALL(_input, p_event);
 	if (!is_inside_tree() || !get_viewport() || get_viewport()->is_input_handled()) {
 		return;
@@ -2700,6 +2849,7 @@ void Node::_call_input(const Ref<InputEvent> &p_event) {
 }
 
 void Node::_call_shortcut_input(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	GDVIRTUAL_CALL(_shortcut_input, p_event);
 	if (!is_inside_tree() || !get_viewport() || get_viewport()->is_input_handled()) {
 		return;
@@ -2708,6 +2858,7 @@ void Node::_call_shortcut_input(const Ref<InputEvent> &p_event) {
 }
 
 void Node::_call_unhandled_input(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	GDVIRTUAL_CALL(_unhandled_input, p_event);
 	if (!is_inside_tree() || !get_viewport() || get_viewport()->is_input_handled()) {
 		return;
@@ -2716,6 +2867,7 @@ void Node::_call_unhandled_input(const Ref<InputEvent> &p_event) {
 }
 
 void Node::_call_unhandled_key_input(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	GDVIRTUAL_CALL(_unhandled_key_input, p_event);
 	if (!is_inside_tree() || !get_viewport() || get_viewport()->is_input_handled()) {
 		return;
@@ -2736,6 +2888,7 @@ void Node::unhandled_key_input(const Ref<InputEvent> &p_key_event) {
 }
 
 void Node::_bind_methods() {
+	ZoneScopedS(60);
 	GLOBAL_DEF("editor/node_naming/name_num_separator", 0);
 	ProjectSettings::get_singleton()->set_custom_property_info("editor/node_naming/name_num_separator", PropertyInfo(Variant::INT, "editor/node_naming/name_num_separator", PROPERTY_HINT_ENUM, "None,Space,Underscore,Dash"));
 	GLOBAL_DEF("editor/node_naming/name_casing", NAME_CASING_PASCAL_CASE);
@@ -2958,6 +3111,7 @@ void Node::_bind_methods() {
 }
 
 String Node::_get_name_num_separator() {
+	ZoneScopedS(60);
 	switch (GLOBAL_GET("editor/node_naming/name_num_separator").operator int()) {
 		case 0:
 			return "";
@@ -2972,10 +3126,12 @@ String Node::_get_name_num_separator() {
 }
 
 Node::Node() {
+	ZoneScopedS(60);
 	orphan_node_count++;
 }
 
 Node::~Node() {
+	ZoneScopedS(60);
 	data.grouped.clear();
 	data.owned.clear();
 	data.children.clear();

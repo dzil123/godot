@@ -28,12 +28,44 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  ray_cast_2d.cpp                                                      */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "ray_cast_2d.h"
 
 #include "collision_object_2d.h"
 #include "scene/resources/world_2d.h"
 
 void RayCast2D::set_target_position(const Vector2 &p_point) {
+	ZoneScopedS(60);
 	target_position = p_point;
 	if (is_inside_tree() && (Engine::get_singleton()->is_editor_hint() || get_tree()->is_debugging_collisions_hint())) {
 		queue_redraw();
@@ -41,18 +73,22 @@ void RayCast2D::set_target_position(const Vector2 &p_point) {
 }
 
 Vector2 RayCast2D::get_target_position() const {
+	ZoneScopedS(60);
 	return target_position;
 }
 
 void RayCast2D::set_collision_mask(uint32_t p_mask) {
+	ZoneScopedS(60);
 	collision_mask = p_mask;
 }
 
 uint32_t RayCast2D::get_collision_mask() const {
+	ZoneScopedS(60);
 	return collision_mask;
 }
 
 void RayCast2D::set_collision_mask_value(int p_layer_number, bool p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_layer_number < 1, "Collision layer number must be between 1 and 32 inclusive.");
 	ERR_FAIL_COND_MSG(p_layer_number > 32, "Collision layer number must be between 1 and 32 inclusive.");
 	uint32_t mask = get_collision_mask();
@@ -65,16 +101,19 @@ void RayCast2D::set_collision_mask_value(int p_layer_number, bool p_value) {
 }
 
 bool RayCast2D::get_collision_mask_value(int p_layer_number) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(p_layer_number < 1, false, "Collision layer number must be between 1 and 32 inclusive.");
 	ERR_FAIL_COND_V_MSG(p_layer_number > 32, false, "Collision layer number must be between 1 and 32 inclusive.");
 	return get_collision_mask() & (1 << (p_layer_number - 1));
 }
 
 bool RayCast2D::is_colliding() const {
+	ZoneScopedS(60);
 	return collided;
 }
 
 Object *RayCast2D::get_collider() const {
+	ZoneScopedS(60);
 	if (against.is_null()) {
 		return nullptr;
 	}
@@ -83,22 +122,27 @@ Object *RayCast2D::get_collider() const {
 }
 
 RID RayCast2D::get_collider_rid() const {
+	ZoneScopedS(60);
 	return against_rid;
 }
 
 int RayCast2D::get_collider_shape() const {
+	ZoneScopedS(60);
 	return against_shape;
 }
 
 Vector2 RayCast2D::get_collision_point() const {
+	ZoneScopedS(60);
 	return collision_point;
 }
 
 Vector2 RayCast2D::get_collision_normal() const {
+	ZoneScopedS(60);
 	return collision_normal;
 }
 
 void RayCast2D::set_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	enabled = p_enabled;
 	queue_redraw();
 	if (is_inside_tree() && !Engine::get_singleton()->is_editor_hint()) {
@@ -110,10 +154,12 @@ void RayCast2D::set_enabled(bool p_enabled) {
 }
 
 bool RayCast2D::is_enabled() const {
+	ZoneScopedS(60);
 	return enabled;
 }
 
 void RayCast2D::set_exclude_parent_body(bool p_exclude_parent_body) {
+	ZoneScopedS(60);
 	if (exclude_parent_body == p_exclude_parent_body) {
 		return;
 	}
@@ -134,10 +180,12 @@ void RayCast2D::set_exclude_parent_body(bool p_exclude_parent_body) {
 }
 
 bool RayCast2D::get_exclude_parent_body() const {
+	ZoneScopedS(60);
 	return exclude_parent_body;
 }
 
 void RayCast2D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			if (enabled && !Engine::get_singleton()->is_editor_hint()) {
@@ -179,6 +227,7 @@ void RayCast2D::_notification(int p_what) {
 }
 
 void RayCast2D::_update_raycast_state() {
+	ZoneScopedS(60);
 	Ref<World2D> w2d = get_world_2d();
 	ERR_FAIL_COND(w2d.is_null());
 
@@ -224,6 +273,7 @@ void RayCast2D::_update_raycast_state() {
 }
 
 void RayCast2D::_draw_debug_shape() {
+	ZoneScopedS(60);
 	Color draw_col = collided ? Color(1.0, 0.01, 0) : get_tree()->get_debug_collisions_color();
 	if (!enabled) {
 		const float g = draw_col.get_v();
@@ -260,28 +310,34 @@ void RayCast2D::_draw_debug_shape() {
 }
 
 void RayCast2D::force_raycast_update() {
+	ZoneScopedS(60);
 	_update_raycast_state();
 }
 
 void RayCast2D::add_exception_rid(const RID &p_rid) {
+	ZoneScopedS(60);
 	exclude.insert(p_rid);
 }
 
 void RayCast2D::add_exception(const CollisionObject2D *p_node) {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL_MSG(p_node, "The passed Node must be an instance of CollisionObject2D.");
 	add_exception_rid(p_node->get_rid());
 }
 
 void RayCast2D::remove_exception_rid(const RID &p_rid) {
+	ZoneScopedS(60);
 	exclude.erase(p_rid);
 }
 
 void RayCast2D::remove_exception(const CollisionObject2D *p_node) {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL_MSG(p_node, "The passed Node must be an instance of CollisionObject2D.");
 	remove_exception_rid(p_node->get_rid());
 }
 
 void RayCast2D::clear_exceptions() {
+	ZoneScopedS(60);
 	exclude.clear();
 
 	if (exclude_parent_body && is_inside_tree()) {
@@ -293,30 +349,37 @@ void RayCast2D::clear_exceptions() {
 }
 
 void RayCast2D::set_collide_with_areas(bool p_enabled) {
+	ZoneScopedS(60);
 	collide_with_areas = p_enabled;
 }
 
 bool RayCast2D::is_collide_with_areas_enabled() const {
+	ZoneScopedS(60);
 	return collide_with_areas;
 }
 
 void RayCast2D::set_collide_with_bodies(bool p_enabled) {
+	ZoneScopedS(60);
 	collide_with_bodies = p_enabled;
 }
 
 bool RayCast2D::is_collide_with_bodies_enabled() const {
+	ZoneScopedS(60);
 	return collide_with_bodies;
 }
 
 void RayCast2D::set_hit_from_inside(bool p_enabled) {
+	ZoneScopedS(60);
 	hit_from_inside = p_enabled;
 }
 
 bool RayCast2D::is_hit_from_inside_enabled() const {
+	ZoneScopedS(60);
 	return hit_from_inside;
 }
 
 void RayCast2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_enabled", "enabled"), &RayCast2D::set_enabled);
 	ClassDB::bind_method(D_METHOD("is_enabled"), &RayCast2D::is_enabled);
 

@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  audio_stream_wav.cpp                                                 */
 /*************************************************************************/
@@ -34,6 +35,7 @@
 #include "core/io/marshalls.h"
 
 void AudioStreamPlaybackWAV::start(double p_from_pos) {
+	ZoneScopedS(60);
 	if (base->format == AudioStreamWAV::FORMAT_IMA_ADPCM) {
 		//no seeking in IMA_ADPCM
 		for (int i = 0; i < 2; i++) {
@@ -56,22 +58,27 @@ void AudioStreamPlaybackWAV::start(double p_from_pos) {
 }
 
 void AudioStreamPlaybackWAV::stop() {
+	ZoneScopedS(60);
 	active = false;
 }
 
 bool AudioStreamPlaybackWAV::is_playing() const {
+	ZoneScopedS(60);
 	return active;
 }
 
 int AudioStreamPlaybackWAV::get_loop_count() const {
+	ZoneScopedS(60);
 	return 0;
 }
 
 double AudioStreamPlaybackWAV::get_playback_position() const {
+	ZoneScopedS(60);
 	return float(offset >> MIX_FRAC_BITS) / base->mix_rate;
 }
 
 void AudioStreamPlaybackWAV::seek(double p_time) {
+	ZoneScopedS(60);
 	if (base->format == AudioStreamWAV::FORMAT_IMA_ADPCM) {
 		return; //no seeking in ima-adpcm
 	}
@@ -88,6 +95,7 @@ void AudioStreamPlaybackWAV::seek(double p_time) {
 
 template <class Depth, bool is_stereo, bool is_ima_adpcm>
 void AudioStreamPlaybackWAV::do_resample(const Depth *p_src, AudioFrame *p_dst, int64_t &offset, int32_t &increment, uint32_t amount, IMA_ADPCM_State *ima_adpcm) {
+	ZoneScopedS(60);
 	// this function will be compiled branchless by any decent compiler
 
 	int32_t final, final_r, next, next_r;
@@ -222,6 +230,7 @@ void AudioStreamPlaybackWAV::do_resample(const Depth *p_src, AudioFrame *p_dst, 
 }
 
 int AudioStreamPlaybackWAV::mix(AudioFrame *p_buffer, float p_rate_scale, int p_frames) {
+	ZoneScopedS(60);
 	if (!base->data || !active) {
 		for (int i = 0; i < p_frames; i++) {
 			p_buffer[i] = AudioFrame(0, 0);
@@ -407,6 +416,7 @@ int AudioStreamPlaybackWAV::mix(AudioFrame *p_buffer, float p_rate_scale, int p_
 }
 
 void AudioStreamPlaybackWAV::tag_used_streams() {
+	ZoneScopedS(60);
 	base->tag_used(get_playback_position());
 }
 
@@ -415,55 +425,68 @@ AudioStreamPlaybackWAV::AudioStreamPlaybackWAV() {}
 /////////////////////
 
 void AudioStreamWAV::set_format(Format p_format) {
+	ZoneScopedS(60);
 	format = p_format;
 }
 
 AudioStreamWAV::Format AudioStreamWAV::get_format() const {
+	ZoneScopedS(60);
 	return format;
 }
 
 void AudioStreamWAV::set_loop_mode(LoopMode p_loop_mode) {
+	ZoneScopedS(60);
 	loop_mode = p_loop_mode;
 }
 
 AudioStreamWAV::LoopMode AudioStreamWAV::get_loop_mode() const {
+	ZoneScopedS(60);
 	return loop_mode;
 }
 
 void AudioStreamWAV::set_loop_begin(int p_frame) {
+	ZoneScopedS(60);
 	loop_begin = p_frame;
 }
 
 int AudioStreamWAV::get_loop_begin() const {
+	ZoneScopedS(60);
 	return loop_begin;
 }
 
 void AudioStreamWAV::set_loop_end(int p_frame) {
+	ZoneScopedS(60);
 	loop_end = p_frame;
 }
 
 int AudioStreamWAV::get_loop_end() const {
+	ZoneScopedS(60);
 	return loop_end;
 }
 
 void AudioStreamWAV::set_mix_rate(int p_hz) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_hz == 0);
 	mix_rate = p_hz;
 }
 
 int AudioStreamWAV::get_mix_rate() const {
+	ZoneScopedS(60);
 	return mix_rate;
 }
 
 void AudioStreamWAV::set_stereo(bool p_enable) {
+	ZoneScopedS(60);
 	stereo = p_enable;
 }
 
 bool AudioStreamWAV::is_stereo() const {
+	ZoneScopedS(60);
 	return stereo;
 }
 
 double AudioStreamWAV::get_length() const {
+	ZoneScopedS(60);
 	int len = data_bytes;
 	switch (format) {
 		case AudioStreamWAV::FORMAT_8_BITS:
@@ -485,10 +508,12 @@ double AudioStreamWAV::get_length() const {
 }
 
 bool AudioStreamWAV::is_monophonic() const {
+	ZoneScopedS(60);
 	return false;
 }
 
 void AudioStreamWAV::set_data(const Vector<uint8_t> &p_data) {
+	ZoneScopedS(60);
 	AudioServer::get_singleton()->lock();
 	if (data) {
 		memfree(data);
@@ -511,6 +536,7 @@ void AudioStreamWAV::set_data(const Vector<uint8_t> &p_data) {
 }
 
 Vector<uint8_t> AudioStreamWAV::get_data() const {
+	ZoneScopedS(60);
 	Vector<uint8_t> pv;
 
 	if (data) {
@@ -526,6 +552,7 @@ Vector<uint8_t> AudioStreamWAV::get_data() const {
 }
 
 Error AudioStreamWAV::save_to_wav(const String &p_path) {
+	ZoneScopedS(60);
 	if (format == AudioStreamWAV::FORMAT_IMA_ADPCM) {
 		WARN_PRINT("Saving IMA_ADPC samples are not supported yet");
 		return ERR_UNAVAILABLE;
@@ -604,6 +631,7 @@ Error AudioStreamWAV::save_to_wav(const String &p_path) {
 }
 
 Ref<AudioStreamPlayback> AudioStreamWAV::instantiate_playback() {
+	ZoneScopedS(60);
 	Ref<AudioStreamPlaybackWAV> sample;
 	sample.instantiate();
 	sample->base = Ref<AudioStreamWAV>(this);
@@ -611,10 +639,12 @@ Ref<AudioStreamPlayback> AudioStreamWAV::instantiate_playback() {
 }
 
 String AudioStreamWAV::get_stream_name() const {
+	ZoneScopedS(60);
 	return "";
 }
 
 void AudioStreamWAV::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_data", "data"), &AudioStreamWAV::set_data);
 	ClassDB::bind_method(D_METHOD("get_data"), &AudioStreamWAV::get_data);
 
@@ -659,6 +689,7 @@ void AudioStreamWAV::_bind_methods() {
 AudioStreamWAV::AudioStreamWAV() {}
 
 AudioStreamWAV::~AudioStreamWAV() {
+	ZoneScopedS(60);
 	if (data) {
 		memfree(data);
 		data = nullptr;

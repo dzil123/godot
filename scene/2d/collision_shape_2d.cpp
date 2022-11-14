@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  collision_shape_2d.cpp                                               */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "collision_shape_2d.h"
 
 #include "collision_object_2d.h"
@@ -36,10 +67,12 @@
 #include "scene/resources/convex_polygon_shape_2d.h"
 
 void CollisionShape2D::_shape_changed() {
+	ZoneScopedS(60);
 	queue_redraw();
 }
 
 void CollisionShape2D::_update_in_shape_owner(bool p_xform_only) {
+	ZoneScopedS(60);
 	parent->shape_owner_set_transform(owner_id, get_transform());
 	if (p_xform_only) {
 		return;
@@ -50,11 +83,13 @@ void CollisionShape2D::_update_in_shape_owner(bool p_xform_only) {
 }
 
 Color CollisionShape2D::_get_default_debug_color() const {
+	ZoneScopedS(60);
 	SceneTree *st = SceneTree::get_singleton();
 	return st ? st->get_debug_collisions_color() : Color();
 }
 
 void CollisionShape2D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_PARENTED: {
 			parent = Object::cast_to<CollisionObject2D>(get_parent());
@@ -138,6 +173,7 @@ void CollisionShape2D::_notification(int p_what) {
 }
 
 void CollisionShape2D::set_shape(const Ref<Shape2D> &p_shape) {
+	ZoneScopedS(60);
 	if (p_shape == shape) {
 		return;
 	}
@@ -162,10 +198,12 @@ void CollisionShape2D::set_shape(const Ref<Shape2D> &p_shape) {
 }
 
 Ref<Shape2D> CollisionShape2D::get_shape() const {
+	ZoneScopedS(60);
 	return shape;
 }
 
 bool CollisionShape2D::_edit_is_selected_on_click(const Point2 &p_point, double p_tolerance) const {
+	ZoneScopedS(60);
 	if (!shape.is_valid()) {
 		return false;
 	}
@@ -174,6 +212,7 @@ bool CollisionShape2D::_edit_is_selected_on_click(const Point2 &p_point, double 
 }
 
 PackedStringArray CollisionShape2D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (!Object::cast_to<CollisionObject2D>(get_parent())) {
@@ -196,6 +235,7 @@ PackedStringArray CollisionShape2D::get_configuration_warnings() const {
 }
 
 void CollisionShape2D::set_disabled(bool p_disabled) {
+	ZoneScopedS(60);
 	disabled = p_disabled;
 	queue_redraw();
 	if (parent) {
@@ -204,10 +244,12 @@ void CollisionShape2D::set_disabled(bool p_disabled) {
 }
 
 bool CollisionShape2D::is_disabled() const {
+	ZoneScopedS(60);
 	return disabled;
 }
 
 void CollisionShape2D::set_one_way_collision(bool p_enable) {
+	ZoneScopedS(60);
 	one_way_collision = p_enable;
 	queue_redraw();
 	if (parent) {
@@ -217,10 +259,12 @@ void CollisionShape2D::set_one_way_collision(bool p_enable) {
 }
 
 bool CollisionShape2D::is_one_way_collision_enabled() const {
+	ZoneScopedS(60);
 	return one_way_collision;
 }
 
 void CollisionShape2D::set_one_way_collision_margin(real_t p_margin) {
+	ZoneScopedS(60);
 	one_way_collision_margin = p_margin;
 	if (parent) {
 		parent->shape_owner_set_one_way_collision_margin(owner_id, one_way_collision_margin);
@@ -228,19 +272,23 @@ void CollisionShape2D::set_one_way_collision_margin(real_t p_margin) {
 }
 
 real_t CollisionShape2D::get_one_way_collision_margin() const {
+	ZoneScopedS(60);
 	return one_way_collision_margin;
 }
 
 void CollisionShape2D::set_debug_color(const Color &p_color) {
+	ZoneScopedS(60);
 	debug_color = p_color;
 	queue_redraw();
 }
 
 Color CollisionShape2D::get_debug_color() const {
+	ZoneScopedS(60);
 	return debug_color;
 }
 
 bool CollisionShape2D::_property_can_revert(const StringName &p_name) const {
+	ZoneScopedS(60);
 	if (p_name == "debug_color") {
 		return true;
 	}
@@ -248,6 +296,7 @@ bool CollisionShape2D::_property_can_revert(const StringName &p_name) const {
 }
 
 bool CollisionShape2D::_property_get_revert(const StringName &p_name, Variant &r_property) const {
+	ZoneScopedS(60);
 	if (p_name == "debug_color") {
 		r_property = _get_default_debug_color();
 		return true;
@@ -256,6 +305,7 @@ bool CollisionShape2D::_property_get_revert(const StringName &p_name, Variant &r
 }
 
 void CollisionShape2D::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (p_property.name == "debug_color") {
 		if (debug_color == _get_default_debug_color()) {
 			p_property.usage = PROPERTY_USAGE_DEFAULT & ~PROPERTY_USAGE_STORAGE;
@@ -266,6 +316,7 @@ void CollisionShape2D::_validate_property(PropertyInfo &p_property) const {
 }
 
 void CollisionShape2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_shape", "shape"), &CollisionShape2D::set_shape);
 	ClassDB::bind_method(D_METHOD("get_shape"), &CollisionShape2D::get_shape);
 	ClassDB::bind_method(D_METHOD("set_disabled", "disabled"), &CollisionShape2D::set_disabled);
@@ -287,6 +338,7 @@ void CollisionShape2D::_bind_methods() {
 }
 
 CollisionShape2D::CollisionShape2D() {
+	ZoneScopedS(60);
 	set_notify_local_transform(true);
 	debug_color = _get_default_debug_color();
 }

@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  skeleton_modification_3d_ccdik.cpp                                   */
 /*************************************************************************/
@@ -28,11 +29,12 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "scene/resources/skeleton_modification_3d_ccdik.h"
 #include "scene/3d/skeleton_3d.h"
 #include "scene/resources/skeleton_modification_3d.h"
+#include "scene/resources/skeleton_modification_3d_ccdik.h"
 
 bool SkeletonModification3DCCDIK::_set(const StringName &p_path, const Variant &p_value) {
+	ZoneScopedS(60);
 	String path = p_path;
 
 	if (path.begins_with("joint_data/")) {
@@ -62,6 +64,7 @@ bool SkeletonModification3DCCDIK::_set(const StringName &p_path, const Variant &
 }
 
 bool SkeletonModification3DCCDIK::_get(const StringName &p_path, Variant &r_ret) const {
+	ZoneScopedS(60);
 	String path = p_path;
 
 	if (path.begins_with("joint_data/")) {
@@ -91,6 +94,7 @@ bool SkeletonModification3DCCDIK::_get(const StringName &p_path, Variant &r_ret)
 }
 
 void SkeletonModification3DCCDIK::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	for (uint32_t i = 0; i < ccdik_data_chain.size(); i++) {
 		String base_string = "joint_data/" + itos(i) + "/";
 
@@ -110,6 +114,7 @@ void SkeletonModification3DCCDIK::_get_property_list(List<PropertyInfo> *p_list)
 }
 
 void SkeletonModification3DCCDIK::_execute(real_t p_delta) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!stack || !is_setup || stack->skeleton == nullptr,
 			"Modification is not setup and therefore cannot execute!");
 	if (!enabled) {
@@ -160,6 +165,7 @@ void SkeletonModification3DCCDIK::_execute(real_t p_delta) {
 }
 
 void SkeletonModification3DCCDIK::_execute_ccdik_joint(int p_joint_idx, Node3D *p_target, Node3D *p_tip) {
+	ZoneScopedS(60);
 	CCDIK_Joint_Data ccdik_data = ccdik_data_chain[p_joint_idx];
 
 	if (_print_execution_error(ccdik_data.bone_idx < 0 || ccdik_data.bone_idx > stack->skeleton->get_bone_count(),
@@ -233,6 +239,7 @@ void SkeletonModification3DCCDIK::_execute_ccdik_joint(int p_joint_idx, Node3D *
 }
 
 void SkeletonModification3DCCDIK::_setup_modification(SkeletonModificationStack3D *p_stack) {
+	ZoneScopedS(60);
 	stack = p_stack;
 	if (stack != nullptr) {
 		is_setup = true;
@@ -243,6 +250,7 @@ void SkeletonModification3DCCDIK::_setup_modification(SkeletonModificationStack3
 }
 
 void SkeletonModification3DCCDIK::update_target_cache() {
+	ZoneScopedS(60);
 	if (!is_setup || !stack) {
 		_print_execution_error(true, "Cannot update target cache: modification is not properly setup!");
 		return;
@@ -266,6 +274,7 @@ void SkeletonModification3DCCDIK::update_target_cache() {
 }
 
 void SkeletonModification3DCCDIK::update_tip_cache() {
+	ZoneScopedS(60);
 	if (!is_setup || !stack) {
 		_print_execution_error(true, "Cannot update tip cache: modification is not properly setup!");
 		return;
@@ -289,39 +298,47 @@ void SkeletonModification3DCCDIK::update_tip_cache() {
 }
 
 void SkeletonModification3DCCDIK::set_target_node(const NodePath &p_target_node) {
+	ZoneScopedS(60);
 	target_node = p_target_node;
 	update_target_cache();
 }
 
 NodePath SkeletonModification3DCCDIK::get_target_node() const {
+	ZoneScopedS(60);
 	return target_node;
 }
 
 void SkeletonModification3DCCDIK::set_tip_node(const NodePath &p_tip_node) {
+	ZoneScopedS(60);
 	tip_node = p_tip_node;
 	update_tip_cache();
 }
 
 NodePath SkeletonModification3DCCDIK::get_tip_node() const {
+	ZoneScopedS(60);
 	return tip_node;
 }
 
 void SkeletonModification3DCCDIK::set_use_high_quality_solve(bool p_high_quality) {
+	ZoneScopedS(60);
 	use_high_quality_solve = p_high_quality;
 }
 
 bool SkeletonModification3DCCDIK::get_use_high_quality_solve() const {
+	ZoneScopedS(60);
 	return use_high_quality_solve;
 }
 
 // CCDIK joint data functions
 String SkeletonModification3DCCDIK::get_ccdik_joint_bone_name(int p_joint_idx) const {
+	ZoneScopedS(60);
 	const int bone_chain_size = ccdik_data_chain.size();
 	ERR_FAIL_INDEX_V(p_joint_idx, bone_chain_size, String());
 	return ccdik_data_chain[p_joint_idx].bone_name;
 }
 
 void SkeletonModification3DCCDIK::set_ccdik_joint_bone_name(int p_joint_idx, String p_bone_name) {
+	ZoneScopedS(60);
 	const int bone_chain_size = ccdik_data_chain.size();
 	ERR_FAIL_INDEX(p_joint_idx, bone_chain_size);
 	ccdik_data_chain[p_joint_idx].bone_name = p_bone_name;
@@ -336,12 +353,14 @@ void SkeletonModification3DCCDIK::set_ccdik_joint_bone_name(int p_joint_idx, Str
 }
 
 int SkeletonModification3DCCDIK::get_ccdik_joint_bone_index(int p_joint_idx) const {
+	ZoneScopedS(60);
 	const int bone_chain_size = ccdik_data_chain.size();
 	ERR_FAIL_INDEX_V(p_joint_idx, bone_chain_size, -1);
 	return ccdik_data_chain[p_joint_idx].bone_idx;
 }
 
 void SkeletonModification3DCCDIK::set_ccdik_joint_bone_index(int p_joint_idx, int p_bone_idx) {
+	ZoneScopedS(60);
 	const int bone_chain_size = ccdik_data_chain.size();
 	ERR_FAIL_INDEX(p_joint_idx, bone_chain_size);
 	ERR_FAIL_COND_MSG(p_bone_idx < 0, "Bone index is out of range: The index is too low!");
@@ -357,12 +376,14 @@ void SkeletonModification3DCCDIK::set_ccdik_joint_bone_index(int p_joint_idx, in
 }
 
 int SkeletonModification3DCCDIK::get_ccdik_joint_ccdik_axis(int p_joint_idx) const {
+	ZoneScopedS(60);
 	const int bone_chain_size = ccdik_data_chain.size();
 	ERR_FAIL_INDEX_V(p_joint_idx, bone_chain_size, -1);
 	return ccdik_data_chain[p_joint_idx].ccdik_axis;
 }
 
 void SkeletonModification3DCCDIK::set_ccdik_joint_ccdik_axis(int p_joint_idx, int p_axis) {
+	ZoneScopedS(60);
 	const int bone_chain_size = ccdik_data_chain.size();
 	ERR_FAIL_INDEX(p_joint_idx, bone_chain_size);
 	ERR_FAIL_COND_MSG(p_axis < 0, "CCDIK axis is out of range: The axis mode is too low!");
@@ -371,12 +392,14 @@ void SkeletonModification3DCCDIK::set_ccdik_joint_ccdik_axis(int p_joint_idx, in
 }
 
 bool SkeletonModification3DCCDIK::get_ccdik_joint_enable_constraint(int p_joint_idx) const {
+	ZoneScopedS(60);
 	const int bone_chain_size = ccdik_data_chain.size();
 	ERR_FAIL_INDEX_V(p_joint_idx, bone_chain_size, false);
 	return ccdik_data_chain[p_joint_idx].enable_constraint;
 }
 
 void SkeletonModification3DCCDIK::set_ccdik_joint_enable_constraint(int p_joint_idx, bool p_enable) {
+	ZoneScopedS(60);
 	const int bone_chain_size = ccdik_data_chain.size();
 	ERR_FAIL_INDEX(p_joint_idx, bone_chain_size);
 	ccdik_data_chain[p_joint_idx].enable_constraint = p_enable;
@@ -384,45 +407,53 @@ void SkeletonModification3DCCDIK::set_ccdik_joint_enable_constraint(int p_joint_
 }
 
 real_t SkeletonModification3DCCDIK::get_ccdik_joint_constraint_angle_min(int p_joint_idx) const {
+	ZoneScopedS(60);
 	const int bone_chain_size = ccdik_data_chain.size();
 	ERR_FAIL_INDEX_V(p_joint_idx, bone_chain_size, false);
 	return ccdik_data_chain[p_joint_idx].constraint_angle_min;
 }
 
 void SkeletonModification3DCCDIK::set_ccdik_joint_constraint_angle_min(int p_joint_idx, real_t p_angle_min) {
+	ZoneScopedS(60);
 	const int bone_chain_size = ccdik_data_chain.size();
 	ERR_FAIL_INDEX(p_joint_idx, bone_chain_size);
 	ccdik_data_chain[p_joint_idx].constraint_angle_min = p_angle_min;
 }
 
 real_t SkeletonModification3DCCDIK::get_ccdik_joint_constraint_angle_max(int p_joint_idx) const {
+	ZoneScopedS(60);
 	const int bone_chain_size = ccdik_data_chain.size();
 	ERR_FAIL_INDEX_V(p_joint_idx, bone_chain_size, false);
 	return ccdik_data_chain[p_joint_idx].constraint_angle_max;
 }
 
 void SkeletonModification3DCCDIK::set_ccdik_joint_constraint_angle_max(int p_joint_idx, real_t p_angle_max) {
+	ZoneScopedS(60);
 	const int bone_chain_size = ccdik_data_chain.size();
 	ERR_FAIL_INDEX(p_joint_idx, bone_chain_size);
 	ccdik_data_chain[p_joint_idx].constraint_angle_max = p_angle_max;
 }
 
 bool SkeletonModification3DCCDIK::get_ccdik_joint_constraint_invert(int p_joint_idx) const {
+	ZoneScopedS(60);
 	const int bone_chain_size = ccdik_data_chain.size();
 	ERR_FAIL_INDEX_V(p_joint_idx, bone_chain_size, false);
 	return ccdik_data_chain[p_joint_idx].constraint_angles_invert;
 }
 
 void SkeletonModification3DCCDIK::set_ccdik_joint_constraint_invert(int p_joint_idx, bool p_invert) {
+	ZoneScopedS(60);
 	const int bone_chain_size = ccdik_data_chain.size();
 	ERR_FAIL_INDEX(p_joint_idx, bone_chain_size);
 	ccdik_data_chain[p_joint_idx].constraint_angles_invert = p_invert;
 }
 
 int SkeletonModification3DCCDIK::get_ccdik_data_chain_length() {
+	ZoneScopedS(60);
 	return ccdik_data_chain.size();
 }
 void SkeletonModification3DCCDIK::set_ccdik_data_chain_length(int p_length) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_length < 0);
 	ccdik_data_chain.resize(p_length);
 	execution_error_found = false;
@@ -430,6 +461,7 @@ void SkeletonModification3DCCDIK::set_ccdik_data_chain_length(int p_length) {
 }
 
 void SkeletonModification3DCCDIK::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_target_node", "target_nodepath"), &SkeletonModification3DCCDIK::set_target_node);
 	ClassDB::bind_method(D_METHOD("get_target_node"), &SkeletonModification3DCCDIK::get_target_node);
 
@@ -465,6 +497,7 @@ void SkeletonModification3DCCDIK::_bind_methods() {
 }
 
 SkeletonModification3DCCDIK::SkeletonModification3DCCDIK() {
+	ZoneScopedS(60);
 	stack = nullptr;
 	is_setup = false;
 	enabled = true;

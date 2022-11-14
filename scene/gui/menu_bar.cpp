@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  menu_bar.cpp                                                         */
 /*************************************************************************/
@@ -34,6 +35,7 @@
 #include "scene/main/window.h"
 
 void MenuBar::gui_input(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_event.is_null());
 	if (is_native_menu()) {
 		// Handled by OS.
@@ -111,6 +113,7 @@ void MenuBar::gui_input(const Ref<InputEvent> &p_event) {
 }
 
 void MenuBar::_open_popup(int p_index, bool p_focus_item) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, menu_cache.size());
 
 	PopupMenu *pm = get_menu_popup(p_index);
@@ -147,6 +150,7 @@ void MenuBar::_open_popup(int p_index, bool p_focus_item) {
 }
 
 void MenuBar::shortcut_input(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_event.is_null());
 
 	if (disable_shortcuts) {
@@ -172,6 +176,7 @@ void MenuBar::shortcut_input(const Ref<InputEvent> &p_event) {
 }
 
 void MenuBar::_popup_visibility_changed(bool p_visible) {
+	ZoneScopedS(60);
 	if (!p_visible) {
 		active_menu = -1;
 		focused_menu = -1;
@@ -203,6 +208,7 @@ void MenuBar::_popup_visibility_changed(bool p_visible) {
 }
 
 void MenuBar::_update_submenu(const String &p_menu_name, PopupMenu *p_child) {
+	ZoneScopedS(60);
 	int count = p_child->get_item_count();
 	global_menus.insert(p_menu_name);
 	for (int i = 0; i < count; i++) {
@@ -249,6 +255,7 @@ void MenuBar::_update_submenu(const String &p_menu_name, PopupMenu *p_child) {
 }
 
 bool MenuBar::is_native_menu() const {
+	ZoneScopedS(60);
 	if (Engine::get_singleton()->is_editor_hint() && is_inside_tree() && get_tree()->get_edited_scene_root() && (get_tree()->get_edited_scene_root()->is_ancestor_of(this) || get_tree()->get_edited_scene_root() == this)) {
 		return false;
 	}
@@ -257,6 +264,7 @@ bool MenuBar::is_native_menu() const {
 }
 
 void MenuBar::_clear_menu() {
+	ZoneScopedS(60);
 	if (!DisplayServer::get_singleton()->has_feature(DisplayServer::FEATURE_GLOBAL_MENU)) {
 		return;
 	}
@@ -276,6 +284,7 @@ void MenuBar::_clear_menu() {
 }
 
 void MenuBar::_update_menu() {
+	ZoneScopedS(60);
 	_clear_menu();
 
 	if (!is_visible_in_tree()) {
@@ -305,6 +314,7 @@ void MenuBar::_update_menu() {
 }
 
 void MenuBar::_update_theme_item_cache() {
+	ZoneScopedS(60);
 	Control::_update_theme_item_cache();
 
 	theme_cache.normal = get_theme_stylebox(SNAME("normal"));
@@ -334,6 +344,7 @@ void MenuBar::_update_theme_item_cache() {
 }
 
 void MenuBar::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			if (get_menu_count() > 0) {
@@ -394,6 +405,7 @@ void MenuBar::_notification(int p_what) {
 }
 
 int MenuBar::_get_index_at_point(const Point2 &p_point) const {
+	ZoneScopedS(60);
 	Ref<StyleBox> style = theme_cache.normal;
 	int offset = 0;
 	for (int i = 0; i < menu_cache.size(); i++) {
@@ -412,6 +424,7 @@ int MenuBar::_get_index_at_point(const Point2 &p_point) const {
 }
 
 Rect2 MenuBar::_get_menu_item_rect(int p_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_index, menu_cache.size(), Rect2());
 
 	Ref<StyleBox> style = theme_cache.normal;
@@ -429,6 +442,7 @@ Rect2 MenuBar::_get_menu_item_rect(int p_index) const {
 }
 
 void MenuBar::_draw_menu_item(int p_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, menu_cache.size());
 
 	RID ci = get_canvas_item();
@@ -518,6 +532,7 @@ void MenuBar::_draw_menu_item(int p_index) {
 }
 
 void MenuBar::shape(Menu &p_menu) {
+	ZoneScopedS(60);
 	p_menu.text_buf->clear();
 	if (text_direction == Control::TEXT_DIRECTION_INHERITED) {
 		p_menu.text_buf->set_direction(is_layout_rtl() ? TextServer::DIRECTION_RTL : TextServer::DIRECTION_LTR);
@@ -528,6 +543,7 @@ void MenuBar::shape(Menu &p_menu) {
 }
 
 void MenuBar::_refresh_menu_names() {
+	ZoneScopedS(60);
 	Vector<PopupMenu *> popups = _get_popups();
 	for (int i = 0; i < popups.size(); i++) {
 		if (!popups[i]->has_meta("_menu_name") && String(popups[i]->get_name()) != get_menu_title(i)) {
@@ -539,6 +555,7 @@ void MenuBar::_refresh_menu_names() {
 }
 
 Vector<PopupMenu *> MenuBar::_get_popups() const {
+	ZoneScopedS(60);
 	Vector<PopupMenu *> popups;
 	for (int i = 0; i < get_child_count(); i++) {
 		PopupMenu *pm = Object::cast_to<PopupMenu>(get_child(i));
@@ -551,6 +568,7 @@ Vector<PopupMenu *> MenuBar::_get_popups() const {
 }
 
 int MenuBar::get_menu_idx_from_control(PopupMenu *p_child) const {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL_V(p_child, -1);
 	ERR_FAIL_COND_V(p_child->get_parent() != this, -1);
 
@@ -565,6 +583,7 @@ int MenuBar::get_menu_idx_from_control(PopupMenu *p_child) const {
 }
 
 void MenuBar::add_child_notify(Node *p_child) {
+	ZoneScopedS(60);
 	Control::add_child_notify(p_child);
 
 	PopupMenu *pm = Object::cast_to<PopupMenu>(p_child);
@@ -584,6 +603,7 @@ void MenuBar::add_child_notify(Node *p_child) {
 }
 
 void MenuBar::move_child_notify(Node *p_child) {
+	ZoneScopedS(60);
 	Control::move_child_notify(p_child);
 
 	PopupMenu *pm = Object::cast_to<PopupMenu>(p_child);
@@ -608,6 +628,7 @@ void MenuBar::move_child_notify(Node *p_child) {
 }
 
 void MenuBar::remove_child_notify(Node *p_child) {
+	ZoneScopedS(60);
 	Control::remove_child_notify(p_child);
 
 	PopupMenu *pm = Object::cast_to<PopupMenu>(p_child);
@@ -631,6 +652,7 @@ void MenuBar::remove_child_notify(Node *p_child) {
 }
 
 void MenuBar::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_switch_on_hover", "enable"), &MenuBar::set_switch_on_hover);
 	ClassDB::bind_method(D_METHOD("is_switch_on_hover"), &MenuBar::is_switch_on_hover);
 	ClassDB::bind_method(D_METHOD("set_disable_shortcuts", "disabled"), &MenuBar::set_disable_shortcuts);
@@ -675,18 +697,22 @@ void MenuBar::_bind_methods() {
 }
 
 void MenuBar::set_switch_on_hover(bool p_enabled) {
+	ZoneScopedS(60);
 	switch_on_hover = p_enabled;
 }
 
 bool MenuBar::is_switch_on_hover() {
+	ZoneScopedS(60);
 	return switch_on_hover;
 }
 
 void MenuBar::set_disable_shortcuts(bool p_disabled) {
+	ZoneScopedS(60);
 	disable_shortcuts = p_disabled;
 }
 
 void MenuBar::set_text_direction(Control::TextDirection p_text_direction) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND((int)p_text_direction < -1 || (int)p_text_direction > 3);
 	if (text_direction != p_text_direction) {
 		text_direction = p_text_direction;
@@ -695,10 +721,12 @@ void MenuBar::set_text_direction(Control::TextDirection p_text_direction) {
 }
 
 Control::TextDirection MenuBar::get_text_direction() const {
+	ZoneScopedS(60);
 	return text_direction;
 }
 
 void MenuBar::set_language(const String &p_language) {
+	ZoneScopedS(60);
 	if (language != p_language) {
 		language = p_language;
 		_update_menu();
@@ -706,10 +734,12 @@ void MenuBar::set_language(const String &p_language) {
 }
 
 String MenuBar::get_language() const {
+	ZoneScopedS(60);
 	return language;
 }
 
 void MenuBar::set_flat(bool p_enabled) {
+	ZoneScopedS(60);
 	if (flat != p_enabled) {
 		flat = p_enabled;
 		queue_redraw();
@@ -717,10 +747,12 @@ void MenuBar::set_flat(bool p_enabled) {
 }
 
 bool MenuBar::is_flat() const {
+	ZoneScopedS(60);
 	return flat;
 }
 
 void MenuBar::set_start_index(int p_index) {
+	ZoneScopedS(60);
 	if (start_index != p_index) {
 		start_index = p_index;
 		_update_menu();
@@ -728,10 +760,12 @@ void MenuBar::set_start_index(int p_index) {
 }
 
 int MenuBar::get_start_index() const {
+	ZoneScopedS(60);
 	return start_index;
 }
 
 void MenuBar::set_prefer_global_menu(bool p_enabled) {
+	ZoneScopedS(60);
 	if (is_native != p_enabled) {
 		if (is_native) {
 			_clear_menu();
@@ -742,10 +776,12 @@ void MenuBar::set_prefer_global_menu(bool p_enabled) {
 }
 
 bool MenuBar::is_prefer_global_menu() const {
+	ZoneScopedS(60);
 	return is_native;
 }
 
 Size2 MenuBar::get_minimum_size() const {
+	ZoneScopedS(60);
 	if (is_native_menu()) {
 		return Size2();
 	}
@@ -768,10 +804,12 @@ Size2 MenuBar::get_minimum_size() const {
 }
 
 int MenuBar::get_menu_count() const {
+	ZoneScopedS(60);
 	return menu_cache.size();
 }
 
 void MenuBar::set_menu_title(int p_menu, const String &p_title) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_menu, menu_cache.size());
 	PopupMenu *pm = get_menu_popup(p_menu);
 	if (p_title == pm->get_name()) {
@@ -785,11 +823,13 @@ void MenuBar::set_menu_title(int p_menu, const String &p_title) {
 }
 
 String MenuBar::get_menu_title(int p_menu) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_menu, menu_cache.size(), String());
 	return menu_cache[p_menu].name;
 }
 
 void MenuBar::set_menu_tooltip(int p_menu, const String &p_tooltip) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_menu, menu_cache.size());
 	PopupMenu *pm = get_menu_popup(p_menu);
 	pm->set_meta("_menu_tooltip", p_tooltip);
@@ -797,33 +837,39 @@ void MenuBar::set_menu_tooltip(int p_menu, const String &p_tooltip) {
 }
 
 String MenuBar::get_menu_tooltip(int p_menu) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_menu, menu_cache.size(), String());
 	return menu_cache[p_menu].tooltip;
 }
 
 void MenuBar::set_menu_disabled(int p_menu, bool p_disabled) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_menu, menu_cache.size());
 	menu_cache.write[p_menu].disabled = p_disabled;
 	_update_menu();
 }
 
 bool MenuBar::is_menu_disabled(int p_menu) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_menu, menu_cache.size(), false);
 	return menu_cache[p_menu].disabled;
 }
 
 void MenuBar::set_menu_hidden(int p_menu, bool p_hidden) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_menu, menu_cache.size());
 	menu_cache.write[p_menu].hidden = p_hidden;
 	_update_menu();
 }
 
 bool MenuBar::is_menu_hidden(int p_menu) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_menu, menu_cache.size(), false);
 	return menu_cache[p_menu].hidden;
 }
 
 PopupMenu *MenuBar::get_menu_popup(int p_idx) const {
+	ZoneScopedS(60);
 	Vector<PopupMenu *> controls = _get_popups();
 	if (p_idx >= 0 && p_idx < controls.size()) {
 		return controls[p_idx];
@@ -833,6 +879,7 @@ PopupMenu *MenuBar::get_menu_popup(int p_idx) const {
 }
 
 String MenuBar::get_tooltip(const Point2 &p_pos) const {
+	ZoneScopedS(60);
 	int index = _get_index_at_point(p_pos);
 	if (index >= 0 && index < menu_cache.size()) {
 		return menu_cache[index].tooltip;
@@ -842,6 +889,7 @@ String MenuBar::get_tooltip(const Point2 &p_pos) const {
 }
 
 void MenuBar::get_translatable_strings(List<String> *p_strings) const {
+	ZoneScopedS(60);
 	Vector<PopupMenu *> popups = _get_popups();
 	for (int i = 0; i < popups.size(); i++) {
 		PopupMenu *pm = popups[i];
@@ -863,6 +911,7 @@ void MenuBar::get_translatable_strings(List<String> *p_strings) const {
 }
 
 MenuBar::MenuBar() {
+	ZoneScopedS(60);
 	set_process_shortcut_input(true);
 }
 

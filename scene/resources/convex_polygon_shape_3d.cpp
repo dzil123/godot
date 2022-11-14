@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  convex_polygon_shape_3d.cpp                                          */
 /*************************************************************************/
@@ -33,6 +34,7 @@
 #include "servers/physics_server_3d.h"
 
 Vector<Vector3> ConvexPolygonShape3D::get_debug_mesh_lines() const {
+	ZoneScopedS(60);
 	Vector<Vector3> poly_points = get_points();
 
 	if (poly_points.size() > 3) {
@@ -54,6 +56,7 @@ Vector<Vector3> ConvexPolygonShape3D::get_debug_mesh_lines() const {
 }
 
 real_t ConvexPolygonShape3D::get_enclosing_radius() const {
+	ZoneScopedS(60);
 	Vector<Vector3> data = get_points();
 	const Vector3 *read = data.ptr();
 	real_t r = 0.0;
@@ -64,21 +67,25 @@ real_t ConvexPolygonShape3D::get_enclosing_radius() const {
 }
 
 void ConvexPolygonShape3D::_update_shape() {
+	ZoneScopedS(60);
 	PhysicsServer3D::get_singleton()->shape_set_data(get_shape(), points);
 	Shape3D::_update_shape();
 }
 
 void ConvexPolygonShape3D::set_points(const Vector<Vector3> &p_points) {
+	ZoneScopedS(60);
 	points = p_points;
 	_update_shape();
 	notify_change_to_owners();
 }
 
 Vector<Vector3> ConvexPolygonShape3D::get_points() const {
+	ZoneScopedS(60);
 	return points;
 }
 
 void ConvexPolygonShape3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_points", "points"), &ConvexPolygonShape3D::set_points);
 	ClassDB::bind_method(D_METHOD("get_points"), &ConvexPolygonShape3D::get_points);
 

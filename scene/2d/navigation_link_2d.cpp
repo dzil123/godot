@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  navigation_link_2d.cpp                                               */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "navigation_link_2d.h"
 
 #include "core/math/geometry_2d.h"
@@ -36,6 +67,7 @@
 #include "servers/navigation_server_3d.h"
 
 void NavigationLink2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_enabled", "enabled"), &NavigationLink2D::set_enabled);
 	ClassDB::bind_method(D_METHOD("is_enabled"), &NavigationLink2D::is_enabled);
 
@@ -70,6 +102,7 @@ void NavigationLink2D::_bind_methods() {
 }
 
 void NavigationLink2D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			if (enabled) {
@@ -113,6 +146,7 @@ void NavigationLink2D::_notification(int p_what) {
 
 #ifdef TOOLS_ENABLED
 Rect2 NavigationLink2D::_edit_get_rect() const {
+	ZoneScopedS(60);
 	if (!is_inside_tree()) {
 		return Rect2();
 	}
@@ -126,6 +160,7 @@ Rect2 NavigationLink2D::_edit_get_rect() const {
 }
 
 bool NavigationLink2D::_edit_is_selected_on_click(const Point2 &p_point, double p_tolerance) const {
+	ZoneScopedS(60);
 	Point2 segment[2] = { get_start_location(), get_end_location() };
 
 	Vector2 closest_point = Geometry2D::get_closest_point_to_segment(p_point, segment);
@@ -134,6 +169,7 @@ bool NavigationLink2D::_edit_is_selected_on_click(const Point2 &p_point, double 
 #endif // TOOLS_ENABLED
 
 void NavigationLink2D::set_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	if (enabled == p_enabled) {
 		return;
 	}
@@ -158,6 +194,7 @@ void NavigationLink2D::set_enabled(bool p_enabled) {
 }
 
 void NavigationLink2D::set_bidirectional(bool p_bidirectional) {
+	ZoneScopedS(60);
 	if (bidirectional == p_bidirectional) {
 		return;
 	}
@@ -168,6 +205,7 @@ void NavigationLink2D::set_bidirectional(bool p_bidirectional) {
 }
 
 void NavigationLink2D::set_navigation_layers(uint32_t p_navigation_layers) {
+	ZoneScopedS(60);
 	if (navigation_layers == p_navigation_layers) {
 		return;
 	}
@@ -178,6 +216,7 @@ void NavigationLink2D::set_navigation_layers(uint32_t p_navigation_layers) {
 }
 
 void NavigationLink2D::set_navigation_layer_value(int p_layer_number, bool p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_layer_number < 1, "Navigation layer number must be between 1 and 32 inclusive.");
 	ERR_FAIL_COND_MSG(p_layer_number > 32, "Navigation layer number must be between 1 and 32 inclusive.");
 
@@ -193,6 +232,7 @@ void NavigationLink2D::set_navigation_layer_value(int p_layer_number, bool p_val
 }
 
 bool NavigationLink2D::get_navigation_layer_value(int p_layer_number) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(p_layer_number < 1, false, "Navigation layer number must be between 1 and 32 inclusive.");
 	ERR_FAIL_COND_V_MSG(p_layer_number > 32, false, "Navigation layer number must be between 1 and 32 inclusive.");
 
@@ -200,6 +240,7 @@ bool NavigationLink2D::get_navigation_layer_value(int p_layer_number) const {
 }
 
 void NavigationLink2D::set_start_location(Vector2 p_location) {
+	ZoneScopedS(60);
 	if (start_location.is_equal_approx(p_location)) {
 		return;
 	}
@@ -223,6 +264,7 @@ void NavigationLink2D::set_start_location(Vector2 p_location) {
 }
 
 void NavigationLink2D::set_end_location(Vector2 p_location) {
+	ZoneScopedS(60);
 	if (end_location.is_equal_approx(p_location)) {
 		return;
 	}
@@ -246,6 +288,7 @@ void NavigationLink2D::set_end_location(Vector2 p_location) {
 }
 
 void NavigationLink2D::set_enter_cost(real_t p_enter_cost) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_enter_cost < 0.0, "The enter_cost must be positive.");
 	if (Math::is_equal_approx(enter_cost, p_enter_cost)) {
 		return;
@@ -257,6 +300,7 @@ void NavigationLink2D::set_enter_cost(real_t p_enter_cost) {
 }
 
 void NavigationLink2D::set_travel_cost(real_t p_travel_cost) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_travel_cost < 0.0, "The travel_cost must be positive.");
 	if (Math::is_equal_approx(travel_cost, p_travel_cost)) {
 		return;
@@ -268,6 +312,7 @@ void NavigationLink2D::set_travel_cost(real_t p_travel_cost) {
 }
 
 PackedStringArray NavigationLink2D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (start_location.is_equal_approx(end_location)) {
@@ -278,11 +323,13 @@ PackedStringArray NavigationLink2D::get_configuration_warnings() const {
 }
 
 NavigationLink2D::NavigationLink2D() {
+	ZoneScopedS(60);
 	link = NavigationServer2D::get_singleton()->link_create();
 	set_notify_transform(true);
 }
 
 NavigationLink2D::~NavigationLink2D() {
+	ZoneScopedS(60);
 	NavigationServer2D::get_singleton()->free(link);
 	link = RID();
 }

@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  shader_globals_override.cpp                                          */
 /*************************************************************************/
@@ -34,6 +35,7 @@
 #include "scene/scene_string_names.h"
 
 StringName *ShaderGlobalsOverride::_remap(const StringName &p_name) const {
+	ZoneScopedS(60);
 	StringName *r = param_remaps.getptr(p_name);
 	if (!r) {
 		//not cached, do caching
@@ -49,6 +51,7 @@ StringName *ShaderGlobalsOverride::_remap(const StringName &p_name) const {
 }
 
 bool ShaderGlobalsOverride::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	StringName *r = _remap(p_name);
 
 	if (r) {
@@ -78,6 +81,7 @@ bool ShaderGlobalsOverride::_set(const StringName &p_name, const Variant &p_valu
 }
 
 bool ShaderGlobalsOverride::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	StringName *r = _remap(p_name);
 
 	if (r) {
@@ -92,6 +96,7 @@ bool ShaderGlobalsOverride::_get(const StringName &p_name, Variant &r_ret) const
 }
 
 void ShaderGlobalsOverride::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	Vector<StringName> variables;
 	variables = RS::get_singleton()->global_shader_parameter_get_list();
 	for (int i = 0; i < variables.size(); i++) {
@@ -221,6 +226,7 @@ void ShaderGlobalsOverride::_get_property_list(List<PropertyInfo> *p_list) const
 }
 
 void ShaderGlobalsOverride::_activate() {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(get_tree());
 	List<Node *> nodes;
 	get_tree()->get_nodes_in_group(SceneStringNames::get_singleton()->shader_overrides_group_active, &nodes);
@@ -246,6 +252,7 @@ void ShaderGlobalsOverride::_activate() {
 }
 
 void ShaderGlobalsOverride::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case Node3D::NOTIFICATION_ENTER_TREE: {
 			add_to_group(SceneStringNames::get_singleton()->shader_overrides_group);
@@ -272,6 +279,7 @@ void ShaderGlobalsOverride::_notification(int p_what) {
 }
 
 PackedStringArray ShaderGlobalsOverride::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (!active) {
@@ -282,6 +290,7 @@ PackedStringArray ShaderGlobalsOverride::get_configuration_warnings() const {
 }
 
 void ShaderGlobalsOverride::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("_activate"), &ShaderGlobalsOverride::_activate);
 }
 

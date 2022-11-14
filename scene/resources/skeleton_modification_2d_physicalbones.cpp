@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  skeleton_modification_2d_physicalbones.cpp                           */
 /*************************************************************************/
@@ -28,11 +29,12 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "skeleton_modification_2d_physicalbones.h"
 #include "scene/2d/physical_bone_2d.h"
 #include "scene/2d/skeleton_2d.h"
+#include "skeleton_modification_2d_physicalbones.h"
 
 bool SkeletonModification2DPhysicalBones::_set(const StringName &p_path, const Variant &p_value) {
+	ZoneScopedS(60);
 	String path = p_path;
 
 #ifdef TOOLS_ENABLED
@@ -62,6 +64,7 @@ bool SkeletonModification2DPhysicalBones::_set(const StringName &p_path, const V
 }
 
 bool SkeletonModification2DPhysicalBones::_get(const StringName &p_path, Variant &r_ret) const {
+	ZoneScopedS(60);
 	String path = p_path;
 
 #ifdef TOOLS_ENABLED
@@ -100,6 +103,7 @@ void SkeletonModification2DPhysicalBones::_get_property_list(List<PropertyInfo> 
 }
 
 void SkeletonModification2DPhysicalBones::_execute(float p_delta) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!stack || !is_setup || stack->skeleton == nullptr,
 			"Modification is not setup and therefore cannot execute!");
 	if (!enabled) {
@@ -137,6 +141,7 @@ void SkeletonModification2DPhysicalBones::_execute(float p_delta) {
 }
 
 void SkeletonModification2DPhysicalBones::_setup_modification(SkeletonModificationStack2D *p_stack) {
+	ZoneScopedS(60);
 	stack = p_stack;
 
 	if (stack) {
@@ -151,6 +156,7 @@ void SkeletonModification2DPhysicalBones::_setup_modification(SkeletonModificati
 }
 
 void SkeletonModification2DPhysicalBones::_physical_bone_update_cache(int p_joint_idx) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_MSG(p_joint_idx, physical_bone_chain.size(), "Cannot update PhysicalBone2D cache: joint index out of range!");
 	if (!is_setup || !stack) {
 		if (!stack) {
@@ -175,16 +181,19 @@ void SkeletonModification2DPhysicalBones::_physical_bone_update_cache(int p_join
 }
 
 int SkeletonModification2DPhysicalBones::get_physical_bone_chain_length() {
+	ZoneScopedS(60);
 	return physical_bone_chain.size();
 }
 
 void SkeletonModification2DPhysicalBones::set_physical_bone_chain_length(int p_length) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_length < 0);
 	physical_bone_chain.resize(p_length);
 	notify_property_list_changed();
 }
 
 void SkeletonModification2DPhysicalBones::fetch_physical_bones() {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!stack, "No modification stack found! Cannot fetch physical bones!");
 	ERR_FAIL_COND_MSG(!stack->skeleton, "No skeleton found! Cannot fetch physical bones!");
 
@@ -213,6 +222,7 @@ void SkeletonModification2DPhysicalBones::fetch_physical_bones() {
 }
 
 void SkeletonModification2DPhysicalBones::start_simulation(const TypedArray<StringName> &p_bones) {
+	ZoneScopedS(60);
 	_simulation_state_dirty = true;
 	_simulation_state_dirty_names = p_bones;
 	_simulation_state_dirty_process = true;
@@ -223,6 +233,7 @@ void SkeletonModification2DPhysicalBones::start_simulation(const TypedArray<Stri
 }
 
 void SkeletonModification2DPhysicalBones::stop_simulation(const TypedArray<StringName> &p_bones) {
+	ZoneScopedS(60);
 	_simulation_state_dirty = true;
 	_simulation_state_dirty_names = p_bones;
 	_simulation_state_dirty_process = false;
@@ -233,6 +244,7 @@ void SkeletonModification2DPhysicalBones::stop_simulation(const TypedArray<Strin
 }
 
 void SkeletonModification2DPhysicalBones::_update_simulation_state() {
+	ZoneScopedS(60);
 	if (!_simulation_state_dirty) {
 		return;
 	}
@@ -261,17 +273,20 @@ void SkeletonModification2DPhysicalBones::_update_simulation_state() {
 }
 
 void SkeletonModification2DPhysicalBones::set_physical_bone_node(int p_joint_idx, const NodePath &p_nodepath) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_MSG(p_joint_idx, physical_bone_chain.size(), "Joint index out of range!");
 	physical_bone_chain.write[p_joint_idx].physical_bone_node = p_nodepath;
 	_physical_bone_update_cache(p_joint_idx);
 }
 
 NodePath SkeletonModification2DPhysicalBones::get_physical_bone_node(int p_joint_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V_MSG(p_joint_idx, physical_bone_chain.size(), NodePath(), "Joint index out of range!");
 	return physical_bone_chain[p_joint_idx].physical_bone_node;
 }
 
 void SkeletonModification2DPhysicalBones::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_physical_bone_chain_length", "length"), &SkeletonModification2DPhysicalBones::set_physical_bone_chain_length);
 	ClassDB::bind_method(D_METHOD("get_physical_bone_chain_length"), &SkeletonModification2DPhysicalBones::get_physical_bone_chain_length);
 
@@ -286,6 +301,7 @@ void SkeletonModification2DPhysicalBones::_bind_methods() {
 }
 
 SkeletonModification2DPhysicalBones::SkeletonModification2DPhysicalBones() {
+	ZoneScopedS(60);
 	stack = nullptr;
 	is_setup = false;
 	physical_bone_chain = Vector<PhysicalBone_Data2D>();

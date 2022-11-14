@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  multiplayer_peer.cpp                                                 */
 /*************************************************************************/
@@ -33,6 +34,7 @@
 #include "core/os/os.h"
 
 uint32_t MultiplayerPeer::generate_unique_id() const {
+	ZoneScopedS(60);
 	uint32_t hash = 0;
 
 	while (hash == 0 || hash == 1) {
@@ -55,34 +57,42 @@ uint32_t MultiplayerPeer::generate_unique_id() const {
 }
 
 void MultiplayerPeer::set_transfer_channel(int p_channel) {
+	ZoneScopedS(60);
 	transfer_channel = p_channel;
 }
 
 int MultiplayerPeer::get_transfer_channel() const {
+	ZoneScopedS(60);
 	return transfer_channel;
 }
 
 void MultiplayerPeer::set_transfer_mode(TransferMode p_mode) {
+	ZoneScopedS(60);
 	transfer_mode = p_mode;
 }
 
 MultiplayerPeer::TransferMode MultiplayerPeer::get_transfer_mode() const {
+	ZoneScopedS(60);
 	return transfer_mode;
 }
 
 void MultiplayerPeer::set_refuse_new_connections(bool p_enable) {
+	ZoneScopedS(60);
 	refuse_connections = p_enable;
 }
 
 bool MultiplayerPeer::is_refusing_new_connections() const {
+	ZoneScopedS(60);
 	return refuse_connections;
 }
 
 bool MultiplayerPeer::is_server_relay_supported() const {
+	ZoneScopedS(60);
 	return false;
 }
 
 void MultiplayerPeer::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_transfer_channel", "channel"), &MultiplayerPeer::set_transfer_channel);
 	ClassDB::bind_method(D_METHOD("get_transfer_channel"), &MultiplayerPeer::get_transfer_channel);
 	ClassDB::bind_method(D_METHOD("set_transfer_mode", "mode"), &MultiplayerPeer::set_transfer_mode);
@@ -128,6 +138,7 @@ void MultiplayerPeer::_bind_methods() {
 /*************/
 
 Error MultiplayerPeerExtension::get_packet(const uint8_t **r_buffer, int &r_buffer_size) {
+	ZoneScopedS(60);
 	Error err;
 	if (GDVIRTUAL_CALL(_get_packet, r_buffer, &r_buffer_size, err)) {
 		return err;
@@ -151,6 +162,7 @@ Error MultiplayerPeerExtension::get_packet(const uint8_t **r_buffer, int &r_buff
 }
 
 Error MultiplayerPeerExtension::put_packet(const uint8_t *p_buffer, int p_buffer_size) {
+	ZoneScopedS(60);
 	Error err;
 	if (GDVIRTUAL_CALL(_put_packet, p_buffer, p_buffer_size, err)) {
 		return err;
@@ -170,6 +182,7 @@ Error MultiplayerPeerExtension::put_packet(const uint8_t *p_buffer, int p_buffer
 }
 
 void MultiplayerPeerExtension::set_refuse_new_connections(bool p_enable) {
+	ZoneScopedS(60);
 	if (GDVIRTUAL_CALL(_set_refuse_new_connections, p_enable)) {
 		return;
 	}
@@ -177,6 +190,7 @@ void MultiplayerPeerExtension::set_refuse_new_connections(bool p_enable) {
 }
 
 bool MultiplayerPeerExtension::is_refusing_new_connections() const {
+	ZoneScopedS(60);
 	bool refusing;
 	if (GDVIRTUAL_CALL(_is_refusing_new_connections, refusing)) {
 		return refusing;
@@ -185,6 +199,7 @@ bool MultiplayerPeerExtension::is_refusing_new_connections() const {
 }
 
 bool MultiplayerPeerExtension::is_server_relay_supported() const {
+	ZoneScopedS(60);
 	bool can_relay;
 	if (GDVIRTUAL_CALL(_is_server_relay_supported, can_relay)) {
 		return can_relay;
@@ -193,6 +208,7 @@ bool MultiplayerPeerExtension::is_server_relay_supported() const {
 }
 
 void MultiplayerPeerExtension::_bind_methods() {
+	ZoneScopedS(60);
 	GDVIRTUAL_BIND(_get_packet, "r_buffer", "r_buffer_size");
 	GDVIRTUAL_BIND(_put_packet, "p_buffer", "p_buffer_size");
 	GDVIRTUAL_BIND(_get_available_packet_count);

@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  label_3d.cpp                                                         */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "label_3d.h"
 
 #include "core/core_string_names.h"
@@ -37,6 +68,7 @@
 #include "scene/theme/theme_db.h"
 
 void Label3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_horizontal_alignment", "alignment"), &Label3D::set_horizontal_alignment);
 	ClassDB::bind_method(D_METHOD("get_horizontal_alignment"), &Label3D::get_horizontal_alignment);
 
@@ -165,6 +197,7 @@ void Label3D::_bind_methods() {
 }
 
 void Label3D::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (
 			p_property.name == "material_override" ||
 			p_property.name == "material_overlay" ||
@@ -181,6 +214,7 @@ void Label3D::_validate_property(PropertyInfo &p_property) const {
 }
 
 void Label3D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			if (!pending_update) {
@@ -208,6 +242,7 @@ void Label3D::_notification(int p_what) {
 }
 
 void Label3D::_im_update() {
+	ZoneScopedS(60);
 	_shape();
 
 	triangle_mesh.unref();
@@ -217,6 +252,7 @@ void Label3D::_im_update() {
 }
 
 void Label3D::_queue_update() {
+	ZoneScopedS(60);
 	if (pending_update) {
 		return;
 	}
@@ -226,10 +262,12 @@ void Label3D::_queue_update() {
 }
 
 AABB Label3D::get_aabb() const {
+	ZoneScopedS(60);
 	return aabb;
 }
 
 Ref<TriangleMesh> Label3D::generate_triangle_mesh() const {
+	ZoneScopedS(60);
 	if (triangle_mesh.is_valid()) {
 		return triangle_mesh;
 	}
@@ -314,6 +352,7 @@ Ref<TriangleMesh> Label3D::generate_triangle_mesh() const {
 }
 
 void Label3D::_generate_glyph_surfaces(const Glyph &p_glyph, Vector2 &r_offset, const Color &p_modulate, int p_priority, int p_outline_size) {
+	ZoneScopedS(60);
 	for (int j = 0; j < p_glyph.repeat; j++) {
 		Vector2 gl_of;
 		Vector2 gl_sz;
@@ -418,6 +457,7 @@ void Label3D::_generate_glyph_surfaces(const Glyph &p_glyph, Vector2 &r_offset, 
 }
 
 void Label3D::_shape() {
+	ZoneScopedS(60);
 	// Clear mesh.
 	RS::get_singleton()->mesh_clear(mesh);
 	aabb = AABB();
@@ -580,6 +620,7 @@ void Label3D::_shape() {
 }
 
 void Label3D::set_text(const String &p_string) {
+	ZoneScopedS(60);
 	text = p_string;
 	xl_text = tr(p_string);
 	dirty_text = true;
@@ -587,10 +628,12 @@ void Label3D::set_text(const String &p_string) {
 }
 
 String Label3D::get_text() const {
+	ZoneScopedS(60);
 	return text;
 }
 
 void Label3D::set_horizontal_alignment(HorizontalAlignment p_alignment) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX((int)p_alignment, 4);
 	if (horizontal_alignment != p_alignment) {
 		if (horizontal_alignment == HORIZONTAL_ALIGNMENT_FILL || p_alignment == HORIZONTAL_ALIGNMENT_FILL) {
@@ -602,10 +645,12 @@ void Label3D::set_horizontal_alignment(HorizontalAlignment p_alignment) {
 }
 
 HorizontalAlignment Label3D::get_horizontal_alignment() const {
+	ZoneScopedS(60);
 	return horizontal_alignment;
 }
 
 void Label3D::set_vertical_alignment(VerticalAlignment p_alignment) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX((int)p_alignment, 4);
 	if (vertical_alignment != p_alignment) {
 		vertical_alignment = p_alignment;
@@ -614,10 +659,12 @@ void Label3D::set_vertical_alignment(VerticalAlignment p_alignment) {
 }
 
 VerticalAlignment Label3D::get_vertical_alignment() const {
+	ZoneScopedS(60);
 	return vertical_alignment;
 }
 
 void Label3D::set_text_direction(TextServer::Direction p_text_direction) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND((int)p_text_direction < -1 || (int)p_text_direction > 3);
 	if (text_direction != p_text_direction) {
 		text_direction = p_text_direction;
@@ -627,10 +674,12 @@ void Label3D::set_text_direction(TextServer::Direction p_text_direction) {
 }
 
 TextServer::Direction Label3D::get_text_direction() const {
+	ZoneScopedS(60);
 	return text_direction;
 }
 
 void Label3D::set_language(const String &p_language) {
+	ZoneScopedS(60);
 	if (language != p_language) {
 		language = p_language;
 		dirty_text = true;
@@ -639,10 +688,12 @@ void Label3D::set_language(const String &p_language) {
 }
 
 String Label3D::get_language() const {
+	ZoneScopedS(60);
 	return language;
 }
 
 void Label3D::set_structured_text_bidi_override(TextServer::StructuredTextParser p_parser) {
+	ZoneScopedS(60);
 	if (st_parser != p_parser) {
 		st_parser = p_parser;
 		dirty_text = true;
@@ -651,10 +702,12 @@ void Label3D::set_structured_text_bidi_override(TextServer::StructuredTextParser
 }
 
 TextServer::StructuredTextParser Label3D::get_structured_text_bidi_override() const {
+	ZoneScopedS(60);
 	return st_parser;
 }
 
 void Label3D::set_structured_text_bidi_override_options(Array p_args) {
+	ZoneScopedS(60);
 	if (st_args != p_args) {
 		st_args = p_args;
 		dirty_text = true;
@@ -663,10 +716,12 @@ void Label3D::set_structured_text_bidi_override_options(Array p_args) {
 }
 
 Array Label3D::get_structured_text_bidi_override_options() const {
+	ZoneScopedS(60);
 	return st_args;
 }
 
 void Label3D::set_uppercase(bool p_uppercase) {
+	ZoneScopedS(60);
 	if (uppercase != p_uppercase) {
 		uppercase = p_uppercase;
 		dirty_text = true;
@@ -675,10 +730,12 @@ void Label3D::set_uppercase(bool p_uppercase) {
 }
 
 bool Label3D::is_uppercase() const {
+	ZoneScopedS(60);
 	return uppercase;
 }
 
 void Label3D::set_render_priority(int p_priority) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_priority < RS::MATERIAL_RENDER_PRIORITY_MIN || p_priority > RS::MATERIAL_RENDER_PRIORITY_MAX);
 	if (render_priority != p_priority) {
 		render_priority = p_priority;
@@ -687,10 +744,12 @@ void Label3D::set_render_priority(int p_priority) {
 }
 
 int Label3D::get_render_priority() const {
+	ZoneScopedS(60);
 	return render_priority;
 }
 
 void Label3D::set_outline_render_priority(int p_priority) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_priority < RS::MATERIAL_RENDER_PRIORITY_MIN || p_priority > RS::MATERIAL_RENDER_PRIORITY_MAX);
 	if (outline_render_priority != p_priority) {
 		outline_render_priority = p_priority;
@@ -699,15 +758,18 @@ void Label3D::set_outline_render_priority(int p_priority) {
 }
 
 int Label3D::get_outline_render_priority() const {
+	ZoneScopedS(60);
 	return outline_render_priority;
 }
 
 void Label3D::_font_changed() {
+	ZoneScopedS(60);
 	dirty_font = true;
 	_queue_update();
 }
 
 void Label3D::set_font(const Ref<Font> &p_font) {
+	ZoneScopedS(60);
 	if (font_override != p_font) {
 		if (font_override.is_valid()) {
 			font_override->disconnect(CoreStringNames::get_singleton()->changed, Callable(this, "_font_changed"));
@@ -722,10 +784,12 @@ void Label3D::set_font(const Ref<Font> &p_font) {
 }
 
 Ref<Font> Label3D::get_font() const {
+	ZoneScopedS(60);
 	return font_override;
 }
 
 Ref<Font> Label3D::_get_font_or_default() const {
+	ZoneScopedS(60);
 	if (theme_font.is_valid()) {
 		theme_font->disconnect(CoreStringNames::get_singleton()->changed, Callable(const_cast<Label3D *>(this), "_font_changed"));
 		theme_font.unref();
@@ -779,6 +843,7 @@ Ref<Font> Label3D::_get_font_or_default() const {
 }
 
 void Label3D::set_font_size(int p_size) {
+	ZoneScopedS(60);
 	if (font_size != p_size) {
 		font_size = p_size;
 		dirty_font = true;
@@ -787,10 +852,12 @@ void Label3D::set_font_size(int p_size) {
 }
 
 int Label3D::get_font_size() const {
+	ZoneScopedS(60);
 	return font_size;
 }
 
 void Label3D::set_outline_size(int p_size) {
+	ZoneScopedS(60);
 	if (outline_size != p_size) {
 		outline_size = p_size;
 		_queue_update();
@@ -798,10 +865,12 @@ void Label3D::set_outline_size(int p_size) {
 }
 
 int Label3D::get_outline_size() const {
+	ZoneScopedS(60);
 	return outline_size;
 }
 
 void Label3D::set_modulate(const Color &p_color) {
+	ZoneScopedS(60);
 	if (modulate != p_color) {
 		modulate = p_color;
 		_queue_update();
@@ -809,10 +878,12 @@ void Label3D::set_modulate(const Color &p_color) {
 }
 
 Color Label3D::get_modulate() const {
+	ZoneScopedS(60);
 	return modulate;
 }
 
 void Label3D::set_outline_modulate(const Color &p_color) {
+	ZoneScopedS(60);
 	if (outline_modulate != p_color) {
 		outline_modulate = p_color;
 		_queue_update();
@@ -820,10 +891,12 @@ void Label3D::set_outline_modulate(const Color &p_color) {
 }
 
 Color Label3D::get_outline_modulate() const {
+	ZoneScopedS(60);
 	return outline_modulate;
 }
 
 void Label3D::set_autowrap_mode(TextServer::AutowrapMode p_mode) {
+	ZoneScopedS(60);
 	if (autowrap_mode != p_mode) {
 		autowrap_mode = p_mode;
 		dirty_lines = true;
@@ -832,10 +905,12 @@ void Label3D::set_autowrap_mode(TextServer::AutowrapMode p_mode) {
 }
 
 TextServer::AutowrapMode Label3D::get_autowrap_mode() const {
+	ZoneScopedS(60);
 	return autowrap_mode;
 }
 
 void Label3D::set_width(float p_width) {
+	ZoneScopedS(60);
 	if (width != p_width) {
 		width = p_width;
 		dirty_lines = true;
@@ -844,10 +919,12 @@ void Label3D::set_width(float p_width) {
 }
 
 float Label3D::get_width() const {
+	ZoneScopedS(60);
 	return width;
 }
 
 void Label3D::set_pixel_size(real_t p_amount) {
+	ZoneScopedS(60);
 	if (pixel_size != p_amount) {
 		pixel_size = p_amount;
 		_queue_update();
@@ -855,10 +932,12 @@ void Label3D::set_pixel_size(real_t p_amount) {
 }
 
 real_t Label3D::get_pixel_size() const {
+	ZoneScopedS(60);
 	return pixel_size;
 }
 
 void Label3D::set_offset(const Point2 &p_offset) {
+	ZoneScopedS(60);
 	if (lbl_offset != p_offset) {
 		lbl_offset = p_offset;
 		_queue_update();
@@ -866,10 +945,12 @@ void Label3D::set_offset(const Point2 &p_offset) {
 }
 
 Point2 Label3D::get_offset() const {
+	ZoneScopedS(60);
 	return lbl_offset;
 }
 
 void Label3D::set_line_spacing(float p_line_spacing) {
+	ZoneScopedS(60);
 	if (line_spacing != p_line_spacing) {
 		line_spacing = p_line_spacing;
 		_queue_update();
@@ -877,10 +958,12 @@ void Label3D::set_line_spacing(float p_line_spacing) {
 }
 
 float Label3D::get_line_spacing() const {
+	ZoneScopedS(60);
 	return line_spacing;
 }
 
 void Label3D::set_draw_flag(DrawFlags p_flag, bool p_enable) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_flag, FLAG_MAX);
 	if (flags[p_flag] != p_enable) {
 		flags[p_flag] = p_enable;
@@ -889,11 +972,13 @@ void Label3D::set_draw_flag(DrawFlags p_flag, bool p_enable) {
 }
 
 bool Label3D::get_draw_flag(DrawFlags p_flag) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_flag, FLAG_MAX, false);
 	return flags[p_flag];
 }
 
 void Label3D::set_billboard_mode(StandardMaterial3D::BillboardMode p_mode) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_mode, 3);
 	if (billboard_mode != p_mode) {
 		billboard_mode = p_mode;
@@ -902,10 +987,12 @@ void Label3D::set_billboard_mode(StandardMaterial3D::BillboardMode p_mode) {
 }
 
 StandardMaterial3D::BillboardMode Label3D::get_billboard_mode() const {
+	ZoneScopedS(60);
 	return billboard_mode;
 }
 
 void Label3D::set_alpha_cut_mode(AlphaCutMode p_mode) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_mode, 3);
 	if (alpha_cut != p_mode) {
 		alpha_cut = p_mode;
@@ -915,6 +1002,7 @@ void Label3D::set_alpha_cut_mode(AlphaCutMode p_mode) {
 }
 
 void Label3D::set_texture_filter(StandardMaterial3D::TextureFilter p_filter) {
+	ZoneScopedS(60);
 	if (texture_filter != p_filter) {
 		texture_filter = p_filter;
 		_queue_update();
@@ -922,14 +1010,17 @@ void Label3D::set_texture_filter(StandardMaterial3D::TextureFilter p_filter) {
 }
 
 StandardMaterial3D::TextureFilter Label3D::get_texture_filter() const {
+	ZoneScopedS(60);
 	return texture_filter;
 }
 
 Label3D::AlphaCutMode Label3D::get_alpha_cut_mode() const {
+	ZoneScopedS(60);
 	return alpha_cut;
 }
 
 void Label3D::set_alpha_scissor_threshold(float p_threshold) {
+	ZoneScopedS(60);
 	if (alpha_scissor_threshold != p_threshold) {
 		alpha_scissor_threshold = p_threshold;
 		_queue_update();
@@ -937,10 +1028,12 @@ void Label3D::set_alpha_scissor_threshold(float p_threshold) {
 }
 
 float Label3D::get_alpha_scissor_threshold() const {
+	ZoneScopedS(60);
 	return alpha_scissor_threshold;
 }
 
 Label3D::Label3D() {
+	ZoneScopedS(60);
 	for (int i = 0; i < FLAG_MAX; i++) {
 		flags[i] = (i == FLAG_DOUBLE_SIDED);
 	}
@@ -959,6 +1052,7 @@ Label3D::Label3D() {
 }
 
 Label3D::~Label3D() {
+	ZoneScopedS(60);
 	for (int i = 0; i < lines_rid.size(); i++) {
 		TS->free_rid(lines_rid[i]);
 	}

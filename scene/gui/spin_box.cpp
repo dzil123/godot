@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  spin_box.cpp                                                         */
 /*************************************************************************/
@@ -34,12 +35,14 @@
 #include "core/math/expression.h"
 
 Size2 SpinBox::get_minimum_size() const {
+	ZoneScopedS(60);
 	Size2 ms = line_edit->get_combined_minimum_size();
 	ms.width += last_w;
 	return ms;
 }
 
 void SpinBox::_value_changed(double p_value) {
+	ZoneScopedS(60);
 	String value = TS->format_number(String::num(get_value(), Math::range_step_decimals(get_step())));
 
 	if (!line_edit->has_focus()) {
@@ -56,6 +59,7 @@ void SpinBox::_value_changed(double p_value) {
 }
 
 void SpinBox::_text_submitted(const String &p_string) {
+	ZoneScopedS(60);
 	Ref<Expression> expr;
 	expr.instantiate();
 
@@ -74,6 +78,7 @@ void SpinBox::_text_submitted(const String &p_string) {
 }
 
 void SpinBox::_text_changed(const String &p_string) {
+	ZoneScopedS(60);
 	int cursor_pos = line_edit->get_caret_column();
 
 	_text_submitted(p_string);
@@ -83,6 +88,7 @@ void SpinBox::_text_changed(const String &p_string) {
 }
 
 LineEdit *SpinBox::get_line_edit() {
+	ZoneScopedS(60);
 	return line_edit;
 }
 
@@ -90,6 +96,7 @@ void SpinBox::_line_edit_input(const Ref<InputEvent> &p_event) {
 }
 
 void SpinBox::_range_click_timeout() {
+	ZoneScopedS(60);
 	if (!drag.enabled && Input::get_singleton()->is_mouse_button_pressed(MouseButton::LEFT)) {
 		bool up = get_local_mouse_position().y < (get_size().height / 2);
 		double step = get_custom_arrow_step() != 0.0 ? get_custom_arrow_step() : get_step();
@@ -107,6 +114,7 @@ void SpinBox::_range_click_timeout() {
 }
 
 void SpinBox::_release_mouse() {
+	ZoneScopedS(60);
 	if (drag.enabled) {
 		drag.enabled = false;
 		Input::get_singleton()->set_mouse_mode(Input::MOUSE_MODE_HIDDEN);
@@ -116,6 +124,7 @@ void SpinBox::_release_mouse() {
 }
 
 void SpinBox::gui_input(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_event.is_null());
 
 	if (!is_editable()) {
@@ -188,6 +197,7 @@ void SpinBox::gui_input(const Ref<InputEvent> &p_event) {
 }
 
 void SpinBox::_line_edit_focus_enter() {
+	ZoneScopedS(60);
 	int col = line_edit->get_caret_column();
 	_value_changed(0); // Update the LineEdit's text.
 	line_edit->set_caret_column(col);
@@ -199,6 +209,7 @@ void SpinBox::_line_edit_focus_enter() {
 }
 
 void SpinBox::_line_edit_focus_exit() {
+	ZoneScopedS(60);
 	// Discontinue because the focus_exit was caused by right-click context menu.
 	if (line_edit->is_menu_visible()) {
 		return;
@@ -208,6 +219,7 @@ void SpinBox::_line_edit_focus_exit() {
 }
 
 inline void SpinBox::_adjust_width_for_icon(const Ref<Texture2D> &icon) {
+	ZoneScopedS(60);
 	int w = icon->get_width();
 	if ((w != last_w)) {
 		line_edit->set_offset(SIDE_LEFT, 0);
@@ -217,12 +229,14 @@ inline void SpinBox::_adjust_width_for_icon(const Ref<Texture2D> &icon) {
 }
 
 void SpinBox::_update_theme_item_cache() {
+	ZoneScopedS(60);
 	Range::_update_theme_item_cache();
 
 	theme_cache.updown_icon = get_theme_icon(SNAME("updown"));
 }
 
 void SpinBox::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
 			_adjust_width_for_icon(theme_cache.updown_icon);
@@ -263,14 +277,17 @@ void SpinBox::_notification(int p_what) {
 }
 
 void SpinBox::set_horizontal_alignment(HorizontalAlignment p_alignment) {
+	ZoneScopedS(60);
 	line_edit->set_horizontal_alignment(p_alignment);
 }
 
 HorizontalAlignment SpinBox::get_horizontal_alignment() const {
+	ZoneScopedS(60);
 	return line_edit->get_horizontal_alignment();
 }
 
 void SpinBox::set_suffix(const String &p_suffix) {
+	ZoneScopedS(60);
 	if (suffix == p_suffix) {
 		return;
 	}
@@ -280,10 +297,12 @@ void SpinBox::set_suffix(const String &p_suffix) {
 }
 
 String SpinBox::get_suffix() const {
+	ZoneScopedS(60);
 	return suffix;
 }
 
 void SpinBox::set_prefix(const String &p_prefix) {
+	ZoneScopedS(60);
 	if (prefix == p_prefix) {
 		return;
 	}
@@ -293,10 +312,12 @@ void SpinBox::set_prefix(const String &p_prefix) {
 }
 
 String SpinBox::get_prefix() const {
+	ZoneScopedS(60);
 	return prefix;
 }
 
 void SpinBox::set_update_on_text_changed(bool p_enabled) {
+	ZoneScopedS(60);
 	if (update_on_text_changed == p_enabled) {
 		return;
 	}
@@ -311,38 +332,47 @@ void SpinBox::set_update_on_text_changed(bool p_enabled) {
 }
 
 bool SpinBox::get_update_on_text_changed() const {
+	ZoneScopedS(60);
 	return update_on_text_changed;
 }
 
 void SpinBox::set_select_all_on_focus(bool p_enabled) {
+	ZoneScopedS(60);
 	line_edit->set_select_all_on_focus(p_enabled);
 }
 
 bool SpinBox::is_select_all_on_focus() const {
+	ZoneScopedS(60);
 	return line_edit->is_select_all_on_focus();
 }
 
 void SpinBox::set_editable(bool p_enabled) {
+	ZoneScopedS(60);
 	line_edit->set_editable(p_enabled);
 }
 
 bool SpinBox::is_editable() const {
+	ZoneScopedS(60);
 	return line_edit->is_editable();
 }
 
 void SpinBox::apply() {
+	ZoneScopedS(60);
 	_text_submitted(line_edit->get_text());
 }
 
 void SpinBox::set_custom_arrow_step(double p_custom_arrow_step) {
+	ZoneScopedS(60);
 	custom_arrow_step = p_custom_arrow_step;
 }
 
 double SpinBox::get_custom_arrow_step() const {
+	ZoneScopedS(60);
 	return custom_arrow_step;
 }
 
 void SpinBox::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_horizontal_alignment", "alignment"), &SpinBox::set_horizontal_alignment);
 	ClassDB::bind_method(D_METHOD("get_horizontal_alignment"), &SpinBox::get_horizontal_alignment);
 	ClassDB::bind_method(D_METHOD("set_suffix", "suffix"), &SpinBox::set_suffix);
@@ -370,6 +400,7 @@ void SpinBox::_bind_methods() {
 }
 
 SpinBox::SpinBox() {
+	ZoneScopedS(60);
 	line_edit = memnew(LineEdit);
 	add_child(line_edit, false, INTERNAL_MODE_FRONT);
 

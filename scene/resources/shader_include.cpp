@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  shader_include.cpp                                                   */
 /*************************************************************************/
@@ -28,15 +29,17 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "shader_include.h"
 #include "servers/rendering/shader_language.h"
 #include "servers/rendering/shader_preprocessor.h"
+#include "shader_include.h"
 
 void ShaderInclude::_dependency_changed() {
+	ZoneScopedS(60);
 	emit_changed();
 }
 
 void ShaderInclude::set_code(const String &p_code) {
+	ZoneScopedS(60);
 	HashSet<Ref<ShaderInclude>> new_dependencies;
 	code = p_code;
 
@@ -61,10 +64,12 @@ void ShaderInclude::set_code(const String &p_code) {
 }
 
 String ShaderInclude::get_code() const {
+	ZoneScopedS(60);
 	return code;
 }
 
 void ShaderInclude::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_code", "code"), &ShaderInclude::set_code);
 	ClassDB::bind_method(D_METHOD("get_code"), &ShaderInclude::get_code);
 
@@ -74,6 +79,7 @@ void ShaderInclude::_bind_methods() {
 // ResourceFormatLoaderShaderInclude
 
 Ref<Resource> ResourceFormatLoaderShaderInclude::load(const String &p_path, const String &p_original_path, Error *r_error, bool p_use_sub_threads, float *r_progress, CacheMode p_cache_mode) {
+	ZoneScopedS(60);
 	if (r_error) {
 		*r_error = ERR_FILE_CANT_OPEN;
 	}
@@ -96,14 +102,17 @@ Ref<Resource> ResourceFormatLoaderShaderInclude::load(const String &p_path, cons
 }
 
 void ResourceFormatLoaderShaderInclude::get_recognized_extensions(List<String> *p_extensions) const {
+	ZoneScopedS(60);
 	p_extensions->push_back("gdshaderinc");
 }
 
 bool ResourceFormatLoaderShaderInclude::handles_type(const String &p_type) const {
+	ZoneScopedS(60);
 	return (p_type == "ShaderInclude");
 }
 
 String ResourceFormatLoaderShaderInclude::get_resource_type(const String &p_path) const {
+	ZoneScopedS(60);
 	String extension = p_path.get_extension().to_lower();
 	if (extension == "gdshaderinc") {
 		return "ShaderInclude";
@@ -114,6 +123,7 @@ String ResourceFormatLoaderShaderInclude::get_resource_type(const String &p_path
 // ResourceFormatSaverShaderInclude
 
 Error ResourceFormatSaverShaderInclude::save(const Ref<Resource> &p_resource, const String &p_path, uint32_t p_flags) {
+	ZoneScopedS(60);
 	Ref<ShaderInclude> shader_inc = p_resource;
 	ERR_FAIL_COND_V(shader_inc.is_null(), ERR_INVALID_PARAMETER);
 
@@ -133,6 +143,7 @@ Error ResourceFormatSaverShaderInclude::save(const Ref<Resource> &p_resource, co
 }
 
 void ResourceFormatSaverShaderInclude::get_recognized_extensions(const Ref<Resource> &p_resource, List<String> *p_extensions) const {
+	ZoneScopedS(60);
 	const ShaderInclude *shader_inc = Object::cast_to<ShaderInclude>(*p_resource);
 	if (shader_inc != nullptr) {
 		p_extensions->push_back("gdshaderinc");
@@ -140,5 +151,6 @@ void ResourceFormatSaverShaderInclude::get_recognized_extensions(const Ref<Resou
 }
 
 bool ResourceFormatSaverShaderInclude::recognize(const Ref<Resource> &p_resource) const {
+	ZoneScopedS(60);
 	return p_resource->get_class_name() == "ShaderInclude"; //only shader, not inherited
 }

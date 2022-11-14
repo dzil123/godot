@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  tween.cpp                                                            */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "tween.h"
 
 #include "scene/animation/easing_equations.h"
@@ -49,18 +80,22 @@ Tween::interpolater Tween::interpolaters[Tween::TRANS_MAX][Tween::EASE_MAX] = {
 };
 
 void Tweener::set_tween(Ref<Tween> p_tween) {
+	ZoneScopedS(60);
 	tween = p_tween;
 }
 
 void Tweener::clear_tween() {
+	ZoneScopedS(60);
 	tween.unref();
 }
 
 void Tweener::_bind_methods() {
+	ZoneScopedS(60);
 	ADD_SIGNAL(MethodInfo("finished"));
 }
 
 void Tween::start_tweeners() {
+	ZoneScopedS(60);
 	if (tweeners.is_empty()) {
 		dead = true;
 		ERR_FAIL_MSG("Tween without commands, aborting.");
@@ -72,6 +107,7 @@ void Tween::start_tweeners() {
 }
 
 Ref<PropertyTweener> Tween::tween_property(Object *p_target, NodePath p_property, Variant p_to, double p_duration) {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL_V(p_target, nullptr);
 	ERR_FAIL_COND_V_MSG(!valid, nullptr, "Tween invalid. Either finished or created outside scene tree.");
 	ERR_FAIL_COND_V_MSG(started, nullptr, "Can't append to a Tween that has started. Use stop() first.");
@@ -94,6 +130,7 @@ Ref<PropertyTweener> Tween::tween_property(Object *p_target, NodePath p_property
 }
 
 Ref<IntervalTweener> Tween::tween_interval(double p_time) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!valid, nullptr, "Tween invalid. Either finished or created outside scene tree.");
 	ERR_FAIL_COND_V_MSG(started, nullptr, "Can't append to a Tween that has started. Use stop() first.");
 
@@ -103,6 +140,7 @@ Ref<IntervalTweener> Tween::tween_interval(double p_time) {
 }
 
 Ref<CallbackTweener> Tween::tween_callback(Callable p_callback) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!valid, nullptr, "Tween invalid. Either finished or created outside scene tree.");
 	ERR_FAIL_COND_V_MSG(started, nullptr, "Can't append to a Tween that has started. Use stop() first.");
 
@@ -112,6 +150,7 @@ Ref<CallbackTweener> Tween::tween_callback(Callable p_callback) {
 }
 
 Ref<MethodTweener> Tween::tween_method(Callable p_callback, Variant p_from, Variant p_to, double p_duration) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!valid, nullptr, "Tween invalid. Either finished or created outside scene tree.");
 	ERR_FAIL_COND_V_MSG(started, nullptr, "Can't append to a Tween that has started. Use stop() first.");
 
@@ -121,6 +160,7 @@ Ref<MethodTweener> Tween::tween_method(Callable p_callback, Variant p_from, Vari
 }
 
 void Tween::append(Ref<Tweener> p_tweener) {
+	ZoneScopedS(60);
 	p_tweener->set_tween(this);
 
 	if (parallel_enabled) {
@@ -135,6 +175,7 @@ void Tween::append(Ref<Tweener> p_tweener) {
 }
 
 void Tween::stop() {
+	ZoneScopedS(60);
 	started = false;
 	running = false;
 	dead = false;
@@ -142,29 +183,35 @@ void Tween::stop() {
 }
 
 void Tween::pause() {
+	ZoneScopedS(60);
 	running = false;
 }
 
 void Tween::play() {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!valid, "Tween invalid. Either finished or created outside scene tree.");
 	ERR_FAIL_COND_MSG(dead, "Can't play finished Tween, use stop() first to reset its state.");
 	running = true;
 }
 
 void Tween::kill() {
+	ZoneScopedS(60);
 	running = false; // For the sake of is_running().
 	dead = true;
 }
 
 bool Tween::is_running() {
+	ZoneScopedS(60);
 	return running;
 }
 
 bool Tween::is_valid() {
+	ZoneScopedS(60);
 	return valid;
 }
 
 void Tween::clear() {
+	ZoneScopedS(60);
 	valid = false;
 
 	for (List<Ref<Tweener>> &step : tweeners) {
@@ -176,6 +223,7 @@ void Tween::clear() {
 }
 
 Ref<Tween> Tween::bind_node(Node *p_node) {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL_V(p_node, this);
 
 	bound_node = p_node->get_instance_id();
@@ -184,68 +232,82 @@ Ref<Tween> Tween::bind_node(Node *p_node) {
 }
 
 Ref<Tween> Tween::set_process_mode(TweenProcessMode p_mode) {
+	ZoneScopedS(60);
 	process_mode = p_mode;
 	return this;
 }
 
 Tween::TweenProcessMode Tween::get_process_mode() {
+	ZoneScopedS(60);
 	return process_mode;
 }
 
 Ref<Tween> Tween::set_pause_mode(TweenPauseMode p_mode) {
+	ZoneScopedS(60);
 	pause_mode = p_mode;
 	return this;
 }
 
 Tween::TweenPauseMode Tween::get_pause_mode() {
+	ZoneScopedS(60);
 	return pause_mode;
 }
 
 Ref<Tween> Tween::set_parallel(bool p_parallel) {
+	ZoneScopedS(60);
 	default_parallel = p_parallel;
 	parallel_enabled = p_parallel;
 	return this;
 }
 
 Ref<Tween> Tween::set_loops(int p_loops) {
+	ZoneScopedS(60);
 	loops = p_loops;
 	return this;
 }
 
 Ref<Tween> Tween::set_speed_scale(float p_speed) {
+	ZoneScopedS(60);
 	speed_scale = p_speed;
 	return this;
 }
 
 Ref<Tween> Tween::set_trans(TransitionType p_trans) {
+	ZoneScopedS(60);
 	default_transition = p_trans;
 	return this;
 }
 
 Tween::TransitionType Tween::get_trans() {
+	ZoneScopedS(60);
 	return default_transition;
 }
 
 Ref<Tween> Tween::set_ease(EaseType p_ease) {
+	ZoneScopedS(60);
 	default_ease = p_ease;
 	return this;
 }
 
 Tween::EaseType Tween::get_ease() {
+	ZoneScopedS(60);
 	return default_ease;
 }
 
 Ref<Tween> Tween::parallel() {
+	ZoneScopedS(60);
 	parallel_enabled = true;
 	return this;
 }
 
 Ref<Tween> Tween::chain() {
+	ZoneScopedS(60);
 	parallel_enabled = false;
 	return this;
 }
 
 bool Tween::custom_step(double p_delta) {
+	ZoneScopedS(60);
 	bool r = running;
 	running = true;
 	bool ret = step(p_delta);
@@ -254,6 +316,7 @@ bool Tween::custom_step(double p_delta) {
 }
 
 bool Tween::step(double p_delta) {
+	ZoneScopedS(60);
 	if (dead) {
 		return false;
 	}
@@ -341,6 +404,7 @@ bool Tween::step(double p_delta) {
 }
 
 bool Tween::can_process(bool p_tree_paused) const {
+	ZoneScopedS(60);
 	if (is_bound && pause_mode == TWEEN_PAUSE_BOUND) {
 		Node *node = get_bound_node();
 		if (node) {
@@ -352,6 +416,7 @@ bool Tween::can_process(bool p_tree_paused) const {
 }
 
 Node *Tween::get_bound_node() const {
+	ZoneScopedS(60);
 	if (is_bound) {
 		return Object::cast_to<Node>(ObjectDB::get_instance(bound_node));
 	} else {
@@ -360,10 +425,12 @@ Node *Tween::get_bound_node() const {
 }
 
 double Tween::get_total_time() const {
+	ZoneScopedS(60);
 	return total_time;
 }
 
 real_t Tween::run_equation(TransitionType p_trans_type, EaseType p_ease_type, real_t p_time, real_t p_initial, real_t p_delta, real_t p_duration) {
+	ZoneScopedS(60);
 	if (p_duration == 0) {
 		// Special case to avoid dividing by 0 in equations.
 		return p_initial + p_delta;
@@ -374,6 +441,7 @@ real_t Tween::run_equation(TransitionType p_trans_type, EaseType p_ease_type, re
 }
 
 Variant Tween::interpolate_variant(Variant p_initial_val, Variant p_delta_val, double p_time, double p_duration, TransitionType p_trans, EaseType p_ease) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_trans, TransitionType::TRANS_MAX, Variant());
 	ERR_FAIL_INDEX_V(p_ease, EaseType::EASE_MAX, Variant());
 
@@ -388,6 +456,7 @@ Variant Tween::interpolate_variant(Variant p_initial_val, Variant p_delta_val, d
 }
 
 void Tween::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("tween_property", "object", "property", "final_val", "duration"), &Tween::tween_property);
 	ClassDB::bind_method(D_METHOD("tween_interval", "time"), &Tween::tween_interval);
 	ClassDB::bind_method(D_METHOD("tween_callback", "callback"), &Tween::tween_callback);
@@ -447,45 +516,54 @@ void Tween::_bind_methods() {
 }
 
 Tween::Tween() {
+	ZoneScopedS(60);
 	ERR_FAIL_MSG("Tween can't be created directly. Use create_tween() method.");
 }
 
 Tween::Tween(bool p_valid) {
+	ZoneScopedS(60);
 	valid = p_valid;
 }
 
 Ref<PropertyTweener> PropertyTweener::from(Variant p_value) {
+	ZoneScopedS(60);
 	initial_val = p_value;
 	do_continue = false;
 	return this;
 }
 
 Ref<PropertyTweener> PropertyTweener::from_current() {
+	ZoneScopedS(60);
 	do_continue = false;
 	return this;
 }
 
 Ref<PropertyTweener> PropertyTweener::as_relative() {
+	ZoneScopedS(60);
 	relative = true;
 	return this;
 }
 
 Ref<PropertyTweener> PropertyTweener::set_trans(Tween::TransitionType p_trans) {
+	ZoneScopedS(60);
 	trans_type = p_trans;
 	return this;
 }
 
 Ref<PropertyTweener> PropertyTweener::set_ease(Tween::EaseType p_ease) {
+	ZoneScopedS(60);
 	ease_type = p_ease;
 	return this;
 }
 
 Ref<PropertyTweener> PropertyTweener::set_delay(double p_delay) {
+	ZoneScopedS(60);
 	delay = p_delay;
 	return this;
 }
 
 void PropertyTweener::start() {
+	ZoneScopedS(60);
 	elapsed_time = 0;
 	finished = false;
 
@@ -507,6 +585,7 @@ void PropertyTweener::start() {
 }
 
 bool PropertyTweener::step(double &r_delta) {
+	ZoneScopedS(60);
 	if (finished) {
 		// This is needed in case there's a parallel Tweener with longer duration.
 		return false;
@@ -538,6 +617,7 @@ bool PropertyTweener::step(double &r_delta) {
 }
 
 void PropertyTweener::set_tween(Ref<Tween> p_tween) {
+	ZoneScopedS(60);
 	tween = p_tween;
 	if (trans_type == Tween::TRANS_MAX) {
 		trans_type = tween->get_trans();
@@ -548,6 +628,7 @@ void PropertyTweener::set_tween(Ref<Tween> p_tween) {
 }
 
 void PropertyTweener::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("from", "value"), &PropertyTweener::from);
 	ClassDB::bind_method(D_METHOD("from_current"), &PropertyTweener::from_current);
 	ClassDB::bind_method(D_METHOD("as_relative"), &PropertyTweener::as_relative);
@@ -557,6 +638,7 @@ void PropertyTweener::_bind_methods() {
 }
 
 PropertyTweener::PropertyTweener(Object *p_target, NodePath p_property, Variant p_to, double p_duration) {
+	ZoneScopedS(60);
 	target = p_target->get_instance_id();
 	property = p_property.get_as_property_path().get_subnames();
 	initial_val = p_target->get_indexed(property);
@@ -566,15 +648,18 @@ PropertyTweener::PropertyTweener(Object *p_target, NodePath p_property, Variant 
 }
 
 PropertyTweener::PropertyTweener() {
+	ZoneScopedS(60);
 	ERR_FAIL_MSG("Can't create empty PropertyTweener. Use get_tree().tween_property() or tween_property() instead.");
 }
 
 void IntervalTweener::start() {
+	ZoneScopedS(60);
 	elapsed_time = 0;
 	finished = false;
 }
 
 bool IntervalTweener::step(double &r_delta) {
+	ZoneScopedS(60);
 	if (finished) {
 		return false;
 	}
@@ -593,24 +678,29 @@ bool IntervalTweener::step(double &r_delta) {
 }
 
 IntervalTweener::IntervalTweener(double p_time) {
+	ZoneScopedS(60);
 	duration = p_time;
 }
 
 IntervalTweener::IntervalTweener() {
+	ZoneScopedS(60);
 	ERR_FAIL_MSG("Can't create empty IntervalTweener. Use get_tree().tween_interval() instead.");
 }
 
 Ref<CallbackTweener> CallbackTweener::set_delay(double p_delay) {
+	ZoneScopedS(60);
 	delay = p_delay;
 	return this;
 }
 
 void CallbackTweener::start() {
+	ZoneScopedS(60);
 	elapsed_time = 0;
 	finished = false;
 }
 
 bool CallbackTweener::step(double &r_delta) {
+	ZoneScopedS(60);
 	if (finished) {
 		return false;
 	}
@@ -635,38 +725,46 @@ bool CallbackTweener::step(double &r_delta) {
 }
 
 void CallbackTweener::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_delay", "delay"), &CallbackTweener::set_delay);
 }
 
 CallbackTweener::CallbackTweener(Callable p_callback) {
+	ZoneScopedS(60);
 	callback = p_callback;
 }
 
 CallbackTweener::CallbackTweener() {
+	ZoneScopedS(60);
 	ERR_FAIL_MSG("Can't create empty CallbackTweener. Use get_tree().tween_callback() instead.");
 }
 
 Ref<MethodTweener> MethodTweener::set_delay(double p_delay) {
+	ZoneScopedS(60);
 	delay = p_delay;
 	return this;
 }
 
 Ref<MethodTweener> MethodTweener::set_trans(Tween::TransitionType p_trans) {
+	ZoneScopedS(60);
 	trans_type = p_trans;
 	return this;
 }
 
 Ref<MethodTweener> MethodTweener::set_ease(Tween::EaseType p_ease) {
+	ZoneScopedS(60);
 	ease_type = p_ease;
 	return this;
 }
 
 void MethodTweener::start() {
+	ZoneScopedS(60);
 	elapsed_time = 0;
 	finished = false;
 }
 
 bool MethodTweener::step(double &r_delta) {
+	ZoneScopedS(60);
 	if (finished) {
 		return false;
 	}
@@ -707,6 +805,7 @@ bool MethodTweener::step(double &r_delta) {
 }
 
 void MethodTweener::set_tween(Ref<Tween> p_tween) {
+	ZoneScopedS(60);
 	tween = p_tween;
 	if (trans_type == Tween::TRANS_MAX) {
 		trans_type = tween->get_trans();
@@ -717,12 +816,14 @@ void MethodTweener::set_tween(Ref<Tween> p_tween) {
 }
 
 void MethodTweener::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_delay", "delay"), &MethodTweener::set_delay);
 	ClassDB::bind_method(D_METHOD("set_trans", "trans"), &MethodTweener::set_trans);
 	ClassDB::bind_method(D_METHOD("set_ease", "ease"), &MethodTweener::set_ease);
 }
 
 MethodTweener::MethodTweener(Callable p_callback, Variant p_from, Variant p_to, double p_duration) {
+	ZoneScopedS(60);
 	callback = p_callback;
 	initial_val = p_from;
 	delta_val = Animation::subtract_variant(p_to, p_from);
@@ -731,5 +832,6 @@ MethodTweener::MethodTweener(Callable p_callback, Variant p_from, Variant p_to, 
 }
 
 MethodTweener::MethodTweener() {
+	ZoneScopedS(60);
 	ERR_FAIL_MSG("Can't create empty MethodTweener. Use get_tree().tween_method() instead.");
 }

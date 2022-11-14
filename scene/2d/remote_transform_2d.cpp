@@ -28,9 +28,41 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  remote_transform_2d.cpp                                              */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "remote_transform_2d.h"
 
 void RemoteTransform2D::_update_cache() {
+	ZoneScopedS(60);
 	cache = ObjectID();
 	if (has_node(remote_node)) {
 		Node *node = get_node(remote_node);
@@ -43,6 +75,7 @@ void RemoteTransform2D::_update_cache() {
 }
 
 void RemoteTransform2D::_update_remote() {
+	ZoneScopedS(60);
 	if (!is_inside_tree()) {
 		return;
 	}
@@ -112,6 +145,7 @@ void RemoteTransform2D::_update_remote() {
 }
 
 void RemoteTransform2D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			_update_cache();
@@ -130,6 +164,7 @@ void RemoteTransform2D::_notification(int p_what) {
 }
 
 void RemoteTransform2D::set_remote_node(const NodePath &p_remote_node) {
+	ZoneScopedS(60);
 	remote_node = p_remote_node;
 	if (is_inside_tree()) {
 		_update_cache();
@@ -140,50 +175,61 @@ void RemoteTransform2D::set_remote_node(const NodePath &p_remote_node) {
 }
 
 NodePath RemoteTransform2D::get_remote_node() const {
+	ZoneScopedS(60);
 	return remote_node;
 }
 
 void RemoteTransform2D::set_use_global_coordinates(const bool p_enable) {
+	ZoneScopedS(60);
 	use_global_coordinates = p_enable;
 	_update_remote();
 }
 
 bool RemoteTransform2D::get_use_global_coordinates() const {
+	ZoneScopedS(60);
 	return use_global_coordinates;
 }
 
 void RemoteTransform2D::set_update_position(const bool p_update) {
+	ZoneScopedS(60);
 	update_remote_position = p_update;
 	_update_remote();
 }
 
 bool RemoteTransform2D::get_update_position() const {
+	ZoneScopedS(60);
 	return update_remote_position;
 }
 
 void RemoteTransform2D::set_update_rotation(const bool p_update) {
+	ZoneScopedS(60);
 	update_remote_rotation = p_update;
 	_update_remote();
 }
 
 bool RemoteTransform2D::get_update_rotation() const {
+	ZoneScopedS(60);
 	return update_remote_rotation;
 }
 
 void RemoteTransform2D::set_update_scale(const bool p_update) {
+	ZoneScopedS(60);
 	update_remote_scale = p_update;
 	_update_remote();
 }
 
 bool RemoteTransform2D::get_update_scale() const {
+	ZoneScopedS(60);
 	return update_remote_scale;
 }
 
 void RemoteTransform2D::force_update_cache() {
+	ZoneScopedS(60);
 	_update_cache();
 }
 
 PackedStringArray RemoteTransform2D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (!has_node(remote_node) || !Object::cast_to<Node2D>(get_node(remote_node))) {
@@ -194,6 +240,7 @@ PackedStringArray RemoteTransform2D::get_configuration_warnings() const {
 }
 
 void RemoteTransform2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_remote_node", "path"), &RemoteTransform2D::set_remote_node);
 	ClassDB::bind_method(D_METHOD("get_remote_node"), &RemoteTransform2D::get_remote_node);
 	ClassDB::bind_method(D_METHOD("force_update_cache"), &RemoteTransform2D::force_update_cache);
@@ -218,5 +265,6 @@ void RemoteTransform2D::_bind_methods() {
 }
 
 RemoteTransform2D::RemoteTransform2D() {
+	ZoneScopedS(60);
 	set_notify_transform(true);
 }

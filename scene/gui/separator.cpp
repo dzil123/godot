@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  separator.cpp                                                        */
 /*************************************************************************/
@@ -31,6 +32,7 @@
 #include "separator.h"
 
 Size2 Separator::get_minimum_size() const {
+	ZoneScopedS(60);
 	Size2 ms(3, 3);
 	if (orientation == VERTICAL) {
 		ms.x = theme_cache.separation;
@@ -41,6 +43,7 @@ Size2 Separator::get_minimum_size() const {
 }
 
 void Separator::_update_theme_item_cache() {
+	ZoneScopedS(60);
 	Control::_update_theme_item_cache();
 
 	theme_cache.separation = get_theme_constant(SNAME("separation"));
@@ -48,6 +51,7 @@ void Separator::_update_theme_item_cache() {
 }
 
 void Separator::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
 			Size2i size = get_size();
@@ -69,9 +73,11 @@ Separator::~Separator() {
 }
 
 HSeparator::HSeparator() {
+	ZoneScopedS(60);
 	orientation = HORIZONTAL;
 }
 
 VSeparator::VSeparator() {
+	ZoneScopedS(60);
 	orientation = VERTICAL;
 }

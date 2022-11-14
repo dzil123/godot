@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  animation_library.cpp                                                */
 /*************************************************************************/
@@ -31,14 +32,17 @@
 #include "animation_library.h"
 
 bool AnimationLibrary::is_valid_animation_name(const String &p_name) {
+	ZoneScopedS(60);
 	return !(p_name.is_empty() || p_name.contains("/") || p_name.contains(":") || p_name.contains(",") || p_name.contains("["));
 }
 
 bool AnimationLibrary::is_valid_library_name(const String &p_name) {
+	ZoneScopedS(60);
 	return !(p_name.contains("/") || p_name.contains(":") || p_name.contains(",") || p_name.contains("["));
 }
 
 String AnimationLibrary::validate_library_name(const String &p_name) {
+	ZoneScopedS(60);
 	String name = p_name;
 	const char *characters = "/:,[";
 	for (const char *p = characters; *p; p++) {
@@ -48,6 +52,7 @@ String AnimationLibrary::validate_library_name(const String &p_name) {
 }
 
 Error AnimationLibrary::add_animation(const StringName &p_name, const Ref<Animation> &p_animation) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!is_valid_animation_name(p_name), ERR_INVALID_PARAMETER, "Invalid animation name: '" + String(p_name) + "'.");
 	ERR_FAIL_COND_V(p_animation.is_null(), ERR_INVALID_PARAMETER);
 
@@ -63,6 +68,7 @@ Error AnimationLibrary::add_animation(const StringName &p_name, const Ref<Animat
 }
 
 void AnimationLibrary::remove_animation(const StringName &p_name) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!animations.has(p_name), vformat("Animation not found: %s.", p_name));
 
 	animations.erase(p_name);
@@ -71,6 +77,7 @@ void AnimationLibrary::remove_animation(const StringName &p_name) {
 }
 
 void AnimationLibrary::rename_animation(const StringName &p_name, const StringName &p_new_name) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!animations.has(p_name), vformat("Animation not found: %s.", p_name));
 	ERR_FAIL_COND_MSG(!is_valid_animation_name(p_new_name), "Invalid animation name: '" + String(p_new_name) + "'.");
 	ERR_FAIL_COND_MSG(animations.has(p_new_name), vformat("Animation name \"%s\" already exists in library.", p_new_name));
@@ -81,16 +88,19 @@ void AnimationLibrary::rename_animation(const StringName &p_name, const StringNa
 }
 
 bool AnimationLibrary::has_animation(const StringName &p_name) const {
+	ZoneScopedS(60);
 	return animations.has(p_name);
 }
 
 Ref<Animation> AnimationLibrary::get_animation(const StringName &p_name) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!animations.has(p_name), Ref<Animation>(), vformat("Animation not found: \"%s\".", p_name));
 
 	return animations[p_name];
 }
 
 TypedArray<StringName> AnimationLibrary::_get_animation_list() const {
+	ZoneScopedS(60);
 	TypedArray<StringName> ret;
 	List<StringName> names;
 	get_animation_list(&names);
@@ -101,6 +111,7 @@ TypedArray<StringName> AnimationLibrary::_get_animation_list() const {
 }
 
 void AnimationLibrary::get_animation_list(List<StringName> *p_animations) const {
+	ZoneScopedS(60);
 	List<StringName> anims;
 
 	for (const KeyValue<StringName, Ref<Animation>> &E : animations) {
@@ -115,6 +126,7 @@ void AnimationLibrary::get_animation_list(List<StringName> *p_animations) const 
 }
 
 void AnimationLibrary::_set_data(const Dictionary &p_data) {
+	ZoneScopedS(60);
 	animations.clear();
 	List<Variant> keys;
 	p_data.get_key_list(&keys);
@@ -124,6 +136,7 @@ void AnimationLibrary::_set_data(const Dictionary &p_data) {
 }
 
 Dictionary AnimationLibrary::_get_data() const {
+	ZoneScopedS(60);
 	Dictionary ret;
 	for (const KeyValue<StringName, Ref<Animation>> &K : animations) {
 		ret[K.key] = K.value;
@@ -132,6 +145,7 @@ Dictionary AnimationLibrary::_get_data() const {
 }
 
 void AnimationLibrary::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("add_animation", "name", "animation"), &AnimationLibrary::add_animation);
 	ClassDB::bind_method(D_METHOD("remove_animation", "name"), &AnimationLibrary::remove_animation);
 	ClassDB::bind_method(D_METHOD("rename_animation", "name", "newname"), &AnimationLibrary::rename_animation);

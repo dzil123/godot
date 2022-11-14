@@ -28,21 +28,56 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  animation_blend_space_1d.cpp                                         */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "animation_blend_space_1d.h"
 
 void AnimationNodeBlendSpace1D::get_parameter_list(List<PropertyInfo> *r_list) const {
+	ZoneScopedS(60);
 	r_list->push_back(PropertyInfo(Variant::FLOAT, blend_position));
 }
 
 Variant AnimationNodeBlendSpace1D::get_parameter_default_value(const StringName &p_parameter) const {
+	ZoneScopedS(60);
 	return 0;
 }
 
 Ref<AnimationNode> AnimationNodeBlendSpace1D::get_child_by_name(const StringName &p_name) {
+	ZoneScopedS(60);
 	return get_blend_point_node(p_name.operator String().to_int());
 }
 
 void AnimationNodeBlendSpace1D::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (p_property.name.begins_with("blend_point_")) {
 		String left = p_property.name.get_slicec('/', 0);
 		int idx = left.get_slicec('_', 2).to_int();
@@ -53,10 +88,12 @@ void AnimationNodeBlendSpace1D::_validate_property(PropertyInfo &p_property) con
 }
 
 void AnimationNodeBlendSpace1D::_tree_changed() {
+	ZoneScopedS(60);
 	emit_signal(SNAME("tree_changed"));
 }
 
 void AnimationNodeBlendSpace1D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("add_blend_point", "node", "pos", "at_index"), &AnimationNodeBlendSpace1D::add_blend_point, DEFVAL(-1));
 	ClassDB::bind_method(D_METHOD("set_blend_point_position", "point", "pos"), &AnimationNodeBlendSpace1D::set_blend_point_position);
 	ClassDB::bind_method(D_METHOD("get_blend_point_position", "point"), &AnimationNodeBlendSpace1D::get_blend_point_position);
@@ -95,6 +132,7 @@ void AnimationNodeBlendSpace1D::_bind_methods() {
 }
 
 void AnimationNodeBlendSpace1D::get_child_nodes(List<ChildNode> *r_child_nodes) {
+	ZoneScopedS(60);
 	for (int i = 0; i < blend_points_used; i++) {
 		ChildNode cn;
 		cn.name = itos(i);
@@ -104,6 +142,7 @@ void AnimationNodeBlendSpace1D::get_child_nodes(List<ChildNode> *r_child_nodes) 
 }
 
 void AnimationNodeBlendSpace1D::add_blend_point(const Ref<AnimationRootNode> &p_node, float p_position, int p_at_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(blend_points_used >= MAX_BLEND_POINTS);
 	ERR_FAIL_COND(p_node.is_null());
 
@@ -127,12 +166,14 @@ void AnimationNodeBlendSpace1D::add_blend_point(const Ref<AnimationRootNode> &p_
 }
 
 void AnimationNodeBlendSpace1D::set_blend_point_position(int p_point, float p_position) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_point, blend_points_used);
 
 	blend_points[p_point].position = p_position;
 }
 
 void AnimationNodeBlendSpace1D::set_blend_point_node(int p_point, const Ref<AnimationRootNode> &p_node) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_point, blend_points_used);
 	ERR_FAIL_COND(p_node.is_null());
 
@@ -147,16 +188,19 @@ void AnimationNodeBlendSpace1D::set_blend_point_node(int p_point, const Ref<Anim
 }
 
 float AnimationNodeBlendSpace1D::get_blend_point_position(int p_point) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_point, blend_points_used, 0);
 	return blend_points[p_point].position;
 }
 
 Ref<AnimationRootNode> AnimationNodeBlendSpace1D::get_blend_point_node(int p_point) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_point, blend_points_used, Ref<AnimationRootNode>());
 	return blend_points[p_point].node;
 }
 
 void AnimationNodeBlendSpace1D::remove_blend_point(int p_point) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_point, blend_points_used);
 
 	ERR_FAIL_COND(blend_points[p_point].node.is_null());
@@ -171,10 +215,12 @@ void AnimationNodeBlendSpace1D::remove_blend_point(int p_point) {
 }
 
 int AnimationNodeBlendSpace1D::get_blend_point_count() const {
+	ZoneScopedS(60);
 	return blend_points_used;
 }
 
 void AnimationNodeBlendSpace1D::set_min_space(float p_min) {
+	ZoneScopedS(60);
 	min_space = p_min;
 
 	if (min_space >= max_space) {
@@ -183,10 +229,12 @@ void AnimationNodeBlendSpace1D::set_min_space(float p_min) {
 }
 
 float AnimationNodeBlendSpace1D::get_min_space() const {
+	ZoneScopedS(60);
 	return min_space;
 }
 
 void AnimationNodeBlendSpace1D::set_max_space(float p_max) {
+	ZoneScopedS(60);
 	max_space = p_max;
 
 	if (max_space <= min_space) {
@@ -195,34 +243,42 @@ void AnimationNodeBlendSpace1D::set_max_space(float p_max) {
 }
 
 float AnimationNodeBlendSpace1D::get_max_space() const {
+	ZoneScopedS(60);
 	return max_space;
 }
 
 void AnimationNodeBlendSpace1D::set_snap(float p_snap) {
+	ZoneScopedS(60);
 	snap = p_snap;
 }
 
 float AnimationNodeBlendSpace1D::get_snap() const {
+	ZoneScopedS(60);
 	return snap;
 }
 
 void AnimationNodeBlendSpace1D::set_value_label(const String &p_label) {
+	ZoneScopedS(60);
 	value_label = p_label;
 }
 
 String AnimationNodeBlendSpace1D::get_value_label() const {
+	ZoneScopedS(60);
 	return value_label;
 }
 
 void AnimationNodeBlendSpace1D::set_use_sync(bool p_sync) {
+	ZoneScopedS(60);
 	sync = p_sync;
 }
 
 bool AnimationNodeBlendSpace1D::is_using_sync() const {
+	ZoneScopedS(60);
 	return sync;
 }
 
 void AnimationNodeBlendSpace1D::_add_blend_point(int p_index, const Ref<AnimationRootNode> &p_node) {
+	ZoneScopedS(60);
 	if (p_index == blend_points_used) {
 		add_blend_point(p_node, 0);
 	} else {
@@ -231,6 +287,7 @@ void AnimationNodeBlendSpace1D::_add_blend_point(int p_index, const Ref<Animatio
 }
 
 double AnimationNodeBlendSpace1D::process(double p_time, bool p_seek, bool p_seek_root) {
+	ZoneScopedS(60);
 	if (blend_points_used == 0) {
 		return 0.0;
 	}
@@ -318,10 +375,12 @@ double AnimationNodeBlendSpace1D::process(double p_time, bool p_seek, bool p_see
 }
 
 String AnimationNodeBlendSpace1D::get_caption() const {
+	ZoneScopedS(60);
 	return "BlendSpace1D";
 }
 
 AnimationNodeBlendSpace1D::AnimationNodeBlendSpace1D() {
+	ZoneScopedS(60);
 	for (int i = 0; i < MAX_BLEND_POINTS; i++) {
 		blend_points[i].name = itos(i);
 	}

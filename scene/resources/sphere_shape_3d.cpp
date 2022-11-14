@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  sphere_shape_3d.cpp                                                  */
 /*************************************************************************/
@@ -33,6 +34,7 @@
 #include "servers/physics_server_3d.h"
 
 Vector<Vector3> SphereShape3D::get_debug_mesh_lines() const {
+	ZoneScopedS(60);
 	float r = get_radius();
 
 	Vector<Vector3> points;
@@ -55,15 +57,18 @@ Vector<Vector3> SphereShape3D::get_debug_mesh_lines() const {
 }
 
 real_t SphereShape3D::get_enclosing_radius() const {
+	ZoneScopedS(60);
 	return radius;
 }
 
 void SphereShape3D::_update_shape() {
+	ZoneScopedS(60);
 	PhysicsServer3D::get_singleton()->shape_set_data(get_shape(), radius);
 	Shape3D::_update_shape();
 }
 
 void SphereShape3D::set_radius(float p_radius) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_radius < 0, "SphereShape3D radius cannot be negative.");
 	radius = p_radius;
 	_update_shape();
@@ -71,10 +76,12 @@ void SphereShape3D::set_radius(float p_radius) {
 }
 
 float SphereShape3D::get_radius() const {
+	ZoneScopedS(60);
 	return radius;
 }
 
 void SphereShape3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_radius", "radius"), &SphereShape3D::set_radius);
 	ClassDB::bind_method(D_METHOD("get_radius"), &SphereShape3D::get_radius);
 

@@ -28,12 +28,44 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  physics_body_2d.cpp                                                  */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "physics_body_2d.h"
 
 #include "core/core_string_names.h"
 #include "scene/scene_string_names.h"
 
 void PhysicsBody2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("move_and_collide", "distance", "test_only", "safe_margin", "recovery_as_collision"), &PhysicsBody2D::_move, DEFVAL(false), DEFVAL(0.08), DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("test_move", "from", "distance", "collision", "safe_margin", "recovery_as_collision"), &PhysicsBody2D::test_move, DEFVAL(Variant()), DEFVAL(0.08), DEFVAL(false));
 
@@ -49,12 +81,14 @@ PhysicsBody2D::PhysicsBody2D(PhysicsServer2D::BodyMode p_mode) :
 }
 
 PhysicsBody2D::~PhysicsBody2D() {
+	ZoneScopedS(60);
 	if (motion_cache.is_valid()) {
 		motion_cache->owner = nullptr;
 	}
 }
 
 Ref<KinematicCollision2D> PhysicsBody2D::_move(const Vector2 &p_distance, bool p_test_only, real_t p_margin, bool p_recovery_as_collision) {
+	ZoneScopedS(60);
 	PhysicsServer2D::MotionParameters parameters(get_global_transform(), p_distance, p_margin);
 	parameters.recovery_as_collision = p_recovery_as_collision;
 
@@ -75,6 +109,7 @@ Ref<KinematicCollision2D> PhysicsBody2D::_move(const Vector2 &p_distance, bool p
 }
 
 bool PhysicsBody2D::move_and_collide(const PhysicsServer2D::MotionParameters &p_parameters, PhysicsServer2D::MotionResult &r_result, bool p_test_only, bool p_cancel_sliding) {
+	ZoneScopedS(60);
 	if (is_only_update_transform_changes_enabled()) {
 		ERR_PRINT("Move functions do not work together with 'sync to physics' option. Please read the documentation.");
 	}
@@ -129,6 +164,7 @@ bool PhysicsBody2D::move_and_collide(const PhysicsServer2D::MotionParameters &p_
 }
 
 bool PhysicsBody2D::test_move(const Transform2D &p_from, const Vector2 &p_distance, const Ref<KinematicCollision2D> &r_collision, real_t p_margin, bool p_recovery_as_collision) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!is_inside_tree(), false);
 
 	PhysicsServer2D::MotionResult *r = nullptr;
@@ -147,6 +183,7 @@ bool PhysicsBody2D::test_move(const Transform2D &p_from, const Vector2 &p_distan
 }
 
 TypedArray<PhysicsBody2D> PhysicsBody2D::get_collision_exceptions() {
+	ZoneScopedS(60);
 	List<RID> exceptions;
 	PhysicsServer2D::get_singleton()->body_get_collision_exceptions(get_rid(), &exceptions);
 	Array ret;
@@ -160,6 +197,7 @@ TypedArray<PhysicsBody2D> PhysicsBody2D::get_collision_exceptions() {
 }
 
 void PhysicsBody2D::add_collision_exception_with(Node *p_node) {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_node);
 	PhysicsBody2D *physics_body = Object::cast_to<PhysicsBody2D>(p_node);
 	ERR_FAIL_COND_MSG(!physics_body, "Collision exception only works between two objects of PhysicsBody2D type.");
@@ -167,6 +205,7 @@ void PhysicsBody2D::add_collision_exception_with(Node *p_node) {
 }
 
 void PhysicsBody2D::remove_collision_exception_with(Node *p_node) {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_node);
 	PhysicsBody2D *physics_body = Object::cast_to<PhysicsBody2D>(p_node);
 	ERR_FAIL_COND_MSG(!physics_body, "Collision exception only works between two objects of PhysicsBody2D type.");
@@ -174,26 +213,31 @@ void PhysicsBody2D::remove_collision_exception_with(Node *p_node) {
 }
 
 void StaticBody2D::set_constant_linear_velocity(const Vector2 &p_vel) {
+	ZoneScopedS(60);
 	constant_linear_velocity = p_vel;
 
 	PhysicsServer2D::get_singleton()->body_set_state(get_rid(), PhysicsServer2D::BODY_STATE_LINEAR_VELOCITY, constant_linear_velocity);
 }
 
 void StaticBody2D::set_constant_angular_velocity(real_t p_vel) {
+	ZoneScopedS(60);
 	constant_angular_velocity = p_vel;
 
 	PhysicsServer2D::get_singleton()->body_set_state(get_rid(), PhysicsServer2D::BODY_STATE_ANGULAR_VELOCITY, constant_angular_velocity);
 }
 
 Vector2 StaticBody2D::get_constant_linear_velocity() const {
+	ZoneScopedS(60);
 	return constant_linear_velocity;
 }
 
 real_t StaticBody2D::get_constant_angular_velocity() const {
+	ZoneScopedS(60);
 	return constant_angular_velocity;
 }
 
 void StaticBody2D::set_physics_material_override(const Ref<PhysicsMaterial> &p_physics_material_override) {
+	ZoneScopedS(60);
 	if (physics_material_override.is_valid()) {
 		if (physics_material_override->is_connected(CoreStringNames::get_singleton()->changed, callable_mp(this, &StaticBody2D::_reload_physics_characteristics))) {
 			physics_material_override->disconnect(CoreStringNames::get_singleton()->changed, callable_mp(this, &StaticBody2D::_reload_physics_characteristics));
@@ -209,10 +253,12 @@ void StaticBody2D::set_physics_material_override(const Ref<PhysicsMaterial> &p_p
 }
 
 Ref<PhysicsMaterial> StaticBody2D::get_physics_material_override() const {
+	ZoneScopedS(60);
 	return physics_material_override;
 }
 
 void StaticBody2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_constant_linear_velocity", "vel"), &StaticBody2D::set_constant_linear_velocity);
 	ClassDB::bind_method(D_METHOD("set_constant_angular_velocity", "vel"), &StaticBody2D::set_constant_angular_velocity);
 	ClassDB::bind_method(D_METHOD("get_constant_linear_velocity"), &StaticBody2D::get_constant_linear_velocity);
@@ -231,6 +277,7 @@ StaticBody2D::StaticBody2D(PhysicsServer2D::BodyMode p_mode) :
 }
 
 void StaticBody2D::_reload_physics_characteristics() {
+	ZoneScopedS(60);
 	if (physics_material_override.is_null()) {
 		PhysicsServer2D::get_singleton()->body_set_param(get_rid(), PhysicsServer2D::BODY_PARAM_BOUNCE, 0);
 		PhysicsServer2D::get_singleton()->body_set_param(get_rid(), PhysicsServer2D::BODY_PARAM_FRICTION, 1);
@@ -241,6 +288,7 @@ void StaticBody2D::_reload_physics_characteristics() {
 }
 
 void AnimatableBody2D::set_sync_to_physics(bool p_enable) {
+	ZoneScopedS(60);
 	if (sync_to_physics == p_enable) {
 		return;
 	}
@@ -251,6 +299,7 @@ void AnimatableBody2D::set_sync_to_physics(bool p_enable) {
 }
 
 bool AnimatableBody2D::is_sync_to_physics_enabled() const {
+	ZoneScopedS(60);
 	return sync_to_physics;
 }
 
@@ -273,6 +322,7 @@ void AnimatableBody2D::_update_kinematic_motion() {
 }
 
 void AnimatableBody2D::_body_state_changed(PhysicsDirectBodyState2D *p_state) {
+	ZoneScopedS(60);
 	if (!sync_to_physics) {
 		return;
 	}
@@ -284,6 +334,7 @@ void AnimatableBody2D::_body_state_changed(PhysicsDirectBodyState2D *p_state) {
 }
 
 void AnimatableBody2D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			last_valid_transform = get_global_transform();
@@ -310,6 +361,7 @@ void AnimatableBody2D::_notification(int p_what) {
 }
 
 void AnimatableBody2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_sync_to_physics", "enable"), &AnimatableBody2D::set_sync_to_physics);
 	ClassDB::bind_method(D_METHOD("is_sync_to_physics_enabled"), &AnimatableBody2D::is_sync_to_physics_enabled);
 
@@ -321,6 +373,7 @@ AnimatableBody2D::AnimatableBody2D() :
 }
 
 void RigidBody2D::_body_enter_tree(ObjectID p_id) {
+	ZoneScopedS(60);
 	Object *obj = ObjectDB::get_instance(p_id);
 	Node *node = Object::cast_to<Node>(obj);
 	ERR_FAIL_COND(!node);
@@ -343,6 +396,7 @@ void RigidBody2D::_body_enter_tree(ObjectID p_id) {
 }
 
 void RigidBody2D::_body_exit_tree(ObjectID p_id) {
+	ZoneScopedS(60);
 	Object *obj = ObjectDB::get_instance(p_id);
 	Node *node = Object::cast_to<Node>(obj);
 	ERR_FAIL_COND(!node);
@@ -364,6 +418,7 @@ void RigidBody2D::_body_exit_tree(ObjectID p_id) {
 }
 
 void RigidBody2D::_body_inout(int p_status, const RID &p_body, ObjectID p_instance, int p_body_shape, int p_local_shape) {
+	ZoneScopedS(60);
 	bool body_in = p_status == 1;
 	ObjectID objid = p_instance;
 
@@ -434,6 +489,7 @@ struct _RigidBody2DInOut {
 };
 
 void RigidBody2D::_body_state_changed(PhysicsDirectBodyState2D *p_state) {
+	ZoneScopedS(60);
 	set_block_transform_notify(true); // don't want notify (would feedback loop)
 	if (!freeze || freeze_mode != FREEZE_MODE_KINEMATIC) {
 		set_global_transform(p_state->get_transform());
@@ -530,6 +586,7 @@ void RigidBody2D::_body_state_changed(PhysicsDirectBodyState2D *p_state) {
 }
 
 void RigidBody2D::_apply_body_mode() {
+	ZoneScopedS(60);
 	if (freeze) {
 		switch (freeze_mode) {
 			case FREEZE_MODE_STATIC: {
@@ -547,6 +604,7 @@ void RigidBody2D::_apply_body_mode() {
 }
 
 void RigidBody2D::set_lock_rotation_enabled(bool p_lock_rotation) {
+	ZoneScopedS(60);
 	if (p_lock_rotation == lock_rotation) {
 		return;
 	}
@@ -556,10 +614,12 @@ void RigidBody2D::set_lock_rotation_enabled(bool p_lock_rotation) {
 }
 
 bool RigidBody2D::is_lock_rotation_enabled() const {
+	ZoneScopedS(60);
 	return lock_rotation;
 }
 
 void RigidBody2D::set_freeze_enabled(bool p_freeze) {
+	ZoneScopedS(60);
 	if (p_freeze == freeze) {
 		return;
 	}
@@ -569,10 +629,12 @@ void RigidBody2D::set_freeze_enabled(bool p_freeze) {
 }
 
 bool RigidBody2D::is_freeze_enabled() const {
+	ZoneScopedS(60);
 	return freeze;
 }
 
 void RigidBody2D::set_freeze_mode(FreezeMode p_freeze_mode) {
+	ZoneScopedS(60);
 	if (p_freeze_mode == freeze_mode) {
 		return;
 	}
@@ -582,30 +644,36 @@ void RigidBody2D::set_freeze_mode(FreezeMode p_freeze_mode) {
 }
 
 RigidBody2D::FreezeMode RigidBody2D::get_freeze_mode() const {
+	ZoneScopedS(60);
 	return freeze_mode;
 }
 
 void RigidBody2D::set_mass(real_t p_mass) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_mass <= 0);
 	mass = p_mass;
 	PhysicsServer2D::get_singleton()->body_set_param(get_rid(), PhysicsServer2D::BODY_PARAM_MASS, mass);
 }
 
 real_t RigidBody2D::get_mass() const {
+	ZoneScopedS(60);
 	return mass;
 }
 
 void RigidBody2D::set_inertia(real_t p_inertia) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_inertia < 0);
 	inertia = p_inertia;
 	PhysicsServer2D::get_singleton()->body_set_param(get_rid(), PhysicsServer2D::BODY_PARAM_INERTIA, inertia);
 }
 
 real_t RigidBody2D::get_inertia() const {
+	ZoneScopedS(60);
 	return inertia;
 }
 
 void RigidBody2D::set_center_of_mass_mode(CenterOfMassMode p_mode) {
+	ZoneScopedS(60);
 	if (center_of_mass_mode == p_mode) {
 		return;
 	}
@@ -628,10 +696,12 @@ void RigidBody2D::set_center_of_mass_mode(CenterOfMassMode p_mode) {
 }
 
 RigidBody2D::CenterOfMassMode RigidBody2D::get_center_of_mass_mode() const {
+	ZoneScopedS(60);
 	return center_of_mass_mode;
 }
 
 void RigidBody2D::set_center_of_mass(const Vector2 &p_center_of_mass) {
+	ZoneScopedS(60);
 	if (center_of_mass == p_center_of_mass) {
 		return;
 	}
@@ -643,10 +713,12 @@ void RigidBody2D::set_center_of_mass(const Vector2 &p_center_of_mass) {
 }
 
 const Vector2 &RigidBody2D::get_center_of_mass() const {
+	ZoneScopedS(60);
 	return center_of_mass;
 }
 
 void RigidBody2D::set_physics_material_override(const Ref<PhysicsMaterial> &p_physics_material_override) {
+	ZoneScopedS(60);
 	if (physics_material_override.is_valid()) {
 		if (physics_material_override->is_connected(CoreStringNames::get_singleton()->changed, callable_mp(this, &RigidBody2D::_reload_physics_characteristics))) {
 			physics_material_override->disconnect(CoreStringNames::get_singleton()->changed, callable_mp(this, &RigidBody2D::_reload_physics_characteristics));
@@ -662,57 +734,69 @@ void RigidBody2D::set_physics_material_override(const Ref<PhysicsMaterial> &p_ph
 }
 
 Ref<PhysicsMaterial> RigidBody2D::get_physics_material_override() const {
+	ZoneScopedS(60);
 	return physics_material_override;
 }
 
 void RigidBody2D::set_gravity_scale(real_t p_gravity_scale) {
+	ZoneScopedS(60);
 	gravity_scale = p_gravity_scale;
 	PhysicsServer2D::get_singleton()->body_set_param(get_rid(), PhysicsServer2D::BODY_PARAM_GRAVITY_SCALE, gravity_scale);
 }
 
 real_t RigidBody2D::get_gravity_scale() const {
+	ZoneScopedS(60);
 	return gravity_scale;
 }
 
 void RigidBody2D::set_linear_damp_mode(DampMode p_mode) {
+	ZoneScopedS(60);
 	linear_damp_mode = p_mode;
 	PhysicsServer2D::get_singleton()->body_set_param(get_rid(), PhysicsServer2D::BODY_PARAM_LINEAR_DAMP_MODE, linear_damp_mode);
 }
 
 RigidBody2D::DampMode RigidBody2D::get_linear_damp_mode() const {
+	ZoneScopedS(60);
 	return linear_damp_mode;
 }
 
 void RigidBody2D::set_angular_damp_mode(DampMode p_mode) {
+	ZoneScopedS(60);
 	angular_damp_mode = p_mode;
 	PhysicsServer2D::get_singleton()->body_set_param(get_rid(), PhysicsServer2D::BODY_PARAM_ANGULAR_DAMP_MODE, angular_damp_mode);
 }
 
 RigidBody2D::DampMode RigidBody2D::get_angular_damp_mode() const {
+	ZoneScopedS(60);
 	return angular_damp_mode;
 }
 
 void RigidBody2D::set_linear_damp(real_t p_linear_damp) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_linear_damp < -1);
 	linear_damp = p_linear_damp;
 	PhysicsServer2D::get_singleton()->body_set_param(get_rid(), PhysicsServer2D::BODY_PARAM_LINEAR_DAMP, linear_damp);
 }
 
 real_t RigidBody2D::get_linear_damp() const {
+	ZoneScopedS(60);
 	return linear_damp;
 }
 
 void RigidBody2D::set_angular_damp(real_t p_angular_damp) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_angular_damp < -1);
 	angular_damp = p_angular_damp;
 	PhysicsServer2D::get_singleton()->body_set_param(get_rid(), PhysicsServer2D::BODY_PARAM_ANGULAR_DAMP, angular_damp);
 }
 
 real_t RigidBody2D::get_angular_damp() const {
+	ZoneScopedS(60);
 	return angular_damp;
 }
 
 void RigidBody2D::set_axis_velocity(const Vector2 &p_axis) {
+	ZoneScopedS(60);
 	Vector2 axis = p_axis.normalized();
 	linear_velocity -= axis * axis.dot(linear_velocity);
 	linear_velocity += p_axis;
@@ -720,24 +804,29 @@ void RigidBody2D::set_axis_velocity(const Vector2 &p_axis) {
 }
 
 void RigidBody2D::set_linear_velocity(const Vector2 &p_velocity) {
+	ZoneScopedS(60);
 	linear_velocity = p_velocity;
 	PhysicsServer2D::get_singleton()->body_set_state(get_rid(), PhysicsServer2D::BODY_STATE_LINEAR_VELOCITY, linear_velocity);
 }
 
 Vector2 RigidBody2D::get_linear_velocity() const {
+	ZoneScopedS(60);
 	return linear_velocity;
 }
 
 void RigidBody2D::set_angular_velocity(real_t p_velocity) {
+	ZoneScopedS(60);
 	angular_velocity = p_velocity;
 	PhysicsServer2D::get_singleton()->body_set_state(get_rid(), PhysicsServer2D::BODY_STATE_ANGULAR_VELOCITY, angular_velocity);
 }
 
 real_t RigidBody2D::get_angular_velocity() const {
+	ZoneScopedS(60);
 	return angular_velocity;
 }
 
 void RigidBody2D::set_use_custom_integrator(bool p_enable) {
+	ZoneScopedS(60);
 	if (custom_integrator == p_enable) {
 		return;
 	}
@@ -747,104 +836,128 @@ void RigidBody2D::set_use_custom_integrator(bool p_enable) {
 }
 
 bool RigidBody2D::is_using_custom_integrator() {
+	ZoneScopedS(60);
 	return custom_integrator;
 }
 
 void RigidBody2D::set_sleeping(bool p_sleeping) {
+	ZoneScopedS(60);
 	sleeping = p_sleeping;
 	PhysicsServer2D::get_singleton()->body_set_state(get_rid(), PhysicsServer2D::BODY_STATE_SLEEPING, sleeping);
 }
 
 void RigidBody2D::set_can_sleep(bool p_active) {
+	ZoneScopedS(60);
 	can_sleep = p_active;
 	PhysicsServer2D::get_singleton()->body_set_state(get_rid(), PhysicsServer2D::BODY_STATE_CAN_SLEEP, p_active);
 }
 
 bool RigidBody2D::is_able_to_sleep() const {
+	ZoneScopedS(60);
 	return can_sleep;
 }
 
 bool RigidBody2D::is_sleeping() const {
+	ZoneScopedS(60);
 	return sleeping;
 }
 
 void RigidBody2D::set_max_contacts_reported(int p_amount) {
+	ZoneScopedS(60);
 	max_contacts_reported = p_amount;
 	PhysicsServer2D::get_singleton()->body_set_max_contacts_reported(get_rid(), p_amount);
 }
 
 int RigidBody2D::get_max_contacts_reported() const {
+	ZoneScopedS(60);
 	return max_contacts_reported;
 }
 
 int RigidBody2D::get_contact_count() const {
+	ZoneScopedS(60);
 	PhysicsDirectBodyState2D *bs = PhysicsServer2D::get_singleton()->body_get_direct_state(get_rid());
 	ERR_FAIL_NULL_V(bs, 0);
 	return bs->get_contact_count();
 }
 
 void RigidBody2D::apply_central_impulse(const Vector2 &p_impulse) {
+	ZoneScopedS(60);
 	PhysicsServer2D::get_singleton()->body_apply_central_impulse(get_rid(), p_impulse);
 }
 
 void RigidBody2D::apply_impulse(const Vector2 &p_impulse, const Vector2 &p_position) {
+	ZoneScopedS(60);
 	PhysicsServer2D::get_singleton()->body_apply_impulse(get_rid(), p_impulse, p_position);
 }
 
 void RigidBody2D::apply_torque_impulse(real_t p_torque) {
+	ZoneScopedS(60);
 	PhysicsServer2D::get_singleton()->body_apply_torque_impulse(get_rid(), p_torque);
 }
 
 void RigidBody2D::apply_central_force(const Vector2 &p_force) {
+	ZoneScopedS(60);
 	PhysicsServer2D::get_singleton()->body_apply_central_force(get_rid(), p_force);
 }
 
 void RigidBody2D::apply_force(const Vector2 &p_force, const Vector2 &p_position) {
+	ZoneScopedS(60);
 	PhysicsServer2D::get_singleton()->body_apply_force(get_rid(), p_force, p_position);
 }
 
 void RigidBody2D::apply_torque(real_t p_torque) {
+	ZoneScopedS(60);
 	PhysicsServer2D::get_singleton()->body_apply_torque(get_rid(), p_torque);
 }
 
 void RigidBody2D::add_constant_central_force(const Vector2 &p_force) {
+	ZoneScopedS(60);
 	PhysicsServer2D::get_singleton()->body_add_constant_central_force(get_rid(), p_force);
 }
 
 void RigidBody2D::add_constant_force(const Vector2 &p_force, const Vector2 &p_position) {
+	ZoneScopedS(60);
 	PhysicsServer2D::get_singleton()->body_add_constant_force(get_rid(), p_force, p_position);
 }
 
 void RigidBody2D::add_constant_torque(const real_t p_torque) {
+	ZoneScopedS(60);
 	PhysicsServer2D::get_singleton()->body_add_constant_torque(get_rid(), p_torque);
 }
 
 void RigidBody2D::set_constant_force(const Vector2 &p_force) {
+	ZoneScopedS(60);
 	PhysicsServer2D::get_singleton()->body_set_constant_force(get_rid(), p_force);
 }
 
 Vector2 RigidBody2D::get_constant_force() const {
+	ZoneScopedS(60);
 	return PhysicsServer2D::get_singleton()->body_get_constant_force(get_rid());
 }
 
 void RigidBody2D::set_constant_torque(real_t p_torque) {
+	ZoneScopedS(60);
 	PhysicsServer2D::get_singleton()->body_set_constant_torque(get_rid(), p_torque);
 }
 
 real_t RigidBody2D::get_constant_torque() const {
+	ZoneScopedS(60);
 	return PhysicsServer2D::get_singleton()->body_get_constant_torque(get_rid());
 }
 
 void RigidBody2D::set_continuous_collision_detection_mode(CCDMode p_mode) {
+	ZoneScopedS(60);
 	ccd_mode = p_mode;
 	PhysicsServer2D::get_singleton()->body_set_continuous_collision_detection_mode(get_rid(), PhysicsServer2D::CCDMode(p_mode));
 }
 
 RigidBody2D::CCDMode RigidBody2D::get_continuous_collision_detection_mode() const {
+	ZoneScopedS(60);
 	return ccd_mode;
 }
 
 TypedArray<Node2D> RigidBody2D::get_colliding_bodies() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!contact_monitor, TypedArray<Node2D>());
 
 	TypedArray<Node2D> ret;
@@ -863,6 +976,7 @@ TypedArray<Node2D> RigidBody2D::get_colliding_bodies() const {
 }
 
 void RigidBody2D::set_contact_monitor(bool p_enabled) {
+	ZoneScopedS(60);
 	if (p_enabled == is_contact_monitor_enabled()) {
 		return;
 	}
@@ -890,6 +1004,7 @@ void RigidBody2D::set_contact_monitor(bool p_enabled) {
 }
 
 bool RigidBody2D::is_contact_monitor_enabled() const {
+	ZoneScopedS(60);
 	return contact_monitor != nullptr;
 }
 
@@ -912,6 +1027,7 @@ void RigidBody2D::_notification(int p_what) {
 }
 
 PackedStringArray RigidBody2D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	Transform2D t = get_transform();
 
 	PackedStringArray warnings = CollisionObject2D::get_configuration_warnings();
@@ -924,6 +1040,7 @@ PackedStringArray RigidBody2D::get_configuration_warnings() const {
 }
 
 void RigidBody2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_mass", "mass"), &RigidBody2D::set_mass);
 	ClassDB::bind_method(D_METHOD("get_mass"), &RigidBody2D::get_mass);
 
@@ -1060,6 +1177,7 @@ void RigidBody2D::_bind_methods() {
 }
 
 void RigidBody2D::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (center_of_mass_mode != CENTER_OF_MASS_MODE_CUSTOM) {
 		if (p_property.name == "center_of_mass") {
 			p_property.usage = PROPERTY_USAGE_NO_EDITOR;
@@ -1073,12 +1191,14 @@ RigidBody2D::RigidBody2D() :
 }
 
 RigidBody2D::~RigidBody2D() {
+	ZoneScopedS(60);
 	if (contact_monitor) {
 		memdelete(contact_monitor);
 	}
 }
 
 void RigidBody2D::_reload_physics_characteristics() {
+	ZoneScopedS(60);
 	if (physics_material_override.is_null()) {
 		PhysicsServer2D::get_singleton()->body_set_param(get_rid(), PhysicsServer2D::BODY_PARAM_BOUNCE, 0);
 		PhysicsServer2D::get_singleton()->body_set_param(get_rid(), PhysicsServer2D::BODY_PARAM_FRICTION, 1);
@@ -1094,6 +1214,7 @@ void RigidBody2D::_reload_physics_characteristics() {
 #define FLOOR_ANGLE_THRESHOLD 0.01
 
 bool CharacterBody2D::move_and_slide() {
+	ZoneScopedS(60);
 	// Hack in order to work with calling from _process as well as from _physics_process; calling from thread is risky.
 	double delta = Engine::get_singleton()->is_in_physics_frame() ? get_physics_process_delta_time() : get_process_delta_time();
 
@@ -1170,6 +1291,7 @@ bool CharacterBody2D::move_and_slide() {
 }
 
 void CharacterBody2D::_move_and_slide_grounded(double p_delta, bool p_was_on_floor) {
+	ZoneScopedS(60);
 	Vector2 motion = velocity * p_delta;
 	Vector2 motion_slide_up = motion.slide(up_direction);
 
@@ -1340,6 +1462,7 @@ void CharacterBody2D::_move_and_slide_grounded(double p_delta, bool p_was_on_flo
 }
 
 void CharacterBody2D::_move_and_slide_floating(double p_delta) {
+	ZoneScopedS(60);
 	Vector2 motion = velocity * p_delta;
 
 	platform_rid = RID();
@@ -1389,6 +1512,7 @@ void CharacterBody2D::_move_and_slide_floating(double p_delta) {
 }
 
 void CharacterBody2D::_snap_on_floor(bool p_was_on_floor, bool p_vel_dir_facing_up, bool p_wall_as_floor) {
+	ZoneScopedS(60);
 	if (on_floor || !p_was_on_floor || p_vel_dir_facing_up) {
 		return;
 	}
@@ -1425,6 +1549,7 @@ void CharacterBody2D::_snap_on_floor(bool p_was_on_floor, bool p_vel_dir_facing_
 }
 
 bool CharacterBody2D::_on_floor_if_snapped(bool p_was_on_floor, bool p_vel_dir_facing_up) {
+	ZoneScopedS(60);
 	if (up_direction == Vector2() || on_floor || !p_was_on_floor || p_vel_dir_facing_up) {
 		return false;
 	}
@@ -1447,6 +1572,7 @@ bool CharacterBody2D::_on_floor_if_snapped(bool p_was_on_floor, bool p_vel_dir_f
 }
 
 void CharacterBody2D::_set_collision_direction(const PhysicsServer2D::MotionResult &p_result) {
+	ZoneScopedS(60);
 	if (motion_mode == MOTION_MODE_GROUNDED && p_result.get_angle(up_direction) <= floor_max_angle + FLOOR_ANGLE_THRESHOLD) { //floor
 		on_floor = true;
 		floor_normal = p_result.collision_normal;
@@ -1464,6 +1590,7 @@ void CharacterBody2D::_set_collision_direction(const PhysicsServer2D::MotionResu
 }
 
 void CharacterBody2D::_set_platform_data(const PhysicsServer2D::MotionResult &p_result) {
+	ZoneScopedS(60);
 	platform_rid = p_result.collider;
 	platform_object_id = p_result.collider_id;
 	platform_velocity = p_result.collider_velocity;
@@ -1471,76 +1598,94 @@ void CharacterBody2D::_set_platform_data(const PhysicsServer2D::MotionResult &p_
 }
 
 const Vector2 &CharacterBody2D::get_velocity() const {
+	ZoneScopedS(60);
 	return velocity;
 }
 
 void CharacterBody2D::set_velocity(const Vector2 &p_velocity) {
+	ZoneScopedS(60);
 	velocity = p_velocity;
 }
 
 bool CharacterBody2D::is_on_floor() const {
+	ZoneScopedS(60);
 	return on_floor;
 }
 
 bool CharacterBody2D::is_on_floor_only() const {
+	ZoneScopedS(60);
 	return on_floor && !on_wall && !on_ceiling;
 }
 
 bool CharacterBody2D::is_on_wall() const {
+	ZoneScopedS(60);
 	return on_wall;
 }
 
 bool CharacterBody2D::is_on_wall_only() const {
+	ZoneScopedS(60);
 	return on_wall && !on_floor && !on_ceiling;
 }
 
 bool CharacterBody2D::is_on_ceiling() const {
+	ZoneScopedS(60);
 	return on_ceiling;
 }
 
 bool CharacterBody2D::is_on_ceiling_only() const {
+	ZoneScopedS(60);
 	return on_ceiling && !on_floor && !on_wall;
 }
 
 const Vector2 &CharacterBody2D::get_floor_normal() const {
+	ZoneScopedS(60);
 	return floor_normal;
 }
 
 const Vector2 &CharacterBody2D::get_wall_normal() const {
+	ZoneScopedS(60);
 	return wall_normal;
 }
 
 const Vector2 &CharacterBody2D::get_last_motion() const {
+	ZoneScopedS(60);
 	return last_motion;
 }
 
 Vector2 CharacterBody2D::get_position_delta() const {
+	ZoneScopedS(60);
 	return get_global_transform().columns[2] - previous_position;
 }
 
 const Vector2 &CharacterBody2D::get_real_velocity() const {
+	ZoneScopedS(60);
 	return real_velocity;
 }
 
 real_t CharacterBody2D::get_floor_angle(const Vector2 &p_up_direction) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_up_direction == Vector2(), 0);
 	return Math::acos(floor_normal.dot(p_up_direction));
 }
 
 const Vector2 &CharacterBody2D::get_platform_velocity() const {
+	ZoneScopedS(60);
 	return platform_velocity;
 }
 
 int CharacterBody2D::get_slide_collision_count() const {
+	ZoneScopedS(60);
 	return motion_results.size();
 }
 
 PhysicsServer2D::MotionResult CharacterBody2D::get_slide_collision(int p_bounce) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_bounce, motion_results.size(), PhysicsServer2D::MotionResult());
 	return motion_results[p_bounce];
 }
 
 Ref<KinematicCollision2D> CharacterBody2D::_get_slide_collision(int p_bounce) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_bounce, motion_results.size(), Ref<KinematicCollision2D>());
 	if (p_bounce >= slide_colliders.size()) {
 		slide_colliders.resize(p_bounce + 1);
@@ -1557,6 +1702,7 @@ Ref<KinematicCollision2D> CharacterBody2D::_get_slide_collision(int p_bounce) {
 }
 
 Ref<KinematicCollision2D> CharacterBody2D::_get_last_slide_collision() {
+	ZoneScopedS(60);
 	if (motion_results.size() == 0) {
 		return Ref<KinematicCollision2D>();
 	}
@@ -1564,121 +1710,150 @@ Ref<KinematicCollision2D> CharacterBody2D::_get_last_slide_collision() {
 }
 
 void CharacterBody2D::set_safe_margin(real_t p_margin) {
+	ZoneScopedS(60);
 	margin = p_margin;
 }
 
 real_t CharacterBody2D::get_safe_margin() const {
+	ZoneScopedS(60);
 	return margin;
 }
 
 bool CharacterBody2D::is_floor_stop_on_slope_enabled() const {
+	ZoneScopedS(60);
 	return floor_stop_on_slope;
 }
 
 void CharacterBody2D::set_floor_stop_on_slope_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	floor_stop_on_slope = p_enabled;
 }
 
 bool CharacterBody2D::is_floor_constant_speed_enabled() const {
+	ZoneScopedS(60);
 	return floor_constant_speed;
 }
 
 void CharacterBody2D::set_floor_constant_speed_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	floor_constant_speed = p_enabled;
 }
 
 bool CharacterBody2D::is_floor_block_on_wall_enabled() const {
+	ZoneScopedS(60);
 	return floor_block_on_wall;
 }
 
 void CharacterBody2D::set_floor_block_on_wall_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	floor_block_on_wall = p_enabled;
 }
 
 bool CharacterBody2D::is_slide_on_ceiling_enabled() const {
+	ZoneScopedS(60);
 	return slide_on_ceiling;
 }
 
 void CharacterBody2D::set_slide_on_ceiling_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	slide_on_ceiling = p_enabled;
 }
 
 uint32_t CharacterBody2D::get_platform_floor_layers() const {
+	ZoneScopedS(60);
 	return platform_floor_layers;
 }
 
 void CharacterBody2D::set_platform_floor_layers(uint32_t p_exclude_layers) {
+	ZoneScopedS(60);
 	platform_floor_layers = p_exclude_layers;
 }
 
 uint32_t CharacterBody2D::get_platform_wall_layers() const {
+	ZoneScopedS(60);
 	return platform_wall_layers;
 }
 
 void CharacterBody2D::set_platform_wall_layers(uint32_t p_exclude_layers) {
+	ZoneScopedS(60);
 	platform_wall_layers = p_exclude_layers;
 }
 
 void CharacterBody2D::set_motion_mode(MotionMode p_mode) {
+	ZoneScopedS(60);
 	motion_mode = p_mode;
 }
 
 CharacterBody2D::MotionMode CharacterBody2D::get_motion_mode() const {
+	ZoneScopedS(60);
 	return motion_mode;
 }
 
 void CharacterBody2D::set_platform_on_leave(PlatformOnLeave p_on_leave_apply_velocity) {
+	ZoneScopedS(60);
 	platform_on_leave = p_on_leave_apply_velocity;
 }
 
 CharacterBody2D::PlatformOnLeave CharacterBody2D::get_platform_on_leave() const {
+	ZoneScopedS(60);
 	return platform_on_leave;
 }
 
 int CharacterBody2D::get_max_slides() const {
+	ZoneScopedS(60);
 	return max_slides;
 }
 
 void CharacterBody2D::set_max_slides(int p_max_slides) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_max_slides < 1);
 	max_slides = p_max_slides;
 }
 
 real_t CharacterBody2D::get_floor_max_angle() const {
+	ZoneScopedS(60);
 	return floor_max_angle;
 }
 
 void CharacterBody2D::set_floor_max_angle(real_t p_radians) {
+	ZoneScopedS(60);
 	floor_max_angle = p_radians;
 }
 
 real_t CharacterBody2D::get_floor_snap_length() {
+	ZoneScopedS(60);
 	return floor_snap_length;
 }
 
 void CharacterBody2D::set_floor_snap_length(real_t p_floor_snap_length) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_floor_snap_length < 0);
 	floor_snap_length = p_floor_snap_length;
 }
 
 real_t CharacterBody2D::get_wall_min_slide_angle() const {
+	ZoneScopedS(60);
 	return wall_min_slide_angle;
 }
 
 void CharacterBody2D::set_wall_min_slide_angle(real_t p_radians) {
+	ZoneScopedS(60);
 	wall_min_slide_angle = p_radians;
 }
 
 const Vector2 &CharacterBody2D::get_up_direction() const {
+	ZoneScopedS(60);
 	return up_direction;
 }
 
 void CharacterBody2D::set_up_direction(const Vector2 &p_up_direction) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_up_direction == Vector2(), "up_direction can't be equal to Vector2.ZERO, consider using Floating motion mode instead.");
 	up_direction = p_up_direction.normalized();
 }
 
 void CharacterBody2D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			// Reset move_and_slide() data.
@@ -1694,6 +1869,7 @@ void CharacterBody2D::_notification(int p_what) {
 }
 
 void CharacterBody2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("move_and_slide"), &CharacterBody2D::move_and_slide);
 
 	ClassDB::bind_method(D_METHOD("set_velocity", "velocity"), &CharacterBody2D::set_velocity);
@@ -1778,6 +1954,7 @@ void CharacterBody2D::_bind_methods() {
 }
 
 void CharacterBody2D::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (motion_mode == MOTION_MODE_FLOATING) {
 		if (p_property.name.begins_with("floor_") || p_property.name == "up_direction" || p_property.name == "slide_on_ceiling") {
 			p_property.usage = PROPERTY_USAGE_NO_EDITOR;
@@ -1794,6 +1971,7 @@ CharacterBody2D::CharacterBody2D() :
 }
 
 CharacterBody2D::~CharacterBody2D() {
+	ZoneScopedS(60);
 	for (int i = 0; i < slide_colliders.size(); i++) {
 		if (slide_colliders[i].is_valid()) {
 			slide_colliders.write[i]->owner = nullptr;
@@ -1804,31 +1982,38 @@ CharacterBody2D::~CharacterBody2D() {
 ////////////////////////
 
 Vector2 KinematicCollision2D::get_position() const {
+	ZoneScopedS(60);
 	return result.collision_point;
 }
 
 Vector2 KinematicCollision2D::get_normal() const {
+	ZoneScopedS(60);
 	return result.collision_normal;
 }
 
 Vector2 KinematicCollision2D::get_travel() const {
+	ZoneScopedS(60);
 	return result.travel;
 }
 
 Vector2 KinematicCollision2D::get_remainder() const {
+	ZoneScopedS(60);
 	return result.remainder;
 }
 
 real_t KinematicCollision2D::get_angle(const Vector2 &p_up_direction) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_up_direction == Vector2(), 0);
 	return result.get_angle(p_up_direction);
 }
 
 real_t KinematicCollision2D::get_depth() const {
+	ZoneScopedS(60);
 	return result.collision_depth;
 }
 
 Object *KinematicCollision2D::get_local_shape() const {
+	ZoneScopedS(60);
 	if (!owner) {
 		return nullptr;
 	}
@@ -1837,6 +2022,7 @@ Object *KinematicCollision2D::get_local_shape() const {
 }
 
 Object *KinematicCollision2D::get_collider() const {
+	ZoneScopedS(60);
 	if (result.collider_id.is_valid()) {
 		return ObjectDB::get_instance(result.collider_id);
 	}
@@ -1845,14 +2031,17 @@ Object *KinematicCollision2D::get_collider() const {
 }
 
 ObjectID KinematicCollision2D::get_collider_id() const {
+	ZoneScopedS(60);
 	return result.collider_id;
 }
 
 RID KinematicCollision2D::get_collider_rid() const {
+	ZoneScopedS(60);
 	return result.collider;
 }
 
 Object *KinematicCollision2D::get_collider_shape() const {
+	ZoneScopedS(60);
 	Object *collider = get_collider();
 	if (collider) {
 		CollisionObject2D *obj2d = Object::cast_to<CollisionObject2D>(collider);
@@ -1866,14 +2055,17 @@ Object *KinematicCollision2D::get_collider_shape() const {
 }
 
 int KinematicCollision2D::get_collider_shape_index() const {
+	ZoneScopedS(60);
 	return result.collider_shape;
 }
 
 Vector2 KinematicCollision2D::get_collider_velocity() const {
+	ZoneScopedS(60);
 	return result.collider_velocity;
 }
 
 void KinematicCollision2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_position"), &KinematicCollision2D::get_position);
 	ClassDB::bind_method(D_METHOD("get_normal"), &KinematicCollision2D::get_normal);
 	ClassDB::bind_method(D_METHOD("get_travel"), &KinematicCollision2D::get_travel);

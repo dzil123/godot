@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  line_edit.cpp                                                        */
 /*************************************************************************/
@@ -45,6 +46,7 @@
 #include "scene/main/window.h"
 
 void LineEdit::_swap_current_input_direction() {
+	ZoneScopedS(60);
 	if (input_direction == TEXT_DIRECTION_LTR) {
 		input_direction = TEXT_DIRECTION_RTL;
 	} else {
@@ -55,6 +57,7 @@ void LineEdit::_swap_current_input_direction() {
 }
 
 void LineEdit::_move_caret_left(bool p_select, bool p_move_by_word) {
+	ZoneScopedS(60);
 	if (selection.enabled && !p_select) {
 		set_caret_column(selection.begin);
 		deselect();
@@ -87,6 +90,7 @@ void LineEdit::_move_caret_left(bool p_select, bool p_move_by_word) {
 }
 
 void LineEdit::_move_caret_right(bool p_select, bool p_move_by_word) {
+	ZoneScopedS(60);
 	if (selection.enabled && !p_select) {
 		set_caret_column(selection.end);
 		deselect();
@@ -119,18 +123,21 @@ void LineEdit::_move_caret_right(bool p_select, bool p_move_by_word) {
 }
 
 void LineEdit::_move_caret_start(bool p_select) {
+	ZoneScopedS(60);
 	shift_selection_check_pre(p_select);
 	set_caret_column(0);
 	shift_selection_check_post(p_select);
 }
 
 void LineEdit::_move_caret_end(bool p_select) {
+	ZoneScopedS(60);
 	shift_selection_check_pre(p_select);
 	set_caret_column(text.length());
 	shift_selection_check_post(p_select);
 }
 
 void LineEdit::_backspace(bool p_word, bool p_all_to_left) {
+	ZoneScopedS(60);
 	if (!editable) {
 		return;
 	}
@@ -167,6 +174,7 @@ void LineEdit::_backspace(bool p_word, bool p_all_to_left) {
 }
 
 void LineEdit::_delete(bool p_word, bool p_all_to_right) {
+	ZoneScopedS(60);
 	if (!editable) {
 		return;
 	}
@@ -216,6 +224,7 @@ void LineEdit::_delete(bool p_word, bool p_all_to_right) {
 }
 
 void LineEdit::unhandled_key_input(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	Ref<InputEventKey> k = p_event;
 
 	if (k.is_valid()) {
@@ -237,6 +246,7 @@ void LineEdit::unhandled_key_input(const Ref<InputEvent> &p_event) {
 }
 
 void LineEdit::gui_input(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_event.is_null());
 
 	Ref<InputEventMouseButton> b = p_event;
@@ -611,6 +621,7 @@ void LineEdit::gui_input(const Ref<InputEvent> &p_event) {
 }
 
 void LineEdit::set_horizontal_alignment(HorizontalAlignment p_alignment) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX((int)p_alignment, 4);
 	if (alignment == p_alignment) {
 		return;
@@ -622,10 +633,12 @@ void LineEdit::set_horizontal_alignment(HorizontalAlignment p_alignment) {
 }
 
 HorizontalAlignment LineEdit::get_horizontal_alignment() const {
+	ZoneScopedS(60);
 	return alignment;
 }
 
 Variant LineEdit::get_drag_data(const Point2 &p_point) {
+	ZoneScopedS(60);
 	if (selection.drag_attempt && selection.enabled) {
 		String t = text.substr(selection.begin, selection.end - selection.begin);
 		Label *l = memnew(Label);
@@ -638,6 +651,7 @@ Variant LineEdit::get_drag_data(const Point2 &p_point) {
 }
 
 bool LineEdit::can_drop_data(const Point2 &p_point, const Variant &p_data) const {
+	ZoneScopedS(60);
 	bool drop_override = Control::can_drop_data(p_point, p_data); // In case user wants to drop custom data.
 	if (drop_override) {
 		return drop_override;
@@ -647,6 +661,7 @@ bool LineEdit::can_drop_data(const Point2 &p_point, const Variant &p_data) const
 }
 
 void LineEdit::drop_data(const Point2 &p_point, const Variant &p_data) {
+	ZoneScopedS(60);
 	Control::drop_data(p_point, p_data);
 
 	if (p_data.get_type() == Variant::STRING && is_editable()) {
@@ -691,6 +706,7 @@ void LineEdit::drop_data(const Point2 &p_point, const Variant &p_data) {
 }
 
 Control::CursorShape LineEdit::get_cursor_shape(const Point2 &p_pos) const {
+	ZoneScopedS(60);
 	if ((!text.is_empty() && is_editable() && _is_over_clear_button(p_pos)) || (!is_editable() && (!is_selecting_enabled() || text.is_empty()))) {
 		return CURSOR_ARROW;
 	}
@@ -698,6 +714,7 @@ Control::CursorShape LineEdit::get_cursor_shape(const Point2 &p_pos) const {
 }
 
 bool LineEdit::_is_over_clear_button(const Point2 &p_pos) const {
+	ZoneScopedS(60);
 	if (!clear_button_enabled || !has_point(p_pos)) {
 		return false;
 	}
@@ -707,6 +724,7 @@ bool LineEdit::_is_over_clear_button(const Point2 &p_pos) const {
 }
 
 void LineEdit::_update_theme_item_cache() {
+	ZoneScopedS(60);
 	Control::_update_theme_item_cache();
 
 	theme_cache.normal = get_theme_stylebox(SNAME("normal"));
@@ -734,6 +752,7 @@ void LineEdit::_update_theme_item_cache() {
 }
 
 void LineEdit::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 #ifdef TOOLS_ENABLED
 		case NOTIFICATION_ENTER_TREE: {
@@ -1150,12 +1169,14 @@ void LineEdit::_notification(int p_what) {
 }
 
 void LineEdit::copy_text() {
+	ZoneScopedS(60);
 	if (selection.enabled && !pass) {
 		DisplayServer::get_singleton()->clipboard_set(text.substr(selection.begin, selection.end - selection.begin));
 	}
 }
 
 void LineEdit::cut_text() {
+	ZoneScopedS(60);
 	if (editable && selection.enabled && !pass) {
 		DisplayServer::get_singleton()->clipboard_set(text.substr(selection.begin, selection.end - selection.begin));
 		selection_delete();
@@ -1163,6 +1184,7 @@ void LineEdit::cut_text() {
 }
 
 void LineEdit::paste_text() {
+	ZoneScopedS(60);
 	if (!editable) {
 		return;
 	}
@@ -1187,6 +1209,7 @@ void LineEdit::paste_text() {
 }
 
 bool LineEdit::has_undo() const {
+	ZoneScopedS(60);
 	if (undo_stack_pos == nullptr) {
 		return undo_stack.size() > 1;
 	}
@@ -1194,10 +1217,12 @@ bool LineEdit::has_undo() const {
 }
 
 bool LineEdit::has_redo() const {
+	ZoneScopedS(60);
 	return undo_stack_pos != nullptr && undo_stack_pos != undo_stack.back();
 }
 
 void LineEdit::undo() {
+	ZoneScopedS(60);
 	if (!editable) {
 		return;
 	}
@@ -1224,6 +1249,7 @@ void LineEdit::undo() {
 }
 
 void LineEdit::redo() {
+	ZoneScopedS(60);
 	if (!editable) {
 		return;
 	}
@@ -1248,6 +1274,7 @@ void LineEdit::redo() {
 }
 
 void LineEdit::shift_selection_check_pre(bool p_shift) {
+	ZoneScopedS(60);
 	if (!selection.enabled && p_shift) {
 		selection.start_column = caret_column;
 	}
@@ -1257,12 +1284,14 @@ void LineEdit::shift_selection_check_pre(bool p_shift) {
 }
 
 void LineEdit::shift_selection_check_post(bool p_shift) {
+	ZoneScopedS(60);
 	if (p_shift) {
 		selection_fill_at_caret();
 	}
 }
 
 void LineEdit::set_caret_at_pixel_pos(int p_x) {
+	ZoneScopedS(60);
 	Ref<StyleBox> style = theme_cache.normal;
 	bool rtl = is_layout_rtl();
 
@@ -1311,6 +1340,7 @@ void LineEdit::set_caret_at_pixel_pos(int p_x) {
 }
 
 Vector2 LineEdit::get_caret_pixel_pos() {
+	ZoneScopedS(60);
 	Ref<StyleBox> style = theme_cache.normal;
 	bool rtl = is_layout_rtl();
 
@@ -1389,18 +1419,22 @@ Vector2 LineEdit::get_caret_pixel_pos() {
 }
 
 void LineEdit::set_caret_mid_grapheme_enabled(const bool p_enabled) {
+	ZoneScopedS(60);
 	caret_mid_grapheme_enabled = p_enabled;
 }
 
 bool LineEdit::is_caret_mid_grapheme_enabled() const {
+	ZoneScopedS(60);
 	return caret_mid_grapheme_enabled;
 }
 
 bool LineEdit::is_caret_blink_enabled() const {
+	ZoneScopedS(60);
 	return caret_blink_enabled;
 }
 
 void LineEdit::set_caret_blink_enabled(const bool p_enabled) {
+	ZoneScopedS(60);
 	caret_blink_enabled = p_enabled;
 	set_process_internal(p_enabled);
 
@@ -1421,25 +1455,30 @@ void LineEdit::set_caret_blink_enabled(const bool p_enabled) {
 }
 
 bool LineEdit::is_caret_force_displayed() const {
+	ZoneScopedS(60);
 	return caret_force_displayed;
 }
 
 void LineEdit::set_caret_force_displayed(const bool p_enabled) {
+	ZoneScopedS(60);
 	caret_force_displayed = p_enabled;
 	set_caret_blink_enabled(caret_blink_enabled);
 	queue_redraw();
 }
 
 float LineEdit::get_caret_blink_interval() const {
+	ZoneScopedS(60);
 	return caret_blink_interval;
 }
 
 void LineEdit::set_caret_blink_interval(const float p_interval) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_interval <= 0);
 	caret_blink_interval = p_interval;
 }
 
 void LineEdit::_reset_caret_blink_timer() {
+	ZoneScopedS(60);
 	if (caret_blink_enabled) {
 		draw_caret = true;
 		if (has_focus()) {
@@ -1450,6 +1489,7 @@ void LineEdit::_reset_caret_blink_timer() {
 }
 
 void LineEdit::_toggle_draw_caret() {
+	ZoneScopedS(60);
 	draw_caret = !draw_caret;
 	if (is_visible_in_tree() && ((has_focus() && window_has_focus) || caret_force_displayed)) {
 		queue_redraw();
@@ -1457,6 +1497,7 @@ void LineEdit::_toggle_draw_caret() {
 }
 
 void LineEdit::delete_char() {
+	ZoneScopedS(60);
 	if ((text.length() <= 0) || (caret_column == 0)) {
 		return;
 	}
@@ -1470,6 +1511,7 @@ void LineEdit::delete_char() {
 }
 
 void LineEdit::delete_text(int p_from_column, int p_to_column) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_from_column < 0 || p_from_column > p_to_column || p_to_column > text.length(),
 			vformat("Positional parameters (from: %d, to: %d) are inverted or outside the text length (%d).", p_from_column, p_to_column, text.length()));
 
@@ -1491,6 +1533,7 @@ void LineEdit::delete_text(int p_from_column, int p_to_column) {
 }
 
 void LineEdit::set_text(String p_text) {
+	ZoneScopedS(60);
 	clear_internal();
 	insert_text_at_caret(p_text);
 	_create_undo_state();
@@ -1501,6 +1544,7 @@ void LineEdit::set_text(String p_text) {
 }
 
 void LineEdit::set_text_direction(Control::TextDirection p_text_direction) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND((int)p_text_direction < -1 || (int)p_text_direction > 3);
 	if (text_direction != p_text_direction) {
 		text_direction = p_text_direction;
@@ -1520,10 +1564,12 @@ void LineEdit::set_text_direction(Control::TextDirection p_text_direction) {
 }
 
 Control::TextDirection LineEdit::get_text_direction() const {
+	ZoneScopedS(60);
 	return text_direction;
 }
 
 void LineEdit::set_language(const String &p_language) {
+	ZoneScopedS(60);
 	if (language != p_language) {
 		language = p_language;
 		_shape();
@@ -1532,10 +1578,12 @@ void LineEdit::set_language(const String &p_language) {
 }
 
 String LineEdit::get_language() const {
+	ZoneScopedS(60);
 	return language;
 }
 
 void LineEdit::set_draw_control_chars(bool p_draw_control_chars) {
+	ZoneScopedS(60);
 	if (draw_control_chars != p_draw_control_chars) {
 		draw_control_chars = p_draw_control_chars;
 		if (menu && menu->get_item_index(MENU_DISPLAY_UCC) >= 0) {
@@ -1547,10 +1595,12 @@ void LineEdit::set_draw_control_chars(bool p_draw_control_chars) {
 }
 
 bool LineEdit::get_draw_control_chars() const {
+	ZoneScopedS(60);
 	return draw_control_chars;
 }
 
 void LineEdit::set_structured_text_bidi_override(TextServer::StructuredTextParser p_parser) {
+	ZoneScopedS(60);
 	if (st_parser != p_parser) {
 		st_parser = p_parser;
 		_shape();
@@ -1559,20 +1609,24 @@ void LineEdit::set_structured_text_bidi_override(TextServer::StructuredTextParse
 }
 
 TextServer::StructuredTextParser LineEdit::get_structured_text_bidi_override() const {
+	ZoneScopedS(60);
 	return st_parser;
 }
 
 void LineEdit::set_structured_text_bidi_override_options(Array p_args) {
+	ZoneScopedS(60);
 	st_args = p_args;
 	_shape();
 	queue_redraw();
 }
 
 Array LineEdit::get_structured_text_bidi_override_options() const {
+	ZoneScopedS(60);
 	return st_args;
 }
 
 void LineEdit::clear() {
+	ZoneScopedS(60);
 	clear_internal();
 	_text_changed();
 
@@ -1583,6 +1637,7 @@ void LineEdit::clear() {
 }
 
 void LineEdit::show_virtual_keyboard() {
+	ZoneScopedS(60);
 	if (DisplayServer::get_singleton()->has_feature(DisplayServer::FEATURE_VIRTUAL_KEYBOARD) && virtual_keyboard_enabled) {
 		if (selection.enabled) {
 			DisplayServer::get_singleton()->virtual_keyboard_show(text, get_global_rect(), DisplayServer::VirtualKeyboardType(virtual_keyboard_type), max_length, selection.begin, selection.end);
@@ -1593,10 +1648,12 @@ void LineEdit::show_virtual_keyboard() {
 }
 
 String LineEdit::get_text() const {
+	ZoneScopedS(60);
 	return text;
 }
 
 void LineEdit::set_placeholder(String p_text) {
+	ZoneScopedS(60);
 	if (placeholder == p_text) {
 		return;
 	}
@@ -1608,10 +1665,12 @@ void LineEdit::set_placeholder(String p_text) {
 }
 
 String LineEdit::get_placeholder() const {
+	ZoneScopedS(60);
 	return placeholder;
 }
 
 void LineEdit::set_caret_column(int p_column) {
+	ZoneScopedS(60);
 	if (p_column > (int)text.length()) {
 		p_column = text.length();
 	}
@@ -1688,10 +1747,12 @@ void LineEdit::set_caret_column(int p_column) {
 }
 
 int LineEdit::get_caret_column() const {
+	ZoneScopedS(60);
 	return caret_column;
 }
 
 void LineEdit::set_scroll_offset(float p_pos) {
+	ZoneScopedS(60);
 	scroll_offset = p_pos;
 	if (scroll_offset < 0.0) {
 		scroll_offset = 0.0;
@@ -1699,10 +1760,12 @@ void LineEdit::set_scroll_offset(float p_pos) {
 }
 
 float LineEdit::get_scroll_offset() const {
+	ZoneScopedS(60);
 	return scroll_offset;
 }
 
 void LineEdit::insert_text_at_caret(String p_text) {
+	ZoneScopedS(60);
 	if (max_length > 0) {
 		// Truncate text to append to fit in max_length, if needed.
 		int available_chars = max_length - text.length();
@@ -1723,6 +1786,7 @@ void LineEdit::insert_text_at_caret(String p_text) {
 }
 
 void LineEdit::clear_internal() {
+	ZoneScopedS(60);
 	deselect();
 	_clear_undo_stack();
 	caret_column = 0;
@@ -1734,6 +1798,7 @@ void LineEdit::clear_internal() {
 }
 
 Size2 LineEdit::get_minimum_size() const {
+	ZoneScopedS(60);
 	Ref<StyleBox> style = theme_cache.normal;
 	Ref<Font> font = theme_cache.font;
 	int font_size = theme_cache.font_size;
@@ -1767,6 +1832,7 @@ Size2 LineEdit::get_minimum_size() const {
 }
 
 void LineEdit::deselect() {
+	ZoneScopedS(60);
 	selection.begin = 0;
 	selection.end = 0;
 	selection.start_column = 0;
@@ -1777,20 +1843,24 @@ void LineEdit::deselect() {
 }
 
 bool LineEdit::has_selection() const {
+	ZoneScopedS(60);
 	return selection.enabled;
 }
 
 int LineEdit::get_selection_from_column() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!selection.enabled, -1);
 	return selection.begin;
 }
 
 int LineEdit::get_selection_to_column() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!selection.enabled, -1);
 	return selection.end;
 }
 
 void LineEdit::selection_delete() {
+	ZoneScopedS(60);
 	if (selection.enabled) {
 		delete_text(selection.begin, selection.end);
 	}
@@ -1799,16 +1869,19 @@ void LineEdit::selection_delete() {
 }
 
 void LineEdit::set_max_length(int p_max_length) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_max_length < 0);
 	max_length = p_max_length;
 	set_text(text);
 }
 
 int LineEdit::get_max_length() const {
+	ZoneScopedS(60);
 	return max_length;
 }
 
 void LineEdit::selection_fill_at_caret() {
+	ZoneScopedS(60);
 	if (!selecting_enabled) {
 		return;
 	}
@@ -1826,6 +1899,7 @@ void LineEdit::selection_fill_at_caret() {
 }
 
 void LineEdit::select_all() {
+	ZoneScopedS(60);
 	if (!selecting_enabled) {
 		return;
 	}
@@ -1841,6 +1915,7 @@ void LineEdit::select_all() {
 }
 
 void LineEdit::set_editable(bool p_editable) {
+	ZoneScopedS(60);
 	if (editable == p_editable) {
 		return;
 	}
@@ -1852,10 +1927,12 @@ void LineEdit::set_editable(bool p_editable) {
 }
 
 bool LineEdit::is_editable() const {
+	ZoneScopedS(60);
 	return editable;
 }
 
 void LineEdit::set_secret(bool p_secret) {
+	ZoneScopedS(60);
 	if (pass == p_secret) {
 		return;
 	}
@@ -1866,10 +1943,12 @@ void LineEdit::set_secret(bool p_secret) {
 }
 
 bool LineEdit::is_secret() const {
+	ZoneScopedS(60);
 	return pass;
 }
 
 void LineEdit::set_secret_character(const String &p_string) {
+	ZoneScopedS(60);
 	// An empty string as the secret character would crash the engine.
 	// It also wouldn't make sense to use multiple characters as the secret character.
 	ERR_FAIL_COND_MSG(p_string.length() != 1, "Secret character must be exactly one character long (" + itos(p_string.length()) + " characters given).");
@@ -1884,10 +1963,12 @@ void LineEdit::set_secret_character(const String &p_string) {
 }
 
 String LineEdit::get_secret_character() const {
+	ZoneScopedS(60);
 	return secret_character;
 }
 
 void LineEdit::select(int p_from, int p_to) {
+	ZoneScopedS(60);
 	if (!selecting_enabled) {
 		return;
 	}
@@ -1921,10 +2002,12 @@ void LineEdit::select(int p_from, int p_to) {
 }
 
 bool LineEdit::is_text_field() const {
+	ZoneScopedS(60);
 	return true;
 }
 
 void LineEdit::menu_option(int p_option) {
+	ZoneScopedS(60);
 	switch (p_option) {
 		case MENU_CUT: {
 			if (editable) {
@@ -2056,18 +2139,22 @@ void LineEdit::menu_option(int p_option) {
 }
 
 void LineEdit::set_context_menu_enabled(bool p_enable) {
+	ZoneScopedS(60);
 	context_menu_enabled = p_enable;
 }
 
 bool LineEdit::is_context_menu_enabled() {
+	ZoneScopedS(60);
 	return context_menu_enabled;
 }
 
 bool LineEdit::is_menu_visible() const {
+	ZoneScopedS(60);
 	return menu && menu->is_visible();
 }
 
 PopupMenu *LineEdit::get_menu() const {
+	ZoneScopedS(60);
 	const_cast<LineEdit *>(this)->_ensure_menu();
 	return menu;
 }
@@ -2080,16 +2167,19 @@ void LineEdit::_editor_settings_changed() {
 }
 
 void LineEdit::set_expand_to_text_length_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	expand_to_text_length = p_enabled;
 	update_minimum_size();
 	set_caret_column(caret_column);
 }
 
 bool LineEdit::is_expand_to_text_length_enabled() const {
+	ZoneScopedS(60);
 	return expand_to_text_length;
 }
 
 void LineEdit::set_clear_button_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	if (clear_button_enabled == p_enabled) {
 		return;
 	}
@@ -2100,42 +2190,52 @@ void LineEdit::set_clear_button_enabled(bool p_enabled) {
 }
 
 bool LineEdit::is_clear_button_enabled() const {
+	ZoneScopedS(60);
 	return clear_button_enabled;
 }
 
 void LineEdit::set_shortcut_keys_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	shortcut_keys_enabled = p_enabled;
 }
 
 bool LineEdit::is_shortcut_keys_enabled() const {
+	ZoneScopedS(60);
 	return shortcut_keys_enabled;
 }
 
 void LineEdit::set_virtual_keyboard_enabled(bool p_enable) {
+	ZoneScopedS(60);
 	virtual_keyboard_enabled = p_enable;
 }
 
 bool LineEdit::is_virtual_keyboard_enabled() const {
+	ZoneScopedS(60);
 	return virtual_keyboard_enabled;
 }
 
 void LineEdit::set_virtual_keyboard_type(VirtualKeyboardType p_type) {
+	ZoneScopedS(60);
 	virtual_keyboard_type = p_type;
 }
 
 LineEdit::VirtualKeyboardType LineEdit::get_virtual_keyboard_type() const {
+	ZoneScopedS(60);
 	return virtual_keyboard_type;
 }
 
 void LineEdit::set_middle_mouse_paste_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	middle_mouse_paste_enabled = p_enabled;
 }
 
 bool LineEdit::is_middle_mouse_paste_enabled() const {
+	ZoneScopedS(60);
 	return middle_mouse_paste_enabled;
 }
 
 void LineEdit::set_selecting_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	if (selecting_enabled == p_enabled) {
 		return;
 	}
@@ -2148,10 +2248,12 @@ void LineEdit::set_selecting_enabled(bool p_enabled) {
 }
 
 bool LineEdit::is_selecting_enabled() const {
+	ZoneScopedS(60);
 	return selecting_enabled;
 }
 
 void LineEdit::set_deselect_on_focus_loss_enabled(const bool p_enabled) {
+	ZoneScopedS(60);
 	if (deselect_on_focus_loss_enabled == p_enabled) {
 		return;
 	}
@@ -2163,10 +2265,12 @@ void LineEdit::set_deselect_on_focus_loss_enabled(const bool p_enabled) {
 }
 
 bool LineEdit::is_deselect_on_focus_loss_enabled() const {
+	ZoneScopedS(60);
 	return deselect_on_focus_loss_enabled;
 }
 
 void LineEdit::set_right_icon(const Ref<Texture2D> &p_icon) {
+	ZoneScopedS(60);
 	if (right_icon == p_icon) {
 		return;
 	}
@@ -2177,10 +2281,12 @@ void LineEdit::set_right_icon(const Ref<Texture2D> &p_icon) {
 }
 
 Ref<Texture2D> LineEdit::get_right_icon() {
+	ZoneScopedS(60);
 	return right_icon;
 }
 
 void LineEdit::set_flat(bool p_enabled) {
+	ZoneScopedS(60);
 	if (flat != p_enabled) {
 		flat = p_enabled;
 		queue_redraw();
@@ -2188,32 +2294,39 @@ void LineEdit::set_flat(bool p_enabled) {
 }
 
 bool LineEdit::is_flat() const {
+	ZoneScopedS(60);
 	return flat;
 }
 
 void LineEdit::set_select_all_on_focus(bool p_enabled) {
+	ZoneScopedS(60);
 	select_all_on_focus = p_enabled;
 }
 
 bool LineEdit::is_select_all_on_focus() const {
+	ZoneScopedS(60);
 	return select_all_on_focus;
 }
 
 void LineEdit::clear_pending_select_all_on_focus() {
+	ZoneScopedS(60);
 	pending_select_all_on_focus = false;
 }
 
 void LineEdit::_text_changed() {
+	ZoneScopedS(60);
 	_emit_text_change();
 	_clear_redo();
 }
 
 void LineEdit::_emit_text_change() {
+	ZoneScopedS(60);
 	emit_signal(SNAME("text_changed"), text);
 	text_changed_dirty = false;
 }
 
 void LineEdit::_shape() {
+	ZoneScopedS(60);
 	const Ref<Font> &font = theme_cache.font;
 	int font_size = theme_cache.font_size;
 	if (font.is_null()) {
@@ -2259,6 +2372,7 @@ void LineEdit::_shape() {
 }
 
 void LineEdit::_fit_to_width() {
+	ZoneScopedS(60);
 	if (alignment == HORIZONTAL_ALIGNMENT_FILL) {
 		Ref<StyleBox> style = theme_cache.normal;
 		int t_width = get_size().width - style->get_margin(SIDE_RIGHT) - style->get_margin(SIDE_LEFT);
@@ -2273,6 +2387,7 @@ void LineEdit::_fit_to_width() {
 }
 
 void LineEdit::_clear_redo() {
+	ZoneScopedS(60);
 	_create_undo_state();
 	if (undo_stack_pos == nullptr) {
 		return;
@@ -2288,12 +2403,14 @@ void LineEdit::_clear_redo() {
 }
 
 void LineEdit::_clear_undo_stack() {
+	ZoneScopedS(60);
 	undo_stack.clear();
 	undo_stack_pos = nullptr;
 	_create_undo_state();
 }
 
 void LineEdit::_create_undo_state() {
+	ZoneScopedS(60);
 	TextOperation op;
 	op.text = text;
 	op.caret_column = caret_column;
@@ -2302,6 +2419,7 @@ void LineEdit::_create_undo_state() {
 }
 
 Key LineEdit::_get_menu_action_accelerator(const String &p_action) {
+	ZoneScopedS(60);
 	const List<Ref<InputEvent>> *events = InputMap::get_singleton()->action_get_events(p_action);
 	if (!events) {
 		return Key::NONE;
@@ -2327,12 +2445,14 @@ Key LineEdit::_get_menu_action_accelerator(const String &p_action) {
 }
 
 void LineEdit::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (!caret_blink_enabled && p_property.name == "caret_blink_interval") {
 		p_property.usage = PROPERTY_USAGE_NO_EDITOR;
 	}
 }
 
 void LineEdit::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("_text_changed"), &LineEdit::_text_changed);
 
 	ClassDB::bind_method(D_METHOD("set_horizontal_alignment", "alignment"), &LineEdit::set_horizontal_alignment);
@@ -2488,6 +2608,7 @@ void LineEdit::_bind_methods() {
 }
 
 void LineEdit::_ensure_menu() {
+	ZoneScopedS(60);
 	if (!menu) {
 		menu = memnew(PopupMenu);
 		add_child(menu, false, INTERNAL_MODE_FRONT);
@@ -2566,6 +2687,7 @@ void LineEdit::_ensure_menu() {
 }
 
 LineEdit::LineEdit(const String &p_placeholder) {
+	ZoneScopedS(60);
 	text_rid = TS->create_shaped_text();
 	_create_undo_state();
 
@@ -2583,5 +2705,6 @@ LineEdit::LineEdit(const String &p_placeholder) {
 }
 
 LineEdit::~LineEdit() {
+	ZoneScopedS(60);
 	TS->free_rid(text_rid);
 }

@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  skeleton_modification_3d_twoboneik.cpp                               */
 /*************************************************************************/
@@ -28,11 +29,12 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "scene/resources/skeleton_modification_3d_twoboneik.h"
 #include "scene/3d/skeleton_3d.h"
 #include "scene/resources/skeleton_modification_3d.h"
+#include "scene/resources/skeleton_modification_3d_twoboneik.h"
 
 bool SkeletonModification3DTwoBoneIK::_set(const StringName &p_path, const Variant &p_value) {
+	ZoneScopedS(60);
 	String path = p_path;
 
 	if (path == "use_tip_node") {
@@ -67,6 +69,7 @@ bool SkeletonModification3DTwoBoneIK::_set(const StringName &p_path, const Varia
 }
 
 bool SkeletonModification3DTwoBoneIK::_get(const StringName &p_path, Variant &r_ret) const {
+	ZoneScopedS(60);
 	String path = p_path;
 
 	if (path == "use_tip_node") {
@@ -101,6 +104,7 @@ bool SkeletonModification3DTwoBoneIK::_get(const StringName &p_path, Variant &r_
 }
 
 void SkeletonModification3DTwoBoneIK::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	p_list->push_back(PropertyInfo(Variant::BOOL, "use_tip_node", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT));
 	if (use_tip_node) {
 		p_list->push_back(PropertyInfo(Variant::NODE_PATH, "tip_node", PROPERTY_HINT_NODE_PATH_VALID_TYPES, "Node3D", PROPERTY_USAGE_DEFAULT));
@@ -127,6 +131,7 @@ void SkeletonModification3DTwoBoneIK::_get_property_list(List<PropertyInfo> *p_l
 }
 
 void SkeletonModification3DTwoBoneIK::_execute(real_t p_delta) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!stack || !is_setup || stack->skeleton == nullptr,
 			"Modification is not setup and therefore cannot execute!");
 
@@ -305,6 +310,7 @@ void SkeletonModification3DTwoBoneIK::_execute(real_t p_delta) {
 }
 
 void SkeletonModification3DTwoBoneIK::_setup_modification(SkeletonModificationStack3D *p_stack) {
+	ZoneScopedS(60);
 	stack = p_stack;
 
 	if (stack != nullptr) {
@@ -316,6 +322,7 @@ void SkeletonModification3DTwoBoneIK::_setup_modification(SkeletonModificationSt
 }
 
 void SkeletonModification3DTwoBoneIK::update_cache_target() {
+	ZoneScopedS(60);
 	if (!is_setup || !stack) {
 		_print_execution_error(true, "Cannot update target cache: modification is not properly setup!");
 		return;
@@ -339,6 +346,7 @@ void SkeletonModification3DTwoBoneIK::update_cache_target() {
 }
 
 void SkeletonModification3DTwoBoneIK::update_cache_tip() {
+	ZoneScopedS(60);
 	if (!is_setup || !stack) {
 		_print_execution_error(true, "Cannot update tip cache: modification is not properly setup!");
 		return;
@@ -362,6 +370,7 @@ void SkeletonModification3DTwoBoneIK::update_cache_tip() {
 }
 
 void SkeletonModification3DTwoBoneIK::update_cache_pole() {
+	ZoneScopedS(60);
 	if (!is_setup || !stack) {
 		_print_execution_error(true, "Cannot update pole cache: modification is not properly setup!");
 		return;
@@ -385,51 +394,62 @@ void SkeletonModification3DTwoBoneIK::update_cache_pole() {
 }
 
 void SkeletonModification3DTwoBoneIK::set_target_node(const NodePath &p_target_node) {
+	ZoneScopedS(60);
 	target_node = p_target_node;
 	update_cache_target();
 }
 
 NodePath SkeletonModification3DTwoBoneIK::get_target_node() const {
+	ZoneScopedS(60);
 	return target_node;
 }
 
 void SkeletonModification3DTwoBoneIK::set_use_tip_node(const bool p_use_tip_node) {
+	ZoneScopedS(60);
 	use_tip_node = p_use_tip_node;
 	notify_property_list_changed();
 }
 
 bool SkeletonModification3DTwoBoneIK::get_use_tip_node() const {
+	ZoneScopedS(60);
 	return use_tip_node;
 }
 
 void SkeletonModification3DTwoBoneIK::set_tip_node(const NodePath &p_tip_node) {
+	ZoneScopedS(60);
 	tip_node = p_tip_node;
 	update_cache_tip();
 }
 
 NodePath SkeletonModification3DTwoBoneIK::get_tip_node() const {
+	ZoneScopedS(60);
 	return tip_node;
 }
 
 void SkeletonModification3DTwoBoneIK::set_use_pole_node(const bool p_use_pole_node) {
+	ZoneScopedS(60);
 	use_pole_node = p_use_pole_node;
 	notify_property_list_changed();
 }
 
 bool SkeletonModification3DTwoBoneIK::get_use_pole_node() const {
+	ZoneScopedS(60);
 	return use_pole_node;
 }
 
 void SkeletonModification3DTwoBoneIK::set_pole_node(const NodePath &p_pole_node) {
+	ZoneScopedS(60);
 	pole_node = p_pole_node;
 	update_cache_pole();
 }
 
 NodePath SkeletonModification3DTwoBoneIK::get_pole_node() const {
+	ZoneScopedS(60);
 	return pole_node;
 }
 
 void SkeletonModification3DTwoBoneIK::set_auto_calculate_joint_length(bool p_calculate) {
+	ZoneScopedS(60);
 	auto_calculate_joint_length = p_calculate;
 	if (p_calculate) {
 		calculate_joint_lengths();
@@ -438,10 +458,12 @@ void SkeletonModification3DTwoBoneIK::set_auto_calculate_joint_length(bool p_cal
 }
 
 bool SkeletonModification3DTwoBoneIK::get_auto_calculate_joint_length() const {
+	ZoneScopedS(60);
 	return auto_calculate_joint_length;
 }
 
 void SkeletonModification3DTwoBoneIK::calculate_joint_lengths() {
+	ZoneScopedS(60);
 	if (!is_setup) {
 		return; // fail silently, as we likely just loaded the scene.
 	}
@@ -485,6 +507,7 @@ void SkeletonModification3DTwoBoneIK::calculate_joint_lengths() {
 }
 
 void SkeletonModification3DTwoBoneIK::set_joint_one_bone_name(String p_bone_name) {
+	ZoneScopedS(60);
 	joint_one_bone_name = p_bone_name;
 	if (stack && stack->skeleton) {
 		joint_one_bone_idx = stack->skeleton->find_bone(p_bone_name);
@@ -494,10 +517,12 @@ void SkeletonModification3DTwoBoneIK::set_joint_one_bone_name(String p_bone_name
 }
 
 String SkeletonModification3DTwoBoneIK::get_joint_one_bone_name() const {
+	ZoneScopedS(60);
 	return joint_one_bone_name;
 }
 
 void SkeletonModification3DTwoBoneIK::set_joint_one_bone_idx(int p_bone_idx) {
+	ZoneScopedS(60);
 	joint_one_bone_idx = p_bone_idx;
 	if (stack && stack->skeleton) {
 		joint_one_bone_name = stack->skeleton->get_bone_name(p_bone_idx);
@@ -507,18 +532,22 @@ void SkeletonModification3DTwoBoneIK::set_joint_one_bone_idx(int p_bone_idx) {
 }
 
 int SkeletonModification3DTwoBoneIK::get_joint_one_bone_idx() const {
+	ZoneScopedS(60);
 	return joint_one_bone_idx;
 }
 
 void SkeletonModification3DTwoBoneIK::set_joint_one_length(real_t p_length) {
+	ZoneScopedS(60);
 	joint_one_length = p_length;
 }
 
 real_t SkeletonModification3DTwoBoneIK::get_joint_one_length() const {
+	ZoneScopedS(60);
 	return joint_one_length;
 }
 
 void SkeletonModification3DTwoBoneIK::set_joint_two_bone_name(String p_bone_name) {
+	ZoneScopedS(60);
 	joint_two_bone_name = p_bone_name;
 	if (stack && stack->skeleton) {
 		joint_two_bone_idx = stack->skeleton->find_bone(p_bone_name);
@@ -528,10 +557,12 @@ void SkeletonModification3DTwoBoneIK::set_joint_two_bone_name(String p_bone_name
 }
 
 String SkeletonModification3DTwoBoneIK::get_joint_two_bone_name() const {
+	ZoneScopedS(60);
 	return joint_two_bone_name;
 }
 
 void SkeletonModification3DTwoBoneIK::set_joint_two_bone_idx(int p_bone_idx) {
+	ZoneScopedS(60);
 	joint_two_bone_idx = p_bone_idx;
 	if (stack && stack->skeleton) {
 		joint_two_bone_name = stack->skeleton->get_bone_name(p_bone_idx);
@@ -541,34 +572,42 @@ void SkeletonModification3DTwoBoneIK::set_joint_two_bone_idx(int p_bone_idx) {
 }
 
 int SkeletonModification3DTwoBoneIK::get_joint_two_bone_idx() const {
+	ZoneScopedS(60);
 	return joint_two_bone_idx;
 }
 
 void SkeletonModification3DTwoBoneIK::set_joint_two_length(real_t p_length) {
+	ZoneScopedS(60);
 	joint_two_length = p_length;
 }
 
 real_t SkeletonModification3DTwoBoneIK::get_joint_two_length() const {
+	ZoneScopedS(60);
 	return joint_two_length;
 }
 
 void SkeletonModification3DTwoBoneIK::set_joint_one_roll(real_t p_roll) {
+	ZoneScopedS(60);
 	joint_one_roll = p_roll;
 }
 
 real_t SkeletonModification3DTwoBoneIK::get_joint_one_roll() const {
+	ZoneScopedS(60);
 	return joint_one_roll;
 }
 
 void SkeletonModification3DTwoBoneIK::set_joint_two_roll(real_t p_roll) {
+	ZoneScopedS(60);
 	joint_two_roll = p_roll;
 }
 
 real_t SkeletonModification3DTwoBoneIK::get_joint_two_roll() const {
+	ZoneScopedS(60);
 	return joint_two_roll;
 }
 
 void SkeletonModification3DTwoBoneIK::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_target_node", "target_nodepath"), &SkeletonModification3DTwoBoneIK::set_target_node);
 	ClassDB::bind_method(D_METHOD("get_target_node"), &SkeletonModification3DTwoBoneIK::get_target_node);
 
@@ -609,6 +648,7 @@ void SkeletonModification3DTwoBoneIK::_bind_methods() {
 }
 
 SkeletonModification3DTwoBoneIK::SkeletonModification3DTwoBoneIK() {
+	ZoneScopedS(60);
 	stack = nullptr;
 	is_setup = false;
 }

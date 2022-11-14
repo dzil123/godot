@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  texture_button.cpp                                                   */
 /*************************************************************************/
@@ -35,6 +36,7 @@
 #include <stdlib.h>
 
 Size2 TextureButton::get_minimum_size() const {
+	ZoneScopedS(60);
 	Size2 rscale = Control::get_minimum_size();
 
 	if (!ignore_texture_size) {
@@ -62,6 +64,7 @@ Size2 TextureButton::get_minimum_size() const {
 }
 
 bool TextureButton::has_point(const Point2 &p_point) const {
+	ZoneScopedS(60);
 	if (click_mask.is_valid()) {
 		Point2 point = p_point;
 		Rect2 rect = Rect2();
@@ -119,6 +122,7 @@ bool TextureButton::has_point(const Point2 &p_point) const {
 }
 
 void TextureButton::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
 			DrawMode draw_mode = get_draw_mode();
@@ -250,6 +254,7 @@ void TextureButton::_notification(int p_what) {
 }
 
 void TextureButton::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_normal_texture", "texture"), &TextureButton::set_normal_texture);
 	ClassDB::bind_method(D_METHOD("set_pressed_texture", "texture"), &TextureButton::set_pressed_texture);
 	ClassDB::bind_method(D_METHOD("set_hover_texture", "texture"), &TextureButton::set_hover_texture);
@@ -294,6 +299,7 @@ void TextureButton::_bind_methods() {
 }
 
 void TextureButton::set_normal_texture(const Ref<Texture2D> &p_normal) {
+	ZoneScopedS(60);
 	if (normal == p_normal) {
 		return;
 	}
@@ -304,6 +310,7 @@ void TextureButton::set_normal_texture(const Ref<Texture2D> &p_normal) {
 }
 
 void TextureButton::set_pressed_texture(const Ref<Texture2D> &p_pressed) {
+	ZoneScopedS(60);
 	if (pressed == p_pressed) {
 		return;
 	}
@@ -314,6 +321,7 @@ void TextureButton::set_pressed_texture(const Ref<Texture2D> &p_pressed) {
 }
 
 void TextureButton::set_hover_texture(const Ref<Texture2D> &p_hover) {
+	ZoneScopedS(60);
 	if (hover == p_hover) {
 		return;
 	}
@@ -324,6 +332,7 @@ void TextureButton::set_hover_texture(const Ref<Texture2D> &p_hover) {
 }
 
 void TextureButton::set_disabled_texture(const Ref<Texture2D> &p_disabled) {
+	ZoneScopedS(60);
 	if (disabled == p_disabled) {
 		return;
 	}
@@ -333,6 +342,7 @@ void TextureButton::set_disabled_texture(const Ref<Texture2D> &p_disabled) {
 }
 
 void TextureButton::set_click_mask(const Ref<BitMap> &p_click_mask) {
+	ZoneScopedS(60);
 	if (click_mask == p_click_mask) {
 		return;
 	}
@@ -342,38 +352,47 @@ void TextureButton::set_click_mask(const Ref<BitMap> &p_click_mask) {
 }
 
 Ref<Texture2D> TextureButton::get_normal_texture() const {
+	ZoneScopedS(60);
 	return normal;
 }
 
 Ref<Texture2D> TextureButton::get_pressed_texture() const {
+	ZoneScopedS(60);
 	return pressed;
 }
 
 Ref<Texture2D> TextureButton::get_hover_texture() const {
+	ZoneScopedS(60);
 	return hover;
 }
 
 Ref<Texture2D> TextureButton::get_disabled_texture() const {
+	ZoneScopedS(60);
 	return disabled;
 }
 
 Ref<BitMap> TextureButton::get_click_mask() const {
+	ZoneScopedS(60);
 	return click_mask;
 }
 
 Ref<Texture2D> TextureButton::get_focused_texture() const {
+	ZoneScopedS(60);
 	return focused;
 };
 
 void TextureButton::set_focused_texture(const Ref<Texture2D> &p_focused) {
+	ZoneScopedS(60);
 	focused = p_focused;
 };
 
 bool TextureButton::get_ignore_texture_size() const {
+	ZoneScopedS(60);
 	return ignore_texture_size;
 }
 
 void TextureButton::set_ignore_texture_size(bool p_ignore) {
+	ZoneScopedS(60);
 	if (ignore_texture_size == p_ignore) {
 		return;
 	}
@@ -384,6 +403,7 @@ void TextureButton::set_ignore_texture_size(bool p_ignore) {
 }
 
 void TextureButton::set_stretch_mode(StretchMode p_stretch_mode) {
+	ZoneScopedS(60);
 	if (stretch_mode == p_stretch_mode) {
 		return;
 	}
@@ -393,10 +413,12 @@ void TextureButton::set_stretch_mode(StretchMode p_stretch_mode) {
 }
 
 TextureButton::StretchMode TextureButton::get_stretch_mode() const {
+	ZoneScopedS(60);
 	return stretch_mode;
 }
 
 void TextureButton::set_flip_h(bool p_flip) {
+	ZoneScopedS(60);
 	if (hflip == p_flip) {
 		return;
 	}
@@ -406,10 +428,12 @@ void TextureButton::set_flip_h(bool p_flip) {
 }
 
 bool TextureButton::is_flipped_h() const {
+	ZoneScopedS(60);
 	return hflip;
 }
 
 void TextureButton::set_flip_v(bool p_flip) {
+	ZoneScopedS(60);
 	if (vflip == p_flip) {
 		return;
 	}
@@ -419,6 +443,7 @@ void TextureButton::set_flip_v(bool p_flip) {
 }
 
 bool TextureButton::is_flipped_v() const {
+	ZoneScopedS(60);
 	return vflip;
 }
 

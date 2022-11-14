@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  audio_stream_player.cpp                                              */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "audio_stream_player.h"
 
 #include "core/config/engine.h"
@@ -35,6 +66,7 @@
 #include "servers/audio_server.h"
 
 void AudioStreamPlayer::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			if (autoplay && !Engine::get_singleton()->is_editor_hint()) {
@@ -89,15 +121,18 @@ void AudioStreamPlayer::_notification(int p_what) {
 }
 
 void AudioStreamPlayer::set_stream(Ref<AudioStream> p_stream) {
+	ZoneScopedS(60);
 	stop();
 	stream = p_stream;
 }
 
 Ref<AudioStream> AudioStreamPlayer::get_stream() const {
+	ZoneScopedS(60);
 	return stream;
 }
 
 void AudioStreamPlayer::set_volume_db(float p_volume) {
+	ZoneScopedS(60);
 	volume_db = p_volume;
 
 	Vector<AudioFrame> volume_vector = _get_volume_vector();
@@ -107,10 +142,12 @@ void AudioStreamPlayer::set_volume_db(float p_volume) {
 }
 
 float AudioStreamPlayer::get_volume_db() const {
+	ZoneScopedS(60);
 	return volume_db;
 }
 
 void AudioStreamPlayer::set_pitch_scale(float p_pitch_scale) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_pitch_scale <= 0.0);
 	pitch_scale = p_pitch_scale;
 
@@ -120,20 +157,24 @@ void AudioStreamPlayer::set_pitch_scale(float p_pitch_scale) {
 }
 
 float AudioStreamPlayer::get_pitch_scale() const {
+	ZoneScopedS(60);
 	return pitch_scale;
 }
 
 void AudioStreamPlayer::set_max_polyphony(int p_max_polyphony) {
+	ZoneScopedS(60);
 	if (p_max_polyphony > 0) {
 		max_polyphony = p_max_polyphony;
 	}
 }
 
 int AudioStreamPlayer::get_max_polyphony() const {
+	ZoneScopedS(60);
 	return max_polyphony;
 }
 
 void AudioStreamPlayer::play(float p_from_pos) {
+	ZoneScopedS(60);
 	if (stream.is_null()) {
 		return;
 	}
@@ -155,6 +196,7 @@ void AudioStreamPlayer::play(float p_from_pos) {
 }
 
 void AudioStreamPlayer::seek(float p_seconds) {
+	ZoneScopedS(60);
 	if (is_playing()) {
 		stop();
 		play(p_seconds);
@@ -162,6 +204,7 @@ void AudioStreamPlayer::seek(float p_seconds) {
 }
 
 void AudioStreamPlayer::stop() {
+	ZoneScopedS(60);
 	for (Ref<AudioStreamPlayback> &playback : stream_playbacks) {
 		AudioServer::get_singleton()->stop_playback_stream(playback);
 	}
@@ -171,6 +214,7 @@ void AudioStreamPlayer::stop() {
 }
 
 bool AudioStreamPlayer::is_playing() const {
+	ZoneScopedS(60);
 	for (const Ref<AudioStreamPlayback> &playback : stream_playbacks) {
 		if (AudioServer::get_singleton()->is_playback_active(playback)) {
 			return true;
@@ -180,6 +224,7 @@ bool AudioStreamPlayer::is_playing() const {
 }
 
 float AudioStreamPlayer::get_playback_position() {
+	ZoneScopedS(60);
 	// Return the playback position of the most recently started playback stream.
 	if (!stream_playbacks.is_empty()) {
 		return AudioServer::get_singleton()->get_playback_position(stream_playbacks[stream_playbacks.size() - 1]);
@@ -188,6 +233,7 @@ float AudioStreamPlayer::get_playback_position() {
 }
 
 void AudioStreamPlayer::set_bus(const StringName &p_bus) {
+	ZoneScopedS(60);
 	bus = p_bus;
 	for (const Ref<AudioStreamPlayback> &playback : stream_playbacks) {
 		AudioServer::get_singleton()->set_playback_bus_exclusive(playback, p_bus, _get_volume_vector());
@@ -195,6 +241,7 @@ void AudioStreamPlayer::set_bus(const StringName &p_bus) {
 }
 
 StringName AudioStreamPlayer::get_bus() const {
+	ZoneScopedS(60);
 	for (int i = 0; i < AudioServer::get_singleton()->get_bus_count(); i++) {
 		if (AudioServer::get_singleton()->get_bus_name(i) == String(bus)) {
 			return bus;
@@ -204,22 +251,27 @@ StringName AudioStreamPlayer::get_bus() const {
 }
 
 void AudioStreamPlayer::set_autoplay(bool p_enable) {
+	ZoneScopedS(60);
 	autoplay = p_enable;
 }
 
 bool AudioStreamPlayer::is_autoplay_enabled() {
+	ZoneScopedS(60);
 	return autoplay;
 }
 
 void AudioStreamPlayer::set_mix_target(MixTarget p_target) {
+	ZoneScopedS(60);
 	mix_target = p_target;
 }
 
 AudioStreamPlayer::MixTarget AudioStreamPlayer::get_mix_target() const {
+	ZoneScopedS(60);
 	return mix_target;
 }
 
 void AudioStreamPlayer::_set_playing(bool p_enable) {
+	ZoneScopedS(60);
 	if (p_enable) {
 		play();
 	} else {
@@ -228,6 +280,7 @@ void AudioStreamPlayer::_set_playing(bool p_enable) {
 }
 
 bool AudioStreamPlayer::_is_active() const {
+	ZoneScopedS(60);
 	for (const Ref<AudioStreamPlayback> &playback : stream_playbacks) {
 		if (AudioServer::get_singleton()->is_playback_active(playback)) {
 			return true;
@@ -237,6 +290,7 @@ bool AudioStreamPlayer::_is_active() const {
 }
 
 void AudioStreamPlayer::set_stream_paused(bool p_pause) {
+	ZoneScopedS(60);
 	// TODO this does not have perfect recall, fix that maybe? If there are zero playbacks registered with the AudioServer, this bool isn't persisted.
 	for (Ref<AudioStreamPlayback> &playback : stream_playbacks) {
 		AudioServer::get_singleton()->set_playback_paused(playback, p_pause);
@@ -244,6 +298,7 @@ void AudioStreamPlayer::set_stream_paused(bool p_pause) {
 }
 
 bool AudioStreamPlayer::get_stream_paused() const {
+	ZoneScopedS(60);
 	// There's currently no way to pause some playback streams but not others. Check the first and don't bother looking at the rest.
 	if (!stream_playbacks.is_empty()) {
 		return AudioServer::get_singleton()->is_playback_paused(stream_playbacks[0]);
@@ -252,6 +307,7 @@ bool AudioStreamPlayer::get_stream_paused() const {
 }
 
 Vector<AudioFrame> AudioStreamPlayer::_get_volume_vector() {
+	ZoneScopedS(60);
 	Vector<AudioFrame> volume_vector;
 	// We need at most four stereo pairs (for 7.1 systems).
 	volume_vector.resize(4);
@@ -289,6 +345,7 @@ Vector<AudioFrame> AudioStreamPlayer::_get_volume_vector() {
 }
 
 void AudioStreamPlayer::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (p_property.name == "bus") {
 		String options;
 		for (int i = 0; i < AudioServer::get_singleton()->get_bus_count(); i++) {
@@ -304,10 +361,12 @@ void AudioStreamPlayer::_validate_property(PropertyInfo &p_property) const {
 }
 
 void AudioStreamPlayer::_bus_layout_changed() {
+	ZoneScopedS(60);
 	notify_property_list_changed();
 }
 
 Ref<AudioStreamPlayback> AudioStreamPlayer::get_stream_playback() {
+	ZoneScopedS(60);
 	if (!stream_playbacks.is_empty()) {
 		return stream_playbacks[stream_playbacks.size() - 1];
 	}
@@ -315,6 +374,7 @@ Ref<AudioStreamPlayback> AudioStreamPlayer::get_stream_playback() {
 }
 
 void AudioStreamPlayer::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_stream", "stream"), &AudioStreamPlayer::set_stream);
 	ClassDB::bind_method(D_METHOD("get_stream"), &AudioStreamPlayer::get_stream);
 
@@ -369,6 +429,7 @@ void AudioStreamPlayer::_bind_methods() {
 }
 
 AudioStreamPlayer::AudioStreamPlayer() {
+	ZoneScopedS(60);
 	AudioServer::get_singleton()->connect("bus_layout_changed", callable_mp(this, &AudioStreamPlayer::_bus_layout_changed));
 }
 

@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  text_file.cpp                                                        */
 /*************************************************************************/
@@ -33,22 +34,27 @@
 #include "core/io/file_access.h"
 
 bool TextFile::has_text() const {
+	ZoneScopedS(60);
 	return !text.is_empty();
 }
 
 String TextFile::get_text() const {
+	ZoneScopedS(60);
 	return text;
 }
 
 void TextFile::set_text(const String &p_code) {
+	ZoneScopedS(60);
 	text = p_code;
 }
 
 void TextFile::reload_from_file() {
+	ZoneScopedS(60);
 	load_text(path);
 }
 
 Error TextFile::load_text(const String &p_path) {
+	ZoneScopedS(60);
 	Vector<uint8_t> sourcef;
 	Error err;
 	Ref<FileAccess> f = FileAccess::open(p_path, FileAccess::READ, &err);

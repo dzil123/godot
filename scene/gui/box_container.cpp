@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  box_container.cpp                                                    */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "box_container.h"
 
 #include "label.h"
@@ -40,6 +71,7 @@ struct _MinSizeCache {
 };
 
 void BoxContainer::_resort() {
+	ZoneScopedS(60);
 	/** First pass, determine minimum size AND amount of stretchable elements */
 
 	Size2i new_size = get_size();
@@ -244,6 +276,7 @@ void BoxContainer::_resort() {
 }
 
 Size2 BoxContainer::get_minimum_size() const {
+	ZoneScopedS(60);
 	/* Calculate MINIMUM SIZE */
 
 	Size2i minimum;
@@ -289,12 +322,14 @@ Size2 BoxContainer::get_minimum_size() const {
 }
 
 void BoxContainer::_update_theme_item_cache() {
+	ZoneScopedS(60);
 	Container::_update_theme_item_cache();
 
 	theme_cache.separation = get_theme_constant(SNAME("separation"));
 }
 
 void BoxContainer::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_SORT_CHILDREN: {
 			_resort();
@@ -312,12 +347,14 @@ void BoxContainer::_notification(int p_what) {
 }
 
 void BoxContainer::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (is_fixed && p_property.name == "vertical") {
 		p_property.usage = PROPERTY_USAGE_NONE;
 	}
 }
 
 void BoxContainer::set_alignment(AlignmentMode p_alignment) {
+	ZoneScopedS(60);
 	if (alignment == p_alignment) {
 		return;
 	}
@@ -326,10 +363,12 @@ void BoxContainer::set_alignment(AlignmentMode p_alignment) {
 }
 
 BoxContainer::AlignmentMode BoxContainer::get_alignment() const {
+	ZoneScopedS(60);
 	return alignment;
 }
 
 void BoxContainer::set_vertical(bool p_vertical) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(is_fixed, "Can't change orientation of " + get_class() + ".");
 	vertical = p_vertical;
 	update_minimum_size();
@@ -337,10 +376,12 @@ void BoxContainer::set_vertical(bool p_vertical) {
 }
 
 bool BoxContainer::is_vertical() const {
+	ZoneScopedS(60);
 	return vertical;
 }
 
 Control *BoxContainer::add_spacer(bool p_begin) {
+	ZoneScopedS(60);
 	Control *c = memnew(Control);
 	c->set_mouse_filter(MOUSE_FILTER_PASS); //allow spacer to pass mouse events
 
@@ -359,6 +400,7 @@ Control *BoxContainer::add_spacer(bool p_begin) {
 }
 
 Vector<int> BoxContainer::get_allowed_size_flags_horizontal() const {
+	ZoneScopedS(60);
 	Vector<int> flags;
 	flags.append(SIZE_FILL);
 	if (!vertical) {
@@ -371,6 +413,7 @@ Vector<int> BoxContainer::get_allowed_size_flags_horizontal() const {
 }
 
 Vector<int> BoxContainer::get_allowed_size_flags_vertical() const {
+	ZoneScopedS(60);
 	Vector<int> flags;
 	flags.append(SIZE_FILL);
 	if (vertical) {
@@ -383,10 +426,12 @@ Vector<int> BoxContainer::get_allowed_size_flags_vertical() const {
 }
 
 BoxContainer::BoxContainer(bool p_vertical) {
+	ZoneScopedS(60);
 	vertical = p_vertical;
 }
 
 void BoxContainer::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("add_spacer", "begin"), &BoxContainer::add_spacer);
 	ClassDB::bind_method(D_METHOD("set_alignment", "alignment"), &BoxContainer::set_alignment);
 	ClassDB::bind_method(D_METHOD("get_alignment"), &BoxContainer::get_alignment);
@@ -402,6 +447,7 @@ void BoxContainer::_bind_methods() {
 }
 
 MarginContainer *VBoxContainer::add_margin_child(const String &p_label, Control *p_control, bool p_expand) {
+	ZoneScopedS(60);
 	Label *l = memnew(Label);
 	l->set_theme_type_variation("HeaderSmall");
 	l->set_text(p_label);

@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  camera_attributes.cpp                                                */
 /*************************************************************************/
@@ -34,26 +35,31 @@
 #include "servers/rendering_server.h"
 
 void CameraAttributes::set_exposure_multiplier(float p_multiplier) {
+	ZoneScopedS(60);
 	exposure_multiplier = p_multiplier;
 	_update_exposure();
 	emit_changed();
 }
 
 float CameraAttributes::get_exposure_multiplier() const {
+	ZoneScopedS(60);
 	return exposure_multiplier;
 }
 
 void CameraAttributes::set_exposure_sensitivity(float p_sensitivity) {
+	ZoneScopedS(60);
 	exposure_sensitivity = p_sensitivity;
 	_update_exposure();
 	emit_changed();
 }
 
 float CameraAttributes::get_exposure_sensitivity() const {
+	ZoneScopedS(60);
 	return exposure_sensitivity;
 }
 
 void CameraAttributes::_update_exposure() {
+	ZoneScopedS(60);
 	float exposure_normalization = 1.0;
 	// Ignore physical properties if not using physical light units.
 	if (GLOBAL_GET("rendering/lights_and_shadows/use_physical_light_units")) {
@@ -64,38 +70,46 @@ void CameraAttributes::_update_exposure() {
 }
 
 void CameraAttributes::set_auto_exposure_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	auto_exposure_enabled = p_enabled;
 	_update_auto_exposure();
 	notify_property_list_changed();
 }
 
 bool CameraAttributes::is_auto_exposure_enabled() const {
+	ZoneScopedS(60);
 	return auto_exposure_enabled;
 }
 
 void CameraAttributes::set_auto_exposure_speed(float p_auto_exposure_speed) {
+	ZoneScopedS(60);
 	auto_exposure_speed = p_auto_exposure_speed;
 	_update_auto_exposure();
 }
 
 float CameraAttributes::get_auto_exposure_speed() const {
+	ZoneScopedS(60);
 	return auto_exposure_speed;
 }
 
 void CameraAttributes::set_auto_exposure_scale(float p_auto_exposure_scale) {
+	ZoneScopedS(60);
 	auto_exposure_scale = p_auto_exposure_scale;
 	_update_auto_exposure();
 }
 
 float CameraAttributes::get_auto_exposure_scale() const {
+	ZoneScopedS(60);
 	return auto_exposure_scale;
 }
 
 RID CameraAttributes::get_rid() const {
+	ZoneScopedS(60);
 	return camera_attributes;
 }
 
 void CameraAttributes::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (!GLOBAL_GET("rendering/lights_and_shadows/use_physical_light_units") && p_property.name == "exposure_sensitivity") {
 		p_property.usage = PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL;
 		return;
@@ -108,6 +122,7 @@ void CameraAttributes::_validate_property(PropertyInfo &p_property) const {
 }
 
 void CameraAttributes::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_exposure_multiplier", "multiplier"), &CameraAttributes::set_exposure_multiplier);
 	ClassDB::bind_method(D_METHOD("get_exposure_multiplier"), &CameraAttributes::get_exposure_multiplier);
 	ClassDB::bind_method(D_METHOD("set_exposure_sensitivity", "sensitivity"), &CameraAttributes::set_exposure_sensitivity);
@@ -131,10 +146,12 @@ void CameraAttributes::_bind_methods() {
 }
 
 CameraAttributes::CameraAttributes() {
+	ZoneScopedS(60);
 	camera_attributes = RS::get_singleton()->camera_attributes_create();
 }
 
 CameraAttributes::~CameraAttributes() {
+	ZoneScopedS(60);
 	RS::get_singleton()->free(camera_attributes);
 }
 
@@ -142,71 +159,86 @@ CameraAttributes::~CameraAttributes() {
 /* CameraAttributesPractical */
 
 void CameraAttributesPractical::set_dof_blur_far_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	dof_blur_far_enabled = p_enabled;
 	_update_dof_blur();
 	notify_property_list_changed();
 }
 
 bool CameraAttributesPractical::is_dof_blur_far_enabled() const {
+	ZoneScopedS(60);
 	return dof_blur_far_enabled;
 }
 
 void CameraAttributesPractical::set_dof_blur_far_distance(float p_distance) {
+	ZoneScopedS(60);
 	dof_blur_far_distance = p_distance;
 	_update_dof_blur();
 }
 
 float CameraAttributesPractical::get_dof_blur_far_distance() const {
+	ZoneScopedS(60);
 	return dof_blur_far_distance;
 }
 
 void CameraAttributesPractical::set_dof_blur_far_transition(float p_distance) {
+	ZoneScopedS(60);
 	dof_blur_far_transition = p_distance;
 	_update_dof_blur();
 }
 
 float CameraAttributesPractical::get_dof_blur_far_transition() const {
+	ZoneScopedS(60);
 	return dof_blur_far_transition;
 }
 
 void CameraAttributesPractical::set_dof_blur_near_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	dof_blur_near_enabled = p_enabled;
 	_update_dof_blur();
 	notify_property_list_changed();
 }
 
 bool CameraAttributesPractical::is_dof_blur_near_enabled() const {
+	ZoneScopedS(60);
 	return dof_blur_near_enabled;
 }
 
 void CameraAttributesPractical::set_dof_blur_near_distance(float p_distance) {
+	ZoneScopedS(60);
 	dof_blur_near_distance = p_distance;
 	_update_dof_blur();
 }
 
 float CameraAttributesPractical::get_dof_blur_near_distance() const {
+	ZoneScopedS(60);
 	return dof_blur_near_distance;
 }
 
 void CameraAttributesPractical::set_dof_blur_near_transition(float p_distance) {
+	ZoneScopedS(60);
 	dof_blur_near_transition = p_distance;
 	_update_dof_blur();
 }
 
 float CameraAttributesPractical::get_dof_blur_near_transition() const {
+	ZoneScopedS(60);
 	return dof_blur_near_transition;
 }
 
 void CameraAttributesPractical::set_dof_blur_amount(float p_amount) {
+	ZoneScopedS(60);
 	dof_blur_amount = p_amount;
 	_update_dof_blur();
 }
 
 float CameraAttributesPractical::get_dof_blur_amount() const {
+	ZoneScopedS(60);
 	return dof_blur_amount;
 }
 
 void CameraAttributesPractical::_update_dof_blur() {
+	ZoneScopedS(60);
 	RS::get_singleton()->camera_attributes_set_dof_blur(
 			get_rid(),
 			dof_blur_far_enabled,
@@ -219,28 +251,34 @@ void CameraAttributesPractical::_update_dof_blur() {
 }
 
 float CameraAttributesPractical::calculate_exposure_normalization() const {
+	ZoneScopedS(60);
 	return exposure_sensitivity / 3072007.0; // Matches exposure normalization for default CameraAttributesPhysical at ISO 100.
 }
 
 void CameraAttributesPractical::set_auto_exposure_min_sensitivity(float p_min) {
+	ZoneScopedS(60);
 	auto_exposure_min = p_min;
 	_update_auto_exposure();
 }
 
 float CameraAttributesPractical::get_auto_exposure_min_sensitivity() const {
+	ZoneScopedS(60);
 	return auto_exposure_min;
 }
 
 void CameraAttributesPractical::set_auto_exposure_max_sensitivity(float p_max) {
+	ZoneScopedS(60);
 	auto_exposure_max = p_max;
 	_update_auto_exposure();
 }
 
 float CameraAttributesPractical::get_auto_exposure_max_sensitivity() const {
+	ZoneScopedS(60);
 	return auto_exposure_max;
 }
 
 void CameraAttributesPractical::_update_auto_exposure() {
+	ZoneScopedS(60);
 	RS::get_singleton()->camera_attributes_set_auto_exposure(
 			get_rid(),
 			auto_exposure_enabled,
@@ -252,6 +290,7 @@ void CameraAttributesPractical::_update_auto_exposure() {
 }
 
 void CameraAttributesPractical::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if ((!dof_blur_far_enabled && (p_property.name == "dof_blur_far_distance" || p_property.name == "dof_blur_far_transition")) ||
 			(!dof_blur_near_enabled && (p_property.name == "dof_blur_near_distance" || p_property.name == "dof_blur_near_transition"))) {
 		p_property.usage = PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL;
@@ -259,6 +298,7 @@ void CameraAttributesPractical::_validate_property(PropertyInfo &p_property) con
 }
 
 void CameraAttributesPractical::_bind_methods() {
+	ZoneScopedS(60);
 	// DOF blur
 
 	ClassDB::bind_method(D_METHOD("set_dof_blur_far_enabled", "enabled"), &CameraAttributesPractical::set_dof_blur_far_enabled);
@@ -297,6 +337,7 @@ void CameraAttributesPractical::_bind_methods() {
 }
 
 CameraAttributesPractical::CameraAttributesPractical() {
+	ZoneScopedS(60);
 	_update_dof_blur();
 	_update_exposure();
 	set_auto_exposure_min_sensitivity(0.0);
@@ -311,68 +352,82 @@ CameraAttributesPractical::~CameraAttributesPractical() {
 /* CameraAttributesPhysical */
 
 void CameraAttributesPhysical::set_aperture(float p_aperture) {
+	ZoneScopedS(60);
 	exposure_aperture = p_aperture;
 	_update_exposure();
 	_update_frustum();
 }
 
 float CameraAttributesPhysical::get_aperture() const {
+	ZoneScopedS(60);
 	return exposure_aperture;
 }
 
 void CameraAttributesPhysical::set_shutter_speed(float p_shutter_speed) {
+	ZoneScopedS(60);
 	exposure_shutter_speed = p_shutter_speed;
 	_update_exposure();
 }
 
 float CameraAttributesPhysical::get_shutter_speed() const {
+	ZoneScopedS(60);
 	return exposure_shutter_speed;
 }
 
 void CameraAttributesPhysical::set_focal_length(float p_focal_length) {
+	ZoneScopedS(60);
 	frustum_focal_length = p_focal_length;
 	_update_frustum();
 	emit_changed();
 }
 
 float CameraAttributesPhysical::get_focal_length() const {
+	ZoneScopedS(60);
 	return frustum_focal_length;
 }
 
 void CameraAttributesPhysical::set_focus_distance(float p_focus_distance) {
+	ZoneScopedS(60);
 	frustum_focus_distance = p_focus_distance;
 	_update_frustum();
 }
 
 float CameraAttributesPhysical::get_focus_distance() const {
+	ZoneScopedS(60);
 	return frustum_focus_distance;
 }
 
 void CameraAttributesPhysical::set_near(real_t p_near) {
+	ZoneScopedS(60);
 	frustum_near = p_near;
 	_update_frustum();
 	emit_changed();
 }
 
 real_t CameraAttributesPhysical::get_near() const {
+	ZoneScopedS(60);
 	return frustum_near;
 }
 
 void CameraAttributesPhysical::set_far(real_t p_far) {
+	ZoneScopedS(60);
 	frustum_far = p_far;
 	_update_frustum();
 	emit_changed();
 }
 
 real_t CameraAttributesPhysical::get_far() const {
+	ZoneScopedS(60);
 	return frustum_far;
 }
 
 real_t CameraAttributesPhysical::get_fov() const {
+	ZoneScopedS(60);
 	return frustum_fov;
 }
 
 void CameraAttributesPhysical::_update_frustum() {
+	ZoneScopedS(60);
 	//https://en.wikipedia.org/wiki/Circle_of_confusion#Circle_of_confusion_diameter_limit_based_on_d/1500
 	Vector2i sensor_size = Vector2i(36, 24); // Matches high-end DSLR, could be made variable if there is demand.
 	float CoC = sensor_size.length() / 1500.0;
@@ -405,29 +460,35 @@ void CameraAttributesPhysical::_update_frustum() {
 }
 
 float CameraAttributesPhysical::calculate_exposure_normalization() const {
+	ZoneScopedS(60);
 	const float e = (exposure_aperture * exposure_aperture) * exposure_shutter_speed * (100.0 / exposure_sensitivity);
 	return 1.0 / (e * 1.2);
 }
 
 void CameraAttributesPhysical::set_auto_exposure_min_exposure_value(float p_min) {
+	ZoneScopedS(60);
 	auto_exposure_min = p_min;
 	_update_auto_exposure();
 }
 
 float CameraAttributesPhysical::get_auto_exposure_min_exposure_value() const {
+	ZoneScopedS(60);
 	return auto_exposure_min;
 }
 
 void CameraAttributesPhysical::set_auto_exposure_max_exposure_value(float p_max) {
+	ZoneScopedS(60);
 	auto_exposure_max = p_max;
 	_update_auto_exposure();
 }
 
 float CameraAttributesPhysical::get_auto_exposure_max_exposure_value() const {
+	ZoneScopedS(60);
 	return auto_exposure_max;
 }
 
 void CameraAttributesPhysical::_update_auto_exposure() {
+	ZoneScopedS(60);
 	RS::get_singleton()->camera_attributes_set_auto_exposure(
 			get_rid(),
 			auto_exposure_enabled,
@@ -439,6 +500,7 @@ void CameraAttributesPhysical::_update_auto_exposure() {
 }
 
 void CameraAttributesPhysical::_validate_property(PropertyInfo &property) const {
+	ZoneScopedS(60);
 	if (!GLOBAL_GET("rendering/lights_and_shadows/use_physical_light_units") && (property.name == "exposure_aperture" || property.name == "exposure_shutter_speed")) {
 		property.usage = PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL;
 		return;
@@ -446,6 +508,7 @@ void CameraAttributesPhysical::_validate_property(PropertyInfo &property) const 
 }
 
 void CameraAttributesPhysical::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_aperture", "aperture"), &CameraAttributesPhysical::set_aperture);
 	ClassDB::bind_method(D_METHOD("get_aperture"), &CameraAttributesPhysical::get_aperture);
 	ClassDB::bind_method(D_METHOD("set_shutter_speed", "shutter_speed"), &CameraAttributesPhysical::set_shutter_speed);
@@ -482,6 +545,7 @@ void CameraAttributesPhysical::_bind_methods() {
 };
 
 CameraAttributesPhysical::CameraAttributesPhysical() {
+	ZoneScopedS(60);
 	_update_exposure();
 	_update_frustum();
 	set_auto_exposure_min_exposure_value(-8);

@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  grid_container.cpp                                                   */
 /*************************************************************************/
@@ -28,10 +29,11 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "grid_container.h"
 #include "core/templates/rb_set.h"
+#include "grid_container.h"
 
 void GridContainer::_update_theme_item_cache() {
+	ZoneScopedS(60);
 	Container::_update_theme_item_cache();
 
 	theme_cache.h_separation = get_theme_constant(SNAME("h_separation"));
@@ -39,6 +41,7 @@ void GridContainer::_update_theme_item_cache() {
 }
 
 void GridContainer::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_SORT_CHILDREN: {
 			RBMap<int, int> col_minw; // Max of min_width of all controls in each col (indexed by col).
@@ -249,6 +252,7 @@ void GridContainer::_notification(int p_what) {
 }
 
 void GridContainer::set_columns(int p_columns) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_columns < 1);
 
 	if (columns == p_columns) {
@@ -261,10 +265,12 @@ void GridContainer::set_columns(int p_columns) {
 }
 
 int GridContainer::get_columns() const {
+	ZoneScopedS(60);
 	return columns;
 }
 
 void GridContainer::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_columns", "columns"), &GridContainer::set_columns);
 	ClassDB::bind_method(D_METHOD("get_columns"), &GridContainer::get_columns);
 
@@ -272,6 +278,7 @@ void GridContainer::_bind_methods() {
 }
 
 Size2 GridContainer::get_minimum_size() const {
+	ZoneScopedS(60);
 	RBMap<int, int> col_minw;
 	RBMap<int, int> row_minh;
 

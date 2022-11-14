@@ -28,11 +28,43 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  physical_bone_2d.cpp                                                 */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "physical_bone_2d.h"
 
 #include "scene/2d/joint_2d.h"
 
 void PhysicalBone2D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_INTERNAL_PHYSICS_PROCESS: {
 			// Position the RigidBody in the correct position.
@@ -68,6 +100,7 @@ void PhysicalBone2D::_notification(int p_what) {
 }
 
 void PhysicalBone2D::_position_at_bone2d() {
+	ZoneScopedS(60);
 	// Reset to Bone2D position
 	if (parent_skeleton) {
 		Bone2D *bone_to_use = parent_skeleton->get_bone(bone2d_index);
@@ -77,6 +110,7 @@ void PhysicalBone2D::_position_at_bone2d() {
 }
 
 void PhysicalBone2D::_find_skeleton_parent() {
+	ZoneScopedS(60);
 	Node *current_parent = get_parent();
 
 	while (current_parent != nullptr) {
@@ -96,6 +130,7 @@ void PhysicalBone2D::_find_skeleton_parent() {
 }
 
 void PhysicalBone2D::_find_joint_child() {
+	ZoneScopedS(60);
 	for (int i = 0; i < get_child_count(); i++) {
 		Node *child_node = get_child(i);
 		Joint2D *potential_joint = Object::cast_to<Joint2D>(child_node);
@@ -107,6 +142,7 @@ void PhysicalBone2D::_find_joint_child() {
 }
 
 PackedStringArray PhysicalBone2D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (!parent_skeleton) {
@@ -126,6 +162,7 @@ PackedStringArray PhysicalBone2D::get_configuration_warnings() const {
 }
 
 void PhysicalBone2D::_auto_configure_joint() {
+	ZoneScopedS(60);
 	if (!auto_configure_joint) {
 		return;
 	}
@@ -148,6 +185,7 @@ void PhysicalBone2D::_auto_configure_joint() {
 }
 
 void PhysicalBone2D::_start_physics_simulation() {
+	ZoneScopedS(60);
 	if (_internal_simulate_physics) {
 		return;
 	}
@@ -168,6 +206,7 @@ void PhysicalBone2D::_start_physics_simulation() {
 }
 
 void PhysicalBone2D::_stop_physics_simulation() {
+	ZoneScopedS(60);
 	if (_internal_simulate_physics) {
 		_internal_simulate_physics = false;
 
@@ -183,19 +222,23 @@ void PhysicalBone2D::_stop_physics_simulation() {
 }
 
 Joint2D *PhysicalBone2D::get_joint() const {
+	ZoneScopedS(60);
 	return child_joint;
 }
 
 bool PhysicalBone2D::get_auto_configure_joint() const {
+	ZoneScopedS(60);
 	return auto_configure_joint;
 }
 
 void PhysicalBone2D::set_auto_configure_joint(bool p_auto_configure) {
+	ZoneScopedS(60);
 	auto_configure_joint = p_auto_configure;
 	_auto_configure_joint();
 }
 
 void PhysicalBone2D::set_simulate_physics(bool p_simulate) {
+	ZoneScopedS(60);
 	if (p_simulate == simulate_physics) {
 		return;
 	}
@@ -209,23 +252,28 @@ void PhysicalBone2D::set_simulate_physics(bool p_simulate) {
 }
 
 bool PhysicalBone2D::get_simulate_physics() const {
+	ZoneScopedS(60);
 	return simulate_physics;
 }
 
 bool PhysicalBone2D::is_simulating_physics() const {
+	ZoneScopedS(60);
 	return _internal_simulate_physics;
 }
 
 void PhysicalBone2D::set_bone2d_nodepath(const NodePath &p_nodepath) {
+	ZoneScopedS(60);
 	bone2d_nodepath = p_nodepath;
 	notify_property_list_changed();
 }
 
 NodePath PhysicalBone2D::get_bone2d_nodepath() const {
+	ZoneScopedS(60);
 	return bone2d_nodepath;
 }
 
 void PhysicalBone2D::set_bone2d_index(int p_bone_idx) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_bone_idx < 0, "Bone index is out of range: The index is too low!");
 
 	if (!is_inside_tree()) {
@@ -247,10 +295,12 @@ void PhysicalBone2D::set_bone2d_index(int p_bone_idx) {
 }
 
 int PhysicalBone2D::get_bone2d_index() const {
+	ZoneScopedS(60);
 	return bone2d_index;
 }
 
 void PhysicalBone2D::set_follow_bone_when_simulating(bool p_follow_bone) {
+	ZoneScopedS(60);
 	follow_bone_when_simulating = p_follow_bone;
 
 	if (_internal_simulate_physics) {
@@ -260,10 +310,12 @@ void PhysicalBone2D::set_follow_bone_when_simulating(bool p_follow_bone) {
 }
 
 bool PhysicalBone2D::get_follow_bone_when_simulating() const {
+	ZoneScopedS(60);
 	return follow_bone_when_simulating;
 }
 
 void PhysicalBone2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_joint"), &PhysicalBone2D::get_joint);
 	ClassDB::bind_method(D_METHOD("get_auto_configure_joint"), &PhysicalBone2D::get_auto_configure_joint);
 	ClassDB::bind_method(D_METHOD("set_auto_configure_joint", "auto_configure_joint"), &PhysicalBone2D::set_auto_configure_joint);
@@ -287,6 +339,7 @@ void PhysicalBone2D::_bind_methods() {
 }
 
 PhysicalBone2D::PhysicalBone2D() {
+	ZoneScopedS(60);
 	// Stop the RigidBody from executing its force integration.
 	PhysicsServer2D::get_singleton()->body_set_collision_layer(get_rid(), 0);
 	PhysicsServer2D::get_singleton()->body_set_collision_mask(get_rid(), 0);

@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  soft_body_3d.cpp                                                     */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "soft_body_3d.h"
 
 #include "scene/3d/physics_body_3d.h"
@@ -35,6 +66,7 @@
 SoftBodyRenderingServerHandler::SoftBodyRenderingServerHandler() {}
 
 void SoftBodyRenderingServerHandler::prepare(RID p_mesh, int p_surface) {
+	ZoneScopedS(60);
 	clear();
 
 	ERR_FAIL_COND(!p_mesh.is_valid());
@@ -57,6 +89,7 @@ void SoftBodyRenderingServerHandler::prepare(RID p_mesh, int p_surface) {
 }
 
 void SoftBodyRenderingServerHandler::clear() {
+	ZoneScopedS(60);
 	buffer.resize(0);
 	stride = 0;
 	offset_vertices = 0;
@@ -67,22 +100,27 @@ void SoftBodyRenderingServerHandler::clear() {
 }
 
 void SoftBodyRenderingServerHandler::open() {
+	ZoneScopedS(60);
 	write_buffer = buffer.ptrw();
 }
 
 void SoftBodyRenderingServerHandler::close() {
+	ZoneScopedS(60);
 	write_buffer = nullptr;
 }
 
 void SoftBodyRenderingServerHandler::commit_changes() {
+	ZoneScopedS(60);
 	RS::get_singleton()->mesh_surface_update_vertex_region(mesh, surface, 0, buffer);
 }
 
 void SoftBodyRenderingServerHandler::set_vertex(int p_vertex_id, const void *p_vector3) {
+	ZoneScopedS(60);
 	memcpy(&write_buffer[p_vertex_id * stride + offset_vertices], p_vector3, sizeof(float) * 3);
 }
 
 void SoftBodyRenderingServerHandler::set_normal(int p_vertex_id, const void *p_vector3) {
+	ZoneScopedS(60);
 	// Store normal vector in A2B10G10R10 format.
 	Vector3 n;
 	memcpy(&n, p_vector3, sizeof(Vector3));
@@ -96,6 +134,7 @@ void SoftBodyRenderingServerHandler::set_normal(int p_vertex_id, const void *p_v
 }
 
 void SoftBodyRenderingServerHandler::set_aabb(const AABB &p_aabb) {
+	ZoneScopedS(60);
 	RS::get_singleton()->mesh_set_custom_aabb(mesh, p_aabb);
 }
 
@@ -103,6 +142,7 @@ SoftBody3D::PinnedPoint::PinnedPoint() {
 }
 
 SoftBody3D::PinnedPoint::PinnedPoint(const PinnedPoint &obj_tocopy) {
+	ZoneScopedS(60);
 	point_index = obj_tocopy.point_index;
 	spatial_attachment_path = obj_tocopy.spatial_attachment_path;
 	spatial_attachment = obj_tocopy.spatial_attachment;
@@ -110,6 +150,7 @@ SoftBody3D::PinnedPoint::PinnedPoint(const PinnedPoint &obj_tocopy) {
 }
 
 void SoftBody3D::PinnedPoint::operator=(const PinnedPoint &obj) {
+	ZoneScopedS(60);
 	point_index = obj.point_index;
 	spatial_attachment_path = obj.spatial_attachment_path;
 	spatial_attachment = obj.spatial_attachment;
@@ -117,6 +158,7 @@ void SoftBody3D::PinnedPoint::operator=(const PinnedPoint &obj) {
 }
 
 void SoftBody3D::_update_pickable() {
+	ZoneScopedS(60);
 	if (!is_inside_tree()) {
 		return;
 	}
@@ -125,6 +167,7 @@ void SoftBody3D::_update_pickable() {
 }
 
 bool SoftBody3D::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	String name = p_name;
 	String which = name.get_slicec('/', 0);
 
@@ -142,6 +185,7 @@ bool SoftBody3D::_set(const StringName &p_name, const Variant &p_value) {
 }
 
 bool SoftBody3D::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	String name = p_name;
 	String which = name.get_slicec('/', 0);
 
@@ -169,6 +213,7 @@ bool SoftBody3D::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void SoftBody3D::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	const int pinned_points_indices_size = pinned_points.size();
 
 	p_list->push_back(PropertyInfo(Variant::PACKED_INT32_ARRAY, PNAME("pinned_points")));
@@ -182,6 +227,7 @@ void SoftBody3D::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 bool SoftBody3D::_set_property_pinned_points_indices(const Array &p_indices) {
+	ZoneScopedS(60);
 	const int p_indices_size = p_indices.size();
 
 	{ // Remove the pined points on physics server that will be removed by resize
@@ -211,6 +257,7 @@ bool SoftBody3D::_set_property_pinned_points_indices(const Array &p_indices) {
 }
 
 bool SoftBody3D::_set_property_pinned_points_attachment(int p_item, const String &p_what, const Variant &p_value) {
+	ZoneScopedS(60);
 	if (pinned_points.size() <= p_item) {
 		return false;
 	}
@@ -230,6 +277,7 @@ bool SoftBody3D::_set_property_pinned_points_attachment(int p_item, const String
 }
 
 bool SoftBody3D::_get_property_pinned_points(int p_item, const String &p_what, Variant &r_ret) const {
+	ZoneScopedS(60);
 	if (pinned_points.size() <= p_item) {
 		return false;
 	}
@@ -249,6 +297,7 @@ bool SoftBody3D::_get_property_pinned_points(int p_item, const String &p_what, V
 }
 
 void SoftBody3D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_WORLD: {
 			if (Engine::get_singleton()->is_editor_hint()) {
@@ -314,6 +363,7 @@ void SoftBody3D::_notification(int p_what) {
 }
 
 void SoftBody3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_physics_rid"), &SoftBody3D::get_physics_rid);
 
 	ClassDB::bind_method(D_METHOD("set_collision_mask", "collision_mask"), &SoftBody3D::set_collision_mask);
@@ -385,6 +435,7 @@ void SoftBody3D::_bind_methods() {
 }
 
 PackedStringArray SoftBody3D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (mesh.is_null()) {
@@ -400,6 +451,7 @@ PackedStringArray SoftBody3D::get_configuration_warnings() const {
 }
 
 void SoftBody3D::_update_physics_server() {
+	ZoneScopedS(60);
 	if (!simulation_started) {
 		return;
 	}
@@ -416,6 +468,7 @@ void SoftBody3D::_update_physics_server() {
 }
 
 void SoftBody3D::_draw_soft_mesh() {
+	ZoneScopedS(60);
 	if (mesh.is_null()) {
 		return;
 	}
@@ -475,6 +528,7 @@ void SoftBody3D::_prepare_physics_server() {
 }
 
 void SoftBody3D::_become_mesh_owner() {
+	ZoneScopedS(60);
 	Vector<Ref<Material>> copy_materials;
 	copy_materials.append_array(surface_override_materials);
 
@@ -503,24 +557,29 @@ void SoftBody3D::_become_mesh_owner() {
 }
 
 void SoftBody3D::set_collision_mask(uint32_t p_mask) {
+	ZoneScopedS(60);
 	collision_mask = p_mask;
 	PhysicsServer3D::get_singleton()->soft_body_set_collision_mask(physics_rid, p_mask);
 }
 
 uint32_t SoftBody3D::get_collision_mask() const {
+	ZoneScopedS(60);
 	return collision_mask;
 }
 
 void SoftBody3D::set_collision_layer(uint32_t p_layer) {
+	ZoneScopedS(60);
 	collision_layer = p_layer;
 	PhysicsServer3D::get_singleton()->soft_body_set_collision_layer(physics_rid, p_layer);
 }
 
 uint32_t SoftBody3D::get_collision_layer() const {
+	ZoneScopedS(60);
 	return collision_layer;
 }
 
 void SoftBody3D::set_collision_layer_value(int p_layer_number, bool p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_layer_number < 1, "Collision layer number must be between 1 and 32 inclusive.");
 	ERR_FAIL_COND_MSG(p_layer_number > 32, "Collision layer number must be between 1 and 32 inclusive.");
 	uint32_t collision_layer_new = get_collision_layer();
@@ -533,12 +592,14 @@ void SoftBody3D::set_collision_layer_value(int p_layer_number, bool p_value) {
 }
 
 bool SoftBody3D::get_collision_layer_value(int p_layer_number) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(p_layer_number < 1, false, "Collision layer number must be between 1 and 32 inclusive.");
 	ERR_FAIL_COND_V_MSG(p_layer_number > 32, false, "Collision layer number must be between 1 and 32 inclusive.");
 	return get_collision_layer() & (1 << (p_layer_number - 1));
 }
 
 void SoftBody3D::set_collision_mask_value(int p_layer_number, bool p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_layer_number < 1, "Collision layer number must be between 1 and 32 inclusive.");
 	ERR_FAIL_COND_MSG(p_layer_number > 32, "Collision layer number must be between 1 and 32 inclusive.");
 	uint32_t mask = get_collision_mask();
@@ -551,12 +612,14 @@ void SoftBody3D::set_collision_mask_value(int p_layer_number, bool p_value) {
 }
 
 bool SoftBody3D::get_collision_mask_value(int p_layer_number) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(p_layer_number < 1, false, "Collision layer number must be between 1 and 32 inclusive.");
 	ERR_FAIL_COND_V_MSG(p_layer_number > 32, false, "Collision layer number must be between 1 and 32 inclusive.");
 	return get_collision_mask() & (1 << (p_layer_number - 1));
 }
 
 void SoftBody3D::set_disable_mode(DisableMode p_mode) {
+	ZoneScopedS(60);
 	if (disable_mode == p_mode) {
 		return;
 	}
@@ -569,18 +632,22 @@ void SoftBody3D::set_disable_mode(DisableMode p_mode) {
 }
 
 SoftBody3D::DisableMode SoftBody3D::get_disable_mode() const {
+	ZoneScopedS(60);
 	return disable_mode;
 }
 
 void SoftBody3D::set_parent_collision_ignore(const NodePath &p_parent_collision_ignore) {
+	ZoneScopedS(60);
 	parent_collision_ignore = p_parent_collision_ignore;
 }
 
 const NodePath &SoftBody3D::get_parent_collision_ignore() const {
+	ZoneScopedS(60);
 	return parent_collision_ignore;
 }
 
 void SoftBody3D::set_pinned_points_indices(Vector<SoftBody3D::PinnedPoint> p_pinned_points_indices) {
+	ZoneScopedS(60);
 	pinned_points = p_pinned_points_indices;
 	for (int i = pinned_points.size() - 1; 0 <= i; --i) {
 		pin_point(p_pinned_points_indices[i].point_index, true);
@@ -588,10 +655,12 @@ void SoftBody3D::set_pinned_points_indices(Vector<SoftBody3D::PinnedPoint> p_pin
 }
 
 Vector<SoftBody3D::PinnedPoint> SoftBody3D::get_pinned_points_indices() {
+	ZoneScopedS(60);
 	return pinned_points;
 }
 
 TypedArray<PhysicsBody3D> SoftBody3D::get_collision_exceptions() {
+	ZoneScopedS(60);
 	List<RID> exceptions;
 	PhysicsServer3D::get_singleton()->soft_body_get_collision_exceptions(physics_rid, &exceptions);
 	TypedArray<PhysicsBody3D> ret;
@@ -605,6 +674,7 @@ TypedArray<PhysicsBody3D> SoftBody3D::get_collision_exceptions() {
 }
 
 void SoftBody3D::add_collision_exception_with(Node *p_node) {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_node);
 	CollisionObject3D *collision_object = Object::cast_to<CollisionObject3D>(p_node);
 	ERR_FAIL_COND_MSG(!collision_object, "Collision exception only works between two CollisionObject3Ds.");
@@ -612,6 +682,7 @@ void SoftBody3D::add_collision_exception_with(Node *p_node) {
 }
 
 void SoftBody3D::remove_collision_exception_with(Node *p_node) {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_node);
 	CollisionObject3D *collision_object = Object::cast_to<CollisionObject3D>(p_node);
 	ERR_FAIL_COND_MSG(!collision_object, "Collision exception only works between two CollisionObject3Ds.");
@@ -619,62 +690,77 @@ void SoftBody3D::remove_collision_exception_with(Node *p_node) {
 }
 
 int SoftBody3D::get_simulation_precision() {
+	ZoneScopedS(60);
 	return PhysicsServer3D::get_singleton()->soft_body_get_simulation_precision(physics_rid);
 }
 
 void SoftBody3D::set_simulation_precision(int p_simulation_precision) {
+	ZoneScopedS(60);
 	PhysicsServer3D::get_singleton()->soft_body_set_simulation_precision(physics_rid, p_simulation_precision);
 }
 
 real_t SoftBody3D::get_total_mass() {
+	ZoneScopedS(60);
 	return PhysicsServer3D::get_singleton()->soft_body_get_total_mass(physics_rid);
 }
 
 void SoftBody3D::set_total_mass(real_t p_total_mass) {
+	ZoneScopedS(60);
 	PhysicsServer3D::get_singleton()->soft_body_set_total_mass(physics_rid, p_total_mass);
 }
 
 void SoftBody3D::set_linear_stiffness(real_t p_linear_stiffness) {
+	ZoneScopedS(60);
 	PhysicsServer3D::get_singleton()->soft_body_set_linear_stiffness(physics_rid, p_linear_stiffness);
 }
 
 real_t SoftBody3D::get_linear_stiffness() {
+	ZoneScopedS(60);
 	return PhysicsServer3D::get_singleton()->soft_body_get_linear_stiffness(physics_rid);
 }
 
 real_t SoftBody3D::get_pressure_coefficient() {
+	ZoneScopedS(60);
 	return PhysicsServer3D::get_singleton()->soft_body_get_pressure_coefficient(physics_rid);
 }
 
 void SoftBody3D::set_pressure_coefficient(real_t p_pressure_coefficient) {
+	ZoneScopedS(60);
 	PhysicsServer3D::get_singleton()->soft_body_set_pressure_coefficient(physics_rid, p_pressure_coefficient);
 }
 
 real_t SoftBody3D::get_damping_coefficient() {
+	ZoneScopedS(60);
 	return PhysicsServer3D::get_singleton()->soft_body_get_damping_coefficient(physics_rid);
 }
 
 void SoftBody3D::set_damping_coefficient(real_t p_damping_coefficient) {
+	ZoneScopedS(60);
 	PhysicsServer3D::get_singleton()->soft_body_set_damping_coefficient(physics_rid, p_damping_coefficient);
 }
 
 real_t SoftBody3D::get_drag_coefficient() {
+	ZoneScopedS(60);
 	return PhysicsServer3D::get_singleton()->soft_body_get_drag_coefficient(physics_rid);
 }
 
 void SoftBody3D::set_drag_coefficient(real_t p_drag_coefficient) {
+	ZoneScopedS(60);
 	PhysicsServer3D::get_singleton()->soft_body_set_drag_coefficient(physics_rid, p_drag_coefficient);
 }
 
 Vector3 SoftBody3D::get_point_transform(int p_point_index) {
+	ZoneScopedS(60);
 	return PhysicsServer3D::get_singleton()->soft_body_get_point_global_position(physics_rid, p_point_index);
 }
 
 void SoftBody3D::pin_point_toggle(int p_point_index) {
+	ZoneScopedS(60);
 	pin_point(p_point_index, !(-1 != _has_pinned_point(p_point_index)));
 }
 
 void SoftBody3D::pin_point(int p_point_index, bool pin, const NodePath &p_spatial_attachment_path) {
+	ZoneScopedS(60);
 	_pin_point_on_physics_server(p_point_index, pin);
 	if (pin) {
 		_add_pinned_point(p_point_index, p_spatial_attachment_path);
@@ -684,15 +770,18 @@ void SoftBody3D::pin_point(int p_point_index, bool pin, const NodePath &p_spatia
 }
 
 bool SoftBody3D::is_point_pinned(int p_point_index) const {
+	ZoneScopedS(60);
 	return -1 != _has_pinned_point(p_point_index);
 }
 
 void SoftBody3D::set_ray_pickable(bool p_ray_pickable) {
+	ZoneScopedS(60);
 	ray_pickable = p_ray_pickable;
 	_update_pickable();
 }
 
 bool SoftBody3D::is_ray_pickable() const {
+	ZoneScopedS(60);
 	return ray_pickable;
 }
 
@@ -703,15 +792,18 @@ SoftBody3D::SoftBody3D() :
 }
 
 SoftBody3D::~SoftBody3D() {
+	ZoneScopedS(60);
 	memdelete(rendering_server_handler);
 	PhysicsServer3D::get_singleton()->free(physics_rid);
 }
 
 void SoftBody3D::_make_cache_dirty() {
+	ZoneScopedS(60);
 	pinned_points_cache_dirty = true;
 }
 
 void SoftBody3D::_update_cache_pin_points_datas() {
+	ZoneScopedS(60);
 	if (!pinned_points_cache_dirty) {
 		return;
 	}
@@ -730,10 +822,12 @@ void SoftBody3D::_update_cache_pin_points_datas() {
 }
 
 void SoftBody3D::_pin_point_on_physics_server(int p_point_index, bool pin) {
+	ZoneScopedS(60);
 	PhysicsServer3D::get_singleton()->soft_body_pin_point(physics_rid, p_point_index, pin);
 }
 
 void SoftBody3D::_add_pinned_point(int p_point_index, const NodePath &p_spatial_attachment_path) {
+	ZoneScopedS(60);
 	SoftBody3D::PinnedPoint *pinned_point;
 	if (-1 == _get_pinned_point(p_point_index, pinned_point)) {
 		// Create new
@@ -760,6 +854,7 @@ void SoftBody3D::_add_pinned_point(int p_point_index, const NodePath &p_spatial_
 }
 
 void SoftBody3D::_reset_points_offsets() {
+	ZoneScopedS(60);
 	if (!Engine::get_singleton()->is_editor_hint()) {
 		return;
 	}
@@ -782,6 +877,7 @@ void SoftBody3D::_reset_points_offsets() {
 }
 
 void SoftBody3D::_remove_pinned_point(int p_point_index) {
+	ZoneScopedS(60);
 	const int id(_has_pinned_point(p_point_index));
 	if (-1 != id) {
 		pinned_points.remove_at(id);
@@ -789,6 +885,7 @@ void SoftBody3D::_remove_pinned_point(int p_point_index) {
 }
 
 int SoftBody3D::_get_pinned_point(int p_point_index, SoftBody3D::PinnedPoint *&r_point) const {
+	ZoneScopedS(60);
 	const int id = _has_pinned_point(p_point_index);
 	if (-1 == id) {
 		r_point = nullptr;
@@ -800,6 +897,7 @@ int SoftBody3D::_get_pinned_point(int p_point_index, SoftBody3D::PinnedPoint *&r
 }
 
 int SoftBody3D::_has_pinned_point(int p_point_index) const {
+	ZoneScopedS(60);
 	const PinnedPoint *r = pinned_points.ptr();
 	for (int i = pinned_points.size() - 1; 0 <= i; --i) {
 		if (p_point_index == r[i].point_index) {

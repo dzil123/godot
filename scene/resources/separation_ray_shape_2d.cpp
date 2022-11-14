@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  separation_ray_shape_2d.cpp                                          */
 /*************************************************************************/
@@ -34,6 +35,7 @@
 #include "servers/rendering_server.h"
 
 void SeparationRayShape2D::_update_shape() {
+	ZoneScopedS(60);
 	Dictionary d;
 	d["length"] = length;
 	d["slide_on_slope"] = slide_on_slope;
@@ -42,6 +44,7 @@ void SeparationRayShape2D::_update_shape() {
 }
 
 void SeparationRayShape2D::draw(const RID &p_to_rid, const Color &p_color) {
+	ZoneScopedS(60);
 	const Vector2 target_position = Vector2(0, get_length());
 
 	const float max_arrow_size = 6;
@@ -71,6 +74,7 @@ void SeparationRayShape2D::draw(const RID &p_to_rid, const Color &p_color) {
 }
 
 Rect2 SeparationRayShape2D::get_rect() const {
+	ZoneScopedS(60);
 	Rect2 rect;
 	rect.position = Vector2();
 	rect.expand_to(Vector2(0, length));
@@ -79,10 +83,12 @@ Rect2 SeparationRayShape2D::get_rect() const {
 }
 
 real_t SeparationRayShape2D::get_enclosing_radius() const {
+	ZoneScopedS(60);
 	return length;
 }
 
 void SeparationRayShape2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_length", "length"), &SeparationRayShape2D::set_length);
 	ClassDB::bind_method(D_METHOD("get_length"), &SeparationRayShape2D::get_length);
 
@@ -94,20 +100,24 @@ void SeparationRayShape2D::_bind_methods() {
 }
 
 void SeparationRayShape2D::set_length(real_t p_length) {
+	ZoneScopedS(60);
 	length = p_length;
 	_update_shape();
 }
 
 real_t SeparationRayShape2D::get_length() const {
+	ZoneScopedS(60);
 	return length;
 }
 
 void SeparationRayShape2D::set_slide_on_slope(bool p_active) {
+	ZoneScopedS(60);
 	slide_on_slope = p_active;
 	_update_shape();
 }
 
 bool SeparationRayShape2D::get_slide_on_slope() const {
+	ZoneScopedS(60);
 	return slide_on_slope;
 }
 

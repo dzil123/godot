@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  world_boundary_shape_3d.cpp                                          */
 /*************************************************************************/
@@ -33,6 +34,7 @@
 #include "servers/physics_server_3d.h"
 
 Vector<Vector3> WorldBoundaryShape3D::get_debug_mesh_lines() const {
+	ZoneScopedS(60);
 	Plane p = get_plane();
 
 	Vector3 n1 = p.get_any_perpendicular_normal();
@@ -62,21 +64,25 @@ Vector<Vector3> WorldBoundaryShape3D::get_debug_mesh_lines() const {
 }
 
 void WorldBoundaryShape3D::_update_shape() {
+	ZoneScopedS(60);
 	PhysicsServer3D::get_singleton()->shape_set_data(get_shape(), plane);
 	Shape3D::_update_shape();
 }
 
 void WorldBoundaryShape3D::set_plane(const Plane &p_plane) {
+	ZoneScopedS(60);
 	plane = p_plane;
 	_update_shape();
 	notify_change_to_owners();
 }
 
 const Plane &WorldBoundaryShape3D::get_plane() const {
+	ZoneScopedS(60);
 	return plane;
 }
 
 void WorldBoundaryShape3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_plane", "plane"), &WorldBoundaryShape3D::set_plane);
 	ClassDB::bind_method(D_METHOD("get_plane"), &WorldBoundaryShape3D::get_plane);
 

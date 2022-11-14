@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  skeleton_modification_3d.cpp                                         */
 /*************************************************************************/
@@ -28,10 +29,11 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "skeleton_modification_3d.h"
 #include "scene/3d/skeleton_3d.h"
+#include "skeleton_modification_3d.h"
 
 void SkeletonModification3D::_execute(real_t p_delta) {
+	ZoneScopedS(60);
 	GDVIRTUAL_CALL(_execute, p_delta);
 
 	if (!enabled) {
@@ -40,6 +42,7 @@ void SkeletonModification3D::_execute(real_t p_delta) {
 }
 
 void SkeletonModification3D::_setup_modification(SkeletonModificationStack3D *p_stack) {
+	ZoneScopedS(60);
 	stack = p_stack;
 	if (stack) {
 		is_setup = true;
@@ -51,15 +54,18 @@ void SkeletonModification3D::_setup_modification(SkeletonModificationStack3D *p_
 }
 
 void SkeletonModification3D::set_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	enabled = p_enabled;
 }
 
 bool SkeletonModification3D::get_enabled() {
+	ZoneScopedS(60);
 	return enabled;
 }
 
 // Helper function. Needed for CCDIK.
 real_t SkeletonModification3D::clamp_angle(real_t p_angle, real_t p_min_bound, real_t p_max_bound, bool p_invert) {
+	ZoneScopedS(60);
 	// Map to the 0 to 360 range (in radians though) instead of the -180 to 180 range.
 	if (p_angle < 0) {
 		p_angle = Math_TAU + p_angle;
@@ -96,6 +102,7 @@ real_t SkeletonModification3D::clamp_angle(real_t p_angle, real_t p_min_bound, r
 }
 
 bool SkeletonModification3D::_print_execution_error(bool p_condition, String p_message) {
+	ZoneScopedS(60);
 	// If the modification is not setup, don't bother printing the error
 	if (!is_setup) {
 		return p_condition;
@@ -109,26 +116,32 @@ bool SkeletonModification3D::_print_execution_error(bool p_condition, String p_m
 }
 
 Ref<SkeletonModificationStack3D> SkeletonModification3D::get_modification_stack() {
+	ZoneScopedS(60);
 	return stack;
 }
 
 void SkeletonModification3D::set_is_setup(bool p_is_setup) {
+	ZoneScopedS(60);
 	is_setup = p_is_setup;
 }
 
 bool SkeletonModification3D::get_is_setup() const {
+	ZoneScopedS(60);
 	return is_setup;
 }
 
 void SkeletonModification3D::set_execution_mode(int p_mode) {
+	ZoneScopedS(60);
 	execution_mode = p_mode;
 }
 
 int SkeletonModification3D::get_execution_mode() const {
+	ZoneScopedS(60);
 	return execution_mode;
 }
 
 void SkeletonModification3D::_bind_methods() {
+	ZoneScopedS(60);
 	GDVIRTUAL_BIND(_execute, "delta");
 	GDVIRTUAL_BIND(_setup_modification, "modification_stack")
 
@@ -146,6 +159,7 @@ void SkeletonModification3D::_bind_methods() {
 }
 
 SkeletonModification3D::SkeletonModification3D() {
+	ZoneScopedS(60);
 	stack = nullptr;
 	is_setup = false;
 }

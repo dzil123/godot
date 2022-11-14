@@ -28,11 +28,43 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  voxelizer.cpp                                                        */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "voxelizer.h"
 
 #include "core/config/project_settings.h"
 
 static _FORCE_INLINE_ void get_uv_and_normal(const Vector3 &p_pos, const Vector3 *p_vtx, const Vector2 *p_uv, const Vector3 *p_normal, Vector2 &r_uv, Vector3 &r_normal) {
+	ZoneScopedS(60);
 	if (p_pos.is_equal_approx(p_vtx[0])) {
 		r_uv = p_uv[0];
 		r_normal = p_normal[0];
@@ -73,6 +105,7 @@ static _FORCE_INLINE_ void get_uv_and_normal(const Vector3 &p_pos, const Vector3
 }
 
 void Voxelizer::_plot_face(int p_idx, int p_level, int p_x, int p_y, int p_z, const Vector3 *p_vtx, const Vector3 *p_normal, const Vector2 *p_uv, const MaterialCache &p_material, const AABB &p_aabb) {
+	ZoneScopedS(60);
 	if (p_level == cell_subdiv) {
 		//plot the face by guessing its albedo and emission value
 
@@ -289,6 +322,7 @@ void Voxelizer::_plot_face(int p_idx, int p_level, int p_x, int p_y, int p_z, co
 }
 
 Vector<Color> Voxelizer::_get_bake_texture(Ref<Image> p_image, const Color &p_color_mul, const Color &p_color_add) {
+	ZoneScopedS(60);
 	Vector<Color> ret;
 
 	if (p_image.is_null() || p_image->is_empty()) {
@@ -325,6 +359,7 @@ Vector<Color> Voxelizer::_get_bake_texture(Ref<Image> p_image, const Color &p_co
 }
 
 Voxelizer::MaterialCache Voxelizer::_get_material_cache(Ref<Material> p_material) {
+	ZoneScopedS(60);
 	// This way of obtaining materials is inaccurate and also does not support some compressed formats very well.
 	Ref<BaseMaterial3D> mat = p_material;
 
@@ -379,6 +414,7 @@ Voxelizer::MaterialCache Voxelizer::_get_material_cache(Ref<Material> p_material
 }
 
 void Voxelizer::plot_mesh(const Transform3D &p_xform, Ref<Mesh> &p_mesh, const Vector<Ref<Material>> &p_materials, const Ref<Material> &p_override_material) {
+	ZoneScopedS(60);
 	for (int i = 0; i < p_mesh->get_surface_count(); i++) {
 		if (p_mesh->surface_get_primitive_type(i) != Mesh::PRIMITIVE_TRIANGLES) {
 			continue; //only triangles
@@ -484,6 +520,7 @@ void Voxelizer::plot_mesh(const Transform3D &p_xform, Ref<Mesh> &p_mesh, const V
 }
 
 void Voxelizer::_sort() {
+	ZoneScopedS(60);
 	// cells need to be sorted by level and coordinates
 	// it is important that level has more priority (for compute), and that Z has the least,
 	// given it may aid older implementations plot using GPU
@@ -546,6 +583,7 @@ void Voxelizer::_sort() {
 }
 
 void Voxelizer::_fixup_plot(int p_idx, int p_level) {
+	ZoneScopedS(60);
 	if (p_level == cell_subdiv) {
 		leaf_voxel_count++;
 		float alpha = bake_cells[p_idx].alpha;
@@ -614,6 +652,7 @@ void Voxelizer::_fixup_plot(int p_idx, int p_level) {
 }
 
 void Voxelizer::begin_bake(int p_subdiv, const AABB &p_bounds, float p_exposure_normalization) {
+	ZoneScopedS(60);
 	sorted = false;
 	original_bounds = p_bounds;
 	cell_subdiv = p_subdiv;
@@ -657,6 +696,7 @@ void Voxelizer::begin_bake(int p_subdiv, const AABB &p_bounds, float p_exposure_
 }
 
 void Voxelizer::end_bake() {
+	ZoneScopedS(60);
 	if (!sorted) {
 		_sort();
 	}
@@ -666,18 +706,22 @@ void Voxelizer::end_bake() {
 //create the data for rendering server
 
 int Voxelizer::get_voxel_gi_octree_depth() const {
+	ZoneScopedS(60);
 	return cell_subdiv;
 }
 
 Vector3i Voxelizer::get_voxel_gi_octree_size() const {
+	ZoneScopedS(60);
 	return Vector3i(axis_cell_size[0], axis_cell_size[1], axis_cell_size[2]);
 }
 
 int Voxelizer::get_voxel_gi_cell_count() const {
+	ZoneScopedS(60);
 	return bake_cells.size();
 }
 
 Vector<uint8_t> Voxelizer::get_voxel_gi_octree_cells() const {
+	ZoneScopedS(60);
 	Vector<uint8_t> data;
 	data.resize((8 * 4) * bake_cells.size()); //8 uint32t values
 	{
@@ -698,6 +742,7 @@ Vector<uint8_t> Voxelizer::get_voxel_gi_octree_cells() const {
 }
 
 Vector<uint8_t> Voxelizer::get_voxel_gi_data_cells() const {
+	ZoneScopedS(60);
 	Vector<uint8_t> data;
 	data.resize((4 * 4) * bake_cells.size()); //8 uint32t values
 	{
@@ -753,6 +798,7 @@ Vector<uint8_t> Voxelizer::get_voxel_gi_data_cells() const {
 }
 
 Vector<int> Voxelizer::get_voxel_gi_level_cell_count() const {
+	ZoneScopedS(60);
 	uint32_t cell_count = bake_cells.size();
 	const Cell *cells = bake_cells.ptr();
 	Vector<int> level_count;
@@ -779,6 +825,7 @@ Vector<int> Voxelizer::get_voxel_gi_level_cell_count() const {
 
 /* dt of 1d function using squared distance */
 static void edt(float *f, int stride, int n) {
+	ZoneScopedS(60);
 	float *d = (float *)alloca(sizeof(float) * n + sizeof(int) * n + sizeof(float) * (n + 1));
 	int *v = reinterpret_cast<int *>(&(d[n]));
 	float *z = reinterpret_cast<float *>(&v[n]);
@@ -816,6 +863,7 @@ static void edt(float *f, int stride, int n) {
 #undef square
 
 Vector<uint8_t> Voxelizer::get_sdf_3d_image() const {
+	ZoneScopedS(60);
 	Vector3i octree_size = get_voxel_gi_octree_size();
 
 	uint32_t float_count = octree_size.x * octree_size.y * octree_size.z;
@@ -886,6 +934,7 @@ Vector<uint8_t> Voxelizer::get_sdf_3d_image() const {
 #undef INF
 
 void Voxelizer::_debug_mesh(int p_idx, int p_level, const AABB &p_aabb, Ref<MultiMesh> &p_multimesh, int &idx) {
+	ZoneScopedS(60);
 	if (p_level == cell_subdiv - 1) {
 		Vector3 center = p_aabb.get_center();
 		Transform3D xform;
@@ -926,6 +975,7 @@ void Voxelizer::_debug_mesh(int p_idx, int p_level, const AABB &p_aabb, Ref<Mult
 }
 
 Ref<MultiMesh> Voxelizer::create_debug_multimesh() {
+	ZoneScopedS(60);
 	Ref<MultiMesh> mm;
 
 	mm.instantiate();
@@ -1000,6 +1050,7 @@ Ref<MultiMesh> Voxelizer::create_debug_multimesh() {
 }
 
 Transform3D Voxelizer::get_to_cell_space_xform() const {
+	ZoneScopedS(60);
 	return to_cell_space;
 }
 

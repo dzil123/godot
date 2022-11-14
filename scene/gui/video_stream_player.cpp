@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  video_stream_player.cpp                                              */
 /*************************************************************************/
@@ -35,6 +36,7 @@
 #include "servers/audio_server.h"
 
 int VideoStreamPlayer::sp_get_channel_count() const {
+	ZoneScopedS(60);
 	if (playback.is_null()) {
 		return 0;
 	}
@@ -43,6 +45,7 @@ int VideoStreamPlayer::sp_get_channel_count() const {
 }
 
 bool VideoStreamPlayer::mix(AudioFrame *p_buffer, int p_frames) {
+	ZoneScopedS(60);
 	// Check the amount resampler can really handle.
 	// If it cannot, wait "wait_resampler_phase_limit" times.
 	// This mechanism contributes to smoother pause/unpause operation.
@@ -57,6 +60,7 @@ bool VideoStreamPlayer::mix(AudioFrame *p_buffer, int p_frames) {
 
 // Called from main thread (e.g. VideoStreamPlaybackTheora::update).
 int VideoStreamPlayer::_audio_mix_callback(void *p_udata, const float *p_data, int p_frames) {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL_V(p_udata, 0);
 	ERR_FAIL_NULL_V(p_data, 0);
 
@@ -76,12 +80,14 @@ int VideoStreamPlayer::_audio_mix_callback(void *p_udata, const float *p_data, i
 }
 
 void VideoStreamPlayer::_mix_audios(void *p_self) {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_self);
 	static_cast<VideoStreamPlayer *>(p_self)->_mix_audio();
 }
 
 // Called from audio thread
 void VideoStreamPlayer::_mix_audio() {
+	ZoneScopedS(60);
 	if (!stream.is_valid()) {
 		return;
 	}
@@ -127,6 +133,7 @@ void VideoStreamPlayer::_mix_audio() {
 }
 
 void VideoStreamPlayer::_notification(int p_notification) {
+	ZoneScopedS(60);
 	switch (p_notification) {
 		case NOTIFICATION_ENTER_TREE: {
 			AudioServer::get_singleton()->add_mix_callback(_mix_audios, this);
@@ -200,6 +207,7 @@ void VideoStreamPlayer::_notification(int p_notification) {
 }
 
 Size2 VideoStreamPlayer::get_minimum_size() const {
+	ZoneScopedS(60);
 	if (!expand && !texture.is_null()) {
 		return texture->get_size();
 	} else {
@@ -208,6 +216,7 @@ Size2 VideoStreamPlayer::get_minimum_size() const {
 }
 
 void VideoStreamPlayer::set_expand(bool p_expand) {
+	ZoneScopedS(60);
 	if (expand == p_expand) {
 		return;
 	}
@@ -218,10 +227,12 @@ void VideoStreamPlayer::set_expand(bool p_expand) {
 }
 
 bool VideoStreamPlayer::has_expand() const {
+	ZoneScopedS(60);
 	return expand;
 }
 
 void VideoStreamPlayer::set_stream(const Ref<VideoStream> &p_stream) {
+	ZoneScopedS(60);
 	stop();
 
 	AudioServer::get_singleton()->lock();
@@ -269,10 +280,12 @@ void VideoStreamPlayer::set_stream(const Ref<VideoStream> &p_stream) {
 }
 
 Ref<VideoStream> VideoStreamPlayer::get_stream() const {
+	ZoneScopedS(60);
 	return stream;
 }
 
 void VideoStreamPlayer::play() {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!is_inside_tree());
 	if (playback.is_null()) {
 		return;
@@ -288,6 +301,7 @@ void VideoStreamPlayer::play() {
 }
 
 void VideoStreamPlayer::stop() {
+	ZoneScopedS(60);
 	if (!is_inside_tree()) {
 		return;
 	}
@@ -302,6 +316,7 @@ void VideoStreamPlayer::stop() {
 }
 
 bool VideoStreamPlayer::is_playing() const {
+	ZoneScopedS(60);
 	if (playback.is_null()) {
 		return false;
 	}
@@ -310,6 +325,7 @@ bool VideoStreamPlayer::is_playing() const {
 }
 
 void VideoStreamPlayer::set_paused(bool p_paused) {
+	ZoneScopedS(60);
 	if (paused == p_paused) {
 		return;
 	}
@@ -331,34 +347,42 @@ void VideoStreamPlayer::set_paused(bool p_paused) {
 }
 
 bool VideoStreamPlayer::is_paused() const {
+	ZoneScopedS(60);
 	return paused;
 }
 
 void VideoStreamPlayer::set_buffering_msec(int p_msec) {
+	ZoneScopedS(60);
 	buffering_ms = p_msec;
 }
 
 int VideoStreamPlayer::get_buffering_msec() const {
+	ZoneScopedS(60);
 	return buffering_ms;
 }
 
 void VideoStreamPlayer::set_audio_track(int p_track) {
+	ZoneScopedS(60);
 	audio_track = p_track;
 }
 
 int VideoStreamPlayer::get_audio_track() const {
+	ZoneScopedS(60);
 	return audio_track;
 }
 
 void VideoStreamPlayer::set_volume(float p_vol) {
+	ZoneScopedS(60);
 	volume = p_vol;
 }
 
 float VideoStreamPlayer::get_volume() const {
+	ZoneScopedS(60);
 	return volume;
 }
 
 void VideoStreamPlayer::set_volume_db(float p_db) {
+	ZoneScopedS(60);
 	if (p_db < -79) {
 		set_volume(0);
 	} else {
@@ -367,6 +391,7 @@ void VideoStreamPlayer::set_volume_db(float p_db) {
 }
 
 float VideoStreamPlayer::get_volume_db() const {
+	ZoneScopedS(60);
 	if (volume == 0) {
 		return -80;
 	} else {
@@ -375,6 +400,7 @@ float VideoStreamPlayer::get_volume_db() const {
 }
 
 String VideoStreamPlayer::get_stream_name() const {
+	ZoneScopedS(60);
 	if (stream.is_null()) {
 		return "<No Stream>";
 	}
@@ -382,6 +408,7 @@ String VideoStreamPlayer::get_stream_name() const {
 }
 
 double VideoStreamPlayer::get_stream_position() const {
+	ZoneScopedS(60);
 	if (playback.is_null()) {
 		return 0;
 	}
@@ -389,12 +416,14 @@ double VideoStreamPlayer::get_stream_position() const {
 }
 
 void VideoStreamPlayer::set_stream_position(double p_position) {
+	ZoneScopedS(60);
 	if (playback.is_valid()) {
 		playback->seek(p_position);
 	}
 }
 
 Ref<Texture2D> VideoStreamPlayer::get_video_texture() const {
+	ZoneScopedS(60);
 	if (playback.is_valid()) {
 		return playback->get_texture();
 	}
@@ -403,14 +432,17 @@ Ref<Texture2D> VideoStreamPlayer::get_video_texture() const {
 }
 
 void VideoStreamPlayer::set_autoplay(bool p_enable) {
+	ZoneScopedS(60);
 	autoplay = p_enable;
 }
 
 bool VideoStreamPlayer::has_autoplay() const {
+	ZoneScopedS(60);
 	return autoplay;
 }
 
 void VideoStreamPlayer::set_bus(const StringName &p_bus) {
+	ZoneScopedS(60);
 	// If audio is active, must lock this.
 	AudioServer::get_singleton()->lock();
 	bus = p_bus;
@@ -418,6 +450,7 @@ void VideoStreamPlayer::set_bus(const StringName &p_bus) {
 }
 
 StringName VideoStreamPlayer::get_bus() const {
+	ZoneScopedS(60);
 	for (int i = 0; i < AudioServer::get_singleton()->get_bus_count(); i++) {
 		if (AudioServer::get_singleton()->get_bus_name(i) == bus) {
 			return bus;
@@ -427,6 +460,7 @@ StringName VideoStreamPlayer::get_bus() const {
 }
 
 void VideoStreamPlayer::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (p_property.name == "bus") {
 		String options;
 		for (int i = 0; i < AudioServer::get_singleton()->get_bus_count(); i++) {
@@ -442,6 +476,7 @@ void VideoStreamPlayer::_validate_property(PropertyInfo &p_property) const {
 }
 
 void VideoStreamPlayer::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_stream", "stream"), &VideoStreamPlayer::set_stream);
 	ClassDB::bind_method(D_METHOD("get_stream"), &VideoStreamPlayer::get_stream);
 
@@ -499,5 +534,6 @@ void VideoStreamPlayer::_bind_methods() {
 VideoStreamPlayer::VideoStreamPlayer() {}
 
 VideoStreamPlayer::~VideoStreamPlayer() {
+	ZoneScopedS(60);
 	resampler.clear(); // Not necessary here, but make in consistent with other "stream_player" classes.
 }

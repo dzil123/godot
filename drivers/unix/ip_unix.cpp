@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  ip_unix.cpp                                                          */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "ip_unix.h"
 
 #if defined(UNIX_ENABLED) || defined(WINDOWS_ENABLED)
@@ -64,6 +95,7 @@
 #endif
 
 static IPAddress _sockaddr2ip(struct sockaddr *p_addr) {
+	ZoneScopedS(60);
 	IPAddress ip;
 
 	if (p_addr->sa_family == AF_INET) {
@@ -78,6 +110,7 @@ static IPAddress _sockaddr2ip(struct sockaddr *p_addr) {
 }
 
 void IPUnix::_resolve_hostname(List<IPAddress> &r_addresses, const String &p_hostname, Type p_type) const {
+	ZoneScopedS(60);
 	struct addrinfo hints;
 	struct addrinfo *result = nullptr;
 
@@ -129,6 +162,7 @@ void IPUnix::_resolve_hostname(List<IPAddress> &r_addresses, const String &p_hos
 #if defined(UWP_ENABLED)
 
 void IPUnix::get_local_interfaces(HashMap<String, Interface_Info> *r_interfaces) const {
+	ZoneScopedS(60);
 	using namespace Windows::Networking;
 	using namespace Windows::Networking::Connectivity;
 
@@ -163,6 +197,7 @@ void IPUnix::get_local_interfaces(HashMap<String, Interface_Info> *r_interfaces)
 #else
 
 void IPUnix::get_local_interfaces(HashMap<String, Interface_Info> *r_interfaces) const {
+	ZoneScopedS(60);
 	ULONG buf_size = 1024;
 	IP_ADAPTER_ADDRESSES *addrs;
 
@@ -213,6 +248,7 @@ void IPUnix::get_local_interfaces(HashMap<String, Interface_Info> *r_interfaces)
 #else // UNIX
 
 void IPUnix::get_local_interfaces(HashMap<String, Interface_Info> *r_interfaces) const {
+	ZoneScopedS(60);
 	struct ifaddrs *ifAddrStruct = nullptr;
 	struct ifaddrs *ifa = nullptr;
 	int family;
@@ -251,10 +287,12 @@ void IPUnix::get_local_interfaces(HashMap<String, Interface_Info> *r_interfaces)
 #endif
 
 void IPUnix::make_default() {
+	ZoneScopedS(60);
 	_create = _create_unix;
 }
 
 IP *IPUnix::_create_unix() {
+	ZoneScopedS(60);
 	return memnew(IPUnix);
 }
 

@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  mesh_library.cpp                                                     */
 /*************************************************************************/
@@ -33,6 +34,7 @@
 #include "box_shape_3d.h"
 
 bool MeshLibrary::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	String prop_name = p_name;
 	if (prop_name.begins_with("item/")) {
 		int idx = prop_name.get_slicec('/', 1).to_int();
@@ -72,6 +74,7 @@ bool MeshLibrary::_set(const StringName &p_name, const Variant &p_value) {
 }
 
 bool MeshLibrary::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	String prop_name = p_name;
 	int idx = prop_name.get_slicec('/', 1).to_int();
 	ERR_FAIL_COND_V(!item_map.has(idx), false);
@@ -99,6 +102,7 @@ bool MeshLibrary::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void MeshLibrary::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	for (const KeyValue<int, Item> &E : item_map) {
 		String prop_name = vformat("%s/%d/", PNAME("item"), E.key);
 		p_list->push_back(PropertyInfo(Variant::STRING, prop_name + PNAME("name")));
@@ -112,6 +116,7 @@ void MeshLibrary::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 void MeshLibrary::create_item(int p_item) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_item < 0);
 	ERR_FAIL_COND(item_map.has(p_item));
 	item_map[p_item] = Item();
@@ -119,6 +124,7 @@ void MeshLibrary::create_item(int p_item) {
 }
 
 void MeshLibrary::set_item_name(int p_item, const String &p_name) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!item_map.has(p_item), "Requested for nonexistent MeshLibrary item '" + itos(p_item) + "'.");
 	item_map[p_item].name = p_name;
 	emit_changed();
@@ -126,6 +132,7 @@ void MeshLibrary::set_item_name(int p_item, const String &p_name) {
 }
 
 void MeshLibrary::set_item_mesh(int p_item, const Ref<Mesh> &p_mesh) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!item_map.has(p_item), "Requested for nonexistent MeshLibrary item '" + itos(p_item) + "'.");
 	item_map[p_item].mesh = p_mesh;
 	notify_change_to_owners();
@@ -134,6 +141,7 @@ void MeshLibrary::set_item_mesh(int p_item, const Ref<Mesh> &p_mesh) {
 }
 
 void MeshLibrary::set_item_mesh_transform(int p_item, const Transform3D &p_transform) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!item_map.has(p_item), "Requested for nonexistent MeshLibrary item '" + itos(p_item) + "'.");
 	item_map[p_item].mesh_transform = p_transform;
 	notify_change_to_owners();
@@ -142,6 +150,7 @@ void MeshLibrary::set_item_mesh_transform(int p_item, const Transform3D &p_trans
 }
 
 void MeshLibrary::set_item_shapes(int p_item, const Vector<ShapeData> &p_shapes) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!item_map.has(p_item), "Requested for nonexistent MeshLibrary item '" + itos(p_item) + "'.");
 	item_map[p_item].shapes = p_shapes;
 	notify_property_list_changed();
@@ -151,6 +160,7 @@ void MeshLibrary::set_item_shapes(int p_item, const Vector<ShapeData> &p_shapes)
 }
 
 void MeshLibrary::set_item_navmesh(int p_item, const Ref<NavigationMesh> &p_navmesh) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!item_map.has(p_item), "Requested for nonexistent MeshLibrary item '" + itos(p_item) + "'.");
 	item_map[p_item].navmesh = p_navmesh;
 	notify_property_list_changed();
@@ -160,6 +170,7 @@ void MeshLibrary::set_item_navmesh(int p_item, const Ref<NavigationMesh> &p_navm
 }
 
 void MeshLibrary::set_item_navmesh_transform(int p_item, const Transform3D &p_transform) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!item_map.has(p_item), "Requested for nonexistent MeshLibrary item '" + itos(p_item) + "'.");
 	item_map[p_item].navmesh_transform = p_transform;
 	notify_change_to_owners();
@@ -168,6 +179,7 @@ void MeshLibrary::set_item_navmesh_transform(int p_item, const Transform3D &p_tr
 }
 
 void MeshLibrary::set_item_preview(int p_item, const Ref<Texture2D> &p_preview) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!item_map.has(p_item), "Requested for nonexistent MeshLibrary item '" + itos(p_item) + "'.");
 	item_map[p_item].preview = p_preview;
 	emit_changed();
@@ -175,45 +187,54 @@ void MeshLibrary::set_item_preview(int p_item, const Ref<Texture2D> &p_preview) 
 }
 
 String MeshLibrary::get_item_name(int p_item) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!item_map.has(p_item), "", "Requested for nonexistent MeshLibrary item '" + itos(p_item) + "'.");
 	return item_map[p_item].name;
 }
 
 Ref<Mesh> MeshLibrary::get_item_mesh(int p_item) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!item_map.has(p_item), Ref<Mesh>(), "Requested for nonexistent MeshLibrary item '" + itos(p_item) + "'.");
 	return item_map[p_item].mesh;
 }
 
 Transform3D MeshLibrary::get_item_mesh_transform(int p_item) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!item_map.has(p_item), Transform3D(), "Requested for nonexistent MeshLibrary item '" + itos(p_item) + "'.");
 	return item_map[p_item].mesh_transform;
 }
 
 Vector<MeshLibrary::ShapeData> MeshLibrary::get_item_shapes(int p_item) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!item_map.has(p_item), Vector<ShapeData>(), "Requested for nonexistent MeshLibrary item '" + itos(p_item) + "'.");
 	return item_map[p_item].shapes;
 }
 
 Ref<NavigationMesh> MeshLibrary::get_item_navmesh(int p_item) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!item_map.has(p_item), Ref<NavigationMesh>(), "Requested for nonexistent MeshLibrary item '" + itos(p_item) + "'.");
 	return item_map[p_item].navmesh;
 }
 
 Transform3D MeshLibrary::get_item_navmesh_transform(int p_item) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!item_map.has(p_item), Transform3D(), "Requested for nonexistent MeshLibrary item '" + itos(p_item) + "'.");
 	return item_map[p_item].navmesh_transform;
 }
 
 Ref<Texture2D> MeshLibrary::get_item_preview(int p_item) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!item_map.has(p_item), Ref<Texture2D>(), "Requested for nonexistent MeshLibrary item '" + itos(p_item) + "'.");
 	return item_map[p_item].preview;
 }
 
 bool MeshLibrary::has_item(int p_item) const {
+	ZoneScopedS(60);
 	return item_map.has(p_item);
 }
 
 void MeshLibrary::remove_item(int p_item) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!item_map.has(p_item), "Requested for nonexistent MeshLibrary item '" + itos(p_item) + "'.");
 	item_map.erase(p_item);
 	notify_change_to_owners();
@@ -222,6 +243,7 @@ void MeshLibrary::remove_item(int p_item) {
 }
 
 void MeshLibrary::clear() {
+	ZoneScopedS(60);
 	item_map.clear();
 	notify_change_to_owners();
 	notify_property_list_changed();
@@ -229,6 +251,7 @@ void MeshLibrary::clear() {
 }
 
 Vector<int> MeshLibrary::get_item_list() const {
+	ZoneScopedS(60);
 	Vector<int> ret;
 	ret.resize(item_map.size());
 	int idx = 0;
@@ -240,6 +263,7 @@ Vector<int> MeshLibrary::get_item_list() const {
 }
 
 int MeshLibrary::find_item_by_name(const String &p_name) const {
+	ZoneScopedS(60);
 	for (const KeyValue<int, Item> &E : item_map) {
 		if (E.value.name == p_name) {
 			return E.key;
@@ -249,6 +273,7 @@ int MeshLibrary::find_item_by_name(const String &p_name) const {
 }
 
 int MeshLibrary::get_last_unused_item_id() const {
+	ZoneScopedS(60);
 	if (!item_map.size()) {
 		return 0;
 	} else {
@@ -257,6 +282,7 @@ int MeshLibrary::get_last_unused_item_id() const {
 }
 
 void MeshLibrary::_set_item_shapes(int p_item, const Array &p_shapes) {
+	ZoneScopedS(60);
 	Array arr_shapes = p_shapes;
 	int size = p_shapes.size();
 	if (size & 1) {
@@ -296,6 +322,7 @@ void MeshLibrary::_set_item_shapes(int p_item, const Array &p_shapes) {
 }
 
 Array MeshLibrary::_get_item_shapes(int p_item) const {
+	ZoneScopedS(60);
 	Vector<ShapeData> shapes = get_item_shapes(p_item);
 	Array ret;
 	for (int i = 0; i < shapes.size(); i++) {
@@ -307,9 +334,11 @@ Array MeshLibrary::_get_item_shapes(int p_item) const {
 }
 
 void MeshLibrary::reset_state() {
+	ZoneScopedS(60);
 	clear();
 }
 void MeshLibrary::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("create_item", "id"), &MeshLibrary::create_item);
 	ClassDB::bind_method(D_METHOD("set_item_name", "id", "name"), &MeshLibrary::set_item_name);
 	ClassDB::bind_method(D_METHOD("set_item_mesh", "id", "mesh"), &MeshLibrary::set_item_mesh);

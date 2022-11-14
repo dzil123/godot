@@ -28,11 +28,43 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  light_3d.cpp                                                         */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "core/config/project_settings.h"
 
 #include "light_3d.h"
 
 void Light3D::set_param(Param p_param, real_t p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_param, PARAM_MAX);
 	param[p_param] = p_value;
 
@@ -48,11 +80,13 @@ void Light3D::set_param(Param p_param, real_t p_value) {
 }
 
 real_t Light3D::get_param(Param p_param) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_param, PARAM_MAX, 0);
 	return param[p_param];
 }
 
 void Light3D::set_shadow(bool p_enable) {
+	ZoneScopedS(60);
 	shadow = p_enable;
 	RS::get_singleton()->light_set_shadow(light, p_enable);
 
@@ -64,65 +98,79 @@ void Light3D::set_shadow(bool p_enable) {
 }
 
 bool Light3D::has_shadow() const {
+	ZoneScopedS(60);
 	return shadow;
 }
 
 void Light3D::set_negative(bool p_enable) {
+	ZoneScopedS(60);
 	negative = p_enable;
 	RS::get_singleton()->light_set_negative(light, p_enable);
 }
 
 bool Light3D::is_negative() const {
+	ZoneScopedS(60);
 	return negative;
 }
 
 void Light3D::set_enable_distance_fade(bool p_enable) {
+	ZoneScopedS(60);
 	distance_fade_enabled = p_enable;
 	RS::get_singleton()->light_set_distance_fade(light, distance_fade_enabled, distance_fade_begin, distance_fade_shadow, distance_fade_length);
 	notify_property_list_changed();
 }
 
 bool Light3D::is_distance_fade_enabled() const {
+	ZoneScopedS(60);
 	return distance_fade_enabled;
 }
 
 void Light3D::set_distance_fade_begin(real_t p_distance) {
+	ZoneScopedS(60);
 	distance_fade_begin = p_distance;
 	RS::get_singleton()->light_set_distance_fade(light, distance_fade_enabled, distance_fade_begin, distance_fade_shadow, distance_fade_length);
 }
 
 real_t Light3D::get_distance_fade_begin() const {
+	ZoneScopedS(60);
 	return distance_fade_begin;
 }
 
 void Light3D::set_distance_fade_shadow(real_t p_distance) {
+	ZoneScopedS(60);
 	distance_fade_shadow = p_distance;
 	RS::get_singleton()->light_set_distance_fade(light, distance_fade_enabled, distance_fade_begin, distance_fade_shadow, distance_fade_length);
 }
 
 real_t Light3D::get_distance_fade_shadow() const {
+	ZoneScopedS(60);
 	return distance_fade_shadow;
 }
 
 void Light3D::set_distance_fade_length(real_t p_length) {
+	ZoneScopedS(60);
 	distance_fade_length = p_length;
 	RS::get_singleton()->light_set_distance_fade(light, distance_fade_enabled, distance_fade_begin, distance_fade_shadow, distance_fade_length);
 }
 
 real_t Light3D::get_distance_fade_length() const {
+	ZoneScopedS(60);
 	return distance_fade_length;
 }
 
 void Light3D::set_cull_mask(uint32_t p_cull_mask) {
+	ZoneScopedS(60);
 	cull_mask = p_cull_mask;
 	RS::get_singleton()->light_set_cull_mask(light, p_cull_mask);
 }
 
 uint32_t Light3D::get_cull_mask() const {
+	ZoneScopedS(60);
 	return cull_mask;
 }
 
 void Light3D::set_color(const Color &p_color) {
+	ZoneScopedS(60);
 	color = p_color;
 
 	if (GLOBAL_GET("rendering/lights_and_shadows/use_physical_light_units")) {
@@ -137,19 +185,23 @@ void Light3D::set_color(const Color &p_color) {
 }
 
 Color Light3D::get_color() const {
+	ZoneScopedS(60);
 	return color;
 }
 
 void Light3D::set_shadow_reverse_cull_face(bool p_enable) {
+	ZoneScopedS(60);
 	reverse_cull = p_enable;
 	RS::get_singleton()->light_set_reverse_cull_face_mode(light, reverse_cull);
 }
 
 bool Light3D::get_shadow_reverse_cull_face() const {
+	ZoneScopedS(60);
 	return reverse_cull;
 }
 
 AABB Light3D::get_aabb() const {
+	ZoneScopedS(60);
 	if (type == RenderingServer::LIGHT_DIRECTIONAL) {
 		return AABB(Vector3(-1, -1, -1), Vector3(2, 2, 2));
 
@@ -166,6 +218,7 @@ AABB Light3D::get_aabb() const {
 }
 
 PackedStringArray Light3D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = VisualInstance3D::get_configuration_warnings();
 
 	if (!get_scale().is_equal_approx(Vector3(1, 1, 1))) {
@@ -176,15 +229,18 @@ PackedStringArray Light3D::get_configuration_warnings() const {
 }
 
 void Light3D::set_bake_mode(BakeMode p_mode) {
+	ZoneScopedS(60);
 	bake_mode = p_mode;
 	RS::get_singleton()->light_set_bake_mode(light, RS::LightBakeMode(p_mode));
 }
 
 Light3D::BakeMode Light3D::get_bake_mode() const {
+	ZoneScopedS(60);
 	return bake_mode;
 }
 
 void Light3D::set_projector(const Ref<Texture2D> &p_texture) {
+	ZoneScopedS(60);
 	projector = p_texture;
 	RID tex_id = projector.is_valid() ? projector->get_rid() : RID();
 	RS::get_singleton()->light_set_projector(light, tex_id);
@@ -192,10 +248,12 @@ void Light3D::set_projector(const Ref<Texture2D> &p_texture) {
 }
 
 Ref<Texture2D> Light3D::get_projector() const {
+	ZoneScopedS(60);
 	return projector;
 }
 
 void Light3D::owner_changed_notify() {
+	ZoneScopedS(60);
 	// For cases where owner changes _after_ entering tree (as example, editor editing).
 	_update_visibility();
 }
@@ -204,6 +262,7 @@ void Light3D::owner_changed_notify() {
 // First converts to CIE 1960 then to sRGB
 // As explained in the Filament documentation: https://google.github.io/filament/Filament.md.html#lighting/directlighting/lightsparameterization
 Color _color_from_temperature(float p_temperature) {
+	ZoneScopedS(60);
 	float T2 = p_temperature * p_temperature;
 	float u = (0.860117757f + 1.54118254e-4f * p_temperature + 1.28641212e-7f * T2) /
 			(1.0f + 8.42420235e-4f * p_temperature + 7.08145163e-7f * T2);
@@ -229,6 +288,7 @@ Color _color_from_temperature(float p_temperature) {
 }
 
 void Light3D::set_temperature(const float p_temperature) {
+	ZoneScopedS(60);
 	temperature = p_temperature;
 	if (!GLOBAL_GET("rendering/lights_and_shadows/use_physical_light_units")) {
 		return;
@@ -243,14 +303,17 @@ void Light3D::set_temperature(const float p_temperature) {
 }
 
 Color Light3D::get_correlated_color() const {
+	ZoneScopedS(60);
 	return correlated_color;
 }
 
 float Light3D::get_temperature() const {
+	ZoneScopedS(60);
 	return temperature;
 }
 
 void Light3D::_update_visibility() {
+	ZoneScopedS(60);
 	if (!is_inside_tree()) {
 		return;
 	}
@@ -275,6 +338,7 @@ void Light3D::_update_visibility() {
 }
 
 void Light3D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_VISIBILITY_CHANGED:
 		case NOTIFICATION_ENTER_TREE: {
@@ -284,15 +348,18 @@ void Light3D::_notification(int p_what) {
 }
 
 void Light3D::set_editor_only(bool p_editor_only) {
+	ZoneScopedS(60);
 	editor_only = p_editor_only;
 	_update_visibility();
 }
 
 bool Light3D::is_editor_only() const {
+	ZoneScopedS(60);
 	return editor_only;
 }
 
 void Light3D::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (!shadow && (p_property.name == "shadow_bias" || p_property.name == "shadow_normal_bias" || p_property.name == "shadow_reverse_cull_face" || p_property.name == "shadow_transmittance_bias" || p_property.name == "shadow_opacity" || p_property.name == "shadow_blur" || p_property.name == "distance_fade_shadow")) {
 		p_property.usage = PROPERTY_USAGE_NO_EDITOR;
 	}
@@ -314,6 +381,7 @@ void Light3D::_validate_property(PropertyInfo &p_property) const {
 }
 
 void Light3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_editor_only", "editor_only"), &Light3D::set_editor_only);
 	ClassDB::bind_method(D_METHOD("is_editor_only"), &Light3D::is_editor_only);
 
@@ -422,6 +490,7 @@ void Light3D::_bind_methods() {
 }
 
 Light3D::Light3D(RenderingServer::LightType p_type) {
+	ZoneScopedS(60);
 	type = p_type;
 	switch (p_type) {
 		case RS::LIGHT_DIRECTIONAL:
@@ -472,10 +541,12 @@ Light3D::Light3D(RenderingServer::LightType p_type) {
 }
 
 Light3D::Light3D() {
+	ZoneScopedS(60);
 	ERR_PRINT("Light3D should not be instantiated directly; use the DirectionalLight3D, OmniLight3D or SpotLight3D subtypes instead.");
 }
 
 Light3D::~Light3D() {
+	ZoneScopedS(60);
 	RS::get_singleton()->instance_set_base(get_instance(), RID());
 
 	if (light.is_valid()) {
@@ -486,34 +557,41 @@ Light3D::~Light3D() {
 /////////////////////////////////////////
 
 void DirectionalLight3D::set_shadow_mode(ShadowMode p_mode) {
+	ZoneScopedS(60);
 	shadow_mode = p_mode;
 	RS::get_singleton()->light_directional_set_shadow_mode(light, RS::LightDirectionalShadowMode(p_mode));
 	notify_property_list_changed();
 }
 
 DirectionalLight3D::ShadowMode DirectionalLight3D::get_shadow_mode() const {
+	ZoneScopedS(60);
 	return shadow_mode;
 }
 
 void DirectionalLight3D::set_blend_splits(bool p_enable) {
+	ZoneScopedS(60);
 	blend_splits = p_enable;
 	RS::get_singleton()->light_directional_set_blend_splits(light, p_enable);
 }
 
 bool DirectionalLight3D::is_blend_splits_enabled() const {
+	ZoneScopedS(60);
 	return blend_splits;
 }
 
 void DirectionalLight3D::set_sky_mode(SkyMode p_mode) {
+	ZoneScopedS(60);
 	sky_mode = p_mode;
 	RS::get_singleton()->light_directional_set_sky_mode(light, RS::LightDirectionalSkyMode(p_mode));
 }
 
 DirectionalLight3D::SkyMode DirectionalLight3D::get_sky_mode() const {
+	ZoneScopedS(60);
 	return sky_mode;
 }
 
 void DirectionalLight3D::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (shadow_mode == SHADOW_ORTHOGONAL && (p_property.name == "directional_shadow_split_1" || p_property.name == "directional_shadow_blend_splits")) {
 		// Split 2 and split blending are only used with the PSSM 2 Splits and PSSM 4 Splits shadow modes.
 		p_property.usage = PROPERTY_USAGE_NO_EDITOR;
@@ -537,6 +615,7 @@ void DirectionalLight3D::_validate_property(PropertyInfo &p_property) const {
 }
 
 void DirectionalLight3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_shadow_mode", "mode"), &DirectionalLight3D::set_shadow_mode);
 	ClassDB::bind_method(D_METHOD("get_shadow_mode"), &DirectionalLight3D::get_shadow_mode);
 
@@ -580,15 +659,18 @@ DirectionalLight3D::DirectionalLight3D() :
 }
 
 void OmniLight3D::set_shadow_mode(ShadowMode p_mode) {
+	ZoneScopedS(60);
 	shadow_mode = p_mode;
 	RS::get_singleton()->light_omni_set_shadow_mode(light, RS::LightOmniShadowMode(p_mode));
 }
 
 OmniLight3D::ShadowMode OmniLight3D::get_shadow_mode() const {
+	ZoneScopedS(60);
 	return shadow_mode;
 }
 
 PackedStringArray OmniLight3D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Light3D::get_configuration_warnings();
 
 	if (!has_shadow() && get_projector().is_valid()) {
@@ -599,6 +681,7 @@ PackedStringArray OmniLight3D::get_configuration_warnings() const {
 }
 
 void OmniLight3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_shadow_mode", "mode"), &OmniLight3D::set_shadow_mode);
 	ClassDB::bind_method(D_METHOD("get_shadow_mode"), &OmniLight3D::get_shadow_mode);
 
@@ -619,6 +702,7 @@ OmniLight3D::OmniLight3D() :
 }
 
 PackedStringArray SpotLight3D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Light3D::get_configuration_warnings();
 
 	if (has_shadow() && get_param(PARAM_SPOT_ANGLE) >= 90.0) {
@@ -633,6 +717,7 @@ PackedStringArray SpotLight3D::get_configuration_warnings() const {
 }
 
 void SpotLight3D::_bind_methods() {
+	ZoneScopedS(60);
 	ADD_GROUP("Spot", "spot_");
 	ADD_PROPERTYI(PropertyInfo(Variant::FLOAT, "spot_range", PROPERTY_HINT_RANGE, "0,4096,0.001,or_greater,exp,suffix:m"), "set_param", "get_param", PARAM_RANGE);
 	ADD_PROPERTYI(PropertyInfo(Variant::FLOAT, "spot_attenuation", PROPERTY_HINT_EXP_EASING, "attenuation"), "set_param", "get_param", PARAM_ATTENUATION);

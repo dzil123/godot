@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  center_container.cpp                                                 */
 /*************************************************************************/
@@ -31,6 +32,7 @@
 #include "center_container.h"
 
 Size2 CenterContainer::get_minimum_size() const {
+	ZoneScopedS(60);
 	if (use_top_left) {
 		return Size2();
 	}
@@ -55,6 +57,7 @@ Size2 CenterContainer::get_minimum_size() const {
 }
 
 void CenterContainer::set_use_top_left(bool p_enable) {
+	ZoneScopedS(60);
 	if (use_top_left == p_enable) {
 		return;
 	}
@@ -66,18 +69,22 @@ void CenterContainer::set_use_top_left(bool p_enable) {
 }
 
 bool CenterContainer::is_using_top_left() const {
+	ZoneScopedS(60);
 	return use_top_left;
 }
 
 Vector<int> CenterContainer::get_allowed_size_flags_horizontal() const {
+	ZoneScopedS(60);
 	return Vector<int>();
 }
 
 Vector<int> CenterContainer::get_allowed_size_flags_vertical() const {
+	ZoneScopedS(60);
 	return Vector<int>();
 }
 
 void CenterContainer::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_SORT_CHILDREN: {
 			Size2 size = get_size();
@@ -99,6 +106,7 @@ void CenterContainer::_notification(int p_what) {
 }
 
 void CenterContainer::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_use_top_left", "enable"), &CenterContainer::set_use_top_left);
 	ClassDB::bind_method(D_METHOD("is_using_top_left"), &CenterContainer::is_using_top_left);
 

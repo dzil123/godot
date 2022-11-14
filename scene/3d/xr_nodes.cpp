@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  xr_nodes.cpp                                                         */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "xr_nodes.h"
 
 #include "core/config/project_settings.h"
@@ -37,6 +68,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void XRCamera3D::_bind_tracker() {
+	ZoneScopedS(60);
 	XRServer *xr_server = XRServer::get_singleton();
 	ERR_FAIL_NULL(xr_server);
 
@@ -52,6 +84,7 @@ void XRCamera3D::_bind_tracker() {
 }
 
 void XRCamera3D::_unbind_tracker() {
+	ZoneScopedS(60);
 	if (tracker.is_valid()) {
 		tracker->disconnect("pose_changed", callable_mp(this, &XRCamera3D::_pose_changed));
 	}
@@ -59,24 +92,28 @@ void XRCamera3D::_unbind_tracker() {
 }
 
 void XRCamera3D::_changed_tracker(const StringName p_tracker_name, int p_tracker_type) {
+	ZoneScopedS(60);
 	if (p_tracker_name == tracker_name) {
 		_bind_tracker();
 	}
 }
 
 void XRCamera3D::_removed_tracker(const StringName p_tracker_name, int p_tracker_type) {
+	ZoneScopedS(60);
 	if (p_tracker_name == tracker_name) {
 		_unbind_tracker();
 	}
 }
 
 void XRCamera3D::_pose_changed(const Ref<XRPose> &p_pose) {
+	ZoneScopedS(60);
 	if (p_pose->get_name() == pose_name) {
 		set_transform(p_pose->get_adjusted_transform());
 	}
 }
 
 PackedStringArray XRCamera3D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (is_visible() && is_inside_tree()) {
@@ -91,6 +128,7 @@ PackedStringArray XRCamera3D::get_configuration_warnings() const {
 };
 
 Vector3 XRCamera3D::project_local_ray_normal(const Point2 &p_pos) const {
+	ZoneScopedS(60);
 	// get our XRServer
 	XRServer *xr_server = XRServer::get_singleton();
 	ERR_FAIL_NULL_V(xr_server, Vector3());
@@ -116,6 +154,7 @@ Vector3 XRCamera3D::project_local_ray_normal(const Point2 &p_pos) const {
 };
 
 Point2 XRCamera3D::unproject_position(const Vector3 &p_pos) const {
+	ZoneScopedS(60);
 	// get our XRServer
 	XRServer *xr_server = XRServer::get_singleton();
 	ERR_FAIL_NULL_V(xr_server, Vector2());
@@ -146,6 +185,7 @@ Point2 XRCamera3D::unproject_position(const Vector3 &p_pos) const {
 };
 
 Vector3 XRCamera3D::project_position(const Point2 &p_point, real_t p_z_depth) const {
+	ZoneScopedS(60);
 	// get our XRServer
 	XRServer *xr_server = XRServer::get_singleton();
 	ERR_FAIL_NULL_V(xr_server, Vector3());
@@ -176,6 +216,7 @@ Vector3 XRCamera3D::project_position(const Point2 &p_point, real_t p_z_depth) co
 };
 
 Vector<Plane> XRCamera3D::get_frustum() const {
+	ZoneScopedS(60);
 	// get our XRServer
 	XRServer *xr_server = XRServer::get_singleton();
 	ERR_FAIL_NULL_V(xr_server, Vector<Plane>());
@@ -195,6 +236,7 @@ Vector<Plane> XRCamera3D::get_frustum() const {
 };
 
 XRCamera3D::XRCamera3D() {
+	ZoneScopedS(60);
 	XRServer *xr_server = XRServer::get_singleton();
 	ERR_FAIL_NULL(xr_server);
 
@@ -207,6 +249,7 @@ XRCamera3D::XRCamera3D() {
 }
 
 XRCamera3D::~XRCamera3D() {
+	ZoneScopedS(60);
 	XRServer *xr_server = XRServer::get_singleton();
 	ERR_FAIL_NULL(xr_server);
 
@@ -221,6 +264,7 @@ XRCamera3D::~XRCamera3D() {
 // So we bind by name and as long as a tracker isn't available, our node remains inactive.
 
 void XRNode3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_tracker", "tracker_name"), &XRNode3D::set_tracker);
 	ClassDB::bind_method(D_METHOD("get_tracker"), &XRNode3D::get_tracker);
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "tracker", PROPERTY_HINT_ENUM_SUGGESTION), "set_tracker", "get_tracker");
@@ -236,6 +280,7 @@ void XRNode3D::_bind_methods() {
 };
 
 void XRNode3D::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	XRServer *xr_server = XRServer::get_singleton();
 	ERR_FAIL_NULL(xr_server);
 
@@ -257,6 +302,7 @@ void XRNode3D::_validate_property(PropertyInfo &p_property) const {
 }
 
 void XRNode3D::set_tracker(const StringName p_tracker_name) {
+	ZoneScopedS(60);
 	if (tracker.is_valid() && tracker->get_tracker_name() == p_tracker_name) {
 		// didn't change
 		return;
@@ -277,10 +323,12 @@ void XRNode3D::set_tracker(const StringName p_tracker_name) {
 }
 
 StringName XRNode3D::get_tracker() const {
+	ZoneScopedS(60);
 	return tracker_name;
 }
 
 void XRNode3D::set_pose_name(const StringName p_pose_name) {
+	ZoneScopedS(60);
 	pose_name = p_pose_name;
 
 	// Update pose if we are bound to a tracker with a valid pose
@@ -291,10 +339,12 @@ void XRNode3D::set_pose_name(const StringName p_pose_name) {
 }
 
 StringName XRNode3D::get_pose_name() const {
+	ZoneScopedS(60);
 	return pose_name;
 }
 
 bool XRNode3D::get_is_active() const {
+	ZoneScopedS(60);
 	if (tracker.is_null()) {
 		return false;
 	} else if (!tracker->has_pose(pose_name)) {
@@ -305,6 +355,7 @@ bool XRNode3D::get_is_active() const {
 }
 
 bool XRNode3D::get_has_tracking_data() const {
+	ZoneScopedS(60);
 	if (tracker.is_null()) {
 		return false;
 	} else if (!tracker->has_pose(pose_name)) {
@@ -315,6 +366,7 @@ bool XRNode3D::get_has_tracking_data() const {
 }
 
 void XRNode3D::trigger_haptic_pulse(const String &p_action_name, double p_frequency, double p_amplitude, double p_duration_sec, double p_delay_sec) {
+	ZoneScopedS(60);
 	// TODO need to link trackers to the interface that registered them so we can call this on the correct interface.
 	// For now this works fine as in 99% of the cases we only have our primary interface active
 	XRServer *xr_server = XRServer::get_singleton();
@@ -327,6 +379,7 @@ void XRNode3D::trigger_haptic_pulse(const String &p_action_name, double p_freque
 }
 
 Ref<XRPose> XRNode3D::get_pose() {
+	ZoneScopedS(60);
 	if (tracker.is_valid()) {
 		return tracker->get_pose(pose_name);
 	} else {
@@ -335,6 +388,7 @@ Ref<XRPose> XRNode3D::get_pose() {
 }
 
 void XRNode3D::_bind_tracker() {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(tracker.is_valid(), "Unbind the current tracker first");
 
 	XRServer *xr_server = XRServer::get_singleton();
@@ -355,6 +409,7 @@ void XRNode3D::_bind_tracker() {
 }
 
 void XRNode3D::_unbind_tracker() {
+	ZoneScopedS(60);
 	if (tracker.is_valid()) {
 		tracker->disconnect("pose_changed", callable_mp(this, &XRNode3D::_pose_changed));
 
@@ -363,6 +418,7 @@ void XRNode3D::_unbind_tracker() {
 }
 
 void XRNode3D::_changed_tracker(const StringName p_tracker_name, int p_tracker_type) {
+	ZoneScopedS(60);
 	if (tracker_name == p_tracker_name) {
 		// just in case unref our current tracker
 		_unbind_tracker();
@@ -373,6 +429,7 @@ void XRNode3D::_changed_tracker(const StringName p_tracker_name, int p_tracker_t
 }
 
 void XRNode3D::_removed_tracker(const StringName p_tracker_name, int p_tracker_type) {
+	ZoneScopedS(60);
 	if (tracker_name == p_tracker_name) {
 		// unref our tracker, it's no longer available
 		_unbind_tracker();
@@ -380,12 +437,14 @@ void XRNode3D::_removed_tracker(const StringName p_tracker_name, int p_tracker_t
 }
 
 void XRNode3D::_pose_changed(const Ref<XRPose> &p_pose) {
+	ZoneScopedS(60);
 	if (p_pose.is_valid() && p_pose->get_name() == pose_name) {
 		set_transform(p_pose->get_adjusted_transform());
 	}
 }
 
 XRNode3D::XRNode3D() {
+	ZoneScopedS(60);
 	XRServer *xr_server = XRServer::get_singleton();
 	ERR_FAIL_NULL(xr_server);
 
@@ -395,6 +454,7 @@ XRNode3D::XRNode3D() {
 }
 
 XRNode3D::~XRNode3D() {
+	ZoneScopedS(60);
 	_unbind_tracker();
 
 	XRServer *xr_server = XRServer::get_singleton();
@@ -406,6 +466,7 @@ XRNode3D::~XRNode3D() {
 }
 
 PackedStringArray XRNode3D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (is_visible() && is_inside_tree()) {
@@ -430,6 +491,7 @@ PackedStringArray XRNode3D::get_configuration_warnings() const {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void XRController3D::_bind_methods() {
+	ZoneScopedS(60);
 	// passthroughs to information about our related joystick
 	ClassDB::bind_method(D_METHOD("is_button_pressed", "name"), &XRController3D::is_button_pressed);
 	ClassDB::bind_method(D_METHOD("get_value", "name"), &XRController3D::get_value);
@@ -444,6 +506,7 @@ void XRController3D::_bind_methods() {
 };
 
 void XRController3D::_bind_tracker() {
+	ZoneScopedS(60);
 	XRNode3D::_bind_tracker();
 	if (tracker.is_valid()) {
 		// bind to input signals
@@ -455,6 +518,7 @@ void XRController3D::_bind_tracker() {
 }
 
 void XRController3D::_unbind_tracker() {
+	ZoneScopedS(60);
 	if (tracker.is_valid()) {
 		// unbind input signals
 		tracker->disconnect("button_pressed", callable_mp(this, &XRController3D::_button_pressed));
@@ -467,26 +531,31 @@ void XRController3D::_unbind_tracker() {
 }
 
 void XRController3D::_button_pressed(const String &p_name) {
+	ZoneScopedS(60);
 	// just pass it on...
 	emit_signal(SNAME("button_pressed"), p_name);
 }
 
 void XRController3D::_button_released(const String &p_name) {
+	ZoneScopedS(60);
 	// just pass it on...
 	emit_signal(SNAME("button_released"), p_name);
 }
 
 void XRController3D::_input_value_changed(const String &p_name, float p_value) {
+	ZoneScopedS(60);
 	// just pass it on...
 	emit_signal(SNAME("input_value_changed"), p_name, p_value);
 }
 
 void XRController3D::_input_axis_changed(const String &p_name, Vector2 p_value) {
+	ZoneScopedS(60);
 	// just pass it on...
 	emit_signal(SNAME("input_axis_changed"), p_name, p_value);
 }
 
 bool XRController3D::is_button_pressed(const StringName &p_name) const {
+	ZoneScopedS(60);
 	if (tracker.is_valid()) {
 		// Inputs should already be of the correct type, our XR runtime handles conversions between raw input and the desired type
 		bool pressed = tracker->get_input(p_name);
@@ -497,6 +566,7 @@ bool XRController3D::is_button_pressed(const StringName &p_name) const {
 }
 
 float XRController3D::get_value(const StringName &p_name) const {
+	ZoneScopedS(60);
 	if (tracker.is_valid()) {
 		// Inputs should already be of the correct type, our XR runtime handles conversions between raw input and the desired type, but just in case we convert
 		Variant input = tracker->get_input(p_name);
@@ -518,6 +588,7 @@ float XRController3D::get_value(const StringName &p_name) const {
 }
 
 Vector2 XRController3D::get_axis(const StringName &p_name) const {
+	ZoneScopedS(60);
 	if (tracker.is_valid()) {
 		// Inputs should already be of the correct type, our XR runtime handles conversions between raw input and the desired type, but just in case we convert
 		Variant input = tracker->get_input(p_name);
@@ -543,6 +614,7 @@ Vector2 XRController3D::get_axis(const StringName &p_name) const {
 }
 
 XRPositionalTracker::TrackerHand XRController3D::get_tracker_hand() const {
+	ZoneScopedS(60);
 	// get our XRServer
 	if (!tracker.is_valid()) {
 		return XRPositionalTracker::TRACKER_HAND_UNKNOWN;
@@ -554,15 +626,18 @@ XRPositionalTracker::TrackerHand XRController3D::get_tracker_hand() const {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void XRAnchor3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_size"), &XRAnchor3D::get_size);
 	ClassDB::bind_method(D_METHOD("get_plane"), &XRAnchor3D::get_plane);
 }
 
 Vector3 XRAnchor3D::get_size() const {
+	ZoneScopedS(60);
 	return size;
 }
 
 Plane XRAnchor3D::get_plane() const {
+	ZoneScopedS(60);
 	Vector3 location = get_position();
 	Basis orientation = get_transform().basis;
 
@@ -576,6 +651,7 @@ Plane XRAnchor3D::get_plane() const {
 Vector<XROrigin3D *> XROrigin3D::origin_nodes;
 
 PackedStringArray XROrigin3D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (is_visible() && is_inside_tree()) {
@@ -602,6 +678,7 @@ PackedStringArray XROrigin3D::get_configuration_warnings() const {
 }
 
 void XROrigin3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_world_scale", "world_scale"), &XROrigin3D::set_world_scale);
 	ClassDB::bind_method(D_METHOD("get_world_scale"), &XROrigin3D::get_world_scale);
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "world_scale"), "set_world_scale", "get_world_scale");
@@ -612,6 +689,7 @@ void XROrigin3D::_bind_methods() {
 }
 
 real_t XROrigin3D::get_world_scale() const {
+	ZoneScopedS(60);
 	// get our XRServer
 	XRServer *xr_server = XRServer::get_singleton();
 	ERR_FAIL_NULL_V(xr_server, 1.0);
@@ -620,6 +698,7 @@ real_t XROrigin3D::get_world_scale() const {
 }
 
 void XROrigin3D::set_world_scale(real_t p_world_scale) {
+	ZoneScopedS(60);
 	// get our XRServer
 	XRServer *xr_server = XRServer::get_singleton();
 	ERR_FAIL_NULL(xr_server);
@@ -628,6 +707,7 @@ void XROrigin3D::set_world_scale(real_t p_world_scale) {
 }
 
 void XROrigin3D::set_current(bool p_enabled) {
+	ZoneScopedS(60);
 	current = p_enabled;
 
 	if (!is_inside_tree() || Engine::get_singleton()->is_editor_hint()) {
@@ -663,6 +743,7 @@ void XROrigin3D::set_current(bool p_enabled) {
 }
 
 bool XROrigin3D::is_current() const {
+	ZoneScopedS(60);
 	if (Engine::get_singleton()->is_editor_hint()) {
 		// return as is
 		return current;
@@ -672,6 +753,7 @@ bool XROrigin3D::is_current() const {
 }
 
 void XROrigin3D::_notification(int p_what) {
+	ZoneScopedS(60);
 	// get our XRServer
 	XRServer *xr_server = XRServer::get_singleton();
 	ERR_FAIL_NULL(xr_server);

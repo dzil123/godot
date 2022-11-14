@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  path_2d.cpp                                                          */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "path_2d.h"
 
 #include "core/math/geometry_2d.h"
@@ -38,6 +69,7 @@
 
 #ifdef TOOLS_ENABLED
 Rect2 Path2D::_edit_get_rect() const {
+	ZoneScopedS(60);
 	if (!curve.is_valid() || curve->get_point_count() == 0) {
 		return Rect2(0, 0, 0, 0);
 	}
@@ -56,10 +88,12 @@ Rect2 Path2D::_edit_get_rect() const {
 }
 
 bool Path2D::_edit_use_rect() const {
+	ZoneScopedS(60);
 	return curve.is_valid() && curve->get_point_count() != 0;
 }
 
 bool Path2D::_edit_is_selected_on_click(const Point2 &p_point, double p_tolerance) const {
+	ZoneScopedS(60);
 	if (curve.is_null()) {
 		return false;
 	}
@@ -86,6 +120,7 @@ bool Path2D::_edit_is_selected_on_click(const Point2 &p_point, double p_toleranc
 #endif
 
 void Path2D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		// Draw the curve if path debugging is enabled.
 		case NOTIFICATION_DRAW: {
@@ -123,6 +158,7 @@ void Path2D::_notification(int p_what) {
 }
 
 void Path2D::_curve_changed() {
+	ZoneScopedS(60);
 	if (!is_inside_tree()) {
 		return;
 	}
@@ -135,6 +171,7 @@ void Path2D::_curve_changed() {
 }
 
 void Path2D::set_curve(const Ref<Curve2D> &p_curve) {
+	ZoneScopedS(60);
 	if (curve.is_valid()) {
 		curve->disconnect("changed", callable_mp(this, &Path2D::_curve_changed));
 	}
@@ -149,10 +186,12 @@ void Path2D::set_curve(const Ref<Curve2D> &p_curve) {
 }
 
 Ref<Curve2D> Path2D::get_curve() const {
+	ZoneScopedS(60);
 	return curve;
 }
 
 void Path2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_curve", "curve"), &Path2D::set_curve);
 	ClassDB::bind_method(D_METHOD("get_curve"), &Path2D::get_curve);
 
@@ -162,6 +201,7 @@ void Path2D::_bind_methods() {
 /////////////////////////////////////////////////////////////////////////////////
 
 void PathFollow2D::_update_transform() {
+	ZoneScopedS(60);
 	if (!path) {
 		return;
 	}
@@ -190,6 +230,7 @@ void PathFollow2D::_update_transform() {
 }
 
 void PathFollow2D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			path = Object::cast_to<Path2D>(get_parent());
@@ -205,14 +246,17 @@ void PathFollow2D::_notification(int p_what) {
 }
 
 void PathFollow2D::set_cubic_interpolation(bool p_enable) {
+	ZoneScopedS(60);
 	cubic = p_enable;
 }
 
 bool PathFollow2D::get_cubic_interpolation() const {
+	ZoneScopedS(60);
 	return cubic;
 }
 
 void PathFollow2D::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (p_property.name == "offset") {
 		real_t max = 10000.0;
 		if (path && path->get_curve().is_valid()) {
@@ -224,6 +268,7 @@ void PathFollow2D::_validate_property(PropertyInfo &p_property) const {
 }
 
 PackedStringArray PathFollow2D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (is_visible_in_tree() && is_inside_tree()) {
@@ -236,6 +281,7 @@ PackedStringArray PathFollow2D::get_configuration_warnings() const {
 }
 
 void PathFollow2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_progress", "progress"), &PathFollow2D::set_progress);
 	ClassDB::bind_method(D_METHOD("get_progress"), &PathFollow2D::get_progress);
 
@@ -271,6 +317,7 @@ void PathFollow2D::_bind_methods() {
 }
 
 void PathFollow2D::set_progress(real_t p_progress) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!isfinite(p_progress));
 	progress = p_progress;
 	if (path) {
@@ -292,6 +339,7 @@ void PathFollow2D::set_progress(real_t p_progress) {
 }
 
 void PathFollow2D::set_h_offset(real_t p_h_offset) {
+	ZoneScopedS(60);
 	h_offset = p_h_offset;
 	if (path) {
 		_update_transform();
@@ -299,10 +347,12 @@ void PathFollow2D::set_h_offset(real_t p_h_offset) {
 }
 
 real_t PathFollow2D::get_h_offset() const {
+	ZoneScopedS(60);
 	return h_offset;
 }
 
 void PathFollow2D::set_v_offset(real_t p_v_offset) {
+	ZoneScopedS(60);
 	v_offset = p_v_offset;
 	if (path) {
 		_update_transform();
@@ -310,20 +360,24 @@ void PathFollow2D::set_v_offset(real_t p_v_offset) {
 }
 
 real_t PathFollow2D::get_v_offset() const {
+	ZoneScopedS(60);
 	return v_offset;
 }
 
 real_t PathFollow2D::get_progress() const {
+	ZoneScopedS(60);
 	return progress;
 }
 
 void PathFollow2D::set_progress_ratio(real_t p_ratio) {
+	ZoneScopedS(60);
 	if (path && path->get_curve().is_valid() && path->get_curve()->get_baked_length()) {
 		set_progress(p_ratio * path->get_curve()->get_baked_length());
 	}
 }
 
 real_t PathFollow2D::get_progress_ratio() const {
+	ZoneScopedS(60);
 	if (path && path->get_curve().is_valid() && path->get_curve()->get_baked_length()) {
 		return get_progress() / path->get_curve()->get_baked_length();
 	} else {
@@ -332,26 +386,32 @@ real_t PathFollow2D::get_progress_ratio() const {
 }
 
 void PathFollow2D::set_lookahead(real_t p_lookahead) {
+	ZoneScopedS(60);
 	lookahead = p_lookahead;
 }
 
 real_t PathFollow2D::get_lookahead() const {
+	ZoneScopedS(60);
 	return lookahead;
 }
 
 void PathFollow2D::set_rotates(bool p_rotates) {
+	ZoneScopedS(60);
 	rotates = p_rotates;
 	_update_transform();
 }
 
 bool PathFollow2D::is_rotating() const {
+	ZoneScopedS(60);
 	return rotates;
 }
 
 void PathFollow2D::set_loop(bool p_loop) {
+	ZoneScopedS(60);
 	loop = p_loop;
 }
 
 bool PathFollow2D::has_loop() const {
+	ZoneScopedS(60);
 	return loop;
 }

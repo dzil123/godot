@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  split_container.cpp                                                  */
 /*************************************************************************/
@@ -34,6 +35,7 @@
 #include "margin_container.h"
 
 void SplitContainerDragger::gui_input(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_event.is_null());
 
 	SplitContainer *sc = Object::cast_to<SplitContainer>(get_parent());
@@ -82,6 +84,7 @@ void SplitContainerDragger::gui_input(const Ref<InputEvent> &p_event) {
 }
 
 Control::CursorShape SplitContainerDragger::get_cursor_shape(const Point2 &p_pos) const {
+	ZoneScopedS(60);
 	SplitContainer *sc = Object::cast_to<SplitContainer>(get_parent());
 
 	if (!sc->collapsed && sc->dragger_visibility == SplitContainer::DRAGGER_VISIBLE) {
@@ -92,6 +95,7 @@ Control::CursorShape SplitContainerDragger::get_cursor_shape(const Point2 &p_pos
 }
 
 void SplitContainerDragger::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_MOUSE_ENTER: {
 			mouse_inside = true;
@@ -122,6 +126,7 @@ void SplitContainerDragger::_notification(int p_what) {
 }
 
 Control *SplitContainer::_getch(int p_idx) const {
+	ZoneScopedS(60);
 	int idx = 0;
 
 	for (int i = 0; i < get_child_count(false); i++) {
@@ -144,6 +149,7 @@ Control *SplitContainer::_getch(int p_idx) const {
 }
 
 Ref<Texture2D> SplitContainer::_get_grabber_icon() const {
+	ZoneScopedS(60);
 	if (is_fixed) {
 		return theme_cache.grabber_icon;
 	} else {
@@ -156,6 +162,7 @@ Ref<Texture2D> SplitContainer::_get_grabber_icon() const {
 }
 
 void SplitContainer::_compute_middle_sep(bool p_clamp) {
+	ZoneScopedS(60);
 	Control *first = _getch(0);
 	Control *second = _getch(1);
 
@@ -199,6 +206,7 @@ void SplitContainer::_compute_middle_sep(bool p_clamp) {
 }
 
 void SplitContainer::_resort() {
+	ZoneScopedS(60);
 	Control *first = _getch(0);
 	Control *second = _getch(1);
 
@@ -256,6 +264,7 @@ void SplitContainer::_resort() {
 }
 
 Size2 SplitContainer::get_minimum_size() const {
+	ZoneScopedS(60);
 	Size2i minimum;
 	Ref<Texture2D> g = _get_grabber_icon();
 	int sep = (dragger_visibility != DRAGGER_HIDDEN_COLLAPSED) ? MAX(theme_cache.separation, vertical ? g->get_height() : g->get_width()) : 0;
@@ -288,12 +297,14 @@ Size2 SplitContainer::get_minimum_size() const {
 }
 
 void SplitContainer::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (is_fixed && p_property.name == "vertical") {
 		p_property.usage = PROPERTY_USAGE_NONE;
 	}
 }
 
 void SplitContainer::_update_theme_item_cache() {
+	ZoneScopedS(60);
 	Container::_update_theme_item_cache();
 
 	theme_cache.separation = get_theme_constant(SNAME("separation"));
@@ -305,6 +316,7 @@ void SplitContainer::_update_theme_item_cache() {
 }
 
 void SplitContainer::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_TRANSLATION_CHANGED:
 		case NOTIFICATION_LAYOUT_DIRECTION_CHANGED: {
@@ -322,6 +334,7 @@ void SplitContainer::_notification(int p_what) {
 }
 
 void SplitContainer::set_split_offset(int p_offset) {
+	ZoneScopedS(60);
 	if (split_offset == p_offset) {
 		return;
 	}
@@ -332,10 +345,12 @@ void SplitContainer::set_split_offset(int p_offset) {
 }
 
 int SplitContainer::get_split_offset() const {
+	ZoneScopedS(60);
 	return split_offset;
 }
 
 void SplitContainer::clamp_split_offset() {
+	ZoneScopedS(60);
 	if (!_getch(0) || !_getch(1)) {
 		return;
 	}
@@ -345,6 +360,7 @@ void SplitContainer::clamp_split_offset() {
 }
 
 void SplitContainer::set_collapsed(bool p_collapsed) {
+	ZoneScopedS(60);
 	if (collapsed == p_collapsed) {
 		return;
 	}
@@ -354,6 +370,7 @@ void SplitContainer::set_collapsed(bool p_collapsed) {
 }
 
 void SplitContainer::set_dragger_visibility(DraggerVisibility p_visibility) {
+	ZoneScopedS(60);
 	if (dragger_visibility == p_visibility) {
 		return;
 	}
@@ -363,14 +380,17 @@ void SplitContainer::set_dragger_visibility(DraggerVisibility p_visibility) {
 }
 
 SplitContainer::DraggerVisibility SplitContainer::get_dragger_visibility() const {
+	ZoneScopedS(60);
 	return dragger_visibility;
 }
 
 bool SplitContainer::is_collapsed() const {
+	ZoneScopedS(60);
 	return collapsed;
 }
 
 void SplitContainer::set_vertical(bool p_vertical) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(is_fixed, "Can't change orientation of " + get_class() + ".");
 	vertical = p_vertical;
 	update_minimum_size();
@@ -378,10 +398,12 @@ void SplitContainer::set_vertical(bool p_vertical) {
 }
 
 bool SplitContainer::is_vertical() const {
+	ZoneScopedS(60);
 	return vertical;
 }
 
 Vector<int> SplitContainer::get_allowed_size_flags_horizontal() const {
+	ZoneScopedS(60);
 	Vector<int> flags;
 	flags.append(SIZE_FILL);
 	if (!vertical) {
@@ -394,6 +416,7 @@ Vector<int> SplitContainer::get_allowed_size_flags_horizontal() const {
 }
 
 Vector<int> SplitContainer::get_allowed_size_flags_vertical() const {
+	ZoneScopedS(60);
 	Vector<int> flags;
 	flags.append(SIZE_FILL);
 	if (vertical) {
@@ -406,6 +429,7 @@ Vector<int> SplitContainer::get_allowed_size_flags_vertical() const {
 }
 
 void SplitContainer::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_split_offset", "offset"), &SplitContainer::set_split_offset);
 	ClassDB::bind_method(D_METHOD("get_split_offset"), &SplitContainer::get_split_offset);
 	ClassDB::bind_method(D_METHOD("clamp_split_offset"), &SplitContainer::clamp_split_offset);
@@ -432,6 +456,7 @@ void SplitContainer::_bind_methods() {
 }
 
 SplitContainer::SplitContainer(bool p_vertical) {
+	ZoneScopedS(60);
 	vertical = p_vertical;
 
 	dragging_area_control = memnew(SplitContainerDragger);

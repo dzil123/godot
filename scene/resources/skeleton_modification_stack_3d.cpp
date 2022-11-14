@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  skeleton_modification_stack_3d.cpp                                   */
 /*************************************************************************/
@@ -28,14 +29,15 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "skeleton_modification_stack_3d.h"
 #include "scene/3d/skeleton_3d.h"
+#include "skeleton_modification_stack_3d.h"
 
 ///////////////////////////////////////
 // ModificationStack3D
 ///////////////////////////////////////
 
 void SkeletonModificationStack3D::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	for (uint32_t i = 0; i < modifications.size(); i++) {
 		p_list->push_back(
 				PropertyInfo(Variant::OBJECT, "modifications/" + itos(i),
@@ -46,6 +48,7 @@ void SkeletonModificationStack3D::_get_property_list(List<PropertyInfo> *p_list)
 }
 
 bool SkeletonModificationStack3D::_set(const StringName &p_path, const Variant &p_value) {
+	ZoneScopedS(60);
 	String path = p_path;
 
 	if (path.begins_with("modifications/")) {
@@ -57,6 +60,7 @@ bool SkeletonModificationStack3D::_set(const StringName &p_path, const Variant &
 }
 
 bool SkeletonModificationStack3D::_get(const StringName &p_path, Variant &r_ret) const {
+	ZoneScopedS(60);
 	String path = p_path;
 
 	if (path.begins_with("modifications/")) {
@@ -68,6 +72,7 @@ bool SkeletonModificationStack3D::_get(const StringName &p_path, Variant &r_ret)
 }
 
 void SkeletonModificationStack3D::setup() {
+	ZoneScopedS(60);
 	if (is_setup) {
 		return;
 	}
@@ -86,6 +91,7 @@ void SkeletonModificationStack3D::setup() {
 }
 
 void SkeletonModificationStack3D::execute(real_t p_delta, int p_execution_mode) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!is_setup || skeleton == nullptr || is_queued_for_deletion(),
 			"Modification stack is not properly setup and therefore cannot execute!");
 
@@ -110,6 +116,7 @@ void SkeletonModificationStack3D::execute(real_t p_delta, int p_execution_mode) 
 }
 
 void SkeletonModificationStack3D::enable_all_modifications(bool p_enabled) {
+	ZoneScopedS(60);
 	for (uint32_t i = 0; i < modifications.size(); i++) {
 		if (!modifications[i].is_valid()) {
 			continue;
@@ -119,24 +126,28 @@ void SkeletonModificationStack3D::enable_all_modifications(bool p_enabled) {
 }
 
 Ref<SkeletonModification3D> SkeletonModificationStack3D::get_modification(int p_mod_idx) const {
+	ZoneScopedS(60);
 	const int modifications_size = modifications.size();
 	ERR_FAIL_INDEX_V(p_mod_idx, modifications_size, nullptr);
 	return modifications[p_mod_idx];
 }
 
 void SkeletonModificationStack3D::add_modification(Ref<SkeletonModification3D> p_mod) {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_mod);
 	p_mod->_setup_modification(this);
 	modifications.push_back(p_mod);
 }
 
 void SkeletonModificationStack3D::delete_modification(int p_mod_idx) {
+	ZoneScopedS(60);
 	const int modifications_size = modifications.size();
 	ERR_FAIL_INDEX(p_mod_idx, modifications_size);
 	modifications.remove_at(p_mod_idx);
 }
 
 void SkeletonModificationStack3D::set_modification(int p_mod_idx, Ref<SkeletonModification3D> p_mod) {
+	ZoneScopedS(60);
 	const int modifications_size = modifications.size();
 	ERR_FAIL_INDEX(p_mod_idx, modifications_size);
 
@@ -149,28 +160,34 @@ void SkeletonModificationStack3D::set_modification(int p_mod_idx, Ref<SkeletonMo
 }
 
 void SkeletonModificationStack3D::set_modification_count(int p_count) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_count < 0, "Modification count cannot be less than zero.");
 	modifications.resize(p_count);
 	notify_property_list_changed();
 }
 
 int SkeletonModificationStack3D::get_modification_count() const {
+	ZoneScopedS(60);
 	return modifications.size();
 }
 
 void SkeletonModificationStack3D::set_skeleton(Skeleton3D *p_skeleton) {
+	ZoneScopedS(60);
 	skeleton = p_skeleton;
 }
 
 Skeleton3D *SkeletonModificationStack3D::get_skeleton() const {
+	ZoneScopedS(60);
 	return skeleton;
 }
 
 bool SkeletonModificationStack3D::get_is_setup() const {
+	ZoneScopedS(60);
 	return is_setup;
 }
 
 void SkeletonModificationStack3D::set_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	enabled = p_enabled;
 
 	if (!enabled && is_setup && skeleton != nullptr) {
@@ -179,20 +196,24 @@ void SkeletonModificationStack3D::set_enabled(bool p_enabled) {
 }
 
 bool SkeletonModificationStack3D::get_enabled() const {
+	ZoneScopedS(60);
 	return enabled;
 }
 
 void SkeletonModificationStack3D::set_strength(real_t p_strength) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_strength < 0, "Strength cannot be less than zero!");
 	ERR_FAIL_COND_MSG(p_strength > 1, "Strength cannot be more than one!");
 	strength = p_strength;
 }
 
 real_t SkeletonModificationStack3D::get_strength() const {
+	ZoneScopedS(60);
 	return strength;
 }
 
 void SkeletonModificationStack3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("setup"), &SkeletonModificationStack3D::setup);
 	ClassDB::bind_method(D_METHOD("execute", "delta", "execution_mode"), &SkeletonModificationStack3D::execute);
 

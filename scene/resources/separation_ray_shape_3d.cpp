@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  separation_ray_shape_3d.cpp                                          */
 /*************************************************************************/
@@ -33,6 +34,7 @@
 #include "servers/physics_server_3d.h"
 
 Vector<Vector3> SeparationRayShape3D::get_debug_mesh_lines() const {
+	ZoneScopedS(60);
 	Vector<Vector3> points = {
 		Vector3(),
 		Vector3(0, 0, get_length())
@@ -42,10 +44,12 @@ Vector<Vector3> SeparationRayShape3D::get_debug_mesh_lines() const {
 }
 
 real_t SeparationRayShape3D::get_enclosing_radius() const {
+	ZoneScopedS(60);
 	return length;
 }
 
 void SeparationRayShape3D::_update_shape() {
+	ZoneScopedS(60);
 	Dictionary d;
 	d["length"] = length;
 	d["slide_on_slope"] = slide_on_slope;
@@ -54,26 +58,31 @@ void SeparationRayShape3D::_update_shape() {
 }
 
 void SeparationRayShape3D::set_length(float p_length) {
+	ZoneScopedS(60);
 	length = p_length;
 	_update_shape();
 	notify_change_to_owners();
 }
 
 float SeparationRayShape3D::get_length() const {
+	ZoneScopedS(60);
 	return length;
 }
 
 void SeparationRayShape3D::set_slide_on_slope(bool p_active) {
+	ZoneScopedS(60);
 	slide_on_slope = p_active;
 	_update_shape();
 	notify_change_to_owners();
 }
 
 bool SeparationRayShape3D::get_slide_on_slope() const {
+	ZoneScopedS(60);
 	return slide_on_slope;
 }
 
 void SeparationRayShape3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_length", "length"), &SeparationRayShape3D::set_length);
 	ClassDB::bind_method(D_METHOD("get_length"), &SeparationRayShape3D::get_length);
 

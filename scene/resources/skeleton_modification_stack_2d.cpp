@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  skeleton_modification_stack_2d.cpp                                   */
 /*************************************************************************/
@@ -28,10 +29,11 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "skeleton_modification_stack_2d.h"
 #include "scene/2d/skeleton_2d.h"
+#include "skeleton_modification_stack_2d.h"
 
 void SkeletonModificationStack2D::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	for (int i = 0; i < modifications.size(); i++) {
 		p_list->push_back(
 				PropertyInfo(Variant::OBJECT, "modifications/" + itos(i),
@@ -42,6 +44,7 @@ void SkeletonModificationStack2D::_get_property_list(List<PropertyInfo> *p_list)
 }
 
 bool SkeletonModificationStack2D::_set(const StringName &p_path, const Variant &p_value) {
+	ZoneScopedS(60);
 	String path = p_path;
 
 	if (path.begins_with("modifications/")) {
@@ -53,6 +56,7 @@ bool SkeletonModificationStack2D::_set(const StringName &p_path, const Variant &
 }
 
 bool SkeletonModificationStack2D::_get(const StringName &p_path, Variant &r_ret) const {
+	ZoneScopedS(60);
 	String path = p_path;
 
 	if (path.begins_with("modifications/")) {
@@ -64,6 +68,7 @@ bool SkeletonModificationStack2D::_get(const StringName &p_path, Variant &r_ret)
 }
 
 void SkeletonModificationStack2D::setup() {
+	ZoneScopedS(60);
 	if (is_setup) {
 		return;
 	}
@@ -87,6 +92,7 @@ void SkeletonModificationStack2D::setup() {
 }
 
 void SkeletonModificationStack2D::execute(float p_delta, int p_execution_mode) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!is_setup || skeleton == nullptr || is_queued_for_deletion(),
 			"Modification stack is not properly setup and therefore cannot execute!");
 
@@ -111,6 +117,7 @@ void SkeletonModificationStack2D::execute(float p_delta, int p_execution_mode) {
 }
 
 void SkeletonModificationStack2D::draw_editor_gizmos() {
+	ZoneScopedS(60);
 	if (!is_setup) {
 		return;
 	}
@@ -131,6 +138,7 @@ void SkeletonModificationStack2D::draw_editor_gizmos() {
 }
 
 void SkeletonModificationStack2D::set_editor_gizmos_dirty(bool p_dirty) {
+	ZoneScopedS(60);
 	if (!is_setup) {
 		return;
 	}
@@ -146,6 +154,7 @@ void SkeletonModificationStack2D::set_editor_gizmos_dirty(bool p_dirty) {
 }
 
 void SkeletonModificationStack2D::enable_all_modifications(bool p_enabled) {
+	ZoneScopedS(60);
 	for (int i = 0; i < modifications.size(); i++) {
 		if (!modifications[i].is_valid()) {
 			continue;
@@ -155,11 +164,13 @@ void SkeletonModificationStack2D::enable_all_modifications(bool p_enabled) {
 }
 
 Ref<SkeletonModification2D> SkeletonModificationStack2D::get_modification(int p_mod_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_mod_idx, modifications.size(), nullptr);
 	return modifications[p_mod_idx];
 }
 
 void SkeletonModificationStack2D::add_modification(Ref<SkeletonModification2D> p_mod) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!p_mod.is_valid());
 
 	p_mod->_setup_modification(this);
@@ -171,6 +182,7 @@ void SkeletonModificationStack2D::add_modification(Ref<SkeletonModification2D> p
 }
 
 void SkeletonModificationStack2D::delete_modification(int p_mod_idx) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_mod_idx, modifications.size());
 	modifications.remove_at(p_mod_idx);
 
@@ -180,6 +192,7 @@ void SkeletonModificationStack2D::delete_modification(int p_mod_idx) {
 }
 
 void SkeletonModificationStack2D::set_modification(int p_mod_idx, Ref<SkeletonModification2D> p_mod) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_mod_idx, modifications.size());
 
 	if (p_mod.is_null()) {
@@ -195,6 +208,7 @@ void SkeletonModificationStack2D::set_modification(int p_mod_idx, Ref<SkeletonMo
 }
 
 void SkeletonModificationStack2D::set_modification_count(int p_count) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_count < 0, "Modification count cannot be less than zero.");
 	modifications.resize(p_count);
 	notify_property_list_changed();
@@ -205,40 +219,49 @@ void SkeletonModificationStack2D::set_modification_count(int p_count) {
 }
 
 int SkeletonModificationStack2D::get_modification_count() const {
+	ZoneScopedS(60);
 	return modifications.size();
 }
 
 void SkeletonModificationStack2D::set_skeleton(Skeleton2D *p_skeleton) {
+	ZoneScopedS(60);
 	skeleton = p_skeleton;
 }
 
 Skeleton2D *SkeletonModificationStack2D::get_skeleton() const {
+	ZoneScopedS(60);
 	return skeleton;
 }
 
 bool SkeletonModificationStack2D::get_is_setup() const {
+	ZoneScopedS(60);
 	return is_setup;
 }
 
 void SkeletonModificationStack2D::set_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	enabled = p_enabled;
 }
 
 bool SkeletonModificationStack2D::get_enabled() const {
+	ZoneScopedS(60);
 	return enabled;
 }
 
 void SkeletonModificationStack2D::set_strength(float p_strength) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_strength < 0, "Strength cannot be less than zero!");
 	ERR_FAIL_COND_MSG(p_strength > 1, "Strength cannot be more than one!");
 	strength = p_strength;
 }
 
 float SkeletonModificationStack2D::get_strength() const {
+	ZoneScopedS(60);
 	return strength;
 }
 
 void SkeletonModificationStack2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("setup"), &SkeletonModificationStack2D::setup);
 	ClassDB::bind_method(D_METHOD("execute", "delta", "execution_mode"), &SkeletonModificationStack2D::execute);
 

@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  option_button.cpp                                                    */
 /*************************************************************************/
@@ -35,6 +36,7 @@
 static const int NONE_SELECTED = -1;
 
 Size2 OptionButton::get_minimum_size() const {
+	ZoneScopedS(60);
 	Size2 minsize;
 	if (fit_to_longest_item) {
 		minsize = _cached_size;
@@ -57,6 +59,7 @@ Size2 OptionButton::get_minimum_size() const {
 }
 
 void OptionButton::_update_theme_item_cache() {
+	ZoneScopedS(60);
 	Button::_update_theme_item_cache();
 
 	theme_cache.normal = get_theme_stylebox(SNAME("normal"));
@@ -76,6 +79,7 @@ void OptionButton::_update_theme_item_cache() {
 }
 
 void OptionButton::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_POSTINITIALIZE: {
 			if (has_theme_icon(SNAME("arrow"))) {
@@ -155,6 +159,7 @@ void OptionButton::_notification(int p_what) {
 }
 
 bool OptionButton::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	Vector<String> components = String(p_name).split("/", true, 2);
 	if (components.size() >= 2 && components[0] == "popup") {
 		String property = components[2];
@@ -182,6 +187,7 @@ bool OptionButton::_set(const StringName &p_name, const Variant &p_value) {
 }
 
 bool OptionButton::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	Vector<String> components = String(p_name).split("/", true, 2);
 	if (components.size() >= 2 && components[0] == "popup") {
 		String property = components[2];
@@ -197,6 +203,7 @@ bool OptionButton::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void OptionButton::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	for (int i = 0; i < popup->get_item_count(); i++) {
 		p_list->push_back(PropertyInfo(Variant::STRING, vformat("popup/item_%d/text", i)));
 
@@ -218,14 +225,17 @@ void OptionButton::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 void OptionButton::_focused(int p_which) {
+	ZoneScopedS(60);
 	emit_signal(SNAME("item_focused"), p_which);
 }
 
 void OptionButton::_selected(int p_which) {
+	ZoneScopedS(60);
 	_select(p_which, true);
 }
 
 void OptionButton::pressed() {
+	ZoneScopedS(60);
 	if (popup->is_visible()) {
 		popup->hide();
 		return;
@@ -235,6 +245,7 @@ void OptionButton::pressed() {
 }
 
 void OptionButton::add_icon_item(const Ref<Texture2D> &p_icon, const String &p_label, int p_id) {
+	ZoneScopedS(60);
 	bool first_selectable = !has_selectable_items();
 	popup->add_icon_radio_check_item(p_icon, p_label, p_id);
 	if (first_selectable) {
@@ -244,6 +255,7 @@ void OptionButton::add_icon_item(const Ref<Texture2D> &p_icon, const String &p_l
 }
 
 void OptionButton::add_item(const String &p_label, int p_id) {
+	ZoneScopedS(60);
 	bool first_selectable = !has_selectable_items();
 	popup->add_radio_check_item(p_label, p_id);
 	if (first_selectable) {
@@ -253,6 +265,7 @@ void OptionButton::add_item(const String &p_label, int p_id) {
 }
 
 void OptionButton::set_item_text(int p_idx, const String &p_text) {
+	ZoneScopedS(60);
 	popup->set_item_text(p_idx, p_text);
 
 	if (current == p_idx) {
@@ -262,6 +275,7 @@ void OptionButton::set_item_text(int p_idx, const String &p_text) {
 }
 
 void OptionButton::set_item_icon(int p_idx, const Ref<Texture2D> &p_icon) {
+	ZoneScopedS(60);
 	popup->set_item_icon(p_idx, p_icon);
 
 	if (current == p_idx) {
@@ -271,30 +285,37 @@ void OptionButton::set_item_icon(int p_idx, const Ref<Texture2D> &p_icon) {
 }
 
 void OptionButton::set_item_id(int p_idx, int p_id) {
+	ZoneScopedS(60);
 	popup->set_item_id(p_idx, p_id);
 }
 
 void OptionButton::set_item_metadata(int p_idx, const Variant &p_metadata) {
+	ZoneScopedS(60);
 	popup->set_item_metadata(p_idx, p_metadata);
 }
 
 void OptionButton::set_item_tooltip(int p_idx, const String &p_tooltip) {
+	ZoneScopedS(60);
 	popup->set_item_tooltip(p_idx, p_tooltip);
 }
 
 void OptionButton::set_item_disabled(int p_idx, bool p_disabled) {
+	ZoneScopedS(60);
 	popup->set_item_disabled(p_idx, p_disabled);
 }
 
 String OptionButton::get_item_text(int p_idx) const {
+	ZoneScopedS(60);
 	return popup->get_item_text(p_idx);
 }
 
 Ref<Texture2D> OptionButton::get_item_icon(int p_idx) const {
+	ZoneScopedS(60);
 	return popup->get_item_icon(p_idx);
 }
 
 int OptionButton::get_item_id(int p_idx) const {
+	ZoneScopedS(60);
 	if (p_idx == NONE_SELECTED) {
 		return NONE_SELECTED;
 	}
@@ -303,25 +324,31 @@ int OptionButton::get_item_id(int p_idx) const {
 }
 
 int OptionButton::get_item_index(int p_id) const {
+	ZoneScopedS(60);
 	return popup->get_item_index(p_id);
 }
 
 Variant OptionButton::get_item_metadata(int p_idx) const {
+	ZoneScopedS(60);
 	return popup->get_item_metadata(p_idx);
 }
 
 String OptionButton::get_item_tooltip(int p_idx) const {
+	ZoneScopedS(60);
 	return popup->get_item_tooltip(p_idx);
 }
 
 bool OptionButton::is_item_disabled(int p_idx) const {
+	ZoneScopedS(60);
 	return popup->is_item_disabled(p_idx);
 }
 
 bool OptionButton::is_item_separator(int p_idx) const {
+	ZoneScopedS(60);
 	return popup->is_item_separator(p_idx);
 }
 void OptionButton::set_item_count(int p_count) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_count < 0);
 
 	int count_old = get_item_count();
@@ -342,6 +369,7 @@ void OptionButton::set_item_count(int p_count) {
 }
 
 bool OptionButton::has_selectable_items() const {
+	ZoneScopedS(60);
 	for (int i = 0; i < get_item_count(); i++) {
 		if (!is_item_disabled(i) && !is_item_separator(i)) {
 			return true;
@@ -350,6 +378,7 @@ bool OptionButton::has_selectable_items() const {
 	return false;
 }
 int OptionButton::get_selectable_item(bool p_from_last) const {
+	ZoneScopedS(60);
 	if (!p_from_last) {
 		for (int i = 0; i < get_item_count(); i++) {
 			if (!is_item_disabled(i) && !is_item_separator(i)) {
@@ -367,10 +396,12 @@ int OptionButton::get_selectable_item(bool p_from_last) const {
 }
 
 int OptionButton::get_item_count() const {
+	ZoneScopedS(60);
 	return popup->get_item_count();
 }
 
 void OptionButton::set_fit_to_longest_item(bool p_fit) {
+	ZoneScopedS(60);
 	if (p_fit == fit_to_longest_item) {
 		return;
 	}
@@ -380,14 +411,17 @@ void OptionButton::set_fit_to_longest_item(bool p_fit) {
 }
 
 bool OptionButton::is_fit_to_longest_item() const {
+	ZoneScopedS(60);
 	return fit_to_longest_item;
 }
 
 void OptionButton::add_separator(const String &p_text) {
+	ZoneScopedS(60);
 	popup->add_separator(p_text);
 }
 
 void OptionButton::clear() {
+	ZoneScopedS(60);
 	popup->clear();
 	set_text("");
 	current = NONE_SELECTED;
@@ -395,6 +429,7 @@ void OptionButton::clear() {
 }
 
 void OptionButton::_select(int p_which, bool p_emit) {
+	ZoneScopedS(60);
 	if (p_which == current) {
 		return;
 	}
@@ -425,6 +460,7 @@ void OptionButton::_select(int p_which, bool p_emit) {
 }
 
 void OptionButton::_select_int(int p_which) {
+	ZoneScopedS(60);
 	if (p_which < NONE_SELECTED || p_which >= popup->get_item_count()) {
 		return;
 	}
@@ -432,6 +468,7 @@ void OptionButton::_select_int(int p_which) {
 }
 
 void OptionButton::_refresh_size_cache() {
+	ZoneScopedS(60);
 	cache_refresh_pending = false;
 
 	if (!fit_to_longest_item) {
@@ -446,6 +483,7 @@ void OptionButton::_refresh_size_cache() {
 }
 
 void OptionButton::_queue_refresh_cache() {
+	ZoneScopedS(60);
 	if (cache_refresh_pending) {
 		return;
 	}
@@ -455,18 +493,22 @@ void OptionButton::_queue_refresh_cache() {
 }
 
 void OptionButton::select(int p_idx) {
+	ZoneScopedS(60);
 	_select(p_idx, false);
 }
 
 int OptionButton::get_selected() const {
+	ZoneScopedS(60);
 	return current;
 }
 
 int OptionButton::get_selected_id() const {
+	ZoneScopedS(60);
 	return get_item_id(current);
 }
 
 Variant OptionButton::get_selected_metadata() const {
+	ZoneScopedS(60);
 	int idx = get_selected();
 	if (idx < 0) {
 		return Variant();
@@ -475,6 +517,7 @@ Variant OptionButton::get_selected_metadata() const {
 }
 
 void OptionButton::remove_item(int p_idx) {
+	ZoneScopedS(60);
 	popup->remove_item(p_idx);
 	if (current == p_idx) {
 		_select(NONE_SELECTED);
@@ -483,10 +526,12 @@ void OptionButton::remove_item(int p_idx) {
 }
 
 PopupMenu *OptionButton::get_popup() const {
+	ZoneScopedS(60);
 	return popup;
 }
 
 void OptionButton::show_popup() {
+	ZoneScopedS(60);
 	if (!get_viewport()) {
 		return;
 	}
@@ -520,16 +565,19 @@ void OptionButton::show_popup() {
 }
 
 void OptionButton::get_translatable_strings(List<String> *p_strings) const {
+	ZoneScopedS(60);
 	popup->get_translatable_strings(p_strings);
 }
 
 void OptionButton::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (p_property.name == "text" || p_property.name == "icon") {
 		p_property.usage = PROPERTY_USAGE_NONE;
 	}
 }
 
 void OptionButton::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("add_item", "label", "id"), &OptionButton::add_item, DEFVAL(-1));
 	ClassDB::bind_method(D_METHOD("add_icon_item", "texture", "label", "id"), &OptionButton::add_icon_item, DEFVAL(-1));
 	ClassDB::bind_method(D_METHOD("set_item_text", "idx", "text"), &OptionButton::set_item_text);

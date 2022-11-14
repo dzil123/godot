@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  tab_bar.cpp                                                          */
 /*************************************************************************/
@@ -38,6 +39,7 @@
 #include "scene/main/viewport.h"
 
 Size2 TabBar::get_minimum_size() const {
+	ZoneScopedS(60);
 	Size2 ms;
 
 	if (tabs.is_empty()) {
@@ -107,6 +109,7 @@ Size2 TabBar::get_minimum_size() const {
 }
 
 void TabBar::gui_input(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_event.is_null());
 
 	Ref<InputEventMouseMotion> mm = p_event;
@@ -286,6 +289,7 @@ void TabBar::gui_input(const Ref<InputEvent> &p_event) {
 }
 
 void TabBar::_shape(int p_tab) {
+	ZoneScopedS(60);
 	tabs.write[p_tab].xl_text = atr(tabs[p_tab].text);
 	tabs.write[p_tab].text_buf->clear();
 	tabs.write[p_tab].text_buf->set_width(-1);
@@ -299,6 +303,7 @@ void TabBar::_shape(int p_tab) {
 }
 
 void TabBar::_update_theme_item_cache() {
+	ZoneScopedS(60);
 	Control::_update_theme_item_cache();
 
 	theme_cache.h_separation = get_theme_constant(SNAME("h_separation"));
@@ -329,6 +334,7 @@ void TabBar::_update_theme_item_cache() {
 }
 
 void TabBar::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_LAYOUT_DIRECTION_CHANGED: {
 			queue_redraw();
@@ -471,6 +477,7 @@ void TabBar::_notification(int p_what) {
 }
 
 void TabBar::_draw_tab(Ref<StyleBox> &p_tab_style, Color &p_font_color, int p_index, float p_x) {
+	ZoneScopedS(60);
 	RID ci = get_canvas_item();
 	bool rtl = is_layout_rtl();
 
@@ -552,6 +559,7 @@ void TabBar::_draw_tab(Ref<StyleBox> &p_tab_style, Color &p_font_color, int p_in
 }
 
 void TabBar::set_tab_count(int p_count) {
+	ZoneScopedS(60);
 	if (p_count == tabs.size()) {
 		return;
 	}
@@ -582,10 +590,12 @@ void TabBar::set_tab_count(int p_count) {
 }
 
 int TabBar::get_tab_count() const {
+	ZoneScopedS(60);
 	return tabs.size();
 }
 
 void TabBar::set_current_tab(int p_current) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_current, get_tab_count());
 
 	previous = current;
@@ -608,26 +618,32 @@ void TabBar::set_current_tab(int p_current) {
 }
 
 int TabBar::get_current_tab() const {
+	ZoneScopedS(60);
 	return current;
 }
 
 int TabBar::get_previous_tab() const {
+	ZoneScopedS(60);
 	return previous;
 }
 
 int TabBar::get_hovered_tab() const {
+	ZoneScopedS(60);
 	return hover;
 }
 
 int TabBar::get_tab_offset() const {
+	ZoneScopedS(60);
 	return offset;
 }
 
 bool TabBar::get_offset_buttons_visible() const {
+	ZoneScopedS(60);
 	return buttons_visible;
 }
 
 void TabBar::set_tab_title(int p_tab, const String &p_title) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_tab, tabs.size());
 
 	if (tabs[p_tab].text == p_title) {
@@ -647,11 +663,13 @@ void TabBar::set_tab_title(int p_tab, const String &p_title) {
 }
 
 String TabBar::get_tab_title(int p_tab) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_tab, tabs.size(), "");
 	return tabs[p_tab].text;
 }
 
 void TabBar::set_tab_text_direction(int p_tab, Control::TextDirection p_text_direction) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_tab, tabs.size());
 	ERR_FAIL_COND((int)p_text_direction < -1 || (int)p_text_direction > 3);
 
@@ -663,11 +681,13 @@ void TabBar::set_tab_text_direction(int p_tab, Control::TextDirection p_text_dir
 }
 
 Control::TextDirection TabBar::get_tab_text_direction(int p_tab) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_tab, tabs.size(), Control::TEXT_DIRECTION_INHERITED);
 	return tabs[p_tab].text_direction;
 }
 
 void TabBar::set_tab_language(int p_tab, const String &p_language) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_tab, tabs.size());
 
 	if (tabs[p_tab].language != p_language) {
@@ -684,11 +704,13 @@ void TabBar::set_tab_language(int p_tab, const String &p_language) {
 }
 
 String TabBar::get_tab_language(int p_tab) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_tab, tabs.size(), "");
 	return tabs[p_tab].language;
 }
 
 void TabBar::set_tab_icon(int p_tab, const Ref<Texture2D> &p_icon) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_tab, tabs.size());
 
 	if (tabs[p_tab].icon == p_icon) {
@@ -707,11 +729,13 @@ void TabBar::set_tab_icon(int p_tab, const Ref<Texture2D> &p_icon) {
 }
 
 Ref<Texture2D> TabBar::get_tab_icon(int p_tab) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_tab, tabs.size(), Ref<Texture2D>());
 	return tabs[p_tab].icon;
 }
 
 void TabBar::set_tab_disabled(int p_tab, bool p_disabled) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_tab, tabs.size());
 
 	if (tabs[p_tab].disabled == p_disabled) {
@@ -730,11 +754,13 @@ void TabBar::set_tab_disabled(int p_tab, bool p_disabled) {
 }
 
 bool TabBar::is_tab_disabled(int p_tab) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_tab, tabs.size(), false);
 	return tabs[p_tab].disabled;
 }
 
 void TabBar::set_tab_hidden(int p_tab, bool p_hidden) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_tab, tabs.size());
 
 	if (tabs[p_tab].hidden == p_hidden) {
@@ -753,11 +779,13 @@ void TabBar::set_tab_hidden(int p_tab, bool p_hidden) {
 }
 
 bool TabBar::is_tab_hidden(int p_tab) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_tab, tabs.size(), false);
 	return tabs[p_tab].hidden;
 }
 
 void TabBar::set_tab_button_icon(int p_tab, const Ref<Texture2D> &p_icon) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_tab, tabs.size());
 
 	if (tabs[p_tab].right_button == p_icon) {
@@ -776,11 +804,13 @@ void TabBar::set_tab_button_icon(int p_tab, const Ref<Texture2D> &p_icon) {
 }
 
 Ref<Texture2D> TabBar::get_tab_button_icon(int p_tab) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_tab, tabs.size(), Ref<Texture2D>());
 	return tabs[p_tab].right_button;
 }
 
 void TabBar::_update_hover() {
+	ZoneScopedS(60);
 	if (!is_inside_tree()) {
 		return;
 	}
@@ -839,6 +869,7 @@ void TabBar::_update_hover() {
 }
 
 void TabBar::_update_cache() {
+	ZoneScopedS(60);
 	if (tabs.is_empty()) {
 		buttons_visible = false;
 		return;
@@ -923,6 +954,7 @@ void TabBar::_update_cache() {
 }
 
 void TabBar::_on_mouse_exited() {
+	ZoneScopedS(60);
 	rb_hover = -1;
 	cb_hover = -1;
 	hover = -1;
@@ -933,6 +965,7 @@ void TabBar::_on_mouse_exited() {
 }
 
 void TabBar::add_tab(const String &p_str, const Ref<Texture2D> &p_icon) {
+	ZoneScopedS(60);
 	Tab t;
 	t.text = p_str;
 	t.text_buf->set_direction(is_layout_rtl() ? TextServer::DIRECTION_RTL : TextServer::DIRECTION_LTR);
@@ -953,6 +986,7 @@ void TabBar::add_tab(const String &p_str, const Ref<Texture2D> &p_icon) {
 }
 
 void TabBar::clear_tabs() {
+	ZoneScopedS(60);
 	if (tabs.is_empty()) {
 		return;
 	}
@@ -969,6 +1003,7 @@ void TabBar::clear_tabs() {
 }
 
 void TabBar::remove_tab(int p_idx) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_idx, tabs.size());
 	tabs.remove_at(p_idx);
 
@@ -1003,6 +1038,7 @@ void TabBar::remove_tab(int p_idx) {
 }
 
 Variant TabBar::get_drag_data(const Point2 &p_point) {
+	ZoneScopedS(60);
 	if (!drag_to_rearrange_enabled) {
 		return Control::get_drag_data(p_point); // Allow stuff like TabContainer to override it.
 	}
@@ -1035,6 +1071,7 @@ Variant TabBar::get_drag_data(const Point2 &p_point) {
 }
 
 bool TabBar::can_drop_data(const Point2 &p_point, const Variant &p_data) const {
+	ZoneScopedS(60);
 	if (!drag_to_rearrange_enabled) {
 		return Control::can_drop_data(p_point, p_data); // Allow stuff like TabContainer to override it.
 	}
@@ -1063,6 +1100,7 @@ bool TabBar::can_drop_data(const Point2 &p_point, const Variant &p_data) const {
 }
 
 void TabBar::drop_data(const Point2 &p_point, const Variant &p_data) {
+	ZoneScopedS(60);
 	if (!drag_to_rearrange_enabled) {
 		Control::drop_data(p_point, p_data); // Allow stuff like TabContainer to override it.
 		return;
@@ -1156,6 +1194,7 @@ void TabBar::drop_data(const Point2 &p_point, const Variant &p_data) {
 }
 
 int TabBar::get_tab_idx_at_point(const Point2 &p_point) const {
+	ZoneScopedS(60);
 	int hover_now = -1;
 	for (int i = offset; i <= max_drawn_tab; i++) {
 		Rect2 rect = get_tab_rect(i);
@@ -1168,6 +1207,7 @@ int TabBar::get_tab_idx_at_point(const Point2 &p_point) const {
 }
 
 void TabBar::set_tab_alignment(AlignmentMode p_alignment) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_alignment, ALIGNMENT_MAX);
 
 	if (tab_alignment == p_alignment) {
@@ -1181,10 +1221,12 @@ void TabBar::set_tab_alignment(AlignmentMode p_alignment) {
 }
 
 TabBar::AlignmentMode TabBar::get_tab_alignment() const {
+	ZoneScopedS(60);
 	return tab_alignment;
 }
 
 void TabBar::set_clip_tabs(bool p_clip_tabs) {
+	ZoneScopedS(60);
 	if (clip_tabs == p_clip_tabs) {
 		return;
 	}
@@ -1204,10 +1246,12 @@ void TabBar::set_clip_tabs(bool p_clip_tabs) {
 }
 
 bool TabBar::get_clip_tabs() const {
+	ZoneScopedS(60);
 	return clip_tabs;
 }
 
 void TabBar::move_tab(int p_from, int p_to) {
+	ZoneScopedS(60);
 	if (p_from == p_to) {
 		return;
 	}
@@ -1245,6 +1289,7 @@ void TabBar::move_tab(int p_from, int p_to) {
 }
 
 int TabBar::get_tab_width(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, tabs.size(), 0);
 
 	Ref<StyleBox> style;
@@ -1294,6 +1339,7 @@ int TabBar::get_tab_width(int p_idx) const {
 }
 
 void TabBar::_ensure_no_over_offset() {
+	ZoneScopedS(60);
 	if (!is_inside_tree() || !buttons_visible) {
 		return;
 	}
@@ -1324,6 +1370,7 @@ void TabBar::_ensure_no_over_offset() {
 }
 
 void TabBar::ensure_tab_visible(int p_idx) {
+	ZoneScopedS(60);
 	if (!is_inside_tree() || !buttons_visible) {
 		return;
 	}
@@ -1374,6 +1421,7 @@ void TabBar::ensure_tab_visible(int p_idx) {
 }
 
 Rect2 TabBar::get_tab_rect(int p_tab) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_tab, tabs.size(), Rect2());
 	if (is_layout_rtl()) {
 		return Rect2(get_size().width - tabs[p_tab].ofs_cache - tabs[p_tab].size_cache, 0, tabs[p_tab].size_cache, get_size().height);
@@ -1383,6 +1431,7 @@ Rect2 TabBar::get_tab_rect(int p_tab) const {
 }
 
 void TabBar::set_tab_close_display_policy(CloseButtonDisplayPolicy p_policy) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_policy, CLOSE_BUTTON_MAX);
 
 	if (cb_displaypolicy == p_policy) {
@@ -1401,10 +1450,12 @@ void TabBar::set_tab_close_display_policy(CloseButtonDisplayPolicy p_policy) {
 }
 
 TabBar::CloseButtonDisplayPolicy TabBar::get_tab_close_display_policy() const {
+	ZoneScopedS(60);
 	return cb_displaypolicy;
 }
 
 void TabBar::set_max_tab_width(int p_width) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_width < 0);
 
 	if (max_width == p_width) {
@@ -1423,34 +1474,42 @@ void TabBar::set_max_tab_width(int p_width) {
 }
 
 int TabBar::get_max_tab_width() const {
+	ZoneScopedS(60);
 	return max_width;
 }
 
 void TabBar::set_scrolling_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	scrolling_enabled = p_enabled;
 }
 
 bool TabBar::get_scrolling_enabled() const {
+	ZoneScopedS(60);
 	return scrolling_enabled;
 }
 
 void TabBar::set_drag_to_rearrange_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	drag_to_rearrange_enabled = p_enabled;
 }
 
 bool TabBar::get_drag_to_rearrange_enabled() const {
+	ZoneScopedS(60);
 	return drag_to_rearrange_enabled;
 }
 
 void TabBar::set_tabs_rearrange_group(int p_group_id) {
+	ZoneScopedS(60);
 	tabs_rearrange_group = p_group_id;
 }
 
 int TabBar::get_tabs_rearrange_group() const {
+	ZoneScopedS(60);
 	return tabs_rearrange_group;
 }
 
 void TabBar::set_scroll_to_selected(bool p_enabled) {
+	ZoneScopedS(60);
 	scroll_to_selected = p_enabled;
 	if (p_enabled) {
 		ensure_tab_visible(current);
@@ -1458,18 +1517,22 @@ void TabBar::set_scroll_to_selected(bool p_enabled) {
 }
 
 bool TabBar::get_scroll_to_selected() const {
+	ZoneScopedS(60);
 	return scroll_to_selected;
 }
 
 void TabBar::set_select_with_rmb(bool p_enabled) {
+	ZoneScopedS(60);
 	select_with_rmb = p_enabled;
 }
 
 bool TabBar::get_select_with_rmb() const {
+	ZoneScopedS(60);
 	return select_with_rmb;
 }
 
 bool TabBar::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	Vector<String> components = String(p_name).split("/", true, 2);
 	if (components.size() >= 2 && components[0].begins_with("tab_") && components[0].trim_prefix("tab_").is_valid_int()) {
 		int tab_index = components[0].trim_prefix("tab_").to_int();
@@ -1489,6 +1552,7 @@ bool TabBar::_set(const StringName &p_name, const Variant &p_value) {
 }
 
 bool TabBar::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	Vector<String> components = String(p_name).split("/", true, 2);
 	if (components.size() >= 2 && components[0].begins_with("tab_") && components[0].trim_prefix("tab_").is_valid_int()) {
 		int tab_index = components[0].trim_prefix("tab_").to_int();
@@ -1508,6 +1572,7 @@ bool TabBar::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void TabBar::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	for (int i = 0; i < tabs.size(); i++) {
 		p_list->push_back(PropertyInfo(Variant::STRING, vformat("tab_%d/title", i)));
 
@@ -1522,6 +1587,7 @@ void TabBar::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 void TabBar::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_tab_count", "count"), &TabBar::set_tab_count);
 	ClassDB::bind_method(D_METHOD("get_tab_count"), &TabBar::get_tab_count);
 	ClassDB::bind_method(D_METHOD("set_current_tab", "tab_idx"), &TabBar::set_current_tab);
@@ -1602,6 +1668,7 @@ void TabBar::_bind_methods() {
 }
 
 TabBar::TabBar() {
+	ZoneScopedS(60);
 	set_size(Size2(get_size().width, get_minimum_size().height));
 	connect("mouse_exited", callable_mp(this, &TabBar::_on_mouse_exited));
 }

@@ -28,11 +28,43 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  joint_3d.cpp                                                         */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "joint_3d.h"
 
 #include "scene/scene_string_names.h"
 
 void Joint3D::_disconnect_signals() {
+	ZoneScopedS(60);
 	Node *node_a = get_node_or_null(a);
 	PhysicsBody3D *body_a = Object::cast_to<PhysicsBody3D>(node_a);
 	if (body_a) {
@@ -47,12 +79,14 @@ void Joint3D::_disconnect_signals() {
 }
 
 void Joint3D::_body_exit_tree() {
+	ZoneScopedS(60);
 	_disconnect_signals();
 	_update_joint(true);
 	update_configuration_warnings();
 }
 
 void Joint3D::_update_joint(bool p_only_free) {
+	ZoneScopedS(60);
 	if (ba.is_valid() && bb.is_valid()) {
 		PhysicsServer3D::get_singleton()->body_remove_collision_exception(ba, bb);
 		PhysicsServer3D::get_singleton()->body_remove_collision_exception(bb, ba);
@@ -120,6 +154,7 @@ void Joint3D::_update_joint(bool p_only_free) {
 }
 
 void Joint3D::set_node_a(const NodePath &p_node_a) {
+	ZoneScopedS(60);
 	if (a == p_node_a) {
 		return;
 	}
@@ -133,10 +168,12 @@ void Joint3D::set_node_a(const NodePath &p_node_a) {
 }
 
 NodePath Joint3D::get_node_a() const {
+	ZoneScopedS(60);
 	return a;
 }
 
 void Joint3D::set_node_b(const NodePath &p_node_b) {
+	ZoneScopedS(60);
 	if (b == p_node_b) {
 		return;
 	}
@@ -150,10 +187,12 @@ void Joint3D::set_node_b(const NodePath &p_node_b) {
 }
 
 NodePath Joint3D::get_node_b() const {
+	ZoneScopedS(60);
 	return b;
 }
 
 void Joint3D::set_solver_priority(int p_priority) {
+	ZoneScopedS(60);
 	solver_priority = p_priority;
 	if (joint.is_valid()) {
 		PhysicsServer3D::get_singleton()->joint_set_solver_priority(joint, solver_priority);
@@ -161,10 +200,12 @@ void Joint3D::set_solver_priority(int p_priority) {
 }
 
 int Joint3D::get_solver_priority() const {
+	ZoneScopedS(60);
 	return solver_priority;
 }
 
 void Joint3D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_POST_ENTER_TREE: {
 			if (is_configured()) {
@@ -183,6 +224,7 @@ void Joint3D::_notification(int p_what) {
 }
 
 void Joint3D::set_exclude_nodes_from_collision(bool p_enable) {
+	ZoneScopedS(60);
 	if (exclude_from_collision == p_enable) {
 		return;
 	}
@@ -195,10 +237,12 @@ void Joint3D::set_exclude_nodes_from_collision(bool p_enable) {
 }
 
 bool Joint3D::get_exclude_nodes_from_collision() const {
+	ZoneScopedS(60);
 	return exclude_from_collision;
 }
 
 PackedStringArray Joint3D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node3D::get_configuration_warnings();
 
 	if (!warning.is_empty()) {
@@ -209,6 +253,7 @@ PackedStringArray Joint3D::get_configuration_warnings() const {
 }
 
 void Joint3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_node_a", "node"), &Joint3D::set_node_a);
 	ClassDB::bind_method(D_METHOD("get_node_a"), &Joint3D::get_node_a);
 
@@ -229,17 +274,20 @@ void Joint3D::_bind_methods() {
 }
 
 Joint3D::Joint3D() {
+	ZoneScopedS(60);
 	set_notify_transform(true);
 	joint = PhysicsServer3D::get_singleton()->joint_create();
 }
 
 Joint3D::~Joint3D() {
+	ZoneScopedS(60);
 	PhysicsServer3D::get_singleton()->free(joint);
 }
 
 ///////////////////////////////////
 
 void PinJoint3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_param", "param", "value"), &PinJoint3D::set_param);
 	ClassDB::bind_method(D_METHOD("get_param", "param"), &PinJoint3D::get_param);
 
@@ -253,6 +301,7 @@ void PinJoint3D::_bind_methods() {
 }
 
 void PinJoint3D::set_param(Param p_param, real_t p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_param, 3);
 	params[p_param] = p_value;
 	if (is_configured()) {
@@ -261,11 +310,13 @@ void PinJoint3D::set_param(Param p_param, real_t p_value) {
 }
 
 real_t PinJoint3D::get_param(Param p_param) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_param, 3, 0);
 	return params[p_param];
 }
 
 void PinJoint3D::_configure_joint(RID p_joint, PhysicsBody3D *body_a, PhysicsBody3D *body_b) {
+	ZoneScopedS(60);
 	Vector3 pinpos = get_global_transform().origin;
 	Vector3 local_a = body_a->to_local(pinpos);
 	Vector3 local_b;
@@ -283,6 +334,7 @@ void PinJoint3D::_configure_joint(RID p_joint, PhysicsBody3D *body_a, PhysicsBod
 }
 
 PinJoint3D::PinJoint3D() {
+	ZoneScopedS(60);
 	params[PARAM_BIAS] = 0.3;
 	params[PARAM_DAMPING] = 1;
 	params[PARAM_IMPULSE_CLAMP] = 0;
@@ -293,6 +345,7 @@ PinJoint3D::PinJoint3D() {
 ///////////////////////////////////
 
 void HingeJoint3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_param", "param", "value"), &HingeJoint3D::set_param);
 	ClassDB::bind_method(D_METHOD("get_param", "param"), &HingeJoint3D::get_param);
 
@@ -328,6 +381,7 @@ void HingeJoint3D::_bind_methods() {
 }
 
 void HingeJoint3D::set_param(Param p_param, real_t p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_param, PARAM_MAX);
 	params[p_param] = p_value;
 	if (is_configured()) {
@@ -338,11 +392,13 @@ void HingeJoint3D::set_param(Param p_param, real_t p_value) {
 }
 
 real_t HingeJoint3D::get_param(Param p_param) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_param, PARAM_MAX, 0);
 	return params[p_param];
 }
 
 void HingeJoint3D::set_flag(Flag p_flag, bool p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_flag, FLAG_MAX);
 	flags[p_flag] = p_value;
 	if (is_configured()) {
@@ -353,11 +409,13 @@ void HingeJoint3D::set_flag(Flag p_flag, bool p_value) {
 }
 
 bool HingeJoint3D::get_flag(Flag p_flag) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_flag, FLAG_MAX, false);
 	return flags[p_flag];
 }
 
 void HingeJoint3D::_configure_joint(RID p_joint, PhysicsBody3D *body_a, PhysicsBody3D *body_b) {
+	ZoneScopedS(60);
 	Transform3D gt = get_global_transform();
 	Transform3D ainv = body_a->get_global_transform().affine_inverse();
 
@@ -383,6 +441,7 @@ void HingeJoint3D::_configure_joint(RID p_joint, PhysicsBody3D *body_a, PhysicsB
 }
 
 HingeJoint3D::HingeJoint3D() {
+	ZoneScopedS(60);
 	params[PARAM_BIAS] = 0.3;
 	params[PARAM_LIMIT_UPPER] = Math_PI * 0.5;
 	params[PARAM_LIMIT_LOWER] = -Math_PI * 0.5;
@@ -399,6 +458,7 @@ HingeJoint3D::HingeJoint3D() {
 /////////////////////////////////////////////////
 
 void SliderJoint3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_param", "param", "value"), &SliderJoint3D::set_param);
 	ClassDB::bind_method(D_METHOD("get_param", "param"), &SliderJoint3D::get_param);
 
@@ -454,6 +514,7 @@ void SliderJoint3D::_bind_methods() {
 }
 
 void SliderJoint3D::set_param(Param p_param, real_t p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_param, PARAM_MAX);
 	params[p_param] = p_value;
 	if (is_configured()) {
@@ -463,11 +524,13 @@ void SliderJoint3D::set_param(Param p_param, real_t p_value) {
 }
 
 real_t SliderJoint3D::get_param(Param p_param) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_param, PARAM_MAX, 0);
 	return params[p_param];
 }
 
 void SliderJoint3D::_configure_joint(RID p_joint, PhysicsBody3D *body_a, PhysicsBody3D *body_b) {
+	ZoneScopedS(60);
 	Transform3D gt = get_global_transform();
 	Transform3D ainv = body_a->get_global_transform().affine_inverse();
 
@@ -489,6 +552,7 @@ void SliderJoint3D::_configure_joint(RID p_joint, PhysicsBody3D *body_a, Physics
 }
 
 SliderJoint3D::SliderJoint3D() {
+	ZoneScopedS(60);
 	params[PARAM_LINEAR_LIMIT_UPPER] = 1.0;
 	params[PARAM_LINEAR_LIMIT_LOWER] = -1.0;
 	params[PARAM_LINEAR_LIMIT_SOFTNESS] = 1.0;
@@ -517,6 +581,7 @@ SliderJoint3D::SliderJoint3D() {
 //////////////////////////////////
 
 void ConeTwistJoint3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_param", "param", "value"), &ConeTwistJoint3D::set_param);
 	ClassDB::bind_method(D_METHOD("get_param", "param"), &ConeTwistJoint3D::get_param);
 
@@ -536,6 +601,7 @@ void ConeTwistJoint3D::_bind_methods() {
 }
 
 void ConeTwistJoint3D::set_param(Param p_param, real_t p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_param, PARAM_MAX);
 	params[p_param] = p_value;
 	if (is_configured()) {
@@ -546,11 +612,13 @@ void ConeTwistJoint3D::set_param(Param p_param, real_t p_value) {
 }
 
 real_t ConeTwistJoint3D::get_param(Param p_param) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_param, PARAM_MAX, 0);
 	return params[p_param];
 }
 
 void ConeTwistJoint3D::_configure_joint(RID p_joint, PhysicsBody3D *body_a, PhysicsBody3D *body_b) {
+	ZoneScopedS(60);
 	Transform3D gt = get_global_transform();
 
 	Transform3D ainv = body_a->get_global_transform().affine_inverse();
@@ -573,6 +641,7 @@ void ConeTwistJoint3D::_configure_joint(RID p_joint, PhysicsBody3D *body_a, Phys
 }
 
 ConeTwistJoint3D::ConeTwistJoint3D() {
+	ZoneScopedS(60);
 	params[PARAM_SWING_SPAN] = Math_PI * 0.25;
 	params[PARAM_TWIST_SPAN] = Math_PI;
 	params[PARAM_BIAS] = 0.3;
@@ -583,6 +652,7 @@ ConeTwistJoint3D::ConeTwistJoint3D() {
 /////////////////////////////////////////////////////////////////////
 
 void Generic6DOFJoint3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_param_x", "param", "value"), &Generic6DOFJoint3D::set_param_x);
 	ClassDB::bind_method(D_METHOD("get_param_x", "param"), &Generic6DOFJoint3D::get_param_x);
 
@@ -749,6 +819,7 @@ void Generic6DOFJoint3D::_bind_methods() {
 }
 
 void Generic6DOFJoint3D::set_param_x(Param p_param, real_t p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_param, PARAM_MAX);
 	params_x[p_param] = p_value;
 	if (is_configured()) {
@@ -759,11 +830,13 @@ void Generic6DOFJoint3D::set_param_x(Param p_param, real_t p_value) {
 }
 
 real_t Generic6DOFJoint3D::get_param_x(Param p_param) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_param, PARAM_MAX, 0);
 	return params_x[p_param];
 }
 
 void Generic6DOFJoint3D::set_param_y(Param p_param, real_t p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_param, PARAM_MAX);
 	params_y[p_param] = p_value;
 	if (is_configured()) {
@@ -773,11 +846,13 @@ void Generic6DOFJoint3D::set_param_y(Param p_param, real_t p_value) {
 }
 
 real_t Generic6DOFJoint3D::get_param_y(Param p_param) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_param, PARAM_MAX, 0);
 	return params_y[p_param];
 }
 
 void Generic6DOFJoint3D::set_param_z(Param p_param, real_t p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_param, PARAM_MAX);
 	params_z[p_param] = p_value;
 	if (is_configured()) {
@@ -787,11 +862,13 @@ void Generic6DOFJoint3D::set_param_z(Param p_param, real_t p_value) {
 }
 
 real_t Generic6DOFJoint3D::get_param_z(Param p_param) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_param, PARAM_MAX, 0);
 	return params_z[p_param];
 }
 
 void Generic6DOFJoint3D::set_flag_x(Flag p_flag, bool p_enabled) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_flag, FLAG_MAX);
 	flags_x[p_flag] = p_enabled;
 	if (is_configured()) {
@@ -801,11 +878,13 @@ void Generic6DOFJoint3D::set_flag_x(Flag p_flag, bool p_enabled) {
 }
 
 bool Generic6DOFJoint3D::get_flag_x(Flag p_flag) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_flag, FLAG_MAX, false);
 	return flags_x[p_flag];
 }
 
 void Generic6DOFJoint3D::set_flag_y(Flag p_flag, bool p_enabled) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_flag, FLAG_MAX);
 	flags_y[p_flag] = p_enabled;
 	if (is_configured()) {
@@ -815,11 +894,13 @@ void Generic6DOFJoint3D::set_flag_y(Flag p_flag, bool p_enabled) {
 }
 
 bool Generic6DOFJoint3D::get_flag_y(Flag p_flag) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_flag, FLAG_MAX, false);
 	return flags_y[p_flag];
 }
 
 void Generic6DOFJoint3D::set_flag_z(Flag p_flag, bool p_enabled) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_flag, FLAG_MAX);
 	flags_z[p_flag] = p_enabled;
 	if (is_configured()) {
@@ -829,11 +910,13 @@ void Generic6DOFJoint3D::set_flag_z(Flag p_flag, bool p_enabled) {
 }
 
 bool Generic6DOFJoint3D::get_flag_z(Flag p_flag) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_flag, FLAG_MAX, false);
 	return flags_z[p_flag];
 }
 
 void Generic6DOFJoint3D::_configure_joint(RID p_joint, PhysicsBody3D *body_a, PhysicsBody3D *body_b) {
+	ZoneScopedS(60);
 	Transform3D gt = get_global_transform();
 	//Vector3 cone_twistpos = gt.origin;
 	//Vector3 cone_twistdir = gt.basis.get_axis(2);
@@ -865,6 +948,7 @@ void Generic6DOFJoint3D::_configure_joint(RID p_joint, PhysicsBody3D *body_a, Ph
 }
 
 Generic6DOFJoint3D::Generic6DOFJoint3D() {
+	ZoneScopedS(60);
 	set_param_x(PARAM_LINEAR_LOWER_LIMIT, 0);
 	set_param_x(PARAM_LINEAR_UPPER_LIMIT, 0);
 	set_param_x(PARAM_LINEAR_LIMIT_SOFTNESS, 0.7);

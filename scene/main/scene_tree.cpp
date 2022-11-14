@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  scene_tree.cpp                                                       */
 /*************************************************************************/
@@ -65,6 +66,7 @@
 #include <stdlib.h>
 
 void SceneTreeTimer::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_time_left", "time"), &SceneTreeTimer::set_time_left);
 	ClassDB::bind_method(D_METHOD("get_time_left"), &SceneTreeTimer::get_time_left);
 
@@ -74,38 +76,47 @@ void SceneTreeTimer::_bind_methods() {
 }
 
 void SceneTreeTimer::set_time_left(double p_time) {
+	ZoneScopedS(60);
 	time_left = p_time;
 }
 
 double SceneTreeTimer::get_time_left() const {
+	ZoneScopedS(60);
 	return time_left;
 }
 
 void SceneTreeTimer::set_process_always(bool p_process_always) {
+	ZoneScopedS(60);
 	process_always = p_process_always;
 }
 
 bool SceneTreeTimer::is_process_always() {
+	ZoneScopedS(60);
 	return process_always;
 }
 
 void SceneTreeTimer::set_process_in_physics(bool p_process_in_physics) {
+	ZoneScopedS(60);
 	process_in_physics = p_process_in_physics;
 }
 
 bool SceneTreeTimer::is_process_in_physics() {
+	ZoneScopedS(60);
 	return process_in_physics;
 }
 
 void SceneTreeTimer::set_ignore_time_scale(bool p_ignore) {
+	ZoneScopedS(60);
 	ignore_time_scale = p_ignore;
 }
 
 bool SceneTreeTimer::is_ignore_time_scale() {
+	ZoneScopedS(60);
 	return ignore_time_scale;
 }
 
 void SceneTreeTimer::release_connections() {
+	ZoneScopedS(60);
 	List<Connection> signal_connections;
 	get_all_signal_connections(&signal_connections);
 
@@ -117,15 +128,18 @@ void SceneTreeTimer::release_connections() {
 SceneTreeTimer::SceneTreeTimer() {}
 
 void SceneTree::tree_changed() {
+	ZoneScopedS(60);
 	tree_version++;
 	emit_signal(tree_changed_name);
 }
 
 void SceneTree::node_added(Node *p_node) {
+	ZoneScopedS(60);
 	emit_signal(node_added_name, p_node);
 }
 
 void SceneTree::node_removed(Node *p_node) {
+	ZoneScopedS(60);
 	if (current_scene == p_node) {
 		current_scene = nullptr;
 	}
@@ -136,10 +150,12 @@ void SceneTree::node_removed(Node *p_node) {
 }
 
 void SceneTree::node_renamed(Node *p_node) {
+	ZoneScopedS(60);
 	emit_signal(node_renamed_name, p_node);
 }
 
 SceneTree::Group *SceneTree::add_to_group(const StringName &p_group, Node *p_node) {
+	ZoneScopedS(60);
 	HashMap<StringName, Group>::Iterator E = group_map.find(p_group);
 	if (!E) {
 		E = group_map.insert(p_group, Group());
@@ -153,6 +169,7 @@ SceneTree::Group *SceneTree::add_to_group(const StringName &p_group, Node *p_nod
 }
 
 void SceneTree::remove_from_group(const StringName &p_group, Node *p_node) {
+	ZoneScopedS(60);
 	HashMap<StringName, Group>::Iterator E = group_map.find(p_group);
 	ERR_FAIL_COND(!E);
 
@@ -163,6 +180,7 @@ void SceneTree::remove_from_group(const StringName &p_group, Node *p_node) {
 }
 
 void SceneTree::make_group_changed(const StringName &p_group) {
+	ZoneScopedS(60);
 	HashMap<StringName, Group>::Iterator E = group_map.find(p_group);
 	if (E) {
 		E->value.changed = true;
@@ -170,6 +188,7 @@ void SceneTree::make_group_changed(const StringName &p_group) {
 }
 
 void SceneTree::flush_transform_notifications() {
+	ZoneScopedS(60);
 	SelfList<Node> *n = xform_change_list.first();
 	while (n) {
 		Node *node = n->self();
@@ -181,6 +200,7 @@ void SceneTree::flush_transform_notifications() {
 }
 
 void SceneTree::_flush_ugc() {
+	ZoneScopedS(60);
 	ugc_locked = true;
 
 	while (unique_group_calls.size()) {
@@ -201,6 +221,7 @@ void SceneTree::_flush_ugc() {
 }
 
 void SceneTree::_update_group_order(Group &g, bool p_use_priority) {
+	ZoneScopedS(60);
 	if (!g.changed) {
 		return;
 	}
@@ -222,6 +243,7 @@ void SceneTree::_update_group_order(Group &g, bool p_use_priority) {
 }
 
 void SceneTree::call_group_flagsp(uint32_t p_call_flags, const StringName &p_group, const StringName &p_function, const Variant **p_args, int p_argcount) {
+	ZoneScopedS(60);
 	HashMap<StringName, Group>::Iterator E = group_map.find(p_group);
 	if (!E) {
 		return;
@@ -295,6 +317,7 @@ void SceneTree::call_group_flagsp(uint32_t p_call_flags, const StringName &p_gro
 }
 
 void SceneTree::notify_group_flags(uint32_t p_call_flags, const StringName &p_group, int p_notification) {
+	ZoneScopedS(60);
 	HashMap<StringName, Group>::Iterator E = group_map.find(p_group);
 	if (!E) {
 		return;
@@ -346,6 +369,7 @@ void SceneTree::notify_group_flags(uint32_t p_call_flags, const StringName &p_gr
 }
 
 void SceneTree::set_group_flags(uint32_t p_call_flags, const StringName &p_group, const String &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	HashMap<StringName, Group>::Iterator E = group_map.find(p_group);
 	if (!E) {
 		return;
@@ -397,14 +421,17 @@ void SceneTree::set_group_flags(uint32_t p_call_flags, const StringName &p_group
 }
 
 void SceneTree::notify_group(const StringName &p_group, int p_notification) {
+	ZoneScopedS(60);
 	notify_group_flags(GROUP_CALL_DEFAULT, p_group, p_notification);
 }
 
 void SceneTree::set_group(const StringName &p_group, const String &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	set_group_flags(GROUP_CALL_DEFAULT, p_group, p_name, p_value);
 }
 
 void SceneTree::initialize() {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!root);
 	initialized = true;
 	root->_set_tree(this);
@@ -412,6 +439,7 @@ void SceneTree::initialize() {
 }
 
 bool SceneTree::physics_process(double p_time) {
+	ZoneScopedS(60);
 	root_lock++;
 
 	current_frame++;
@@ -443,6 +471,7 @@ bool SceneTree::physics_process(double p_time) {
 }
 
 bool SceneTree::process(double p_time) {
+	ZoneScopedS(60);
 	root_lock++;
 
 	MainLoop::process(p_time);
@@ -512,6 +541,7 @@ bool SceneTree::process(double p_time) {
 }
 
 void SceneTree::process_timers(double p_delta, bool p_physics_frame) {
+	ZoneScopedS(60);
 	List<Ref<SceneTreeTimer>>::Element *L = timers.back(); //last element
 
 	for (List<Ref<SceneTreeTimer>>::Element *E = timers.front(); E;) {
@@ -544,6 +574,7 @@ void SceneTree::process_timers(double p_delta, bool p_physics_frame) {
 }
 
 void SceneTree::process_tweens(double p_delta, bool p_physics) {
+	ZoneScopedS(60);
 	// This methods works similarly to how SceneTreeTimers are handled.
 	List<Ref<Tween>>::Element *L = tweens.back();
 
@@ -570,6 +601,7 @@ void SceneTree::process_tweens(double p_delta, bool p_physics) {
 }
 
 void SceneTree::finalize() {
+	ZoneScopedS(60);
 	_flush_delete_queue();
 
 	_flush_ugc();
@@ -597,23 +629,27 @@ void SceneTree::finalize() {
 }
 
 void SceneTree::quit(int p_exit_code) {
+	ZoneScopedS(60);
 	OS::get_singleton()->set_exit_code(p_exit_code);
 	_quit = true;
 }
 
 void SceneTree::_main_window_close() {
+	ZoneScopedS(60);
 	if (accept_quit) {
 		_quit = true;
 	}
 }
 
 void SceneTree::_main_window_go_back() {
+	ZoneScopedS(60);
 	if (quit_on_go_back) {
 		_quit = true;
 	}
 }
 
 void SceneTree::_main_window_focus_in() {
+	ZoneScopedS(60);
 	Input *id = Input::get_singleton();
 	if (id) {
 		id->ensure_touch_mouse_raised();
@@ -621,6 +657,7 @@ void SceneTree::_main_window_focus_in() {
 }
 
 void SceneTree::_notification(int p_notification) {
+	ZoneScopedS(60);
 	switch (p_notification) {
 		case NOTIFICATION_TRANSLATION_CHANGED: {
 			if (!Engine::get_singleton()->is_editor_hint()) {
@@ -643,87 +680,107 @@ void SceneTree::_notification(int p_notification) {
 }
 
 bool SceneTree::is_auto_accept_quit() const {
+	ZoneScopedS(60);
 	return accept_quit;
 }
 
 void SceneTree::set_auto_accept_quit(bool p_enable) {
+	ZoneScopedS(60);
 	accept_quit = p_enable;
 }
 
 bool SceneTree::is_quit_on_go_back() const {
+	ZoneScopedS(60);
 	return quit_on_go_back;
 }
 
 void SceneTree::set_quit_on_go_back(bool p_enable) {
+	ZoneScopedS(60);
 	quit_on_go_back = p_enable;
 }
 
 #ifdef TOOLS_ENABLED
 
 bool SceneTree::is_node_being_edited(const Node *p_node) const {
+	ZoneScopedS(60);
 	return Engine::get_singleton()->is_editor_hint() && edited_scene_root && (edited_scene_root->is_ancestor_of(p_node) || edited_scene_root == p_node);
 }
 #endif
 
 #ifdef DEBUG_ENABLED
 void SceneTree::set_debug_collisions_hint(bool p_enabled) {
+	ZoneScopedS(60);
 	debug_collisions_hint = p_enabled;
 }
 
 bool SceneTree::is_debugging_collisions_hint() const {
+	ZoneScopedS(60);
 	return debug_collisions_hint;
 }
 
 void SceneTree::set_debug_paths_hint(bool p_enabled) {
+	ZoneScopedS(60);
 	debug_paths_hint = p_enabled;
 }
 
 bool SceneTree::is_debugging_paths_hint() const {
+	ZoneScopedS(60);
 	return debug_paths_hint;
 }
 
 void SceneTree::set_debug_navigation_hint(bool p_enabled) {
+	ZoneScopedS(60);
 	debug_navigation_hint = p_enabled;
 }
 
 bool SceneTree::is_debugging_navigation_hint() const {
+	ZoneScopedS(60);
 	return debug_navigation_hint;
 }
 #endif
 
 void SceneTree::set_debug_collisions_color(const Color &p_color) {
+	ZoneScopedS(60);
 	debug_collisions_color = p_color;
 }
 
 Color SceneTree::get_debug_collisions_color() const {
+	ZoneScopedS(60);
 	return debug_collisions_color;
 }
 
 void SceneTree::set_debug_collision_contact_color(const Color &p_color) {
+	ZoneScopedS(60);
 	debug_collision_contact_color = p_color;
 }
 
 Color SceneTree::get_debug_collision_contact_color() const {
+	ZoneScopedS(60);
 	return debug_collision_contact_color;
 }
 
 void SceneTree::set_debug_paths_color(const Color &p_color) {
+	ZoneScopedS(60);
 	debug_paths_color = p_color;
 }
 
 Color SceneTree::get_debug_paths_color() const {
+	ZoneScopedS(60);
 	return debug_paths_color;
 }
 
 void SceneTree::set_debug_paths_width(float p_width) {
+	ZoneScopedS(60);
 	debug_paths_width = p_width;
 }
 
 float SceneTree::get_debug_paths_width() const {
+	ZoneScopedS(60);
 	return debug_paths_width;
 }
 
 Ref<Material> SceneTree::get_debug_paths_material() {
+	ZoneScopedS(60);
 	if (debug_paths_material.is_valid()) {
 		return debug_paths_material;
 	}
@@ -741,6 +798,7 @@ Ref<Material> SceneTree::get_debug_paths_material() {
 }
 
 Ref<Material> SceneTree::get_debug_collision_material() {
+	ZoneScopedS(60);
 	if (collision_material.is_valid()) {
 		return collision_material;
 	}
@@ -758,6 +816,7 @@ Ref<Material> SceneTree::get_debug_collision_material() {
 }
 
 Ref<ArrayMesh> SceneTree::get_debug_contact_mesh() {
+	ZoneScopedS(60);
 	if (debug_contact_mesh.is_valid()) {
 		return debug_contact_mesh;
 	}
@@ -815,6 +874,7 @@ Ref<ArrayMesh> SceneTree::get_debug_contact_mesh() {
 }
 
 void SceneTree::set_pause(bool p_enabled) {
+	ZoneScopedS(60);
 	if (p_enabled == paused) {
 		return;
 	}
@@ -828,10 +888,12 @@ void SceneTree::set_pause(bool p_enabled) {
 }
 
 bool SceneTree::is_paused() const {
+	ZoneScopedS(60);
 	return paused;
 }
 
 void SceneTree::_notify_group_pause(const StringName &p_group, int p_notification) {
+	ZoneScopedS(60);
 	HashMap<StringName, Group>::Iterator E = group_map.find(p_group);
 	if (!E) {
 		return;
@@ -876,6 +938,7 @@ void SceneTree::_notify_group_pause(const StringName &p_group, int p_notificatio
 }
 
 void SceneTree::_call_input_pause(const StringName &p_group, CallInputType p_call_type, const Ref<InputEvent> &p_input, Viewport *p_viewport) {
+	ZoneScopedS(60);
 	HashMap<StringName, Group>::Iterator E = group_map.find(p_group);
 	if (!E) {
 		return;
@@ -955,6 +1018,7 @@ void SceneTree::_call_input_pause(const StringName &p_group, CallInputType p_cal
 }
 
 void SceneTree::_call_group_flags(const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+	ZoneScopedS(60);
 	r_error.error = Callable::CallError::CALL_OK;
 
 	ERR_FAIL_COND(p_argcount < 3);
@@ -970,6 +1034,7 @@ void SceneTree::_call_group_flags(const Variant **p_args, int p_argcount, Callab
 }
 
 void SceneTree::_call_group(const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+	ZoneScopedS(60);
 	r_error.error = Callable::CallError::CALL_OK;
 
 	ERR_FAIL_COND(p_argcount < 2);
@@ -983,10 +1048,12 @@ void SceneTree::_call_group(const Variant **p_args, int p_argcount, Callable::Ca
 }
 
 int64_t SceneTree::get_frame() const {
+	ZoneScopedS(60);
 	return current_frame;
 }
 
 TypedArray<Node> SceneTree::_get_nodes_in_group(const StringName &p_group) {
+	ZoneScopedS(60);
 	TypedArray<Node> ret;
 	HashMap<StringName, Group>::Iterator E = group_map.find(p_group);
 	if (!E) {
@@ -1010,10 +1077,12 @@ TypedArray<Node> SceneTree::_get_nodes_in_group(const StringName &p_group) {
 }
 
 bool SceneTree::has_group(const StringName &p_identifier) const {
+	ZoneScopedS(60);
 	return group_map.has(p_identifier);
 }
 
 Node *SceneTree::get_first_node_in_group(const StringName &p_group) {
+	ZoneScopedS(60);
 	HashMap<StringName, Group>::Iterator E = group_map.find(p_group);
 	if (!E) {
 		return nullptr; // No group.
@@ -1029,6 +1098,7 @@ Node *SceneTree::get_first_node_in_group(const StringName &p_group) {
 }
 
 void SceneTree::get_nodes_in_group(const StringName &p_group, List<Node *> *p_list) {
+	ZoneScopedS(60);
 	HashMap<StringName, Group>::Iterator E = group_map.find(p_group);
 	if (!E) {
 		return;
@@ -1046,6 +1116,7 @@ void SceneTree::get_nodes_in_group(const StringName &p_group, List<Node *> *p_li
 }
 
 void SceneTree::_flush_delete_queue() {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	while (delete_queue.size()) {
@@ -1058,6 +1129,7 @@ void SceneTree::_flush_delete_queue() {
 }
 
 void SceneTree::queue_delete(Object *p_object) {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 	ERR_FAIL_NULL(p_object);
 	p_object->_is_queued_for_deletion = true;
@@ -1065,6 +1137,7 @@ void SceneTree::queue_delete(Object *p_object) {
 }
 
 int SceneTree::get_node_count() const {
+	ZoneScopedS(60);
 	return node_count;
 }
 
@@ -1083,15 +1156,18 @@ Node *SceneTree::get_edited_scene_root() const {
 }
 
 void SceneTree::set_current_scene(Node *p_scene) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_scene && p_scene->get_parent() != root);
 	current_scene = p_scene;
 }
 
 Node *SceneTree::get_current_scene() const {
+	ZoneScopedS(60);
 	return current_scene;
 }
 
 void SceneTree::_change_scene(Node *p_to) {
+	ZoneScopedS(60);
 	if (current_scene) {
 		memdelete(current_scene);
 		current_scene = nullptr;
@@ -1113,6 +1189,7 @@ void SceneTree::_change_scene(Node *p_to) {
 }
 
 Error SceneTree::change_scene_to_file(const String &p_path) {
+	ZoneScopedS(60);
 	Ref<PackedScene> new_scene = ResourceLoader::load(p_path);
 	if (new_scene.is_null()) {
 		return ERR_CANT_OPEN;
@@ -1122,6 +1199,7 @@ Error SceneTree::change_scene_to_file(const String &p_path) {
 }
 
 Error SceneTree::change_scene_to_packed(const Ref<PackedScene> &p_scene) {
+	ZoneScopedS(60);
 	Node *new_scene = nullptr;
 	if (p_scene.is_valid()) {
 		new_scene = p_scene->instantiate();
@@ -1133,17 +1211,20 @@ Error SceneTree::change_scene_to_packed(const Ref<PackedScene> &p_scene) {
 }
 
 Error SceneTree::reload_current_scene() {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!current_scene, ERR_UNCONFIGURED);
 	String fname = current_scene->get_scene_file_path();
 	return change_scene_to_file(fname);
 }
 
 void SceneTree::add_current_scene(Node *p_current) {
+	ZoneScopedS(60);
 	current_scene = p_current;
 	root->add_child(p_current);
 }
 
 Ref<SceneTreeTimer> SceneTree::create_timer(double p_delay_sec, bool p_process_always, bool p_process_in_physics, bool p_ignore_time_scale) {
+	ZoneScopedS(60);
 	Ref<SceneTreeTimer> stt;
 	stt.instantiate();
 	stt->set_process_always(p_process_always);
@@ -1155,12 +1236,14 @@ Ref<SceneTreeTimer> SceneTree::create_timer(double p_delay_sec, bool p_process_a
 }
 
 Ref<Tween> SceneTree::create_tween() {
+	ZoneScopedS(60);
 	Ref<Tween> tween = memnew(Tween(true));
 	tweens.push_back(tween);
 	return tween;
 }
 
 TypedArray<Tween> SceneTree::get_processed_tweens() {
+	ZoneScopedS(60);
 	TypedArray<Tween> ret;
 	ret.resize(tweens.size());
 
@@ -1174,6 +1257,7 @@ TypedArray<Tween> SceneTree::get_processed_tweens() {
 }
 
 Ref<MultiplayerAPI> SceneTree::get_multiplayer(const NodePath &p_for_path) const {
+	ZoneScopedS(60);
 	Ref<MultiplayerAPI> out = multiplayer;
 	for (const KeyValue<NodePath, Ref<MultiplayerAPI>> &E : custom_multiplayers) {
 		const Vector<StringName> snames = E.key.get_names();
@@ -1199,6 +1283,7 @@ Ref<MultiplayerAPI> SceneTree::get_multiplayer(const NodePath &p_for_path) const
 }
 
 void SceneTree::set_multiplayer(Ref<MultiplayerAPI> p_multiplayer, const NodePath &p_root_path) {
+	ZoneScopedS(60);
 	if (p_root_path.is_empty()) {
 		ERR_FAIL_COND(!p_multiplayer.is_valid());
 		if (multiplayer.is_valid()) {
@@ -1218,14 +1303,17 @@ void SceneTree::set_multiplayer(Ref<MultiplayerAPI> p_multiplayer, const NodePat
 }
 
 void SceneTree::set_multiplayer_poll_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	multiplayer_poll = p_enabled;
 }
 
 bool SceneTree::is_multiplayer_poll_enabled() const {
+	ZoneScopedS(60);
 	return multiplayer_poll;
 }
 
 void SceneTree::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_root"), &SceneTree::get_root);
 	ClassDB::bind_method(D_METHOD("has_group", "name"), &SceneTree::has_group);
 
@@ -1329,17 +1417,20 @@ SceneTree::IdleCallback SceneTree::idle_callbacks[SceneTree::MAX_IDLE_CALLBACKS]
 int SceneTree::idle_callback_count = 0;
 
 void SceneTree::_call_idle_callbacks() {
+	ZoneScopedS(60);
 	for (int i = 0; i < idle_callback_count; i++) {
 		idle_callbacks[i]();
 	}
 }
 
 void SceneTree::add_idle_callback(IdleCallback p_callback) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(idle_callback_count >= MAX_IDLE_CALLBACKS);
 	idle_callbacks[idle_callback_count++] = p_callback;
 }
 
 void SceneTree::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+	ZoneScopedS(60);
 	if (p_function == "change_scene_to_file") {
 		Ref<DirAccess> dir_access = DirAccess::create(DirAccess::ACCESS_RESOURCES);
 		List<String> directories;
@@ -1371,6 +1462,7 @@ void SceneTree::get_argument_options(const StringName &p_function, int p_idx, Li
 }
 
 SceneTree::SceneTree() {
+	ZoneScopedS(60);
 	if (singleton == nullptr) {
 		singleton = this;
 	}
@@ -1536,6 +1628,7 @@ SceneTree::SceneTree() {
 }
 
 SceneTree::~SceneTree() {
+	ZoneScopedS(60);
 	if (root) {
 		root->_set_tree(nullptr);
 		root->_propagate_after_exit_tree();

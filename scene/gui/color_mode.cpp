@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  color_mode.cpp                                                       */
 /*************************************************************************/
@@ -35,26 +36,31 @@
 #include "thirdparty/misc/ok_color.h"
 
 ColorMode::ColorMode(ColorPicker *p_color_picker) {
+	ZoneScopedS(60);
 	color_picker = p_color_picker;
 }
 
 String ColorModeRGB::get_slider_label(int idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V_MSG(idx, 3, String(), "Couldn't get slider label.");
 	return labels[idx];
 }
 
 float ColorModeRGB::get_slider_max(int idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V_MSG(idx, 4, 0, "Couldn't get slider max value.");
 	Color color = color_picker->get_pick_color();
 	return next_power_of_2(MAX(255, color.components[idx] * 255.0)) - 1;
 }
 
 float ColorModeRGB::get_slider_value(int idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V_MSG(idx, 4, 0, "Couldn't get slider value.");
 	return color_picker->get_pick_color().components[idx] * 255;
 }
 
 Color ColorModeRGB::get_color() const {
+	ZoneScopedS(60);
 	Vector<float> values = color_picker->get_active_slider_values();
 	Color color;
 	for (int i = 0; i < 4; i++) {
@@ -64,6 +70,7 @@ Color ColorModeRGB::get_color() const {
 }
 
 void ColorModeRGB::slider_draw(int p_which) {
+	ZoneScopedS(60);
 	Vector<Vector2> pos;
 	pos.resize(4);
 	Vector<Color> col;
@@ -106,16 +113,19 @@ void ColorModeRGB::slider_draw(int p_which) {
 }
 
 String ColorModeHSV::get_slider_label(int idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V_MSG(idx, 3, String(), "Couldn't get slider label.");
 	return labels[idx];
 }
 
 float ColorModeHSV::get_slider_max(int idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V_MSG(idx, 4, 0, "Couldn't get slider max value.");
 	return slider_max[idx];
 }
 
 float ColorModeHSV::get_slider_value(int idx) const {
+	ZoneScopedS(60);
 	switch (idx) {
 		case 0:
 			return color_picker->get_pick_color().get_h() * 360.0;
@@ -131,6 +141,7 @@ float ColorModeHSV::get_slider_value(int idx) const {
 }
 
 Color ColorModeHSV::get_color() const {
+	ZoneScopedS(60);
 	Vector<float> values = color_picker->get_active_slider_values();
 	Color color;
 	color.set_hsv(values[0] / 360.0, values[1] / 100.0, values[2] / 100.0, values[3] / 255.0);
@@ -138,6 +149,7 @@ Color ColorModeHSV::get_color() const {
 }
 
 void ColorModeHSV::slider_draw(int p_which) {
+	ZoneScopedS(60);
 	Vector<Vector2> pos;
 	pos.resize(4);
 	Vector<Color> col;
@@ -182,21 +194,25 @@ void ColorModeHSV::slider_draw(int p_which) {
 }
 
 String ColorModeRAW::get_slider_label(int idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V_MSG(idx, 3, String(), "Couldn't get slider label.");
 	return labels[idx];
 }
 
 float ColorModeRAW::get_slider_max(int idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V_MSG(idx, 4, 0, "Couldn't get slider max value.");
 	return slider_max[idx];
 }
 
 float ColorModeRAW::get_slider_value(int idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V_MSG(idx, 4, 0, "Couldn't get slider value.");
 	return color_picker->get_pick_color().components[idx];
 }
 
 Color ColorModeRAW::get_color() const {
+	ZoneScopedS(60);
 	Vector<float> values = color_picker->get_active_slider_values();
 	Color color;
 	for (int i = 0; i < 4; i++) {
@@ -206,6 +222,7 @@ Color ColorModeRAW::get_color() const {
 }
 
 void ColorModeRAW::slider_draw(int p_which) {
+	ZoneScopedS(60);
 	Vector<Vector2> pos;
 	pos.resize(4);
 	Vector<Color> col;
@@ -239,6 +256,7 @@ void ColorModeRAW::slider_draw(int p_which) {
 }
 
 bool ColorModeRAW::apply_theme() const {
+	ZoneScopedS(60);
 	for (int i = 0; i < 4; i++) {
 		HSlider *slider = color_picker->get_slider(i);
 		slider->remove_theme_icon_override("grabber");
@@ -251,16 +269,19 @@ bool ColorModeRAW::apply_theme() const {
 }
 
 String ColorModeOKHSL::get_slider_label(int idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V_MSG(idx, 3, String(), "Couldn't get slider label.");
 	return labels[idx];
 }
 
 float ColorModeOKHSL::get_slider_max(int idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V_MSG(idx, 4, 0, "Couldn't get slider max value.");
 	return slider_max[idx];
 }
 
 float ColorModeOKHSL::get_slider_value(int idx) const {
+	ZoneScopedS(60);
 	switch (idx) {
 		case 0:
 			return color_picker->get_pick_color().get_ok_hsl_h() * 360.0;
@@ -276,6 +297,7 @@ float ColorModeOKHSL::get_slider_value(int idx) const {
 }
 
 Color ColorModeOKHSL::get_color() const {
+	ZoneScopedS(60);
 	Vector<float> values = color_picker->get_active_slider_values();
 	Color color;
 	color.set_ok_hsl(values[0] / 360.0, values[1] / 100.0, values[2] / 100.0, values[3] / 255.0);
@@ -283,6 +305,7 @@ Color ColorModeOKHSL::get_color() const {
 }
 
 void ColorModeOKHSL::slider_draw(int p_which) {
+	ZoneScopedS(60);
 	HSlider *slider = color_picker->get_slider(p_which);
 	Size2 size = slider->get_size();
 	const real_t margin = 16 * color_picker->get_theme_default_base_scale();

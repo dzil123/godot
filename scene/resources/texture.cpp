@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  texture.cpp                                                          */
 /*************************************************************************/
@@ -40,6 +41,7 @@
 #include "servers/camera/camera_feed.h"
 
 int Texture2D::get_width() const {
+	ZoneScopedS(60);
 	int ret;
 	if (GDVIRTUAL_REQUIRED_CALL(_get_width, ret)) {
 		return ret;
@@ -48,6 +50,7 @@ int Texture2D::get_width() const {
 }
 
 int Texture2D::get_height() const {
+	ZoneScopedS(60);
 	int ret;
 	if (GDVIRTUAL_REQUIRED_CALL(_get_height, ret)) {
 		return ret;
@@ -56,21 +59,25 @@ int Texture2D::get_height() const {
 }
 
 Size2 Texture2D::get_size() const {
+	ZoneScopedS(60);
 	return Size2(get_width(), get_height());
 }
 
 bool Texture2D::is_pixel_opaque(int p_x, int p_y) const {
+	ZoneScopedS(60);
 	bool ret = true;
 	GDVIRTUAL_CALL(_is_pixel_opaque, p_x, p_y, ret);
 	return ret;
 }
 bool Texture2D::has_alpha() const {
+	ZoneScopedS(60);
 	bool ret = true;
 	GDVIRTUAL_CALL(_has_alpha, ret);
 	return ret;
 }
 
 void Texture2D::draw(RID p_canvas_item, const Point2 &p_pos, const Color &p_modulate, bool p_transpose) const {
+	ZoneScopedS(60);
 	if (GDVIRTUAL_CALL(_draw, p_canvas_item, p_pos, p_modulate, p_transpose)) {
 		return;
 	}
@@ -78,6 +85,7 @@ void Texture2D::draw(RID p_canvas_item, const Point2 &p_pos, const Color &p_modu
 }
 
 void Texture2D::draw_rect(RID p_canvas_item, const Rect2 &p_rect, bool p_tile, const Color &p_modulate, bool p_transpose) const {
+	ZoneScopedS(60);
 	if (GDVIRTUAL_CALL(_draw_rect, p_canvas_item, p_rect, p_tile, p_modulate, p_transpose)) {
 		return;
 	}
@@ -85,6 +93,7 @@ void Texture2D::draw_rect(RID p_canvas_item, const Rect2 &p_rect, bool p_tile, c
 }
 
 void Texture2D::draw_rect_region(RID p_canvas_item, const Rect2 &p_rect, const Rect2 &p_src_rect, const Color &p_modulate, bool p_transpose, bool p_clip_uv) const {
+	ZoneScopedS(60);
 	if (GDVIRTUAL_CALL(_draw_rect_region, p_canvas_item, p_rect, p_src_rect, p_modulate, p_transpose, p_clip_uv)) {
 		return;
 	}
@@ -92,12 +101,14 @@ void Texture2D::draw_rect_region(RID p_canvas_item, const Rect2 &p_rect, const R
 }
 
 bool Texture2D::get_rect_region(const Rect2 &p_rect, const Rect2 &p_src_rect, Rect2 &r_rect, Rect2 &r_src_rect) const {
+	ZoneScopedS(60);
 	r_rect = p_rect;
 	r_src_rect = p_src_rect;
 	return true;
 }
 
 void Texture2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_width"), &Texture2D::get_width);
 	ClassDB::bind_method(D_METHOD("get_height"), &Texture2D::get_height);
 	ClassDB::bind_method(D_METHOD("get_size"), &Texture2D::get_size);
@@ -125,6 +136,7 @@ Texture2D::Texture2D() {
 /////////////////////
 
 void ImageTexture::reload_from_file() {
+	ZoneScopedS(60);
 	String path = ResourceLoader::path_remap(get_path());
 	if (!path.is_resource_file()) {
 		return;
@@ -143,6 +155,7 @@ void ImageTexture::reload_from_file() {
 }
 
 bool ImageTexture::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	if (p_name == "image") {
 		set_image(p_value);
 		return true;
@@ -151,6 +164,7 @@ bool ImageTexture::_set(const StringName &p_name, const Variant &p_value) {
 }
 
 bool ImageTexture::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	if (p_name == "image") {
 		r_ret = get_image();
 		return true;
@@ -159,10 +173,12 @@ bool ImageTexture::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void ImageTexture::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	p_list->push_back(PropertyInfo(Variant::OBJECT, PNAME("image"), PROPERTY_HINT_RESOURCE_TYPE, "Image", PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_RESOURCE_NOT_PERSISTENT));
 }
 
 Ref<ImageTexture> ImageTexture::create_from_image(const Ref<Image> &p_image) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(p_image.is_null() || p_image->is_empty(), Ref<ImageTexture>(), "Invalid image");
 
 	Ref<ImageTexture> image_texture;
@@ -172,6 +188,7 @@ Ref<ImageTexture> ImageTexture::create_from_image(const Ref<Image> &p_image) {
 }
 
 void ImageTexture::set_image(const Ref<Image> &p_image) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_image.is_null() || p_image->is_empty(), "Invalid image");
 	w = p_image->get_width();
 	h = p_image->get_height();
@@ -191,10 +208,12 @@ void ImageTexture::set_image(const Ref<Image> &p_image) {
 }
 
 Image::Format ImageTexture::get_format() const {
+	ZoneScopedS(60);
 	return format;
 }
 
 void ImageTexture::update(const Ref<Image> &p_image) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_image.is_null(), "Invalid image");
 	ERR_FAIL_COND_MSG(texture.is_null(), "Texture is not initialized.");
 	ERR_FAIL_COND_MSG(p_image->get_width() != w || p_image->get_height() != h,
@@ -214,6 +233,7 @@ void ImageTexture::update(const Ref<Image> &p_image) {
 }
 
 Ref<Image> ImageTexture::get_image() const {
+	ZoneScopedS(60);
 	if (image_stored) {
 		return RenderingServer::get_singleton()->texture_2d_get(texture);
 	} else {
@@ -222,14 +242,17 @@ Ref<Image> ImageTexture::get_image() const {
 }
 
 int ImageTexture::get_width() const {
+	ZoneScopedS(60);
 	return w;
 }
 
 int ImageTexture::get_height() const {
+	ZoneScopedS(60);
 	return h;
 }
 
 RID ImageTexture::get_rid() const {
+	ZoneScopedS(60);
 	if (texture.is_null()) {
 		//we are in trouble, create something temporary
 		texture = RenderingServer::get_singleton()->texture_2d_placeholder_create();
@@ -238,10 +261,12 @@ RID ImageTexture::get_rid() const {
 }
 
 bool ImageTexture::has_alpha() const {
+	ZoneScopedS(60);
 	return (format == Image::FORMAT_LA8 || format == Image::FORMAT_RGBA8);
 }
 
 void ImageTexture::draw(RID p_canvas_item, const Point2 &p_pos, const Color &p_modulate, bool p_transpose) const {
+	ZoneScopedS(60);
 	if ((w | h) == 0) {
 		return;
 	}
@@ -249,6 +274,7 @@ void ImageTexture::draw(RID p_canvas_item, const Point2 &p_pos, const Color &p_m
 }
 
 void ImageTexture::draw_rect(RID p_canvas_item, const Rect2 &p_rect, bool p_tile, const Color &p_modulate, bool p_transpose) const {
+	ZoneScopedS(60);
 	if ((w | h) == 0) {
 		return;
 	}
@@ -256,6 +282,7 @@ void ImageTexture::draw_rect(RID p_canvas_item, const Rect2 &p_rect, bool p_tile
 }
 
 void ImageTexture::draw_rect_region(RID p_canvas_item, const Rect2 &p_rect, const Rect2 &p_src_rect, const Color &p_modulate, bool p_transpose, bool p_clip_uv) const {
+	ZoneScopedS(60);
 	if ((w | h) == 0) {
 		return;
 	}
@@ -263,6 +290,7 @@ void ImageTexture::draw_rect_region(RID p_canvas_item, const Rect2 &p_rect, cons
 }
 
 bool ImageTexture::is_pixel_opaque(int p_x, int p_y) const {
+	ZoneScopedS(60);
 	if (!alpha_cache.is_valid()) {
 		Ref<Image> img = get_image();
 		if (img.is_valid()) {
@@ -296,6 +324,7 @@ bool ImageTexture::is_pixel_opaque(int p_x, int p_y) const {
 }
 
 void ImageTexture::set_size_override(const Size2i &p_size) {
+	ZoneScopedS(60);
 	Size2i s = p_size;
 	if (s.x != 0) {
 		w = s.x;
@@ -307,6 +336,7 @@ void ImageTexture::set_size_override(const Size2i &p_size) {
 }
 
 void ImageTexture::set_path(const String &p_path, bool p_take_over) {
+	ZoneScopedS(60);
 	if (texture.is_valid()) {
 		RenderingServer::get_singleton()->texture_set_path(texture, p_path);
 	}
@@ -315,6 +345,7 @@ void ImageTexture::set_path(const String &p_path, bool p_take_over) {
 }
 
 void ImageTexture::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_static_method("ImageTexture", D_METHOD("create_from_image", "image"), &ImageTexture::create_from_image);
 	ClassDB::bind_method(D_METHOD("get_format"), &ImageTexture::get_format);
 
@@ -326,6 +357,7 @@ void ImageTexture::_bind_methods() {
 ImageTexture::ImageTexture() {}
 
 ImageTexture::~ImageTexture() {
+	ZoneScopedS(60);
 	if (texture.is_valid()) {
 		RenderingServer::get_singleton()->free(texture);
 	}
@@ -334,6 +366,7 @@ ImageTexture::~ImageTexture() {
 /////////////////////
 
 void PortableCompressedTexture2D::_set_data(const Vector<uint8_t> &p_data) {
+	ZoneScopedS(60);
 	if (p_data.size() == 0) {
 		return; //nothing to do
 	}
@@ -410,13 +443,16 @@ void PortableCompressedTexture2D::_set_data(const Vector<uint8_t> &p_data) {
 }
 
 PortableCompressedTexture2D::CompressionMode PortableCompressedTexture2D::get_compression_mode() const {
+	ZoneScopedS(60);
 	return compression_mode;
 }
 Vector<uint8_t> PortableCompressedTexture2D::_get_data() const {
+	ZoneScopedS(60);
 	return compressed_buffer;
 }
 
 void PortableCompressedTexture2D::create_from_image(const Ref<Image> &p_image, CompressionMode p_compression_mode, bool p_normal_map, float p_lossy_quality) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_image.is_null() || p_image->is_empty());
 
 	Vector<uint8_t> buffer;
@@ -477,10 +513,12 @@ void PortableCompressedTexture2D::create_from_image(const Ref<Image> &p_image, C
 }
 
 Image::Format PortableCompressedTexture2D::get_format() const {
+	ZoneScopedS(60);
 	return format;
 }
 
 Ref<Image> PortableCompressedTexture2D::get_image() const {
+	ZoneScopedS(60);
 	if (image_stored) {
 		return RenderingServer::get_singleton()->texture_2d_get(texture);
 	} else {
@@ -489,14 +527,17 @@ Ref<Image> PortableCompressedTexture2D::get_image() const {
 }
 
 int PortableCompressedTexture2D::get_width() const {
+	ZoneScopedS(60);
 	return size.width;
 }
 
 int PortableCompressedTexture2D::get_height() const {
+	ZoneScopedS(60);
 	return size.height;
 }
 
 RID PortableCompressedTexture2D::get_rid() const {
+	ZoneScopedS(60);
 	if (texture.is_null()) {
 		//we are in trouble, create something temporary
 		texture = RenderingServer::get_singleton()->texture_2d_placeholder_create();
@@ -505,10 +546,12 @@ RID PortableCompressedTexture2D::get_rid() const {
 }
 
 bool PortableCompressedTexture2D::has_alpha() const {
+	ZoneScopedS(60);
 	return (format == Image::FORMAT_LA8 || format == Image::FORMAT_RGBA8);
 }
 
 void PortableCompressedTexture2D::draw(RID p_canvas_item, const Point2 &p_pos, const Color &p_modulate, bool p_transpose) const {
+	ZoneScopedS(60);
 	if (size.width == 0 || size.height == 0) {
 		return;
 	}
@@ -516,6 +559,7 @@ void PortableCompressedTexture2D::draw(RID p_canvas_item, const Point2 &p_pos, c
 }
 
 void PortableCompressedTexture2D::draw_rect(RID p_canvas_item, const Rect2 &p_rect, bool p_tile, const Color &p_modulate, bool p_transpose) const {
+	ZoneScopedS(60);
 	if (size.width == 0 || size.height == 0) {
 		return;
 	}
@@ -523,6 +567,7 @@ void PortableCompressedTexture2D::draw_rect(RID p_canvas_item, const Rect2 &p_re
 }
 
 void PortableCompressedTexture2D::draw_rect_region(RID p_canvas_item, const Rect2 &p_rect, const Rect2 &p_src_rect, const Color &p_modulate, bool p_transpose, bool p_clip_uv) const {
+	ZoneScopedS(60);
 	if (size.width == 0 || size.height == 0) {
 		return;
 	}
@@ -530,6 +575,7 @@ void PortableCompressedTexture2D::draw_rect_region(RID p_canvas_item, const Rect
 }
 
 bool PortableCompressedTexture2D::is_pixel_opaque(int p_x, int p_y) const {
+	ZoneScopedS(60);
 	if (!alpha_cache.is_valid()) {
 		Ref<Image> img = get_image();
 		if (img.is_valid()) {
@@ -563,15 +609,18 @@ bool PortableCompressedTexture2D::is_pixel_opaque(int p_x, int p_y) const {
 }
 
 void PortableCompressedTexture2D::set_size_override(const Size2 &p_size) {
+	ZoneScopedS(60);
 	size_override = p_size;
 	RenderingServer::get_singleton()->texture_set_size_override(texture, size_override.width, size_override.height);
 }
 
 Size2 PortableCompressedTexture2D::get_size_override() const {
+	ZoneScopedS(60);
 	return size_override;
 }
 
 void PortableCompressedTexture2D::set_path(const String &p_path, bool p_take_over) {
+	ZoneScopedS(60);
 	if (texture.is_valid()) {
 		RenderingServer::get_singleton()->texture_set_path(texture, p_path);
 	}
@@ -582,14 +631,17 @@ void PortableCompressedTexture2D::set_path(const String &p_path, bool p_take_ove
 bool PortableCompressedTexture2D::keep_all_compressed_buffers = false;
 
 void PortableCompressedTexture2D::set_keep_all_compressed_buffers(bool p_keep) {
+	ZoneScopedS(60);
 	keep_all_compressed_buffers = p_keep;
 }
 
 bool PortableCompressedTexture2D::is_keeping_all_compressed_buffers() {
+	ZoneScopedS(60);
 	return keep_all_compressed_buffers;
 }
 
 void PortableCompressedTexture2D::set_keep_compressed_buffer(bool p_keep) {
+	ZoneScopedS(60);
 	keep_compressed_buffer = p_keep;
 	if (!p_keep) {
 		compressed_buffer.clear();
@@ -597,10 +649,12 @@ void PortableCompressedTexture2D::set_keep_compressed_buffer(bool p_keep) {
 }
 
 bool PortableCompressedTexture2D::is_keeping_compressed_buffer() const {
+	ZoneScopedS(60);
 	return keep_compressed_buffer;
 }
 
 void PortableCompressedTexture2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("create_from_image", "image", "compression_mode", "normal_map", "lossy_quality"), &PortableCompressedTexture2D::create_from_image, DEFVAL(false), DEFVAL(0.8));
 	ClassDB::bind_method(D_METHOD("get_format"), &PortableCompressedTexture2D::get_format);
 	ClassDB::bind_method(D_METHOD("get_compression_mode"), &PortableCompressedTexture2D::get_compression_mode);
@@ -632,6 +686,7 @@ void PortableCompressedTexture2D::_bind_methods() {
 PortableCompressedTexture2D::PortableCompressedTexture2D() {}
 
 PortableCompressedTexture2D::~PortableCompressedTexture2D() {
+	ZoneScopedS(60);
 	if (texture.is_valid()) {
 		RenderingServer::get_singleton()->free(texture);
 	}
@@ -640,6 +695,7 @@ PortableCompressedTexture2D::~PortableCompressedTexture2D() {
 //////////////////////////////////////////
 
 Ref<Image> CompressedTexture2D::load_image_from_file(Ref<FileAccess> f, int p_size_limit) {
+	ZoneScopedS(60);
 	uint32_t data_format = f->get_32();
 	uint32_t w = f->get_16();
 	uint32_t h = f->get_16();
@@ -770,6 +826,7 @@ Ref<Image> CompressedTexture2D::load_image_from_file(Ref<FileAccess> f, int p_si
 }
 
 void CompressedTexture2D::set_path(const String &p_path, bool p_take_over) {
+	ZoneScopedS(60);
 	if (texture.is_valid()) {
 		RenderingServer::get_singleton()->texture_set_path(texture, p_path);
 	}
@@ -778,6 +835,7 @@ void CompressedTexture2D::set_path(const String &p_path, bool p_take_over) {
 }
 
 void CompressedTexture2D::_requested_3d(void *p_ud) {
+	ZoneScopedS(60);
 	CompressedTexture2D *ct = (CompressedTexture2D *)p_ud;
 	Ref<CompressedTexture2D> ctex(ct);
 	ERR_FAIL_COND(!request_3d_callback);
@@ -785,6 +843,7 @@ void CompressedTexture2D::_requested_3d(void *p_ud) {
 }
 
 void CompressedTexture2D::_requested_roughness(void *p_ud, const String &p_normal_path, RS::TextureDetectRoughnessChannel p_roughness_channel) {
+	ZoneScopedS(60);
 	CompressedTexture2D *ct = (CompressedTexture2D *)p_ud;
 	Ref<CompressedTexture2D> ctex(ct);
 	ERR_FAIL_COND(!request_roughness_callback);
@@ -792,6 +851,7 @@ void CompressedTexture2D::_requested_roughness(void *p_ud, const String &p_norma
 }
 
 void CompressedTexture2D::_requested_normal(void *p_ud) {
+	ZoneScopedS(60);
 	CompressedTexture2D *ct = (CompressedTexture2D *)p_ud;
 	Ref<CompressedTexture2D> ctex(ct);
 	ERR_FAIL_COND(!request_normal_callback);
@@ -803,10 +863,12 @@ CompressedTexture2D::TextureFormatRoughnessRequestCallback CompressedTexture2D::
 CompressedTexture2D::TextureFormatRequestCallback CompressedTexture2D::request_normal_callback = nullptr;
 
 Image::Format CompressedTexture2D::get_format() const {
+	ZoneScopedS(60);
 	return format;
 }
 
 Error CompressedTexture2D::_load_data(const String &p_path, int &r_width, int &r_height, Ref<Image> &image, bool &r_request_3d, bool &r_request_normal, bool &r_request_roughness, int &mipmap_limit, int p_size_limit) {
+	ZoneScopedS(60);
 	alpha_cache.unref();
 
 	ERR_FAIL_COND_V(image.is_null(), ERR_INVALID_PARAMETER);
@@ -863,6 +925,7 @@ Error CompressedTexture2D::_load_data(const String &p_path, int &r_width, int &r
 }
 
 Error CompressedTexture2D::load(const String &p_path) {
+	ZoneScopedS(60);
 	int lw, lh;
 	Ref<Image> image;
 	image.instantiate();
@@ -930,18 +993,22 @@ Error CompressedTexture2D::load(const String &p_path) {
 }
 
 String CompressedTexture2D::get_load_path() const {
+	ZoneScopedS(60);
 	return path_to_file;
 }
 
 int CompressedTexture2D::get_width() const {
+	ZoneScopedS(60);
 	return w;
 }
 
 int CompressedTexture2D::get_height() const {
+	ZoneScopedS(60);
 	return h;
 }
 
 RID CompressedTexture2D::get_rid() const {
+	ZoneScopedS(60);
 	if (!texture.is_valid()) {
 		texture = RS::get_singleton()->texture_2d_placeholder_create();
 	}
@@ -949,6 +1016,7 @@ RID CompressedTexture2D::get_rid() const {
 }
 
 void CompressedTexture2D::draw(RID p_canvas_item, const Point2 &p_pos, const Color &p_modulate, bool p_transpose) const {
+	ZoneScopedS(60);
 	if ((w | h) == 0) {
 		return;
 	}
@@ -956,6 +1024,7 @@ void CompressedTexture2D::draw(RID p_canvas_item, const Point2 &p_pos, const Col
 }
 
 void CompressedTexture2D::draw_rect(RID p_canvas_item, const Rect2 &p_rect, bool p_tile, const Color &p_modulate, bool p_transpose) const {
+	ZoneScopedS(60);
 	if ((w | h) == 0) {
 		return;
 	}
@@ -963,6 +1032,7 @@ void CompressedTexture2D::draw_rect(RID p_canvas_item, const Rect2 &p_rect, bool
 }
 
 void CompressedTexture2D::draw_rect_region(RID p_canvas_item, const Rect2 &p_rect, const Rect2 &p_src_rect, const Color &p_modulate, bool p_transpose, bool p_clip_uv) const {
+	ZoneScopedS(60);
 	if ((w | h) == 0) {
 		return;
 	}
@@ -970,10 +1040,12 @@ void CompressedTexture2D::draw_rect_region(RID p_canvas_item, const Rect2 &p_rec
 }
 
 bool CompressedTexture2D::has_alpha() const {
+	ZoneScopedS(60);
 	return false;
 }
 
 Ref<Image> CompressedTexture2D::get_image() const {
+	ZoneScopedS(60);
 	if (texture.is_valid()) {
 		return RS::get_singleton()->texture_2d_get(texture);
 	} else {
@@ -982,6 +1054,7 @@ Ref<Image> CompressedTexture2D::get_image() const {
 }
 
 bool CompressedTexture2D::is_pixel_opaque(int p_x, int p_y) const {
+	ZoneScopedS(60);
 	if (!alpha_cache.is_valid()) {
 		Ref<Image> img = get_image();
 		if (img.is_valid()) {
@@ -1016,6 +1089,7 @@ bool CompressedTexture2D::is_pixel_opaque(int p_x, int p_y) const {
 }
 
 void CompressedTexture2D::reload_from_file() {
+	ZoneScopedS(60);
 	String path = get_path();
 	if (!path.is_resource_file()) {
 		return;
@@ -1034,6 +1108,7 @@ void CompressedTexture2D::_validate_property(PropertyInfo &p_property) const {
 }
 
 void CompressedTexture2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("load", "path"), &CompressedTexture2D::load);
 	ClassDB::bind_method(D_METHOD("get_load_path"), &CompressedTexture2D::get_load_path);
 
@@ -1043,12 +1118,14 @@ void CompressedTexture2D::_bind_methods() {
 CompressedTexture2D::CompressedTexture2D() {}
 
 CompressedTexture2D::~CompressedTexture2D() {
+	ZoneScopedS(60);
 	if (texture.is_valid()) {
 		RS::get_singleton()->free(texture);
 	}
 }
 
 Ref<Resource> ResourceFormatLoaderCompressedTexture2D::load(const String &p_path, const String &p_original_path, Error *r_error, bool p_use_sub_threads, float *r_progress, CacheMode p_cache_mode) {
+	ZoneScopedS(60);
 	Ref<CompressedTexture2D> st;
 	st.instantiate();
 	Error err = st->load(p_path);
@@ -1063,14 +1140,17 @@ Ref<Resource> ResourceFormatLoaderCompressedTexture2D::load(const String &p_path
 }
 
 void ResourceFormatLoaderCompressedTexture2D::get_recognized_extensions(List<String> *p_extensions) const {
+	ZoneScopedS(60);
 	p_extensions->push_back("ctex");
 }
 
 bool ResourceFormatLoaderCompressedTexture2D::handles_type(const String &p_type) const {
+	ZoneScopedS(60);
 	return p_type == "CompressedTexture2D";
 }
 
 String ResourceFormatLoaderCompressedTexture2D::get_resource_type(const String &p_path) const {
+	ZoneScopedS(60);
 	if (p_path.get_extension().to_lower() == "ctex") {
 		return "CompressedTexture2D";
 	}
@@ -1080,6 +1160,7 @@ String ResourceFormatLoaderCompressedTexture2D::get_resource_type(const String &
 ////////////////////////////////////
 
 TypedArray<Image> Texture3D::_get_datai() const {
+	ZoneScopedS(60);
 	Vector<Ref<Image>> data = get_data();
 
 	TypedArray<Image> ret;
@@ -1091,6 +1172,7 @@ TypedArray<Image> Texture3D::_get_datai() const {
 }
 
 Image::Format Texture3D::get_format() const {
+	ZoneScopedS(60);
 	Image::Format ret;
 	if (GDVIRTUAL_REQUIRED_CALL(_get_format, ret)) {
 		return ret;
@@ -1099,6 +1181,7 @@ Image::Format Texture3D::get_format() const {
 }
 
 int Texture3D::get_width() const {
+	ZoneScopedS(60);
 	int ret;
 	if (GDVIRTUAL_REQUIRED_CALL(_get_width, ret)) {
 		return ret;
@@ -1107,6 +1190,7 @@ int Texture3D::get_width() const {
 }
 
 int Texture3D::get_height() const {
+	ZoneScopedS(60);
 	int ret;
 	if (GDVIRTUAL_REQUIRED_CALL(_get_height, ret)) {
 		return ret;
@@ -1115,6 +1199,7 @@ int Texture3D::get_height() const {
 }
 
 int Texture3D::get_depth() const {
+	ZoneScopedS(60);
 	int ret;
 	if (GDVIRTUAL_REQUIRED_CALL(_get_depth, ret)) {
 		return ret;
@@ -1124,6 +1209,7 @@ int Texture3D::get_depth() const {
 }
 
 bool Texture3D::has_mipmaps() const {
+	ZoneScopedS(60);
 	bool ret;
 	if (GDVIRTUAL_REQUIRED_CALL(_has_mipmaps, ret)) {
 		return ret;
@@ -1132,6 +1218,7 @@ bool Texture3D::has_mipmaps() const {
 }
 
 Vector<Ref<Image>> Texture3D::get_data() const {
+	ZoneScopedS(60);
 	TypedArray<Image> ret;
 	if (GDVIRTUAL_REQUIRED_CALL(_get_data, ret)) {
 		Vector<Ref<Image>> data;
@@ -1144,6 +1231,7 @@ Vector<Ref<Image>> Texture3D::get_data() const {
 	return Vector<Ref<Image>>();
 }
 void Texture3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_format"), &Texture3D::get_format);
 	ClassDB::bind_method(D_METHOD("get_width"), &Texture3D::get_width);
 	ClassDB::bind_method(D_METHOD("get_height"), &Texture3D::get_height);
@@ -1161,22 +1249,28 @@ void Texture3D::_bind_methods() {
 //////////////////////////////////////////
 
 Image::Format ImageTexture3D::get_format() const {
+	ZoneScopedS(60);
 	return format;
 }
 int ImageTexture3D::get_width() const {
+	ZoneScopedS(60);
 	return width;
 }
 int ImageTexture3D::get_height() const {
+	ZoneScopedS(60);
 	return height;
 }
 int ImageTexture3D::get_depth() const {
+	ZoneScopedS(60);
 	return depth;
 }
 bool ImageTexture3D::has_mipmaps() const {
+	ZoneScopedS(60);
 	return mipmaps;
 }
 
 Error ImageTexture3D::_create(Image::Format p_format, int p_width, int p_height, int p_depth, bool p_mipmaps, const TypedArray<Image> &p_data) {
+	ZoneScopedS(60);
 	Vector<Ref<Image>> images;
 	images.resize(p_data.size());
 	for (int i = 0; i < images.size(); i++) {
@@ -1186,6 +1280,7 @@ Error ImageTexture3D::_create(Image::Format p_format, int p_width, int p_height,
 }
 
 void ImageTexture3D::_update(const TypedArray<Image> &p_data) {
+	ZoneScopedS(60);
 	Vector<Ref<Image>> images;
 	images.resize(p_data.size());
 	for (int i = 0; i < images.size(); i++) {
@@ -1195,6 +1290,7 @@ void ImageTexture3D::_update(const TypedArray<Image> &p_data) {
 }
 
 Error ImageTexture3D::create(Image::Format p_format, int p_width, int p_height, int p_depth, bool p_mipmaps, const Vector<Ref<Image>> &p_data) {
+	ZoneScopedS(60);
 	RID tex = RenderingServer::get_singleton()->texture_3d_create(p_format, p_width, p_height, p_depth, p_mipmaps, p_data);
 	ERR_FAIL_COND_V(tex.is_null(), ERR_CANT_CREATE);
 
@@ -1208,22 +1304,26 @@ Error ImageTexture3D::create(Image::Format p_format, int p_width, int p_height, 
 }
 
 void ImageTexture3D::update(const Vector<Ref<Image>> &p_data) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!texture.is_valid());
 	RenderingServer::get_singleton()->texture_3d_update(texture, p_data);
 }
 
 Vector<Ref<Image>> ImageTexture3D::get_data() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!texture.is_valid(), Vector<Ref<Image>>());
 	return RS::get_singleton()->texture_3d_get(texture);
 }
 
 RID ImageTexture3D::get_rid() const {
+	ZoneScopedS(60);
 	if (!texture.is_valid()) {
 		texture = RS::get_singleton()->texture_3d_placeholder_create();
 	}
 	return texture;
 }
 void ImageTexture3D::set_path(const String &p_path, bool p_take_over) {
+	ZoneScopedS(60);
 	if (texture.is_valid()) {
 		RenderingServer::get_singleton()->texture_set_path(texture, p_path);
 	}
@@ -1232,6 +1332,7 @@ void ImageTexture3D::set_path(const String &p_path, bool p_take_over) {
 }
 
 void ImageTexture3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("create", "format", "width", "height", "depth", "use_mipmaps", "data"), &ImageTexture3D::_create);
 	ClassDB::bind_method(D_METHOD("update", "data"), &ImageTexture3D::_update);
 }
@@ -1240,6 +1341,7 @@ ImageTexture3D::ImageTexture3D() {
 }
 
 ImageTexture3D::~ImageTexture3D() {
+	ZoneScopedS(60);
 	if (texture.is_valid()) {
 		RS::get_singleton()->free(texture);
 	}
@@ -1248,6 +1350,7 @@ ImageTexture3D::~ImageTexture3D() {
 ////////////////////////////////////////////
 
 void CompressedTexture3D::set_path(const String &p_path, bool p_take_over) {
+	ZoneScopedS(60);
 	if (texture.is_valid()) {
 		RenderingServer::get_singleton()->texture_set_path(texture, p_path);
 	}
@@ -1256,10 +1359,12 @@ void CompressedTexture3D::set_path(const String &p_path, bool p_take_over) {
 }
 
 Image::Format CompressedTexture3D::get_format() const {
+	ZoneScopedS(60);
 	return format;
 }
 
 Error CompressedTexture3D::_load_data(const String &p_path, Vector<Ref<Image>> &r_data, Image::Format &r_format, int &r_width, int &r_height, int &r_depth, bool &r_mipmaps) {
+	ZoneScopedS(60);
 	Ref<FileAccess> f = FileAccess::open(p_path, FileAccess::READ);
 	ERR_FAIL_COND_V_MSG(f.is_null(), ERR_CANT_OPEN, vformat("Unable to open file: %s.", p_path));
 
@@ -1302,6 +1407,7 @@ Error CompressedTexture3D::_load_data(const String &p_path, Vector<Ref<Image>> &
 }
 
 Error CompressedTexture3D::load(const String &p_path) {
+	ZoneScopedS(60);
 	Vector<Ref<Image>> data;
 
 	int tw, th, td;
@@ -1339,26 +1445,32 @@ Error CompressedTexture3D::load(const String &p_path) {
 }
 
 String CompressedTexture3D::get_load_path() const {
+	ZoneScopedS(60);
 	return path_to_file;
 }
 
 int CompressedTexture3D::get_width() const {
+	ZoneScopedS(60);
 	return w;
 }
 
 int CompressedTexture3D::get_height() const {
+	ZoneScopedS(60);
 	return h;
 }
 
 int CompressedTexture3D::get_depth() const {
+	ZoneScopedS(60);
 	return d;
 }
 
 bool CompressedTexture3D::has_mipmaps() const {
+	ZoneScopedS(60);
 	return mipmaps;
 }
 
 RID CompressedTexture3D::get_rid() const {
+	ZoneScopedS(60);
 	if (!texture.is_valid()) {
 		texture = RS::get_singleton()->texture_3d_placeholder_create();
 	}
@@ -1366,6 +1478,7 @@ RID CompressedTexture3D::get_rid() const {
 }
 
 Vector<Ref<Image>> CompressedTexture3D::get_data() const {
+	ZoneScopedS(60);
 	if (texture.is_valid()) {
 		return RS::get_singleton()->texture_3d_get(texture);
 	} else {
@@ -1374,6 +1487,7 @@ Vector<Ref<Image>> CompressedTexture3D::get_data() const {
 }
 
 void CompressedTexture3D::reload_from_file() {
+	ZoneScopedS(60);
 	String path = get_path();
 	if (!path.is_resource_file()) {
 		return;
@@ -1392,6 +1506,7 @@ void CompressedTexture3D::_validate_property(PropertyInfo &p_property) const {
 }
 
 void CompressedTexture3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("load", "path"), &CompressedTexture3D::load);
 	ClassDB::bind_method(D_METHOD("get_load_path"), &CompressedTexture3D::get_load_path);
 
@@ -1401,6 +1516,7 @@ void CompressedTexture3D::_bind_methods() {
 CompressedTexture3D::CompressedTexture3D() {}
 
 CompressedTexture3D::~CompressedTexture3D() {
+	ZoneScopedS(60);
 	if (texture.is_valid()) {
 		RS::get_singleton()->free(texture);
 	}
@@ -1409,6 +1525,7 @@ CompressedTexture3D::~CompressedTexture3D() {
 /////////////////////////////
 
 Ref<Resource> ResourceFormatLoaderCompressedTexture3D::load(const String &p_path, const String &p_original_path, Error *r_error, bool p_use_sub_threads, float *r_progress, CacheMode p_cache_mode) {
+	ZoneScopedS(60);
 	Ref<CompressedTexture3D> st;
 	st.instantiate();
 	Error err = st->load(p_path);
@@ -1423,14 +1540,17 @@ Ref<Resource> ResourceFormatLoaderCompressedTexture3D::load(const String &p_path
 }
 
 void ResourceFormatLoaderCompressedTexture3D::get_recognized_extensions(List<String> *p_extensions) const {
+	ZoneScopedS(60);
 	p_extensions->push_back("ctex3d");
 }
 
 bool ResourceFormatLoaderCompressedTexture3D::handles_type(const String &p_type) const {
+	ZoneScopedS(60);
 	return p_type == "CompressedTexture3D";
 }
 
 String ResourceFormatLoaderCompressedTexture3D::get_resource_type(const String &p_path) const {
+	ZoneScopedS(60);
 	if (p_path.get_extension().to_lower() == "ctex3d") {
 		return "CompressedTexture3D";
 	}
@@ -1440,6 +1560,7 @@ String ResourceFormatLoaderCompressedTexture3D::get_resource_type(const String &
 ////////////////////////////////////////////
 
 int AtlasTexture::get_width() const {
+	ZoneScopedS(60);
 	if (region.size.width == 0) {
 		if (atlas.is_valid()) {
 			return atlas->get_width();
@@ -1451,6 +1572,7 @@ int AtlasTexture::get_width() const {
 }
 
 int AtlasTexture::get_height() const {
+	ZoneScopedS(60);
 	if (region.size.height == 0) {
 		if (atlas.is_valid()) {
 			return atlas->get_height();
@@ -1462,6 +1584,7 @@ int AtlasTexture::get_height() const {
 }
 
 RID AtlasTexture::get_rid() const {
+	ZoneScopedS(60);
 	if (atlas.is_valid()) {
 		return atlas->get_rid();
 	}
@@ -1470,6 +1593,7 @@ RID AtlasTexture::get_rid() const {
 }
 
 bool AtlasTexture::has_alpha() const {
+	ZoneScopedS(60);
 	if (atlas.is_valid()) {
 		return atlas->has_alpha();
 	}
@@ -1478,6 +1602,7 @@ bool AtlasTexture::has_alpha() const {
 }
 
 void AtlasTexture::set_atlas(const Ref<Texture2D> &p_atlas) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_atlas == this);
 	if (atlas == p_atlas) {
 		return;
@@ -1495,10 +1620,12 @@ void AtlasTexture::set_atlas(const Ref<Texture2D> &p_atlas) {
 }
 
 Ref<Texture2D> AtlasTexture::get_atlas() const {
+	ZoneScopedS(60);
 	return atlas;
 }
 
 void AtlasTexture::set_region(const Rect2 &p_region) {
+	ZoneScopedS(60);
 	if (region == p_region) {
 		return;
 	}
@@ -1507,10 +1634,12 @@ void AtlasTexture::set_region(const Rect2 &p_region) {
 }
 
 Rect2 AtlasTexture::get_region() const {
+	ZoneScopedS(60);
 	return region;
 }
 
 void AtlasTexture::set_margin(const Rect2 &p_margin) {
+	ZoneScopedS(60);
 	if (margin == p_margin) {
 		return;
 	}
@@ -1519,19 +1648,23 @@ void AtlasTexture::set_margin(const Rect2 &p_margin) {
 }
 
 Rect2 AtlasTexture::get_margin() const {
+	ZoneScopedS(60);
 	return margin;
 }
 
 void AtlasTexture::set_filter_clip(const bool p_enable) {
+	ZoneScopedS(60);
 	filter_clip = p_enable;
 	emit_changed();
 }
 
 bool AtlasTexture::has_filter_clip() const {
+	ZoneScopedS(60);
 	return filter_clip;
 }
 
 void AtlasTexture::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_atlas", "atlas"), &AtlasTexture::set_atlas);
 	ClassDB::bind_method(D_METHOD("get_atlas"), &AtlasTexture::get_atlas);
 
@@ -1551,6 +1684,7 @@ void AtlasTexture::_bind_methods() {
 }
 
 void AtlasTexture::draw(RID p_canvas_item, const Point2 &p_pos, const Color &p_modulate, bool p_transpose) const {
+	ZoneScopedS(60);
 	if (!atlas.is_valid()) {
 		return;
 	}
@@ -1569,6 +1703,7 @@ void AtlasTexture::draw(RID p_canvas_item, const Point2 &p_pos, const Color &p_m
 }
 
 void AtlasTexture::draw_rect(RID p_canvas_item, const Rect2 &p_rect, bool p_tile, const Color &p_modulate, bool p_transpose) const {
+	ZoneScopedS(60);
 	if (!atlas.is_valid()) {
 		return;
 	}
@@ -1590,6 +1725,7 @@ void AtlasTexture::draw_rect(RID p_canvas_item, const Rect2 &p_rect, bool p_tile
 }
 
 void AtlasTexture::draw_rect_region(RID p_canvas_item, const Rect2 &p_rect, const Rect2 &p_src_rect, const Color &p_modulate, bool p_transpose, bool p_clip_uv) const {
+	ZoneScopedS(60);
 	//this might not necessarily work well if using a rect, needs to be fixed properly
 	if (!atlas.is_valid()) {
 		return;
@@ -1603,6 +1739,7 @@ void AtlasTexture::draw_rect_region(RID p_canvas_item, const Rect2 &p_rect, cons
 }
 
 bool AtlasTexture::get_rect_region(const Rect2 &p_rect, const Rect2 &p_src_rect, Rect2 &r_rect, Rect2 &r_src_rect) const {
+	ZoneScopedS(60);
 	if (!atlas.is_valid()) {
 		return false;
 	}
@@ -1640,6 +1777,7 @@ bool AtlasTexture::get_rect_region(const Rect2 &p_rect, const Rect2 &p_src_rect,
 }
 
 bool AtlasTexture::is_pixel_opaque(int p_x, int p_y) const {
+	ZoneScopedS(60);
 	if (!atlas.is_valid()) {
 		return true;
 	}
@@ -1659,6 +1797,7 @@ bool AtlasTexture::is_pixel_opaque(int p_x, int p_y) const {
 }
 
 Ref<Image> AtlasTexture::get_image() const {
+	ZoneScopedS(60);
 	if (!atlas.is_valid() || !atlas->get_image().is_valid()) {
 		return Ref<Image>();
 	}
@@ -1671,46 +1810,57 @@ AtlasTexture::AtlasTexture() {}
 /////////////////////////////////////////
 
 int MeshTexture::get_width() const {
+	ZoneScopedS(60);
 	return size.width;
 }
 
 int MeshTexture::get_height() const {
+	ZoneScopedS(60);
 	return size.height;
 }
 
 RID MeshTexture::get_rid() const {
+	ZoneScopedS(60);
 	return RID();
 }
 
 bool MeshTexture::has_alpha() const {
+	ZoneScopedS(60);
 	return false;
 }
 
 void MeshTexture::set_mesh(const Ref<Mesh> &p_mesh) {
+	ZoneScopedS(60);
 	mesh = p_mesh;
 }
 
 Ref<Mesh> MeshTexture::get_mesh() const {
+	ZoneScopedS(60);
 	return mesh;
 }
 
 void MeshTexture::set_image_size(const Size2 &p_size) {
+	ZoneScopedS(60);
 	size = p_size;
 }
 
 Size2 MeshTexture::get_image_size() const {
+	ZoneScopedS(60);
 	return size;
 }
 
 void MeshTexture::set_base_texture(const Ref<Texture2D> &p_texture) {
+	ZoneScopedS(60);
 	base_texture = p_texture;
 }
 
 Ref<Texture2D> MeshTexture::get_base_texture() const {
+	ZoneScopedS(60);
 	return base_texture;
 }
 
 void MeshTexture::draw(RID p_canvas_item, const Point2 &p_pos, const Color &p_modulate, bool p_transpose) const {
+	ZoneScopedS(60);
 	if (mesh.is_null() || base_texture.is_null()) {
 		return;
 	}
@@ -1724,6 +1874,7 @@ void MeshTexture::draw(RID p_canvas_item, const Point2 &p_pos, const Color &p_mo
 }
 
 void MeshTexture::draw_rect(RID p_canvas_item, const Rect2 &p_rect, bool p_tile, const Color &p_modulate, bool p_transpose) const {
+	ZoneScopedS(60);
 	if (mesh.is_null() || base_texture.is_null()) {
 		return;
 	}
@@ -1746,6 +1897,7 @@ void MeshTexture::draw_rect(RID p_canvas_item, const Rect2 &p_rect, bool p_tile,
 }
 
 void MeshTexture::draw_rect_region(RID p_canvas_item, const Rect2 &p_rect, const Rect2 &p_src_rect, const Color &p_modulate, bool p_transpose, bool p_clip_uv) const {
+	ZoneScopedS(60);
 	if (mesh.is_null() || base_texture.is_null()) {
 		return;
 	}
@@ -1768,16 +1920,19 @@ void MeshTexture::draw_rect_region(RID p_canvas_item, const Rect2 &p_rect, const
 }
 
 bool MeshTexture::get_rect_region(const Rect2 &p_rect, const Rect2 &p_src_rect, Rect2 &r_rect, Rect2 &r_src_rect) const {
+	ZoneScopedS(60);
 	r_rect = p_rect;
 	r_src_rect = p_src_rect;
 	return true;
 }
 
 bool MeshTexture::is_pixel_opaque(int p_x, int p_y) const {
+	ZoneScopedS(60);
 	return true;
 }
 
 void MeshTexture::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_mesh", "mesh"), &MeshTexture::set_mesh);
 	ClassDB::bind_method(D_METHOD("get_mesh"), &MeshTexture::get_mesh);
 	ClassDB::bind_method(D_METHOD("set_image_size", "size"), &MeshTexture::set_image_size);
@@ -1796,6 +1951,7 @@ MeshTexture::MeshTexture() {
 //////////////////////////////////////////
 
 void CurveTexture::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_width", "width"), &CurveTexture::set_width);
 
 	ClassDB::bind_method(D_METHOD("set_curve", "curve"), &CurveTexture::set_curve);
@@ -1815,6 +1971,7 @@ void CurveTexture::_bind_methods() {
 }
 
 void CurveTexture::set_width(int p_width) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_width < 32 || p_width > 4096);
 
 	if (_width == p_width) {
@@ -1826,10 +1983,12 @@ void CurveTexture::set_width(int p_width) {
 }
 
 int CurveTexture::get_width() const {
+	ZoneScopedS(60);
 	return _width;
 }
 
 void CurveTexture::ensure_default_setup(float p_min, float p_max) {
+	ZoneScopedS(60);
 	if (_curve.is_null()) {
 		Ref<Curve> curve = Ref<Curve>(memnew(Curve));
 		curve->add_point(Vector2(0, 1));
@@ -1842,6 +2001,7 @@ void CurveTexture::ensure_default_setup(float p_min, float p_max) {
 }
 
 void CurveTexture::set_curve(Ref<Curve> p_curve) {
+	ZoneScopedS(60);
 	if (_curve != p_curve) {
 		if (_curve.is_valid()) {
 			_curve->disconnect(CoreStringNames::get_singleton()->changed, callable_mp(this, &CurveTexture::_update));
@@ -1855,6 +2015,7 @@ void CurveTexture::set_curve(Ref<Curve> p_curve) {
 }
 
 void CurveTexture::_update() {
+	ZoneScopedS(60);
 	Vector<uint8_t> data;
 	data.resize(_width * sizeof(float) * (texture_mode == TEXTURE_MODE_RGB ? 3 : 1));
 
@@ -1908,10 +2069,12 @@ void CurveTexture::_update() {
 }
 
 Ref<Curve> CurveTexture::get_curve() const {
+	ZoneScopedS(60);
 	return _curve;
 }
 
 void CurveTexture::set_texture_mode(TextureMode p_mode) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_mode < TEXTURE_MODE_RGB || p_mode > TEXTURE_MODE_RED);
 	if (texture_mode == p_mode) {
 		return;
@@ -1920,10 +2083,12 @@ void CurveTexture::set_texture_mode(TextureMode p_mode) {
 	_update();
 }
 CurveTexture::TextureMode CurveTexture::get_texture_mode() const {
+	ZoneScopedS(60);
 	return texture_mode;
 }
 
 RID CurveTexture::get_rid() const {
+	ZoneScopedS(60);
 	if (!_texture.is_valid()) {
 		_texture = RS::get_singleton()->texture_2d_placeholder_create();
 	}
@@ -1933,6 +2098,7 @@ RID CurveTexture::get_rid() const {
 CurveTexture::CurveTexture() {}
 
 CurveTexture::~CurveTexture() {
+	ZoneScopedS(60);
 	if (_texture.is_valid()) {
 		RS::get_singleton()->free(_texture);
 	}
@@ -1941,6 +2107,7 @@ CurveTexture::~CurveTexture() {
 //////////////////
 
 void CurveXYZTexture::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_width", "width"), &CurveXYZTexture::set_width);
 
 	ClassDB::bind_method(D_METHOD("set_curve_x", "curve"), &CurveXYZTexture::set_curve_x);
@@ -1961,6 +2128,7 @@ void CurveXYZTexture::_bind_methods() {
 }
 
 void CurveXYZTexture::set_width(int p_width) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_width < 32 || p_width > 4096);
 
 	if (_width == p_width) {
@@ -1972,10 +2140,12 @@ void CurveXYZTexture::set_width(int p_width) {
 }
 
 int CurveXYZTexture::get_width() const {
+	ZoneScopedS(60);
 	return _width;
 }
 
 void CurveXYZTexture::ensure_default_setup(float p_min, float p_max) {
+	ZoneScopedS(60);
 	if (_curve_x.is_null()) {
 		Ref<Curve> curve = Ref<Curve>(memnew(Curve));
 		curve->add_point(Vector2(0, 1));
@@ -2005,6 +2175,7 @@ void CurveXYZTexture::ensure_default_setup(float p_min, float p_max) {
 }
 
 void CurveXYZTexture::set_curve_x(Ref<Curve> p_curve) {
+	ZoneScopedS(60);
 	if (_curve_x != p_curve) {
 		if (_curve_x.is_valid()) {
 			_curve_x->disconnect(CoreStringNames::get_singleton()->changed, callable_mp(this, &CurveXYZTexture::_update));
@@ -2018,6 +2189,7 @@ void CurveXYZTexture::set_curve_x(Ref<Curve> p_curve) {
 }
 
 void CurveXYZTexture::set_curve_y(Ref<Curve> p_curve) {
+	ZoneScopedS(60);
 	if (_curve_y != p_curve) {
 		if (_curve_y.is_valid()) {
 			_curve_y->disconnect(CoreStringNames::get_singleton()->changed, callable_mp(this, &CurveXYZTexture::_update));
@@ -2031,6 +2203,7 @@ void CurveXYZTexture::set_curve_y(Ref<Curve> p_curve) {
 }
 
 void CurveXYZTexture::set_curve_z(Ref<Curve> p_curve) {
+	ZoneScopedS(60);
 	if (_curve_z != p_curve) {
 		if (_curve_z.is_valid()) {
 			_curve_z->disconnect(CoreStringNames::get_singleton()->changed, callable_mp(this, &CurveXYZTexture::_update));
@@ -2044,6 +2217,7 @@ void CurveXYZTexture::set_curve_z(Ref<Curve> p_curve) {
 }
 
 void CurveXYZTexture::_update() {
+	ZoneScopedS(60);
 	Vector<uint8_t> data;
 	data.resize(_width * sizeof(float) * 3);
 
@@ -2110,18 +2284,22 @@ void CurveXYZTexture::_update() {
 }
 
 Ref<Curve> CurveXYZTexture::get_curve_x() const {
+	ZoneScopedS(60);
 	return _curve_x;
 }
 
 Ref<Curve> CurveXYZTexture::get_curve_y() const {
+	ZoneScopedS(60);
 	return _curve_y;
 }
 
 Ref<Curve> CurveXYZTexture::get_curve_z() const {
+	ZoneScopedS(60);
 	return _curve_z;
 }
 
 RID CurveXYZTexture::get_rid() const {
+	ZoneScopedS(60);
 	if (!_texture.is_valid()) {
 		_texture = RS::get_singleton()->texture_2d_placeholder_create();
 	}
@@ -2131,6 +2309,7 @@ RID CurveXYZTexture::get_rid() const {
 CurveXYZTexture::CurveXYZTexture() {}
 
 CurveXYZTexture::~CurveXYZTexture() {
+	ZoneScopedS(60);
 	if (_texture.is_valid()) {
 		RS::get_singleton()->free(_texture);
 	}
@@ -2139,16 +2318,19 @@ CurveXYZTexture::~CurveXYZTexture() {
 //////////////////
 
 GradientTexture1D::GradientTexture1D() {
+	ZoneScopedS(60);
 	_queue_update();
 }
 
 GradientTexture1D::~GradientTexture1D() {
+	ZoneScopedS(60);
 	if (texture.is_valid()) {
 		RS::get_singleton()->free(texture);
 	}
 }
 
 void GradientTexture1D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_gradient", "gradient"), &GradientTexture1D::set_gradient);
 	ClassDB::bind_method(D_METHOD("get_gradient"), &GradientTexture1D::get_gradient);
 
@@ -2166,6 +2348,7 @@ void GradientTexture1D::_bind_methods() {
 }
 
 void GradientTexture1D::set_gradient(Ref<Gradient> p_gradient) {
+	ZoneScopedS(60);
 	if (p_gradient == gradient) {
 		return;
 	}
@@ -2181,10 +2364,12 @@ void GradientTexture1D::set_gradient(Ref<Gradient> p_gradient) {
 }
 
 Ref<Gradient> GradientTexture1D::get_gradient() const {
+	ZoneScopedS(60);
 	return gradient;
 }
 
 void GradientTexture1D::_queue_update() {
+	ZoneScopedS(60);
 	if (update_pending) {
 		return;
 	}
@@ -2194,6 +2379,7 @@ void GradientTexture1D::_queue_update() {
 }
 
 void GradientTexture1D::_update() {
+	ZoneScopedS(60);
 	update_pending = false;
 
 	if (gradient.is_null()) {
@@ -2249,16 +2435,19 @@ void GradientTexture1D::_update() {
 }
 
 void GradientTexture1D::set_width(int p_width) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_width <= 0 || p_width > 16384, "Texture dimensions have to be within 1 to 16384 range.");
 	width = p_width;
 	_queue_update();
 }
 
 int GradientTexture1D::get_width() const {
+	ZoneScopedS(60);
 	return width;
 }
 
 void GradientTexture1D::set_use_hdr(bool p_enabled) {
+	ZoneScopedS(60);
 	if (p_enabled == use_hdr) {
 		return;
 	}
@@ -2268,10 +2457,12 @@ void GradientTexture1D::set_use_hdr(bool p_enabled) {
 }
 
 bool GradientTexture1D::is_using_hdr() const {
+	ZoneScopedS(60);
 	return use_hdr;
 }
 
 Ref<Image> GradientTexture1D::get_image() const {
+	ZoneScopedS(60);
 	if (!texture.is_valid()) {
 		return Ref<Image>();
 	}
@@ -2281,16 +2472,19 @@ Ref<Image> GradientTexture1D::get_image() const {
 //////////////////
 
 GradientTexture2D::GradientTexture2D() {
+	ZoneScopedS(60);
 	_queue_update();
 }
 
 GradientTexture2D::~GradientTexture2D() {
+	ZoneScopedS(60);
 	if (texture.is_valid()) {
 		RS::get_singleton()->free(texture);
 	}
 }
 
 void GradientTexture2D::set_gradient(Ref<Gradient> p_gradient) {
+	ZoneScopedS(60);
 	if (gradient == p_gradient) {
 		return;
 	}
@@ -2306,10 +2500,12 @@ void GradientTexture2D::set_gradient(Ref<Gradient> p_gradient) {
 }
 
 Ref<Gradient> GradientTexture2D::get_gradient() const {
+	ZoneScopedS(60);
 	return gradient;
 }
 
 void GradientTexture2D::_queue_update() {
+	ZoneScopedS(60);
 	if (update_pending) {
 		return;
 	}
@@ -2318,6 +2514,7 @@ void GradientTexture2D::_queue_update() {
 }
 
 void GradientTexture2D::_update() {
+	ZoneScopedS(60);
 	update_pending = false;
 
 	if (gradient.is_null()) {
@@ -2372,6 +2569,7 @@ void GradientTexture2D::_update() {
 }
 
 float GradientTexture2D::_get_gradient_offset_at(int x, int y) const {
+	ZoneScopedS(60);
 	if (fill_to == fill_from) {
 		return 0;
 	}
@@ -2413,25 +2611,30 @@ float GradientTexture2D::_get_gradient_offset_at(int x, int y) const {
 }
 
 void GradientTexture2D::set_width(int p_width) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_width <= 0 || p_width > 16384, "Texture dimensions have to be within 1 to 16384 range.");
 	width = p_width;
 	_queue_update();
 }
 
 int GradientTexture2D::get_width() const {
+	ZoneScopedS(60);
 	return width;
 }
 
 void GradientTexture2D::set_height(int p_height) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_height <= 0 || p_height > 16384, "Texture dimensions have to be within 1 to 16384 range.");
 	height = p_height;
 	_queue_update();
 }
 int GradientTexture2D::get_height() const {
+	ZoneScopedS(60);
 	return height;
 }
 
 void GradientTexture2D::set_use_hdr(bool p_enabled) {
+	ZoneScopedS(60);
 	if (p_enabled == use_hdr) {
 		return;
 	}
@@ -2441,46 +2644,56 @@ void GradientTexture2D::set_use_hdr(bool p_enabled) {
 }
 
 bool GradientTexture2D::is_using_hdr() const {
+	ZoneScopedS(60);
 	return use_hdr;
 }
 
 void GradientTexture2D::set_fill_from(Vector2 p_fill_from) {
+	ZoneScopedS(60);
 	fill_from = p_fill_from;
 	_queue_update();
 }
 
 Vector2 GradientTexture2D::get_fill_from() const {
+	ZoneScopedS(60);
 	return fill_from;
 }
 
 void GradientTexture2D::set_fill_to(Vector2 p_fill_to) {
+	ZoneScopedS(60);
 	fill_to = p_fill_to;
 	_queue_update();
 }
 
 Vector2 GradientTexture2D::get_fill_to() const {
+	ZoneScopedS(60);
 	return fill_to;
 }
 
 void GradientTexture2D::set_fill(Fill p_fill) {
+	ZoneScopedS(60);
 	fill = p_fill;
 	_queue_update();
 }
 
 GradientTexture2D::Fill GradientTexture2D::get_fill() const {
+	ZoneScopedS(60);
 	return fill;
 }
 
 void GradientTexture2D::set_repeat(Repeat p_repeat) {
+	ZoneScopedS(60);
 	repeat = p_repeat;
 	_queue_update();
 }
 
 GradientTexture2D::Repeat GradientTexture2D::get_repeat() const {
+	ZoneScopedS(60);
 	return repeat;
 }
 
 RID GradientTexture2D::get_rid() const {
+	ZoneScopedS(60);
 	if (!texture.is_valid()) {
 		texture = RS::get_singleton()->texture_2d_placeholder_create();
 	}
@@ -2488,6 +2701,7 @@ RID GradientTexture2D::get_rid() const {
 }
 
 Ref<Image> GradientTexture2D::get_image() const {
+	ZoneScopedS(60);
 	if (!texture.is_valid()) {
 		return Ref<Image>();
 	}
@@ -2495,6 +2709,7 @@ Ref<Image> GradientTexture2D::get_image() const {
 }
 
 void GradientTexture2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_gradient", "gradient"), &GradientTexture2D::set_gradient);
 	ClassDB::bind_method(D_METHOD("get_gradient"), &GradientTexture2D::get_gradient);
 
@@ -2540,6 +2755,7 @@ void GradientTexture2D::_bind_methods() {
 //////////////////////////////////////
 
 void ProxyTexture::set_base(const Ref<Texture2D> &p_texture) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_texture == this);
 
 	base = p_texture;
@@ -2557,10 +2773,12 @@ void ProxyTexture::set_base(const Ref<Texture2D> &p_texture) {
 }
 
 Ref<Texture2D> ProxyTexture::get_base() const {
+	ZoneScopedS(60);
 	return base;
 }
 
 int ProxyTexture::get_width() const {
+	ZoneScopedS(60);
 	if (base.is_valid()) {
 		return base->get_width();
 	}
@@ -2568,6 +2786,7 @@ int ProxyTexture::get_width() const {
 }
 
 int ProxyTexture::get_height() const {
+	ZoneScopedS(60);
 	if (base.is_valid()) {
 		return base->get_height();
 	}
@@ -2575,6 +2794,7 @@ int ProxyTexture::get_height() const {
 }
 
 RID ProxyTexture::get_rid() const {
+	ZoneScopedS(60);
 	if (proxy.is_null()) {
 		proxy_ph = RS::get_singleton()->texture_2d_placeholder_create();
 		proxy = RS::get_singleton()->texture_proxy_create(proxy_ph);
@@ -2583,6 +2803,7 @@ RID ProxyTexture::get_rid() const {
 }
 
 bool ProxyTexture::has_alpha() const {
+	ZoneScopedS(60);
 	if (base.is_valid()) {
 		return base->has_alpha();
 	}
@@ -2590,10 +2811,12 @@ bool ProxyTexture::has_alpha() const {
 }
 
 ProxyTexture::ProxyTexture() {
+	ZoneScopedS(60);
 	//proxy = RS::get_singleton()->texture_create();
 }
 
 ProxyTexture::~ProxyTexture() {
+	ZoneScopedS(60);
 	if (proxy_ph.is_valid()) {
 		RS::get_singleton()->free(proxy_ph);
 	}
@@ -2605,6 +2828,7 @@ ProxyTexture::~ProxyTexture() {
 //////////////////////////////////////////////
 
 void AnimatedTexture::_update_proxy() {
+	ZoneScopedS(60);
 	RWLockRead r(rw_lock);
 
 	float delta;
@@ -2658,6 +2882,7 @@ void AnimatedTexture::_update_proxy() {
 }
 
 void AnimatedTexture::set_frames(int p_frames) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_frames < 1 || p_frames > MAX_FRAMES);
 
 	RWLockWrite r(rw_lock);
@@ -2666,10 +2891,12 @@ void AnimatedTexture::set_frames(int p_frames) {
 }
 
 int AnimatedTexture::get_frames() const {
+	ZoneScopedS(60);
 	return frame_count;
 }
 
 void AnimatedTexture::set_current_frame(int p_frame) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_frame < 0 || p_frame >= frame_count);
 
 	RWLockWrite r(rw_lock);
@@ -2678,28 +2905,34 @@ void AnimatedTexture::set_current_frame(int p_frame) {
 }
 
 int AnimatedTexture::get_current_frame() const {
+	ZoneScopedS(60);
 	return current_frame;
 }
 
 void AnimatedTexture::set_pause(bool p_pause) {
+	ZoneScopedS(60);
 	RWLockWrite r(rw_lock);
 	pause = p_pause;
 }
 
 bool AnimatedTexture::get_pause() const {
+	ZoneScopedS(60);
 	return pause;
 }
 
 void AnimatedTexture::set_one_shot(bool p_one_shot) {
+	ZoneScopedS(60);
 	RWLockWrite r(rw_lock);
 	one_shot = p_one_shot;
 }
 
 bool AnimatedTexture::get_one_shot() const {
+	ZoneScopedS(60);
 	return one_shot;
 }
 
 void AnimatedTexture::set_frame_texture(int p_frame, const Ref<Texture2D> &p_texture) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_texture == this);
 	ERR_FAIL_INDEX(p_frame, MAX_FRAMES);
 
@@ -2709,6 +2942,7 @@ void AnimatedTexture::set_frame_texture(int p_frame, const Ref<Texture2D> &p_tex
 }
 
 Ref<Texture2D> AnimatedTexture::get_frame_texture(int p_frame) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_frame, MAX_FRAMES, Ref<Texture2D>());
 
 	RWLockRead r(rw_lock);
@@ -2717,6 +2951,7 @@ Ref<Texture2D> AnimatedTexture::get_frame_texture(int p_frame) const {
 }
 
 void AnimatedTexture::set_frame_duration(int p_frame, float p_duration) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_frame, MAX_FRAMES);
 
 	RWLockRead r(rw_lock);
@@ -2725,6 +2960,7 @@ void AnimatedTexture::set_frame_duration(int p_frame, float p_duration) {
 }
 
 float AnimatedTexture::get_frame_duration(int p_frame) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_frame, MAX_FRAMES, 0);
 
 	RWLockRead r(rw_lock);
@@ -2733,16 +2969,19 @@ float AnimatedTexture::get_frame_duration(int p_frame) const {
 }
 
 void AnimatedTexture::set_speed_scale(float p_scale) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_scale < -1000 || p_scale >= 1000);
 
 	speed_scale = p_scale;
 }
 
 float AnimatedTexture::get_speed_scale() const {
+	ZoneScopedS(60);
 	return speed_scale;
 }
 
 int AnimatedTexture::get_width() const {
+	ZoneScopedS(60);
 	RWLockRead r(rw_lock);
 
 	if (!frames[current_frame].texture.is_valid()) {
@@ -2753,6 +2992,7 @@ int AnimatedTexture::get_width() const {
 }
 
 int AnimatedTexture::get_height() const {
+	ZoneScopedS(60);
 	RWLockRead r(rw_lock);
 
 	if (!frames[current_frame].texture.is_valid()) {
@@ -2763,10 +3003,12 @@ int AnimatedTexture::get_height() const {
 }
 
 RID AnimatedTexture::get_rid() const {
+	ZoneScopedS(60);
 	return proxy;
 }
 
 bool AnimatedTexture::has_alpha() const {
+	ZoneScopedS(60);
 	RWLockRead r(rw_lock);
 
 	if (!frames[current_frame].texture.is_valid()) {
@@ -2777,6 +3019,7 @@ bool AnimatedTexture::has_alpha() const {
 }
 
 Ref<Image> AnimatedTexture::get_image() const {
+	ZoneScopedS(60);
 	RWLockRead r(rw_lock);
 
 	if (!frames[current_frame].texture.is_valid()) {
@@ -2787,6 +3030,7 @@ Ref<Image> AnimatedTexture::get_image() const {
 }
 
 bool AnimatedTexture::is_pixel_opaque(int p_x, int p_y) const {
+	ZoneScopedS(60);
 	RWLockRead r(rw_lock);
 
 	if (frames[current_frame].texture.is_valid()) {
@@ -2796,6 +3040,7 @@ bool AnimatedTexture::is_pixel_opaque(int p_x, int p_y) const {
 }
 
 void AnimatedTexture::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	String prop = p_property.name;
 	if (prop.begins_with("frame_")) {
 		int frame = prop.get_slicec('/', 0).get_slicec('_', 1).to_int();
@@ -2806,6 +3051,7 @@ void AnimatedTexture::_validate_property(PropertyInfo &p_property) const {
 }
 
 void AnimatedTexture::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_frames", "frames"), &AnimatedTexture::set_frames);
 	ClassDB::bind_method(D_METHOD("get_frames"), &AnimatedTexture::get_frames);
 
@@ -2842,6 +3088,7 @@ void AnimatedTexture::_bind_methods() {
 }
 
 AnimatedTexture::AnimatedTexture() {
+	ZoneScopedS(60);
 	//proxy = RS::get_singleton()->texture_create();
 	proxy_ph = RS::get_singleton()->texture_2d_placeholder_create();
 	proxy = RS::get_singleton()->texture_proxy_create(proxy_ph);
@@ -2851,6 +3098,7 @@ AnimatedTexture::AnimatedTexture() {
 }
 
 AnimatedTexture::~AnimatedTexture() {
+	ZoneScopedS(60);
 	RS::get_singleton()->free(proxy);
 	RS::get_singleton()->free(proxy_ph);
 }
@@ -2858,6 +3106,7 @@ AnimatedTexture::~AnimatedTexture() {
 ///////////////////////////////
 
 Image::Format TextureLayered::get_format() const {
+	ZoneScopedS(60);
 	Image::Format ret;
 	if (GDVIRTUAL_REQUIRED_CALL(_get_format, ret)) {
 		return ret;
@@ -2866,6 +3115,7 @@ Image::Format TextureLayered::get_format() const {
 }
 
 TextureLayered::LayeredType TextureLayered::get_layered_type() const {
+	ZoneScopedS(60);
 	uint32_t ret;
 	if (GDVIRTUAL_REQUIRED_CALL(_get_layered_type, ret)) {
 		return (LayeredType)ret;
@@ -2874,6 +3124,7 @@ TextureLayered::LayeredType TextureLayered::get_layered_type() const {
 }
 
 int TextureLayered::get_width() const {
+	ZoneScopedS(60);
 	int ret;
 	if (GDVIRTUAL_REQUIRED_CALL(_get_width, ret)) {
 		return ret;
@@ -2882,6 +3133,7 @@ int TextureLayered::get_width() const {
 }
 
 int TextureLayered::get_height() const {
+	ZoneScopedS(60);
 	int ret;
 	if (GDVIRTUAL_REQUIRED_CALL(_get_height, ret)) {
 		return ret;
@@ -2890,6 +3142,7 @@ int TextureLayered::get_height() const {
 }
 
 int TextureLayered::get_layers() const {
+	ZoneScopedS(60);
 	int ret;
 	if (GDVIRTUAL_REQUIRED_CALL(_get_layers, ret)) {
 		return ret;
@@ -2899,6 +3152,7 @@ int TextureLayered::get_layers() const {
 }
 
 bool TextureLayered::has_mipmaps() const {
+	ZoneScopedS(60);
 	bool ret;
 	if (GDVIRTUAL_REQUIRED_CALL(_has_mipmaps, ret)) {
 		return ret;
@@ -2907,6 +3161,7 @@ bool TextureLayered::has_mipmaps() const {
 }
 
 Ref<Image> TextureLayered::get_layer_data(int p_layer) const {
+	ZoneScopedS(60);
 	Ref<Image> ret;
 	if (GDVIRTUAL_REQUIRED_CALL(_get_layer_data, p_layer, ret)) {
 		return ret;
@@ -2915,6 +3170,7 @@ Ref<Image> TextureLayered::get_layer_data(int p_layer) const {
 }
 
 void TextureLayered::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_format"), &TextureLayered::get_format);
 	ClassDB::bind_method(D_METHOD("get_layered_type"), &TextureLayered::get_layered_type);
 	ClassDB::bind_method(D_METHOD("get_width"), &TextureLayered::get_width);
@@ -2938,30 +3194,37 @@ void TextureLayered::_bind_methods() {
 
 ///////////////////////////////
 Image::Format ImageTextureLayered::get_format() const {
+	ZoneScopedS(60);
 	return format;
 }
 
 int ImageTextureLayered::get_width() const {
+	ZoneScopedS(60);
 	return width;
 }
 
 int ImageTextureLayered::get_height() const {
+	ZoneScopedS(60);
 	return height;
 }
 
 int ImageTextureLayered::get_layers() const {
+	ZoneScopedS(60);
 	return layers;
 }
 
 bool ImageTextureLayered::has_mipmaps() const {
+	ZoneScopedS(60);
 	return mipmaps;
 }
 
 ImageTextureLayered::LayeredType ImageTextureLayered::get_layered_type() const {
+	ZoneScopedS(60);
 	return layered_type;
 }
 
 Error ImageTextureLayered::_create_from_images(const TypedArray<Image> &p_images) {
+	ZoneScopedS(60);
 	Vector<Ref<Image>> images;
 	for (int i = 0; i < p_images.size(); i++) {
 		Ref<Image> img = p_images[i];
@@ -2973,6 +3236,7 @@ Error ImageTextureLayered::_create_from_images(const TypedArray<Image> &p_images
 }
 
 TypedArray<Image> ImageTextureLayered::_get_images() const {
+	ZoneScopedS(60);
 	TypedArray<Image> images;
 	for (int i = 0; i < layers; i++) {
 		images.push_back(get_layer_data(i));
@@ -2981,6 +3245,7 @@ TypedArray<Image> ImageTextureLayered::_get_images() const {
 }
 
 Error ImageTextureLayered::create_from_images(Vector<Ref<Image>> p_images) {
+	ZoneScopedS(60);
 	int new_layers = p_images.size();
 	ERR_FAIL_COND_V(new_layers == 0, ERR_INVALID_PARAMETER);
 	if (layered_type == LAYERED_TYPE_CUBEMAP) {
@@ -3025,6 +3290,7 @@ Error ImageTextureLayered::create_from_images(Vector<Ref<Image>> p_images) {
 }
 
 void ImageTextureLayered::update_layer(const Ref<Image> &p_image, int p_layer) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(texture.is_null(), "Texture is not initialized.");
 	ERR_FAIL_COND_MSG(p_image.is_null(), "Invalid image.");
 	ERR_FAIL_COND_MSG(p_image->get_format() != format, "Image format must match texture's image format.");
@@ -3035,11 +3301,13 @@ void ImageTextureLayered::update_layer(const Ref<Image> &p_image, int p_layer) {
 }
 
 Ref<Image> ImageTextureLayered::get_layer_data(int p_layer) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_layer, layers, Ref<Image>());
 	return RS::get_singleton()->texture_2d_layer_get(texture, p_layer);
 }
 
 RID ImageTextureLayered::get_rid() const {
+	ZoneScopedS(60);
 	if (texture.is_null()) {
 		texture = RS::get_singleton()->texture_2d_layered_placeholder_create(RS::TextureLayeredType(layered_type));
 	}
@@ -3047,6 +3315,7 @@ RID ImageTextureLayered::get_rid() const {
 }
 
 void ImageTextureLayered::set_path(const String &p_path, bool p_take_over) {
+	ZoneScopedS(60);
 	if (texture.is_valid()) {
 		RS::get_singleton()->texture_set_path(texture, p_path);
 	}
@@ -3055,6 +3324,7 @@ void ImageTextureLayered::set_path(const String &p_path, bool p_take_over) {
 }
 
 void ImageTextureLayered::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("create_from_images", "images"), &ImageTextureLayered::_create_from_images);
 	ClassDB::bind_method(D_METHOD("update_layer", "image", "layer"), &ImageTextureLayered::update_layer);
 
@@ -3064,10 +3334,12 @@ void ImageTextureLayered::_bind_methods() {
 }
 
 ImageTextureLayered::ImageTextureLayered(LayeredType p_layered_type) {
+	ZoneScopedS(60);
 	layered_type = p_layered_type;
 }
 
 ImageTextureLayered::~ImageTextureLayered() {
+	ZoneScopedS(60);
 	if (texture.is_valid()) {
 		RS::get_singleton()->free(texture);
 	}
@@ -3076,6 +3348,7 @@ ImageTextureLayered::~ImageTextureLayered() {
 ///////////////////////////////////////////
 
 void CompressedTextureLayered::set_path(const String &p_path, bool p_take_over) {
+	ZoneScopedS(60);
 	if (texture.is_valid()) {
 		RenderingServer::get_singleton()->texture_set_path(texture, p_path);
 	}
@@ -3084,10 +3357,12 @@ void CompressedTextureLayered::set_path(const String &p_path, bool p_take_over) 
 }
 
 Image::Format CompressedTextureLayered::get_format() const {
+	ZoneScopedS(60);
 	return format;
 }
 
 Error CompressedTextureLayered::_load_data(const String &p_path, Vector<Ref<Image>> &images, int &mipmap_limit, int p_size_limit) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(images.size() != 0, ERR_INVALID_PARAMETER);
 
 	Ref<FileAccess> f = FileAccess::open(p_path, FileAccess::READ);
@@ -3132,6 +3407,7 @@ Error CompressedTextureLayered::_load_data(const String &p_path, Vector<Ref<Imag
 }
 
 Error CompressedTextureLayered::load(const String &p_path) {
+	ZoneScopedS(60);
 	Vector<Ref<Image>> images;
 
 	int mipmap_limit;
@@ -3167,30 +3443,37 @@ Error CompressedTextureLayered::load(const String &p_path) {
 }
 
 String CompressedTextureLayered::get_load_path() const {
+	ZoneScopedS(60);
 	return path_to_file;
 }
 
 int CompressedTextureLayered::get_width() const {
+	ZoneScopedS(60);
 	return w;
 }
 
 int CompressedTextureLayered::get_height() const {
+	ZoneScopedS(60);
 	return h;
 }
 
 int CompressedTextureLayered::get_layers() const {
+	ZoneScopedS(60);
 	return layers;
 }
 
 bool CompressedTextureLayered::has_mipmaps() const {
+	ZoneScopedS(60);
 	return mipmaps;
 }
 
 TextureLayered::LayeredType CompressedTextureLayered::get_layered_type() const {
+	ZoneScopedS(60);
 	return layered_type;
 }
 
 RID CompressedTextureLayered::get_rid() const {
+	ZoneScopedS(60);
 	if (!texture.is_valid()) {
 		texture = RS::get_singleton()->texture_2d_layered_placeholder_create(RS::TextureLayeredType(layered_type));
 	}
@@ -3198,6 +3481,7 @@ RID CompressedTextureLayered::get_rid() const {
 }
 
 Ref<Image> CompressedTextureLayered::get_layer_data(int p_layer) const {
+	ZoneScopedS(60);
 	if (texture.is_valid()) {
 		return RS::get_singleton()->texture_2d_layer_get(texture, p_layer);
 	} else {
@@ -3206,6 +3490,7 @@ Ref<Image> CompressedTextureLayered::get_layer_data(int p_layer) const {
 }
 
 void CompressedTextureLayered::reload_from_file() {
+	ZoneScopedS(60);
 	String path = get_path();
 	if (!path.is_resource_file()) {
 		return;
@@ -3224,6 +3509,7 @@ void CompressedTextureLayered::_validate_property(PropertyInfo &p_property) cons
 }
 
 void CompressedTextureLayered::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("load", "path"), &CompressedTextureLayered::load);
 	ClassDB::bind_method(D_METHOD("get_load_path"), &CompressedTextureLayered::get_load_path);
 
@@ -3231,10 +3517,12 @@ void CompressedTextureLayered::_bind_methods() {
 }
 
 CompressedTextureLayered::CompressedTextureLayered(LayeredType p_type) {
+	ZoneScopedS(60);
 	layered_type = p_type;
 }
 
 CompressedTextureLayered::~CompressedTextureLayered() {
+	ZoneScopedS(60);
 	if (texture.is_valid()) {
 		RS::get_singleton()->free(texture);
 	}
@@ -3243,6 +3531,7 @@ CompressedTextureLayered::~CompressedTextureLayered() {
 /////////////////////////////////////////////////
 
 Ref<Resource> ResourceFormatLoaderCompressedTextureLayered::load(const String &p_path, const String &p_original_path, Error *r_error, bool p_use_sub_threads, float *r_progress, CacheMode p_cache_mode) {
+	ZoneScopedS(60);
 	Ref<CompressedTextureLayered> ct;
 	if (p_path.get_extension().to_lower() == "ctexarray") {
 		Ref<CompressedTexture2DArray> c;
@@ -3274,16 +3563,19 @@ Ref<Resource> ResourceFormatLoaderCompressedTextureLayered::load(const String &p
 }
 
 void ResourceFormatLoaderCompressedTextureLayered::get_recognized_extensions(List<String> *p_extensions) const {
+	ZoneScopedS(60);
 	p_extensions->push_back("ctexarray");
 	p_extensions->push_back("ccube");
 	p_extensions->push_back("ccubearray");
 }
 
 bool ResourceFormatLoaderCompressedTextureLayered::handles_type(const String &p_type) const {
+	ZoneScopedS(60);
 	return p_type == "CompressedTexture2DArray" || p_type == "CompressedCubemap" || p_type == "CompressedCubemapArray";
 }
 
 String ResourceFormatLoaderCompressedTextureLayered::get_resource_type(const String &p_path) const {
+	ZoneScopedS(60);
 	if (p_path.get_extension().to_lower() == "ctexarray") {
 		return "CompressedTexture2DArray";
 	}
@@ -3299,6 +3591,7 @@ String ResourceFormatLoaderCompressedTextureLayered::get_resource_type(const Str
 ///////////////////////////////
 
 void CameraTexture::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_camera_feed_id", "feed_id"), &CameraTexture::set_camera_feed_id);
 	ClassDB::bind_method(D_METHOD("get_camera_feed_id"), &CameraTexture::get_camera_feed_id);
 
@@ -3314,6 +3607,7 @@ void CameraTexture::_bind_methods() {
 }
 
 int CameraTexture::get_width() const {
+	ZoneScopedS(60);
 	Ref<CameraFeed> feed = CameraServer::get_singleton()->get_feed_by_id(camera_feed_id);
 	if (feed.is_valid()) {
 		return feed->get_base_width();
@@ -3323,6 +3617,7 @@ int CameraTexture::get_width() const {
 }
 
 int CameraTexture::get_height() const {
+	ZoneScopedS(60);
 	Ref<CameraFeed> feed = CameraServer::get_singleton()->get_feed_by_id(camera_feed_id);
 	if (feed.is_valid()) {
 		return feed->get_base_height();
@@ -3332,10 +3627,12 @@ int CameraTexture::get_height() const {
 }
 
 bool CameraTexture::has_alpha() const {
+	ZoneScopedS(60);
 	return false;
 }
 
 RID CameraTexture::get_rid() const {
+	ZoneScopedS(60);
 	Ref<CameraFeed> feed = CameraServer::get_singleton()->get_feed_by_id(camera_feed_id);
 	if (feed.is_valid()) {
 		return feed->get_texture(which_feed);
@@ -3348,29 +3645,35 @@ RID CameraTexture::get_rid() const {
 }
 
 Ref<Image> CameraTexture::get_image() const {
+	ZoneScopedS(60);
 	// not (yet) supported
 	return Ref<Image>();
 }
 
 void CameraTexture::set_camera_feed_id(int p_new_id) {
+	ZoneScopedS(60);
 	camera_feed_id = p_new_id;
 	notify_property_list_changed();
 }
 
 int CameraTexture::get_camera_feed_id() const {
+	ZoneScopedS(60);
 	return camera_feed_id;
 }
 
 void CameraTexture::set_which_feed(CameraServer::FeedImage p_which) {
+	ZoneScopedS(60);
 	which_feed = p_which;
 	notify_property_list_changed();
 }
 
 CameraServer::FeedImage CameraTexture::get_which_feed() const {
+	ZoneScopedS(60);
 	return which_feed;
 }
 
 void CameraTexture::set_camera_active(bool p_active) {
+	ZoneScopedS(60);
 	Ref<CameraFeed> feed = CameraServer::get_singleton()->get_feed_by_id(camera_feed_id);
 	if (feed.is_valid()) {
 		feed->set_active(p_active);
@@ -3379,6 +3682,7 @@ void CameraTexture::set_camera_active(bool p_active) {
 }
 
 bool CameraTexture::get_camera_active() const {
+	ZoneScopedS(60);
 	Ref<CameraFeed> feed = CameraServer::get_singleton()->get_feed_by_id(camera_feed_id);
 	if (feed.is_valid()) {
 		return feed->is_active();
@@ -3390,6 +3694,7 @@ bool CameraTexture::get_camera_active() const {
 CameraTexture::CameraTexture() {}
 
 CameraTexture::~CameraTexture() {
+	ZoneScopedS(60);
 	if (_texture.is_valid()) {
 		RenderingServer::get_singleton()->free(_texture);
 	}
@@ -3398,133 +3703,164 @@ CameraTexture::~CameraTexture() {
 ///////////////////////////
 
 void PlaceholderTexture2D::set_size(Size2 p_size) {
+	ZoneScopedS(60);
 	size = p_size;
 }
 
 int PlaceholderTexture2D::get_width() const {
+	ZoneScopedS(60);
 	return size.width;
 }
 
 int PlaceholderTexture2D::get_height() const {
+	ZoneScopedS(60);
 	return size.height;
 }
 
 bool PlaceholderTexture2D::has_alpha() const {
+	ZoneScopedS(60);
 	return false;
 }
 
 Ref<Image> PlaceholderTexture2D::get_image() const {
+	ZoneScopedS(60);
 	return Ref<Image>();
 }
 
 RID PlaceholderTexture2D::get_rid() const {
+	ZoneScopedS(60);
 	return rid;
 }
 
 void PlaceholderTexture2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_size", "size"), &PlaceholderTexture2D::set_size);
 
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2I, "size", PROPERTY_HINT_NONE, "suffix:px"), "set_size", "get_size");
 }
 
 PlaceholderTexture2D::PlaceholderTexture2D() {
+	ZoneScopedS(60);
 	rid = RS::get_singleton()->texture_2d_placeholder_create();
 }
 
 PlaceholderTexture2D::~PlaceholderTexture2D() {
+	ZoneScopedS(60);
 	RS::get_singleton()->free(rid);
 }
 
 ///////////////////////////////////////////////
 
 void PlaceholderTexture3D::set_size(const Vector3i &p_size) {
+	ZoneScopedS(60);
 	size = p_size;
 }
 
 Vector3i PlaceholderTexture3D::get_size() const {
+	ZoneScopedS(60);
 	return size;
 }
 
 Image::Format PlaceholderTexture3D::get_format() const {
+	ZoneScopedS(60);
 	return Image::FORMAT_RGB8;
 }
 
 int PlaceholderTexture3D::get_width() const {
+	ZoneScopedS(60);
 	return size.x;
 }
 
 int PlaceholderTexture3D::get_height() const {
+	ZoneScopedS(60);
 	return size.y;
 }
 
 int PlaceholderTexture3D::get_depth() const {
+	ZoneScopedS(60);
 	return size.z;
 }
 
 bool PlaceholderTexture3D::has_mipmaps() const {
+	ZoneScopedS(60);
 	return false;
 }
 
 Vector<Ref<Image>> PlaceholderTexture3D::get_data() const {
+	ZoneScopedS(60);
 	return Vector<Ref<Image>>();
 }
 
 void PlaceholderTexture3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_size", "size"), &PlaceholderTexture3D::set_size);
 	ClassDB::bind_method(D_METHOD("get_size"), &PlaceholderTexture3D::get_size);
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3I, "size", PROPERTY_HINT_NONE, "suffix:px"), "set_size", "get_size");
 }
 
 PlaceholderTexture3D::PlaceholderTexture3D() {
+	ZoneScopedS(60);
 	rid = RS::get_singleton()->texture_3d_placeholder_create();
 }
 PlaceholderTexture3D::~PlaceholderTexture3D() {
+	ZoneScopedS(60);
 	RS::get_singleton()->free(rid);
 }
 
 /////////////////////////////////////////////////
 
 void PlaceholderTextureLayered::set_size(const Size2i &p_size) {
+	ZoneScopedS(60);
 	size = p_size;
 }
 
 Size2i PlaceholderTextureLayered::get_size() const {
+	ZoneScopedS(60);
 	return size;
 }
 
 void PlaceholderTextureLayered::set_layers(int p_layers) {
+	ZoneScopedS(60);
 	layers = p_layers;
 }
 
 Image::Format PlaceholderTextureLayered::get_format() const {
+	ZoneScopedS(60);
 	return Image::FORMAT_RGB8;
 }
 
 TextureLayered::LayeredType PlaceholderTextureLayered::get_layered_type() const {
+	ZoneScopedS(60);
 	return layered_type;
 }
 
 int PlaceholderTextureLayered::get_width() const {
+	ZoneScopedS(60);
 	return size.x;
 }
 
 int PlaceholderTextureLayered::get_height() const {
+	ZoneScopedS(60);
 	return size.y;
 }
 
 int PlaceholderTextureLayered::get_layers() const {
+	ZoneScopedS(60);
 	return layers;
 }
 
 bool PlaceholderTextureLayered::has_mipmaps() const {
+	ZoneScopedS(60);
 	return false;
 }
 
 Ref<Image> PlaceholderTextureLayered::get_layer_data(int p_layer) const {
+	ZoneScopedS(60);
 	return Ref<Image>();
 }
 
 void PlaceholderTextureLayered::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_size", "size"), &PlaceholderTextureLayered::set_size);
 	ClassDB::bind_method(D_METHOD("get_size"), &PlaceholderTextureLayered::get_size);
 	ClassDB::bind_method(D_METHOD("set_layers", "layers"), &PlaceholderTextureLayered::set_layers);
@@ -3533,9 +3869,11 @@ void PlaceholderTextureLayered::_bind_methods() {
 }
 
 PlaceholderTextureLayered::PlaceholderTextureLayered(LayeredType p_type) {
+	ZoneScopedS(60);
 	layered_type = p_type;
 	rid = RS::get_singleton()->texture_2d_layered_placeholder_create(RS::TextureLayeredType(layered_type));
 }
 PlaceholderTextureLayered::~PlaceholderTextureLayered() {
+	ZoneScopedS(60);
 	RS::get_singleton()->free(rid);
 }

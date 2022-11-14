@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  collision_polygon_3d.cpp                                             */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "collision_polygon_3d.h"
 
 #include "collision_object_3d.h"
@@ -35,6 +66,7 @@
 #include "scene/resources/convex_polygon_shape_3d.h"
 
 void CollisionPolygon3D::_build_polygon() {
+	ZoneScopedS(60);
 	if (!parent) {
 		return;
 	}
@@ -76,6 +108,7 @@ void CollisionPolygon3D::_build_polygon() {
 }
 
 void CollisionPolygon3D::_update_in_shape_owner(bool p_xform_only) {
+	ZoneScopedS(60);
 	parent->shape_owner_set_transform(owner_id, get_transform());
 	if (p_xform_only) {
 		return;
@@ -84,6 +117,7 @@ void CollisionPolygon3D::_update_in_shape_owner(bool p_xform_only) {
 }
 
 void CollisionPolygon3D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_PARENTED: {
 			parent = Object::cast_to<CollisionObject3D>(get_parent());
@@ -117,6 +151,7 @@ void CollisionPolygon3D::_notification(int p_what) {
 }
 
 void CollisionPolygon3D::set_polygon(const Vector<Point2> &p_polygon) {
+	ZoneScopedS(60);
 	polygon = p_polygon;
 	if (parent) {
 		_build_polygon();
@@ -126,24 +161,29 @@ void CollisionPolygon3D::set_polygon(const Vector<Point2> &p_polygon) {
 }
 
 Vector<Point2> CollisionPolygon3D::get_polygon() const {
+	ZoneScopedS(60);
 	return polygon;
 }
 
 AABB CollisionPolygon3D::get_item_rect() const {
+	ZoneScopedS(60);
 	return aabb;
 }
 
 void CollisionPolygon3D::set_depth(real_t p_depth) {
+	ZoneScopedS(60);
 	depth = p_depth;
 	_build_polygon();
 	update_gizmos();
 }
 
 real_t CollisionPolygon3D::get_depth() const {
+	ZoneScopedS(60);
 	return depth;
 }
 
 void CollisionPolygon3D::set_disabled(bool p_disabled) {
+	ZoneScopedS(60);
 	disabled = p_disabled;
 	update_gizmos();
 
@@ -153,14 +193,17 @@ void CollisionPolygon3D::set_disabled(bool p_disabled) {
 }
 
 bool CollisionPolygon3D::is_disabled() const {
+	ZoneScopedS(60);
 	return disabled;
 }
 
 real_t CollisionPolygon3D::get_margin() const {
+	ZoneScopedS(60);
 	return margin;
 }
 
 void CollisionPolygon3D::set_margin(real_t p_margin) {
+	ZoneScopedS(60);
 	margin = p_margin;
 	if (parent) {
 		_build_polygon();
@@ -168,6 +211,7 @@ void CollisionPolygon3D::set_margin(real_t p_margin) {
 }
 
 PackedStringArray CollisionPolygon3D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (!Object::cast_to<CollisionObject3D>(get_parent())) {
@@ -182,10 +226,12 @@ PackedStringArray CollisionPolygon3D::get_configuration_warnings() const {
 }
 
 bool CollisionPolygon3D::_is_editable_3d_polygon() const {
+	ZoneScopedS(60);
 	return true;
 }
 
 void CollisionPolygon3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_depth", "depth"), &CollisionPolygon3D::set_depth);
 	ClassDB::bind_method(D_METHOD("get_depth"), &CollisionPolygon3D::get_depth);
 
@@ -207,5 +253,6 @@ void CollisionPolygon3D::_bind_methods() {
 }
 
 CollisionPolygon3D::CollisionPolygon3D() {
+	ZoneScopedS(60);
 	set_notify_local_transform(true);
 }

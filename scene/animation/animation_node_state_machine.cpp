@@ -28,28 +28,64 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  animation_node_state_machine.cpp                                     */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "animation_node_state_machine.h"
 #include "scene/main/window.h"
 
 /////////////////////////////////////////////////
 
 void AnimationNodeStateMachineTransition::set_switch_mode(SwitchMode p_mode) {
+	ZoneScopedS(60);
 	switch_mode = p_mode;
 }
 
 AnimationNodeStateMachineTransition::SwitchMode AnimationNodeStateMachineTransition::get_switch_mode() const {
+	ZoneScopedS(60);
 	return switch_mode;
 }
 
 void AnimationNodeStateMachineTransition::set_auto_advance(bool p_enable) {
+	ZoneScopedS(60);
 	auto_advance = p_enable;
 }
 
 bool AnimationNodeStateMachineTransition::has_auto_advance() const {
+	ZoneScopedS(60);
 	return auto_advance;
 }
 
 void AnimationNodeStateMachineTransition::set_advance_condition(const StringName &p_condition) {
+	ZoneScopedS(60);
 	String cs = p_condition;
 	ERR_FAIL_COND(cs.contains("/") || cs.contains(":"));
 	advance_condition = p_condition;
@@ -62,14 +98,17 @@ void AnimationNodeStateMachineTransition::set_advance_condition(const StringName
 }
 
 StringName AnimationNodeStateMachineTransition::get_advance_condition() const {
+	ZoneScopedS(60);
 	return advance_condition;
 }
 
 StringName AnimationNodeStateMachineTransition::get_advance_condition_name() const {
+	ZoneScopedS(60);
 	return advance_condition_name;
 }
 
 void AnimationNodeStateMachineTransition::set_advance_expression(const String &p_expression) {
+	ZoneScopedS(60);
 	advance_expression = p_expression;
 
 	String advance_expression_stripped = advance_expression.strip_edges();
@@ -86,46 +125,56 @@ void AnimationNodeStateMachineTransition::set_advance_expression(const String &p
 }
 
 String AnimationNodeStateMachineTransition::get_advance_expression() const {
+	ZoneScopedS(60);
 	return advance_expression;
 }
 
 void AnimationNodeStateMachineTransition::set_xfade_time(float p_xfade) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_xfade < 0);
 	xfade_time = p_xfade;
 	emit_changed();
 }
 
 float AnimationNodeStateMachineTransition::get_xfade_time() const {
+	ZoneScopedS(60);
 	return xfade_time;
 }
 
 void AnimationNodeStateMachineTransition::set_xfade_curve(const Ref<Curve> &p_curve) {
+	ZoneScopedS(60);
 	xfade_curve = p_curve;
 }
 
 Ref<Curve> AnimationNodeStateMachineTransition::get_xfade_curve() const {
+	ZoneScopedS(60);
 	return xfade_curve;
 }
 
 void AnimationNodeStateMachineTransition::set_disabled(bool p_disabled) {
+	ZoneScopedS(60);
 	disabled = p_disabled;
 	emit_changed();
 }
 
 bool AnimationNodeStateMachineTransition::is_disabled() const {
+	ZoneScopedS(60);
 	return disabled;
 }
 
 void AnimationNodeStateMachineTransition::set_priority(int p_priority) {
+	ZoneScopedS(60);
 	priority = p_priority;
 	emit_changed();
 }
 
 int AnimationNodeStateMachineTransition::get_priority() const {
+	ZoneScopedS(60);
 	return priority;
 }
 
 void AnimationNodeStateMachineTransition::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_switch_mode", "mode"), &AnimationNodeStateMachineTransition::set_switch_mode);
 	ClassDB::bind_method(D_METHOD("get_switch_mode"), &AnimationNodeStateMachineTransition::get_switch_mode);
 
@@ -175,46 +224,56 @@ AnimationNodeStateMachineTransition::AnimationNodeStateMachineTransition() {
 ////////////////////////////////////////////////////////
 
 void AnimationNodeStateMachinePlayback::travel(const StringName &p_state) {
+	ZoneScopedS(60);
 	start_request_travel = true;
 	start_request = p_state;
 	stop_request = false;
 }
 
 void AnimationNodeStateMachinePlayback::start(const StringName &p_state) {
+	ZoneScopedS(60);
 	start_request_travel = false;
 	start_request = p_state;
 	stop_request = false;
 }
 
 void AnimationNodeStateMachinePlayback::stop() {
+	ZoneScopedS(60);
 	stop_request = true;
 }
 
 bool AnimationNodeStateMachinePlayback::is_playing() const {
+	ZoneScopedS(60);
 	return playing;
 }
 
 StringName AnimationNodeStateMachinePlayback::get_current_node() const {
+	ZoneScopedS(60);
 	return current;
 }
 
 StringName AnimationNodeStateMachinePlayback::get_blend_from_node() const {
+	ZoneScopedS(60);
 	return fading_from;
 }
 
 Vector<StringName> AnimationNodeStateMachinePlayback::get_travel_path() const {
+	ZoneScopedS(60);
 	return path;
 }
 
 float AnimationNodeStateMachinePlayback::get_current_play_pos() const {
+	ZoneScopedS(60);
 	return pos_current;
 }
 
 float AnimationNodeStateMachinePlayback::get_current_length() const {
+	ZoneScopedS(60);
 	return len_current;
 }
 
 bool AnimationNodeStateMachinePlayback::_travel(AnimationNodeStateMachine *p_state_machine, const StringName &p_travel) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!playing, false);
 	ERR_FAIL_COND_V(!p_state_machine->states.has(p_travel), false);
 	ERR_FAIL_COND_V(!p_state_machine->states.has(current), false);
@@ -333,6 +392,7 @@ bool AnimationNodeStateMachinePlayback::_travel(AnimationNodeStateMachine *p_sta
 }
 
 double AnimationNodeStateMachinePlayback::process(AnimationNodeStateMachine *p_state_machine, double p_time, bool p_seek, bool p_seek_root) {
+	ZoneScopedS(60);
 	if (p_time == -1) {
 		Ref<AnimationNodeStateMachine> anodesm = p_state_machine->states[current].node;
 		if (anodesm.is_valid()) {
@@ -630,6 +690,7 @@ double AnimationNodeStateMachinePlayback::process(AnimationNodeStateMachine *p_s
 }
 
 bool AnimationNodeStateMachinePlayback::_check_advance_condition(const Ref<AnimationNodeStateMachine> state_machine, const Ref<AnimationNodeStateMachineTransition> transition) const {
+	ZoneScopedS(60);
 	if (transition->has_auto_advance()) {
 		return true;
 	}
@@ -664,6 +725,7 @@ bool AnimationNodeStateMachinePlayback::_check_advance_condition(const Ref<Anima
 }
 
 void AnimationNodeStateMachinePlayback::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("travel", "to_node"), &AnimationNodeStateMachinePlayback::travel);
 	ClassDB::bind_method(D_METHOD("start", "node"), &AnimationNodeStateMachinePlayback::start);
 	ClassDB::bind_method(D_METHOD("stop"), &AnimationNodeStateMachinePlayback::stop);
@@ -675,12 +737,14 @@ void AnimationNodeStateMachinePlayback::_bind_methods() {
 }
 
 AnimationNodeStateMachinePlayback::AnimationNodeStateMachinePlayback() {
+	ZoneScopedS(60);
 	set_local_to_scene(true); //only one per instantiated scene
 }
 
 ///////////////////////////////////////////////////////
 
 void AnimationNodeStateMachine::get_parameter_list(List<PropertyInfo> *r_list) const {
+	ZoneScopedS(60);
 	r_list->push_back(PropertyInfo(Variant::OBJECT, playback, PROPERTY_HINT_RESOURCE_TYPE, "AnimationNodeStateMachinePlayback", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_DO_NOT_SHARE_ON_DUPLICATE));
 	List<StringName> advance_conditions;
 	for (int i = 0; i < transitions.size(); i++) {
@@ -697,6 +761,7 @@ void AnimationNodeStateMachine::get_parameter_list(List<PropertyInfo> *r_list) c
 }
 
 Variant AnimationNodeStateMachine::get_parameter_default_value(const StringName &p_parameter) const {
+	ZoneScopedS(60);
 	if (p_parameter == playback) {
 		Ref<AnimationNodeStateMachinePlayback> p;
 		p.instantiate();
@@ -707,6 +772,7 @@ Variant AnimationNodeStateMachine::get_parameter_default_value(const StringName 
 }
 
 void AnimationNodeStateMachine::add_node(const StringName &p_name, Ref<AnimationNode> p_node, const Vector2 &p_position) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(states.has(p_name));
 	ERR_FAIL_COND(p_node.is_null());
 	ERR_FAIL_COND(String(p_name).contains("/"));
@@ -731,6 +797,7 @@ void AnimationNodeStateMachine::add_node(const StringName &p_name, Ref<Animation
 }
 
 void AnimationNodeStateMachine::replace_node(const StringName &p_name, Ref<AnimationNode> p_node) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(states.has(p_name) == false);
 	ERR_FAIL_COND(p_node.is_null());
 	ERR_FAIL_COND(String(p_name).contains("/"));
@@ -751,6 +818,7 @@ void AnimationNodeStateMachine::replace_node(const StringName &p_name, Ref<Anima
 }
 
 bool AnimationNodeStateMachine::can_edit_node(const StringName &p_name) const {
+	ZoneScopedS(60);
 	if (states.has(p_name)) {
 		return !(states[p_name].node->is_class("AnimationNodeStartState") || states[p_name].node->is_class("AnimationNodeEndState"));
 	}
@@ -759,12 +827,14 @@ bool AnimationNodeStateMachine::can_edit_node(const StringName &p_name) const {
 }
 
 Ref<AnimationNode> AnimationNodeStateMachine::get_node(const StringName &p_name) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!states.has(p_name), Ref<AnimationNode>());
 
 	return states[p_name].node;
 }
 
 StringName AnimationNodeStateMachine::get_node_name(const Ref<AnimationNode> &p_node) const {
+	ZoneScopedS(60);
 	for (const KeyValue<StringName, State> &E : states) {
 		if (E.value.node == p_node) {
 			return E.key;
@@ -775,6 +845,7 @@ StringName AnimationNodeStateMachine::get_node_name(const Ref<AnimationNode> &p_
 }
 
 void AnimationNodeStateMachine::get_child_nodes(List<ChildNode> *r_child_nodes) {
+	ZoneScopedS(60);
 	Vector<StringName> nodes;
 
 	for (const KeyValue<StringName, State> &E : states) {
@@ -792,10 +863,12 @@ void AnimationNodeStateMachine::get_child_nodes(List<ChildNode> *r_child_nodes) 
 }
 
 bool AnimationNodeStateMachine::has_node(const StringName &p_name) const {
+	ZoneScopedS(60);
 	return states.has(p_name);
 }
 
 void AnimationNodeStateMachine::remove_node(const StringName &p_name) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!states.has(p_name));
 
 	if (!can_edit_node(p_name)) {
@@ -822,6 +895,7 @@ void AnimationNodeStateMachine::remove_node(const StringName &p_name) {
 }
 
 void AnimationNodeStateMachine::rename_node(const StringName &p_name, const StringName &p_new_name) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!states.has(p_name));
 	ERR_FAIL_COND(states.has(p_new_name));
 	ERR_FAIL_COND(!can_edit_node(p_name));
@@ -840,6 +914,7 @@ void AnimationNodeStateMachine::rename_node(const StringName &p_name, const Stri
 }
 
 void AnimationNodeStateMachine::_rename_transitions(const StringName &p_name, const StringName &p_new_name) {
+	ZoneScopedS(60);
 	if (updating_transitions) {
 		return;
 	}
@@ -885,6 +960,7 @@ void AnimationNodeStateMachine::_rename_transitions(const StringName &p_name, co
 }
 
 void AnimationNodeStateMachine::get_node_list(List<StringName> *r_nodes) const {
+	ZoneScopedS(60);
 	List<StringName> nodes;
 	for (const KeyValue<StringName, State> &E : states) {
 		nodes.push_back(E.key);
@@ -897,10 +973,12 @@ void AnimationNodeStateMachine::get_node_list(List<StringName> *r_nodes) const {
 }
 
 AnimationNodeStateMachine *AnimationNodeStateMachine::get_prev_state_machine() const {
+	ZoneScopedS(60);
 	return prev_state_machine;
 }
 
 bool AnimationNodeStateMachine::has_transition(const StringName &p_from, const StringName &p_to) const {
+	ZoneScopedS(60);
 	StringName from = _get_shortest_path(p_from);
 	StringName to = _get_shortest_path(p_to);
 
@@ -913,6 +991,7 @@ bool AnimationNodeStateMachine::has_transition(const StringName &p_from, const S
 }
 
 int AnimationNodeStateMachine::find_transition(const StringName &p_from, const StringName &p_to) const {
+	ZoneScopedS(60);
 	StringName from = _get_shortest_path(p_from);
 	StringName to = _get_shortest_path(p_to);
 
@@ -925,6 +1004,7 @@ int AnimationNodeStateMachine::find_transition(const StringName &p_from, const S
 }
 
 bool AnimationNodeStateMachine::_can_connect(const StringName &p_name, Vector<AnimationNodeStateMachine *> p_parents) {
+	ZoneScopedS(60);
 	if (p_parents.is_empty()) {
 		AnimationNodeStateMachine *prev = this;
 		while (prev != nullptr) {
@@ -965,6 +1045,7 @@ bool AnimationNodeStateMachine::_can_connect(const StringName &p_name, Vector<An
 }
 
 StringName AnimationNodeStateMachine::_get_shortest_path(const StringName &p_path) const {
+	ZoneScopedS(60);
 	// If p_path is something like StateMachine/../StateMachine2/State1,
 	// the result will be StateMachine2/State1. This avoid duplicate
 	// transitions when using add_transition. eg, this two calls is the same:
@@ -995,6 +1076,7 @@ StringName AnimationNodeStateMachine::_get_shortest_path(const StringName &p_pat
 }
 
 void AnimationNodeStateMachine::add_transition(const StringName &p_from, const StringName &p_to, const Ref<AnimationNodeStateMachineTransition> &p_transition) {
+	ZoneScopedS(60);
 	if (updating_transitions) {
 		return;
 	}
@@ -1058,25 +1140,30 @@ void AnimationNodeStateMachine::add_transition(const StringName &p_from, const S
 }
 
 Ref<AnimationNodeStateMachineTransition> AnimationNodeStateMachine::get_transition(int p_transition) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_transition, transitions.size(), Ref<AnimationNodeStateMachineTransition>());
 	return transitions[p_transition].transition;
 }
 
 StringName AnimationNodeStateMachine::get_transition_from(int p_transition) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_transition, transitions.size(), StringName());
 	return transitions[p_transition].from;
 }
 
 StringName AnimationNodeStateMachine::get_transition_to(int p_transition) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_transition, transitions.size(), StringName());
 	return transitions[p_transition].to;
 }
 
 int AnimationNodeStateMachine::get_transition_count() const {
+	ZoneScopedS(60);
 	return transitions.size();
 }
 
 void AnimationNodeStateMachine::remove_transition(const StringName &p_from, const StringName &p_to) {
+	ZoneScopedS(60);
 	StringName from = _get_shortest_path(p_from);
 	StringName to = _get_shortest_path(p_to);
 
@@ -1089,6 +1176,7 @@ void AnimationNodeStateMachine::remove_transition(const StringName &p_from, cons
 }
 
 void AnimationNodeStateMachine::remove_transition_by_index(const int p_transition) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_transition, transitions.size());
 	Transition tr = transitions[p_transition];
 	transitions.write[p_transition].transition->disconnect("advance_condition_changed", callable_mp(this, &AnimationNodeStateMachine::_tree_changed));
@@ -1117,6 +1205,7 @@ void AnimationNodeStateMachine::remove_transition_by_index(const int p_transitio
 }
 
 void AnimationNodeStateMachine::_remove_transition(const Ref<AnimationNodeStateMachineTransition> p_transition) {
+	ZoneScopedS(60);
 	for (int i = 0; i < transitions.size(); i++) {
 		if (transitions[i].transition == p_transition) {
 			remove_transition_by_index(i);
@@ -1126,14 +1215,17 @@ void AnimationNodeStateMachine::_remove_transition(const Ref<AnimationNodeStateM
 }
 
 void AnimationNodeStateMachine::set_graph_offset(const Vector2 &p_offset) {
+	ZoneScopedS(60);
 	graph_offset = p_offset;
 }
 
 Vector2 AnimationNodeStateMachine::get_graph_offset() const {
+	ZoneScopedS(60);
 	return graph_offset;
 }
 
 double AnimationNodeStateMachine::process(double p_time, bool p_seek, bool p_seek_root) {
+	ZoneScopedS(60);
 	Ref<AnimationNodeStateMachinePlayback> playback_new = get_parameter(playback);
 	ERR_FAIL_COND_V(playback_new.is_null(), 0.0);
 
@@ -1141,10 +1233,12 @@ double AnimationNodeStateMachine::process(double p_time, bool p_seek, bool p_see
 }
 
 String AnimationNodeStateMachine::get_caption() const {
+	ZoneScopedS(60);
 	return "StateMachine";
 }
 
 bool AnimationNodeStateMachine::has_local_transition(const StringName &p_from, const StringName &p_to) const {
+	ZoneScopedS(60);
 	StringName from = _get_shortest_path(p_from);
 	StringName to = _get_shortest_path(p_to);
 
@@ -1157,10 +1251,12 @@ bool AnimationNodeStateMachine::has_local_transition(const StringName &p_from, c
 }
 
 Ref<AnimationNode> AnimationNodeStateMachine::get_child_by_name(const StringName &p_name) {
+	ZoneScopedS(60);
 	return get_node(p_name);
 }
 
 bool AnimationNodeStateMachine::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	String prop_name = p_name;
 	if (prop_name.begins_with("states/")) {
 		String node_name = prop_name.get_slicec('/', 1);
@@ -1197,6 +1293,7 @@ bool AnimationNodeStateMachine::_set(const StringName &p_name, const Variant &p_
 }
 
 bool AnimationNodeStateMachine::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	String prop_name = p_name;
 	if (prop_name.begins_with("states/")) {
 		String node_name = prop_name.get_slicec('/', 1);
@@ -1241,6 +1338,7 @@ bool AnimationNodeStateMachine::_get(const StringName &p_name, Variant &r_ret) c
 }
 
 void AnimationNodeStateMachine::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	List<StringName> names;
 	for (const KeyValue<StringName, State> &E : states) {
 		names.push_back(E.key);
@@ -1257,6 +1355,7 @@ void AnimationNodeStateMachine::_get_property_list(List<PropertyInfo> *p_list) c
 }
 
 void AnimationNodeStateMachine::reset_state() {
+	ZoneScopedS(60);
 	states.clear();
 	transitions.clear();
 	playback = "playback";
@@ -1283,20 +1382,24 @@ void AnimationNodeStateMachine::reset_state() {
 }
 
 void AnimationNodeStateMachine::set_node_position(const StringName &p_name, const Vector2 &p_position) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!states.has(p_name));
 	states[p_name].position = p_position;
 }
 
 Vector2 AnimationNodeStateMachine::get_node_position(const StringName &p_name) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!states.has(p_name), Vector2());
 	return states[p_name].position;
 }
 
 void AnimationNodeStateMachine::_tree_changed() {
+	ZoneScopedS(60);
 	emit_signal(SNAME("tree_changed"));
 }
 
 void AnimationNodeStateMachine::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("add_node", "name", "node", "position"), &AnimationNodeStateMachine::add_node, DEFVAL(Vector2()));
 	ClassDB::bind_method(D_METHOD("replace_node", "name", "node"), &AnimationNodeStateMachine::replace_node);
 	ClassDB::bind_method(D_METHOD("get_node", "name"), &AnimationNodeStateMachine::get_node);
@@ -1322,6 +1425,7 @@ void AnimationNodeStateMachine::_bind_methods() {
 }
 
 AnimationNodeStateMachine::AnimationNodeStateMachine() {
+	ZoneScopedS(60);
 	Ref<AnimationNodeStartState> s;
 	s.instantiate();
 	State start;

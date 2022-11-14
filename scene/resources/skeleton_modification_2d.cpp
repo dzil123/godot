@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  skeleton_modification_2d.cpp                                         */
 /*************************************************************************/
@@ -28,8 +29,8 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "skeleton_modification_2d.h"
 #include "scene/2d/skeleton_2d.h"
+#include "skeleton_modification_2d.h"
 
 #include "scene/2d/collision_object_2d.h"
 #include "scene/2d/collision_shape_2d.h"
@@ -44,6 +45,7 @@
 ///////////////////////////////////////
 
 void SkeletonModification2D::_execute(float p_delta) {
+	ZoneScopedS(60);
 	GDVIRTUAL_CALL(_execute, p_delta);
 
 	if (!enabled) {
@@ -52,6 +54,7 @@ void SkeletonModification2D::_execute(float p_delta) {
 }
 
 void SkeletonModification2D::_setup_modification(SkeletonModificationStack2D *p_stack) {
+	ZoneScopedS(60);
 	stack = p_stack;
 	if (stack) {
 		is_setup = true;
@@ -63,10 +66,12 @@ void SkeletonModification2D::_setup_modification(SkeletonModificationStack2D *p_
 }
 
 void SkeletonModification2D::_draw_editor_gizmo() {
+	ZoneScopedS(60);
 	GDVIRTUAL_CALL(_draw_editor_gizmo);
 }
 
 void SkeletonModification2D::set_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	enabled = p_enabled;
 
 #ifdef TOOLS_ENABLED
@@ -79,10 +84,12 @@ void SkeletonModification2D::set_enabled(bool p_enabled) {
 }
 
 bool SkeletonModification2D::get_enabled() {
+	ZoneScopedS(60);
 	return enabled;
 }
 
 float SkeletonModification2D::clamp_angle(float p_angle, float p_min_bound, float p_max_bound, bool p_invert) {
+	ZoneScopedS(60);
 	// Map to the 0 to 360 range (in radians though) instead of the -180 to 180 range.
 	if (p_angle < 0) {
 		p_angle = Math_TAU + p_angle;
@@ -179,26 +186,32 @@ void SkeletonModification2D::editor_draw_angle_constraints(Bone2D *p_operation_b
 }
 
 Ref<SkeletonModificationStack2D> SkeletonModification2D::get_modification_stack() {
+	ZoneScopedS(60);
 	return stack;
 }
 
 void SkeletonModification2D::set_is_setup(bool p_setup) {
+	ZoneScopedS(60);
 	is_setup = p_setup;
 }
 
 bool SkeletonModification2D::get_is_setup() const {
+	ZoneScopedS(60);
 	return is_setup;
 }
 
 void SkeletonModification2D::set_execution_mode(int p_mode) {
+	ZoneScopedS(60);
 	execution_mode = p_mode;
 }
 
 int SkeletonModification2D::get_execution_mode() const {
+	ZoneScopedS(60);
 	return execution_mode;
 }
 
 void SkeletonModification2D::set_editor_draw_gizmo(bool p_draw_gizmo) {
+	ZoneScopedS(60);
 	editor_draw_gizmo = p_draw_gizmo;
 #ifdef TOOLS_ENABLED
 	if (is_setup) {
@@ -210,10 +223,12 @@ void SkeletonModification2D::set_editor_draw_gizmo(bool p_draw_gizmo) {
 }
 
 bool SkeletonModification2D::get_editor_draw_gizmo() const {
+	ZoneScopedS(60);
 	return editor_draw_gizmo;
 }
 
 void SkeletonModification2D::_bind_methods() {
+	ZoneScopedS(60);
 	GDVIRTUAL_BIND(_execute, "delta");
 	GDVIRTUAL_BIND(_setup_modification, "modification_stack")
 	GDVIRTUAL_BIND(_draw_editor_gizmo)
@@ -234,6 +249,7 @@ void SkeletonModification2D::_bind_methods() {
 }
 
 SkeletonModification2D::SkeletonModification2D() {
+	ZoneScopedS(60);
 	stack = nullptr;
 	is_setup = false;
 }

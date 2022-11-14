@@ -28,11 +28,43 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  navigation_agent_3d.cpp                                              */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "navigation_agent_3d.h"
 
 #include "servers/navigation_server_3d.h"
 
 void NavigationAgent3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_rid"), &NavigationAgent3D::get_rid);
 
 	ClassDB::bind_method(D_METHOD("set_avoidance_enabled", "enabled"), &NavigationAgent3D::set_avoidance_enabled);
@@ -116,6 +148,7 @@ void NavigationAgent3D::_bind_methods() {
 }
 
 void NavigationAgent3D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_POST_ENTER_TREE: {
 			// need to use POST_ENTER_TREE cause with normal ENTER_TREE not all required Nodes are ready.
@@ -180,6 +213,7 @@ void NavigationAgent3D::_notification(int p_what) {
 }
 
 NavigationAgent3D::NavigationAgent3D() {
+	ZoneScopedS(60);
 	agent = NavigationServer3D::get_singleton()->agent_create();
 	set_neighbor_distance(50.0);
 	set_max_neighbors(10);
@@ -197,11 +231,13 @@ NavigationAgent3D::NavigationAgent3D() {
 }
 
 NavigationAgent3D::~NavigationAgent3D() {
+	ZoneScopedS(60);
 	NavigationServer3D::get_singleton()->free(agent);
 	agent = RID(); // Pointless
 }
 
 void NavigationAgent3D::set_avoidance_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	avoidance_enabled = p_enabled;
 	if (avoidance_enabled) {
 		NavigationServer3D::get_singleton()->agent_set_callback(agent, this, "_avoidance_done");
@@ -211,10 +247,12 @@ void NavigationAgent3D::set_avoidance_enabled(bool p_enabled) {
 }
 
 bool NavigationAgent3D::get_avoidance_enabled() const {
+	ZoneScopedS(60);
 	return avoidance_enabled;
 }
 
 void NavigationAgent3D::set_agent_parent(Node *p_agent_parent) {
+	ZoneScopedS(60);
 	// remove agent from any avoidance map before changing parent or there will be leftovers on the RVO map
 	NavigationServer3D::get_singleton()->agent_set_callback(agent, nullptr, "_avoidance_done");
 	if (Object::cast_to<Node3D>(p_agent_parent) != nullptr) {
@@ -234,6 +272,7 @@ void NavigationAgent3D::set_agent_parent(Node *p_agent_parent) {
 }
 
 void NavigationAgent3D::set_navigation_layers(uint32_t p_navigation_layers) {
+	ZoneScopedS(60);
 	bool navigation_layers_changed = navigation_layers != p_navigation_layers;
 	navigation_layers = p_navigation_layers;
 	if (navigation_layers_changed) {
@@ -242,10 +281,12 @@ void NavigationAgent3D::set_navigation_layers(uint32_t p_navigation_layers) {
 }
 
 uint32_t NavigationAgent3D::get_navigation_layers() const {
+	ZoneScopedS(60);
 	return navigation_layers;
 }
 
 void NavigationAgent3D::set_navigation_layer_value(int p_layer_number, bool p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_layer_number < 1, "Navigation layer number must be between 1 and 32 inclusive.");
 	ERR_FAIL_COND_MSG(p_layer_number > 32, "Navigation layer number must be between 1 and 32 inclusive.");
 	uint32_t _navigation_layers = get_navigation_layers();
@@ -258,18 +299,21 @@ void NavigationAgent3D::set_navigation_layer_value(int p_layer_number, bool p_va
 }
 
 bool NavigationAgent3D::get_navigation_layer_value(int p_layer_number) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(p_layer_number < 1, false, "Navigation layer number must be between 1 and 32 inclusive.");
 	ERR_FAIL_COND_V_MSG(p_layer_number > 32, false, "Navigation layer number must be between 1 and 32 inclusive.");
 	return get_navigation_layers() & (1 << (p_layer_number - 1));
 }
 
 void NavigationAgent3D::set_navigation_map(RID p_navigation_map) {
+	ZoneScopedS(60);
 	map_override = p_navigation_map;
 	NavigationServer3D::get_singleton()->agent_set_map(agent, map_override);
 	_request_repath();
 }
 
 RID NavigationAgent3D::get_navigation_map() const {
+	ZoneScopedS(60);
 	if (map_override.is_valid()) {
 		return map_override;
 	} else if (agent_parent != nullptr) {
@@ -279,65 +323,79 @@ RID NavigationAgent3D::get_navigation_map() const {
 }
 
 void NavigationAgent3D::set_path_desired_distance(real_t p_dd) {
+	ZoneScopedS(60);
 	path_desired_distance = p_dd;
 }
 
 void NavigationAgent3D::set_target_desired_distance(real_t p_dd) {
+	ZoneScopedS(60);
 	target_desired_distance = p_dd;
 }
 
 void NavigationAgent3D::set_radius(real_t p_radius) {
+	ZoneScopedS(60);
 	radius = p_radius;
 	NavigationServer3D::get_singleton()->agent_set_radius(agent, radius);
 }
 
 void NavigationAgent3D::set_agent_height_offset(real_t p_hh) {
+	ZoneScopedS(60);
 	navigation_height_offset = p_hh;
 }
 
 void NavigationAgent3D::set_ignore_y(bool p_ignore_y) {
+	ZoneScopedS(60);
 	ignore_y = p_ignore_y;
 	NavigationServer3D::get_singleton()->agent_set_ignore_y(agent, ignore_y);
 }
 
 void NavigationAgent3D::set_neighbor_distance(real_t p_distance) {
+	ZoneScopedS(60);
 	neighbor_distance = p_distance;
 	NavigationServer3D::get_singleton()->agent_set_neighbor_distance(agent, neighbor_distance);
 }
 
 void NavigationAgent3D::set_max_neighbors(int p_count) {
+	ZoneScopedS(60);
 	max_neighbors = p_count;
 	NavigationServer3D::get_singleton()->agent_set_max_neighbors(agent, max_neighbors);
 }
 
 void NavigationAgent3D::set_time_horizon(real_t p_time) {
+	ZoneScopedS(60);
 	time_horizon = p_time;
 	NavigationServer3D::get_singleton()->agent_set_time_horizon(agent, time_horizon);
 }
 
 void NavigationAgent3D::set_max_speed(real_t p_max_speed) {
+	ZoneScopedS(60);
 	max_speed = p_max_speed;
 	NavigationServer3D::get_singleton()->agent_set_max_speed(agent, max_speed);
 }
 
 void NavigationAgent3D::set_path_max_distance(real_t p_pmd) {
+	ZoneScopedS(60);
 	path_max_distance = p_pmd;
 }
 
 real_t NavigationAgent3D::get_path_max_distance() {
+	ZoneScopedS(60);
 	return path_max_distance;
 }
 
 void NavigationAgent3D::set_target_location(Vector3 p_location) {
+	ZoneScopedS(60);
 	target_location = p_location;
 	_request_repath();
 }
 
 Vector3 NavigationAgent3D::get_target_location() const {
+	ZoneScopedS(60);
 	return target_location;
 }
 
 Vector3 NavigationAgent3D::get_next_location() {
+	ZoneScopedS(60);
 	update_navigation();
 
 	const Vector<Vector3> &navigation_path = navigation_result->get_path();
@@ -350,28 +408,34 @@ Vector3 NavigationAgent3D::get_next_location() {
 }
 
 const Vector<Vector3> &NavigationAgent3D::get_nav_path() const {
+	ZoneScopedS(60);
 	return navigation_result->get_path();
 }
 
 real_t NavigationAgent3D::distance_to_target() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(agent_parent == nullptr, 0.0, "The agent has no parent.");
 	return agent_parent->get_global_transform().origin.distance_to(target_location);
 }
 
 bool NavigationAgent3D::is_target_reached() const {
+	ZoneScopedS(60);
 	return target_reached;
 }
 
 bool NavigationAgent3D::is_target_reachable() {
+	ZoneScopedS(60);
 	return target_desired_distance >= get_final_location().distance_to(target_location);
 }
 
 bool NavigationAgent3D::is_navigation_finished() {
+	ZoneScopedS(60);
 	update_navigation();
 	return navigation_finished;
 }
 
 Vector3 NavigationAgent3D::get_final_location() {
+	ZoneScopedS(60);
 	update_navigation();
 
 	const Vector<Vector3> &navigation_path = navigation_result->get_path();
@@ -382,6 +446,7 @@ Vector3 NavigationAgent3D::get_final_location() {
 }
 
 void NavigationAgent3D::set_velocity(Vector3 p_velocity) {
+	ZoneScopedS(60);
 	target_velocity = p_velocity;
 	NavigationServer3D::get_singleton()->agent_set_target_velocity(agent, target_velocity);
 	NavigationServer3D::get_singleton()->agent_set_velocity(agent, prev_safe_velocity);
@@ -389,6 +454,7 @@ void NavigationAgent3D::set_velocity(Vector3 p_velocity) {
 }
 
 void NavigationAgent3D::_avoidance_done(Vector3 p_new_velocity) {
+	ZoneScopedS(60);
 	prev_safe_velocity = p_new_velocity;
 
 	if (!velocity_submitted) {
@@ -401,6 +467,7 @@ void NavigationAgent3D::_avoidance_done(Vector3 p_new_velocity) {
 }
 
 PackedStringArray NavigationAgent3D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (!Object::cast_to<Node3D>(get_parent())) {
@@ -411,6 +478,7 @@ PackedStringArray NavigationAgent3D::get_configuration_warnings() const {
 }
 
 void NavigationAgent3D::update_navigation() {
+	ZoneScopedS(60);
 	if (agent_parent == nullptr) {
 		return;
 	}
@@ -488,6 +556,7 @@ void NavigationAgent3D::update_navigation() {
 }
 
 void NavigationAgent3D::_request_repath() {
+	ZoneScopedS(60);
 	navigation_result->reset();
 	target_reached = false;
 	navigation_finished = false;
@@ -495,6 +564,7 @@ void NavigationAgent3D::_request_repath() {
 }
 
 void NavigationAgent3D::_check_distance_to_target() {
+	ZoneScopedS(60);
 	if (!target_reached) {
 		if (distance_to_target() < target_desired_distance) {
 			target_reached = true;

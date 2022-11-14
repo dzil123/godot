@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  animated_sprite_2d.cpp                                               */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "animated_sprite_2d.h"
 
 #include "scene/main/viewport.h"
@@ -35,34 +66,41 @@
 
 #ifdef TOOLS_ENABLED
 Dictionary AnimatedSprite2D::_edit_get_state() const {
+	ZoneScopedS(60);
 	Dictionary state = Node2D::_edit_get_state();
 	state["offset"] = offset;
 	return state;
 }
 
 void AnimatedSprite2D::_edit_set_state(const Dictionary &p_state) {
+	ZoneScopedS(60);
 	Node2D::_edit_set_state(p_state);
 	set_offset(p_state["offset"]);
 }
 
 void AnimatedSprite2D::_edit_set_pivot(const Point2 &p_pivot) {
+	ZoneScopedS(60);
 	set_offset(get_offset() - p_pivot);
 	set_position(get_transform().xform(p_pivot));
 }
 
 Point2 AnimatedSprite2D::_edit_get_pivot() const {
+	ZoneScopedS(60);
 	return Vector2();
 }
 
 bool AnimatedSprite2D::_edit_use_pivot() const {
+	ZoneScopedS(60);
 	return true;
 }
 
 Rect2 AnimatedSprite2D::_edit_get_rect() const {
+	ZoneScopedS(60);
 	return _get_rect();
 }
 
 bool AnimatedSprite2D::_edit_use_rect() const {
+	ZoneScopedS(60);
 	if (frames.is_null() || !frames->has_animation(animation)) {
 		return false;
 	}
@@ -79,10 +117,12 @@ bool AnimatedSprite2D::_edit_use_rect() const {
 #endif
 
 Rect2 AnimatedSprite2D::get_anchorable_rect() const {
+	ZoneScopedS(60);
 	return _get_rect();
 }
 
 Rect2 AnimatedSprite2D::_get_rect() const {
+	ZoneScopedS(60);
 	if (frames.is_null() || !frames->has_animation(animation)) {
 		return Rect2();
 	}
@@ -112,6 +152,7 @@ Rect2 AnimatedSprite2D::_get_rect() const {
 }
 
 void AnimatedSprite2D::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (!frames.is_valid()) {
 		return;
 	}
@@ -166,6 +207,7 @@ void AnimatedSprite2D::_validate_property(PropertyInfo &p_property) const {
 }
 
 void AnimatedSprite2D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_INTERNAL_PROCESS: {
 			if (frames.is_null() || !frames->has_animation(animation)) {
@@ -264,6 +306,7 @@ void AnimatedSprite2D::_notification(int p_what) {
 }
 
 void AnimatedSprite2D::set_sprite_frames(const Ref<SpriteFrames> &p_frames) {
+	ZoneScopedS(60);
 	if (frames.is_valid()) {
 		frames->disconnect(SceneStringNames::get_singleton()->changed, callable_mp(this, &AnimatedSprite2D::_res_changed));
 	}
@@ -286,10 +329,12 @@ void AnimatedSprite2D::set_sprite_frames(const Ref<SpriteFrames> &p_frames) {
 }
 
 Ref<SpriteFrames> AnimatedSprite2D::get_sprite_frames() const {
+	ZoneScopedS(60);
 	return frames;
 }
 
 void AnimatedSprite2D::set_frame(int p_frame) {
+	ZoneScopedS(60);
 	if (frames.is_null()) {
 		return;
 	}
@@ -317,10 +362,12 @@ void AnimatedSprite2D::set_frame(int p_frame) {
 }
 
 int AnimatedSprite2D::get_frame() const {
+	ZoneScopedS(60);
 	return frame;
 }
 
 void AnimatedSprite2D::set_speed_scale(double p_speed_scale) {
+	ZoneScopedS(60);
 	if (speed_scale == p_speed_scale) {
 		return;
 	}
@@ -336,54 +383,65 @@ void AnimatedSprite2D::set_speed_scale(double p_speed_scale) {
 }
 
 double AnimatedSprite2D::get_speed_scale() const {
+	ZoneScopedS(60);
 	return speed_scale;
 }
 
 void AnimatedSprite2D::set_centered(bool p_center) {
+	ZoneScopedS(60);
 	centered = p_center;
 	queue_redraw();
 	item_rect_changed();
 }
 
 bool AnimatedSprite2D::is_centered() const {
+	ZoneScopedS(60);
 	return centered;
 }
 
 void AnimatedSprite2D::set_offset(const Point2 &p_offset) {
+	ZoneScopedS(60);
 	offset = p_offset;
 	queue_redraw();
 	item_rect_changed();
 }
 
 Point2 AnimatedSprite2D::get_offset() const {
+	ZoneScopedS(60);
 	return offset;
 }
 
 void AnimatedSprite2D::set_flip_h(bool p_flip) {
+	ZoneScopedS(60);
 	hflip = p_flip;
 	queue_redraw();
 }
 
 bool AnimatedSprite2D::is_flipped_h() const {
+	ZoneScopedS(60);
 	return hflip;
 }
 
 void AnimatedSprite2D::set_flip_v(bool p_flip) {
+	ZoneScopedS(60);
 	vflip = p_flip;
 	queue_redraw();
 }
 
 bool AnimatedSprite2D::is_flipped_v() const {
+	ZoneScopedS(60);
 	return vflip;
 }
 
 void AnimatedSprite2D::_res_changed() {
+	ZoneScopedS(60);
 	set_frame(frame);
 
 	queue_redraw();
 }
 
 void AnimatedSprite2D::set_playing(bool p_playing) {
+	ZoneScopedS(60);
 	if (playing == p_playing) {
 		return;
 	}
@@ -394,10 +452,12 @@ void AnimatedSprite2D::set_playing(bool p_playing) {
 }
 
 bool AnimatedSprite2D::is_playing() const {
+	ZoneScopedS(60);
 	return playing;
 }
 
 void AnimatedSprite2D::play(const StringName &p_animation, bool p_backwards) {
+	ZoneScopedS(60);
 	backwards = p_backwards;
 	playing_backwards = signbit(speed_scale) != backwards;
 
@@ -413,10 +473,12 @@ void AnimatedSprite2D::play(const StringName &p_animation, bool p_backwards) {
 }
 
 void AnimatedSprite2D::stop() {
+	ZoneScopedS(60);
 	set_playing(false);
 }
 
 double AnimatedSprite2D::_get_frame_duration() {
+	ZoneScopedS(60);
 	if (frames.is_valid() && frames->has_animation(animation)) {
 		double speed = frames->get_animation_speed(animation) * Math::abs(speed_scale);
 		if (speed > 0) {
@@ -427,6 +489,7 @@ double AnimatedSprite2D::_get_frame_duration() {
 }
 
 void AnimatedSprite2D::_reset_timeout() {
+	ZoneScopedS(60);
 	if (!playing) {
 		return;
 	}
@@ -436,6 +499,7 @@ void AnimatedSprite2D::_reset_timeout() {
 }
 
 void AnimatedSprite2D::set_animation(const StringName &p_animation) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(frames == nullptr, vformat("There is no animation with name '%s'.", p_animation));
 	ERR_FAIL_COND_MSG(!frames->get_animation_names().has(p_animation), vformat("There is no animation with name '%s'.", p_animation));
 
@@ -451,10 +515,12 @@ void AnimatedSprite2D::set_animation(const StringName &p_animation) {
 }
 
 StringName AnimatedSprite2D::get_animation() const {
+	ZoneScopedS(60);
 	return animation;
 }
 
 PackedStringArray AnimatedSprite2D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (frames.is_null()) {
@@ -465,6 +531,7 @@ PackedStringArray AnimatedSprite2D::get_configuration_warnings() const {
 }
 
 void AnimatedSprite2D::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+	ZoneScopedS(60);
 	if (p_idx == 0 && p_function == "play" && frames.is_valid()) {
 		List<StringName> al;
 		frames->get_animation_list(&al);
@@ -476,6 +543,7 @@ void AnimatedSprite2D::get_argument_options(const StringName &p_function, int p_
 }
 
 void AnimatedSprite2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_sprite_frames", "sprite_frames"), &AnimatedSprite2D::set_sprite_frames);
 	ClassDB::bind_method(D_METHOD("get_sprite_frames"), &AnimatedSprite2D::get_sprite_frames);
 

@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  shape_cast_3d.cpp                                                    */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "shape_cast_3d.h"
 
 #include "collision_object_3d.h"
@@ -35,6 +66,7 @@
 #include "scene/resources/concave_polygon_shape_3d.h"
 
 void ShapeCast3D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			if (Engine::get_singleton()->is_editor_hint()) {
@@ -92,6 +124,7 @@ void ShapeCast3D::_notification(int p_what) {
 }
 
 void ShapeCast3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("resource_changed", "resource"), &ShapeCast3D::resource_changed);
 
 	ClassDB::bind_method(D_METHOD("set_enabled", "enabled"), &ShapeCast3D::set_enabled);
@@ -169,6 +202,7 @@ void ShapeCast3D::_bind_methods() {
 }
 
 PackedStringArray ShapeCast3D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node3D::get_configuration_warnings();
 
 	if (shape.is_null()) {
@@ -181,6 +215,7 @@ PackedStringArray ShapeCast3D::get_configuration_warnings() const {
 }
 
 void ShapeCast3D::set_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	enabled = p_enabled;
 	update_gizmos();
 
@@ -201,10 +236,12 @@ void ShapeCast3D::set_enabled(bool p_enabled) {
 }
 
 bool ShapeCast3D::is_enabled() const {
+	ZoneScopedS(60);
 	return enabled;
 }
 
 void ShapeCast3D::set_target_position(const Vector3 &p_point) {
+	ZoneScopedS(60);
 	target_position = p_point;
 	if (is_inside_tree() && get_tree()->is_debugging_collisions_hint()) {
 		_update_debug_shape();
@@ -221,34 +258,42 @@ void ShapeCast3D::set_target_position(const Vector3 &p_point) {
 }
 
 Vector3 ShapeCast3D::get_target_position() const {
+	ZoneScopedS(60);
 	return target_position;
 }
 
 void ShapeCast3D::set_margin(real_t p_margin) {
+	ZoneScopedS(60);
 	margin = p_margin;
 }
 
 real_t ShapeCast3D::get_margin() const {
+	ZoneScopedS(60);
 	return margin;
 }
 
 void ShapeCast3D::set_max_results(int p_max_results) {
+	ZoneScopedS(60);
 	max_results = p_max_results;
 }
 
 int ShapeCast3D::get_max_results() const {
+	ZoneScopedS(60);
 	return max_results;
 }
 
 void ShapeCast3D::set_collision_mask(uint32_t p_mask) {
+	ZoneScopedS(60);
 	collision_mask = p_mask;
 }
 
 uint32_t ShapeCast3D::get_collision_mask() const {
+	ZoneScopedS(60);
 	return collision_mask;
 }
 
 void ShapeCast3D::set_collision_mask_value(int p_layer_number, bool p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_layer_number < 1, "Collision layer number must be between 1 and 32 inclusive.");
 	ERR_FAIL_COND_MSG(p_layer_number > 32, "Collision layer number must be between 1 and 32 inclusive.");
 	uint32_t mask = get_collision_mask();
@@ -261,20 +306,24 @@ void ShapeCast3D::set_collision_mask_value(int p_layer_number, bool p_value) {
 }
 
 bool ShapeCast3D::get_collision_mask_value(int p_layer_number) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(p_layer_number < 1, false, "Collision layer number must be between 1 and 32 inclusive.");
 	ERR_FAIL_COND_V_MSG(p_layer_number > 32, false, "Collision layer number must be between 1 and 32 inclusive.");
 	return get_collision_mask() & (1 << (p_layer_number - 1));
 }
 
 int ShapeCast3D::get_collision_count() const {
+	ZoneScopedS(60);
 	return result.size();
 }
 
 bool ShapeCast3D::is_colliding() const {
+	ZoneScopedS(60);
 	return collided;
 }
 
 Object *ShapeCast3D::get_collider(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V_MSG(p_idx, result.size(), nullptr, "No collider found.");
 
 	if (result[p_idx].collider_id.is_null()) {
@@ -284,34 +333,41 @@ Object *ShapeCast3D::get_collider(int p_idx) const {
 }
 
 RID ShapeCast3D::get_collider_rid(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V_MSG(p_idx, result.size(), RID(), "No collider RID found.");
 	return result[p_idx].rid;
 }
 
 int ShapeCast3D::get_collider_shape(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V_MSG(p_idx, result.size(), -1, "No collider shape found.");
 	return result[p_idx].shape;
 }
 
 Vector3 ShapeCast3D::get_collision_point(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V_MSG(p_idx, result.size(), Vector3(), "No collision point found.");
 	return result[p_idx].point;
 }
 
 Vector3 ShapeCast3D::get_collision_normal(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V_MSG(p_idx, result.size(), Vector3(), "No collision normal found.");
 	return result[p_idx].normal;
 }
 
 real_t ShapeCast3D::get_closest_collision_safe_fraction() const {
+	ZoneScopedS(60);
 	return collision_safe_fraction;
 }
 
 real_t ShapeCast3D::get_closest_collision_unsafe_fraction() const {
+	ZoneScopedS(60);
 	return collision_unsafe_fraction;
 }
 
 void ShapeCast3D::resource_changed(Ref<Resource> p_res) {
+	ZoneScopedS(60);
 	if (is_inside_tree() && get_tree()->is_debugging_collisions_hint()) {
 		_update_debug_shape();
 	}
@@ -319,6 +375,7 @@ void ShapeCast3D::resource_changed(Ref<Resource> p_res) {
 }
 
 void ShapeCast3D::set_shape(const Ref<Shape3D> &p_shape) {
+	ZoneScopedS(60);
 	if (p_shape == shape) {
 		return;
 	}
@@ -342,10 +399,12 @@ void ShapeCast3D::set_shape(const Ref<Shape3D> &p_shape) {
 }
 
 Ref<Shape3D> ShapeCast3D::get_shape() const {
+	ZoneScopedS(60);
 	return shape;
 }
 
 void ShapeCast3D::set_exclude_parent_body(bool p_exclude_parent_body) {
+	ZoneScopedS(60);
 	if (exclude_parent_body == p_exclude_parent_body) {
 		return;
 	}
@@ -364,10 +423,12 @@ void ShapeCast3D::set_exclude_parent_body(bool p_exclude_parent_body) {
 }
 
 bool ShapeCast3D::get_exclude_parent_body() const {
+	ZoneScopedS(60);
 	return exclude_parent_body;
 }
 
 void ShapeCast3D::_update_shapecast_state() {
+	ZoneScopedS(60);
 	result.clear();
 
 	ERR_FAIL_COND_MSG(shape.is_null(), "Null reference to shape. ShapeCast3D requires a Shape3D to sweep for collisions.");
@@ -419,14 +480,17 @@ void ShapeCast3D::_update_shapecast_state() {
 }
 
 void ShapeCast3D::force_shapecast_update() {
+	ZoneScopedS(60);
 	_update_shapecast_state();
 }
 
 void ShapeCast3D::add_exception_rid(const RID &p_rid) {
+	ZoneScopedS(60);
 	exclude.insert(p_rid);
 }
 
 void ShapeCast3D::add_exception(const Object *p_object) {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_object);
 	const CollisionObject3D *co = Object::cast_to<CollisionObject3D>(p_object);
 	if (!co) {
@@ -436,10 +500,12 @@ void ShapeCast3D::add_exception(const Object *p_object) {
 }
 
 void ShapeCast3D::remove_exception_rid(const RID &p_rid) {
+	ZoneScopedS(60);
 	exclude.erase(p_rid);
 }
 
 void ShapeCast3D::remove_exception(const Object *p_object) {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_object);
 	const CollisionObject3D *co = Object::cast_to<CollisionObject3D>(p_object);
 	if (!co) {
@@ -449,26 +515,32 @@ void ShapeCast3D::remove_exception(const Object *p_object) {
 }
 
 void ShapeCast3D::clear_exceptions() {
+	ZoneScopedS(60);
 	exclude.clear();
 }
 
 void ShapeCast3D::set_collide_with_areas(bool p_clip) {
+	ZoneScopedS(60);
 	collide_with_areas = p_clip;
 }
 
 bool ShapeCast3D::is_collide_with_areas_enabled() const {
+	ZoneScopedS(60);
 	return collide_with_areas;
 }
 
 void ShapeCast3D::set_collide_with_bodies(bool p_clip) {
+	ZoneScopedS(60);
 	collide_with_bodies = p_clip;
 }
 
 bool ShapeCast3D::is_collide_with_bodies_enabled() const {
+	ZoneScopedS(60);
 	return collide_with_bodies;
 }
 
 Array ShapeCast3D::_get_collision_result() const {
+	ZoneScopedS(60);
 	Array ret;
 
 	for (int i = 0; i < result.size(); ++i) {
@@ -489,6 +561,7 @@ Array ShapeCast3D::_get_collision_result() const {
 }
 
 void ShapeCast3D::_update_debug_shape_vertices() {
+	ZoneScopedS(60);
 	debug_shape_vertices.clear();
 	debug_line_vertices.clear();
 
@@ -508,14 +581,17 @@ void ShapeCast3D::_update_debug_shape_vertices() {
 }
 
 const Vector<Vector3> &ShapeCast3D::get_debug_shape_vertices() const {
+	ZoneScopedS(60);
 	return debug_shape_vertices;
 }
 
 const Vector<Vector3> &ShapeCast3D::get_debug_line_vertices() const {
+	ZoneScopedS(60);
 	return debug_line_vertices;
 }
 
 void ShapeCast3D::set_debug_shape_custom_color(const Color &p_color) {
+	ZoneScopedS(60);
 	debug_shape_custom_color = p_color;
 	if (debug_material.is_valid()) {
 		_update_debug_shape_material();
@@ -523,15 +599,18 @@ void ShapeCast3D::set_debug_shape_custom_color(const Color &p_color) {
 }
 
 Ref<StandardMaterial3D> ShapeCast3D::get_debug_material() {
+	ZoneScopedS(60);
 	_update_debug_shape_material();
 	return debug_material;
 }
 
 const Color &ShapeCast3D::get_debug_shape_custom_color() const {
+	ZoneScopedS(60);
 	return debug_shape_custom_color;
 }
 
 void ShapeCast3D::_create_debug_shape() {
+	ZoneScopedS(60);
 	_update_debug_shape_material();
 
 	Ref<ArrayMesh> mesh = memnew(ArrayMesh);
@@ -544,6 +623,7 @@ void ShapeCast3D::_create_debug_shape() {
 }
 
 void ShapeCast3D::_update_debug_shape_material(bool p_check_collision) {
+	ZoneScopedS(60);
 	if (!debug_material.is_valid()) {
 		Ref<StandardMaterial3D> material = memnew(StandardMaterial3D);
 		debug_material = material;
@@ -575,6 +655,7 @@ void ShapeCast3D::_update_debug_shape_material(bool p_check_collision) {
 }
 
 void ShapeCast3D::_update_debug_shape() {
+	ZoneScopedS(60);
 	if (!enabled) {
 		return;
 	}
@@ -619,6 +700,7 @@ void ShapeCast3D::_update_debug_shape() {
 }
 
 void ShapeCast3D::_clear_debug_shape() {
+	ZoneScopedS(60);
 	if (!debug_shape) {
 		return;
 	}
@@ -634,6 +716,7 @@ void ShapeCast3D::_clear_debug_shape() {
 }
 
 ShapeCast3D::~ShapeCast3D() {
+	ZoneScopedS(60);
 	if (!shape.is_null()) {
 		shape->unregister_owner(this);
 	}

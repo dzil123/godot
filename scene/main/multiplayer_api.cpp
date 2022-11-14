@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  multiplayer_api.cpp                                                  */
 /*************************************************************************/
@@ -42,15 +43,18 @@
 StringName MultiplayerAPI::default_interface = StringName();
 
 void MultiplayerAPI::set_default_interface(const StringName &p_interface) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!ClassDB::is_parent_class(p_interface, MultiplayerAPI::get_class_static()), vformat("Can't make %s the default multiplayer interface since it does not extend MultiplayerAPI.", p_interface));
 	default_interface = p_interface;
 }
 
 StringName MultiplayerAPI::get_default_interface() {
+	ZoneScopedS(60);
 	return default_interface;
 }
 
 Ref<MultiplayerAPI> MultiplayerAPI::create_default_interface() {
+	ZoneScopedS(60);
 	if (default_interface != StringName()) {
 		return Ref<MultiplayerAPI>(Object::cast_to<MultiplayerAPI>(ClassDB::instantiate(default_interface)));
 	}
@@ -70,6 +74,7 @@ Ref<MultiplayerAPI> MultiplayerAPI::create_default_interface() {
 #define ENCODE_32 2 << 6
 #define ENCODE_64 3 << 6
 Error MultiplayerAPI::encode_and_compress_variant(const Variant &p_variant, uint8_t *r_buffer, int &r_len, bool p_allow_object_decoding) {
+	ZoneScopedS(60);
 	// Unreachable because `VARIANT_MAX` == 38 and `ENCODE_VARIANT_MASK` == 77
 	CRASH_COND(p_variant.get_type() > VARIANT_META_TYPE_MASK);
 
@@ -145,6 +150,7 @@ Error MultiplayerAPI::encode_and_compress_variant(const Variant &p_variant, uint
 }
 
 Error MultiplayerAPI::decode_and_decompress_variant(Variant &r_variant, const uint8_t *p_buffer, int p_len, int *r_len, bool p_allow_object_decoding) {
+	ZoneScopedS(60);
 	const uint8_t *buf = p_buffer;
 	int len = p_len;
 
@@ -213,6 +219,7 @@ Error MultiplayerAPI::decode_and_decompress_variant(Variant &r_variant, const ui
 }
 
 Error MultiplayerAPI::encode_and_compress_variants(const Variant **p_variants, int p_count, uint8_t *p_buffer, int &r_len, bool *r_raw, bool p_allow_object_decoding) {
+	ZoneScopedS(60);
 	r_len = 0;
 	int size = 0;
 
@@ -251,6 +258,7 @@ Error MultiplayerAPI::encode_and_compress_variants(const Variant **p_variants, i
 }
 
 Error MultiplayerAPI::decode_and_decompress_variants(Vector<Variant> &r_variants, const uint8_t *p_buffer, int p_len, int &r_len, bool p_raw, bool p_allow_object_decoding) {
+	ZoneScopedS(60);
 	r_len = 0;
 	int argc = r_variants.size();
 	if (argc == 0 && p_raw) {
@@ -282,6 +290,7 @@ Error MultiplayerAPI::decode_and_decompress_variants(Vector<Variant> &r_variants
 }
 
 Error MultiplayerAPI::_rpc_bind(int p_peer, Object *p_object, const StringName &p_method, Array p_args) {
+	ZoneScopedS(60);
 	Vector<Variant> args;
 	Vector<const Variant *> argsp;
 	args.resize(p_args.size());
@@ -296,6 +305,7 @@ Error MultiplayerAPI::_rpc_bind(int p_peer, Object *p_object, const StringName &
 }
 
 void MultiplayerAPI::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("has_multiplayer_peer"), &MultiplayerAPI::has_multiplayer_peer);
 	ClassDB::bind_method(D_METHOD("get_multiplayer_peer"), &MultiplayerAPI::get_multiplayer_peer);
 	ClassDB::bind_method(D_METHOD("set_multiplayer_peer", "peer"), &MultiplayerAPI::set_multiplayer_peer);
@@ -329,34 +339,40 @@ void MultiplayerAPI::_bind_methods() {
 /// MultiplayerAPIExtension
 
 Error MultiplayerAPIExtension::poll() {
+	ZoneScopedS(60);
 	int err = OK;
 	GDVIRTUAL_CALL(_poll, err);
 	return (Error)err;
 }
 
 void MultiplayerAPIExtension::set_multiplayer_peer(const Ref<MultiplayerPeer> &p_peer) {
+	ZoneScopedS(60);
 	GDVIRTUAL_CALL(_set_multiplayer_peer, p_peer);
 }
 
 Ref<MultiplayerPeer> MultiplayerAPIExtension::get_multiplayer_peer() {
+	ZoneScopedS(60);
 	Ref<MultiplayerPeer> peer;
 	GDVIRTUAL_CALL(_get_multiplayer_peer, peer);
 	return peer;
 }
 
 int MultiplayerAPIExtension::get_unique_id() {
+	ZoneScopedS(60);
 	int id = 1;
 	GDVIRTUAL_CALL(_get_unique_id, id);
 	return id;
 }
 
 Vector<int> MultiplayerAPIExtension::get_peer_ids() {
+	ZoneScopedS(60);
 	Vector<int> ids;
 	GDVIRTUAL_CALL(_get_peer_ids, ids);
 	return ids;
 }
 
 Error MultiplayerAPIExtension::rpcp(Object *p_obj, int p_peer_id, const StringName &p_method, const Variant **p_arg, int p_argcount) {
+	ZoneScopedS(60);
 	if (!GDVIRTUAL_IS_OVERRIDDEN(_rpc)) {
 		return ERR_UNAVAILABLE;
 	}
@@ -370,24 +386,28 @@ Error MultiplayerAPIExtension::rpcp(Object *p_obj, int p_peer_id, const StringNa
 }
 
 int MultiplayerAPIExtension::get_remote_sender_id() {
+	ZoneScopedS(60);
 	int id = 0;
 	GDVIRTUAL_CALL(_get_remote_sender_id, id);
 	return id;
 }
 
 Error MultiplayerAPIExtension::object_configuration_add(Object *p_object, Variant p_config) {
+	ZoneScopedS(60);
 	int err = ERR_UNAVAILABLE;
 	GDVIRTUAL_CALL(_object_configuration_add, p_object, p_config, err);
 	return (Error)err;
 }
 
 Error MultiplayerAPIExtension::object_configuration_remove(Object *p_object, Variant p_config) {
+	ZoneScopedS(60);
 	int err = ERR_UNAVAILABLE;
 	GDVIRTUAL_CALL(_object_configuration_remove, p_object, p_config, err);
 	return (Error)err;
 }
 
 void MultiplayerAPIExtension::_bind_methods() {
+	ZoneScopedS(60);
 	GDVIRTUAL_BIND(_poll);
 	GDVIRTUAL_BIND(_set_multiplayer_peer, "multiplayer_peer");
 	GDVIRTUAL_BIND(_get_multiplayer_peer);

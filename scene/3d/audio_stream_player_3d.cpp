@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  audio_stream_player_3d.cpp                                           */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "audio_stream_player_3d.h"
 
 #include "core/config/project_settings.h"
@@ -97,6 +128,7 @@ static const Vector3 speaker_directions[7] = {
 };
 
 void AudioStreamPlayer3D::_calc_output_vol(const Vector3 &source_dir, real_t tightness, Vector<AudioFrame> &output) {
+	ZoneScopedS(60);
 	unsigned int speaker_count = 0; // only main speakers (no LFE)
 	switch (AudioServer::get_singleton()->get_speaker_mode()) {
 		case AudioServer::SPEAKER_MODE_STEREO:
@@ -138,6 +170,7 @@ void AudioStreamPlayer3D::_calc_output_vol(const Vector3 &source_dir, real_t tig
 }
 
 void AudioStreamPlayer3D::_calc_reverb_vol(Area3D *area, Vector3 listener_area_pos, Vector<AudioFrame> direct_path_vol, Vector<AudioFrame> &reverb_vol) {
+	ZoneScopedS(60);
 	reverb_vol.resize(4);
 	reverb_vol.write[0] = AudioFrame(0, 0);
 	reverb_vol.write[1] = AudioFrame(0, 0);
@@ -210,6 +243,7 @@ void AudioStreamPlayer3D::_calc_reverb_vol(Area3D *area, Vector3 listener_area_p
 }
 
 float AudioStreamPlayer3D::_get_attenuation_db(float p_distance) const {
+	ZoneScopedS(60);
 	float att = 0;
 	switch (attenuation_model) {
 		case ATTENUATION_INVERSE_DISTANCE: {
@@ -240,6 +274,7 @@ float AudioStreamPlayer3D::_get_attenuation_db(float p_distance) const {
 }
 
 void AudioStreamPlayer3D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			velocity_tracker->reset(get_global_transform().origin);
@@ -327,6 +362,7 @@ void AudioStreamPlayer3D::_notification(int p_what) {
 
 // Interacts with PhysicsServer3D, so can only be called during _physics_process
 Area3D *AudioStreamPlayer3D::_get_overriding_area() {
+	ZoneScopedS(60);
 	//check if any area is diverting sound into a bus
 	Ref<World3D> world_3d = get_world_3d();
 	ERR_FAIL_COND_V(world_3d.is_null(), nullptr);
@@ -366,6 +402,7 @@ Area3D *AudioStreamPlayer3D::_get_overriding_area() {
 
 // Interacts with PhysicsServer3D, so can only be called during _physics_process
 StringName AudioStreamPlayer3D::_get_actual_bus() {
+	ZoneScopedS(60);
 	Area3D *overriding_area = _get_overriding_area();
 	if (overriding_area && overriding_area->is_overriding_audio_bus() && !overriding_area->is_using_reverb_bus()) {
 		return overriding_area->get_audio_bus_name();
@@ -375,6 +412,7 @@ StringName AudioStreamPlayer3D::_get_actual_bus() {
 
 // Interacts with PhysicsServer3D, so can only be called during _physics_process
 Vector<AudioFrame> AudioStreamPlayer3D::_update_panning() {
+	ZoneScopedS(60);
 	Vector<AudioFrame> output_volume_vector;
 	output_volume_vector.resize(4);
 	for (AudioFrame &frame : output_volume_vector) {
@@ -530,49 +568,60 @@ Vector<AudioFrame> AudioStreamPlayer3D::_update_panning() {
 }
 
 void AudioStreamPlayer3D::set_stream(Ref<AudioStream> p_stream) {
+	ZoneScopedS(60);
 	stop();
 	stream = p_stream;
 }
 
 Ref<AudioStream> AudioStreamPlayer3D::get_stream() const {
+	ZoneScopedS(60);
 	return stream;
 }
 
 void AudioStreamPlayer3D::set_volume_db(float p_volume) {
+	ZoneScopedS(60);
 	volume_db = p_volume;
 }
 
 float AudioStreamPlayer3D::get_volume_db() const {
+	ZoneScopedS(60);
 	return volume_db;
 }
 
 void AudioStreamPlayer3D::set_unit_size(float p_volume) {
+	ZoneScopedS(60);
 	unit_size = p_volume;
 	update_gizmos();
 }
 
 float AudioStreamPlayer3D::get_unit_size() const {
+	ZoneScopedS(60);
 	return unit_size;
 }
 
 void AudioStreamPlayer3D::set_max_db(float p_boost) {
+	ZoneScopedS(60);
 	max_db = p_boost;
 }
 
 float AudioStreamPlayer3D::get_max_db() const {
+	ZoneScopedS(60);
 	return max_db;
 }
 
 void AudioStreamPlayer3D::set_pitch_scale(float p_pitch_scale) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_pitch_scale <= 0.0);
 	pitch_scale = p_pitch_scale;
 }
 
 float AudioStreamPlayer3D::get_pitch_scale() const {
+	ZoneScopedS(60);
 	return pitch_scale;
 }
 
 void AudioStreamPlayer3D::play(float p_from_pos) {
+	ZoneScopedS(60);
 	if (stream.is_null()) {
 		return;
 	}
@@ -586,11 +635,13 @@ void AudioStreamPlayer3D::play(float p_from_pos) {
 }
 
 void AudioStreamPlayer3D::seek(float p_seconds) {
+	ZoneScopedS(60);
 	stop();
 	play(p_seconds);
 }
 
 void AudioStreamPlayer3D::stop() {
+	ZoneScopedS(60);
 	setplay.set(-1);
 	for (Ref<AudioStreamPlayback> &playback : stream_playbacks) {
 		AudioServer::get_singleton()->stop_playback_stream(playback);
@@ -601,6 +652,7 @@ void AudioStreamPlayer3D::stop() {
 }
 
 bool AudioStreamPlayer3D::is_playing() const {
+	ZoneScopedS(60);
 	for (const Ref<AudioStreamPlayback> &playback : stream_playbacks) {
 		if (AudioServer::get_singleton()->is_playback_active(playback)) {
 			return true;
@@ -610,6 +662,7 @@ bool AudioStreamPlayer3D::is_playing() const {
 }
 
 float AudioStreamPlayer3D::get_playback_position() {
+	ZoneScopedS(60);
 	// Return the playback position of the most recently started playback stream.
 	if (!stream_playbacks.is_empty()) {
 		return AudioServer::get_singleton()->get_playback_position(stream_playbacks[stream_playbacks.size() - 1]);
@@ -618,6 +671,7 @@ float AudioStreamPlayer3D::get_playback_position() {
 }
 
 void AudioStreamPlayer3D::set_bus(const StringName &p_bus) {
+	ZoneScopedS(60);
 	//if audio is active, must lock this
 	AudioServer::get_singleton()->lock();
 	bus = p_bus;
@@ -625,6 +679,7 @@ void AudioStreamPlayer3D::set_bus(const StringName &p_bus) {
 }
 
 StringName AudioStreamPlayer3D::get_bus() const {
+	ZoneScopedS(60);
 	for (int i = 0; i < AudioServer::get_singleton()->get_bus_count(); i++) {
 		if (AudioServer::get_singleton()->get_bus_name(i) == bus) {
 			return bus;
@@ -634,14 +689,17 @@ StringName AudioStreamPlayer3D::get_bus() const {
 }
 
 void AudioStreamPlayer3D::set_autoplay(bool p_enable) {
+	ZoneScopedS(60);
 	autoplay = p_enable;
 }
 
 bool AudioStreamPlayer3D::is_autoplay_enabled() {
+	ZoneScopedS(60);
 	return autoplay;
 }
 
 void AudioStreamPlayer3D::_set_playing(bool p_enable) {
+	ZoneScopedS(60);
 	if (p_enable) {
 		play();
 	} else {
@@ -650,10 +708,12 @@ void AudioStreamPlayer3D::_set_playing(bool p_enable) {
 }
 
 bool AudioStreamPlayer3D::_is_active() const {
+	ZoneScopedS(60);
 	return active.is_set();
 }
 
 void AudioStreamPlayer3D::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (p_property.name == "bus") {
 		String options;
 		for (int i = 0; i < AudioServer::get_singleton()->get_bus_count(); i++) {
@@ -669,81 +729,99 @@ void AudioStreamPlayer3D::_validate_property(PropertyInfo &p_property) const {
 }
 
 void AudioStreamPlayer3D::_bus_layout_changed() {
+	ZoneScopedS(60);
 	notify_property_list_changed();
 }
 
 void AudioStreamPlayer3D::set_max_distance(float p_metres) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_metres < 0.0);
 	max_distance = p_metres;
 	update_gizmos();
 }
 
 float AudioStreamPlayer3D::get_max_distance() const {
+	ZoneScopedS(60);
 	return max_distance;
 }
 
 void AudioStreamPlayer3D::set_area_mask(uint32_t p_mask) {
+	ZoneScopedS(60);
 	area_mask = p_mask;
 }
 
 uint32_t AudioStreamPlayer3D::get_area_mask() const {
+	ZoneScopedS(60);
 	return area_mask;
 }
 
 void AudioStreamPlayer3D::set_emission_angle_enabled(bool p_enable) {
+	ZoneScopedS(60);
 	emission_angle_enabled = p_enable;
 	update_gizmos();
 }
 
 bool AudioStreamPlayer3D::is_emission_angle_enabled() const {
+	ZoneScopedS(60);
 	return emission_angle_enabled;
 }
 
 void AudioStreamPlayer3D::set_emission_angle(float p_angle) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_angle < 0 || p_angle > 90);
 	emission_angle = p_angle;
 	update_gizmos();
 }
 
 float AudioStreamPlayer3D::get_emission_angle() const {
+	ZoneScopedS(60);
 	return emission_angle;
 }
 
 void AudioStreamPlayer3D::set_emission_angle_filter_attenuation_db(float p_angle_attenuation_db) {
+	ZoneScopedS(60);
 	emission_angle_filter_attenuation_db = p_angle_attenuation_db;
 }
 
 float AudioStreamPlayer3D::get_emission_angle_filter_attenuation_db() const {
+	ZoneScopedS(60);
 	return emission_angle_filter_attenuation_db;
 }
 
 void AudioStreamPlayer3D::set_attenuation_filter_cutoff_hz(float p_hz) {
+	ZoneScopedS(60);
 	attenuation_filter_cutoff_hz = p_hz;
 }
 
 float AudioStreamPlayer3D::get_attenuation_filter_cutoff_hz() const {
+	ZoneScopedS(60);
 	return attenuation_filter_cutoff_hz;
 }
 
 void AudioStreamPlayer3D::set_attenuation_filter_db(float p_db) {
+	ZoneScopedS(60);
 	attenuation_filter_db = p_db;
 }
 
 float AudioStreamPlayer3D::get_attenuation_filter_db() const {
+	ZoneScopedS(60);
 	return attenuation_filter_db;
 }
 
 void AudioStreamPlayer3D::set_attenuation_model(AttenuationModel p_model) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX((int)p_model, 4);
 	attenuation_model = p_model;
 	update_gizmos();
 }
 
 AudioStreamPlayer3D::AttenuationModel AudioStreamPlayer3D::get_attenuation_model() const {
+	ZoneScopedS(60);
 	return attenuation_model;
 }
 
 void AudioStreamPlayer3D::set_doppler_tracking(DopplerTracking p_tracking) {
+	ZoneScopedS(60);
 	if (doppler_tracking == p_tracking) {
 		return;
 	}
@@ -762,10 +840,12 @@ void AudioStreamPlayer3D::set_doppler_tracking(DopplerTracking p_tracking) {
 }
 
 AudioStreamPlayer3D::DopplerTracking AudioStreamPlayer3D::get_doppler_tracking() const {
+	ZoneScopedS(60);
 	return doppler_tracking;
 }
 
 void AudioStreamPlayer3D::set_stream_paused(bool p_pause) {
+	ZoneScopedS(60);
 	// TODO this does not have perfect recall, fix that maybe? If there are zero playbacks registered with the AudioServer, this bool isn't persisted.
 	for (Ref<AudioStreamPlayback> &playback : stream_playbacks) {
 		AudioServer::get_singleton()->set_playback_paused(playback, p_pause);
@@ -773,6 +853,7 @@ void AudioStreamPlayer3D::set_stream_paused(bool p_pause) {
 }
 
 bool AudioStreamPlayer3D::get_stream_paused() const {
+	ZoneScopedS(60);
 	// There's currently no way to pause some playback streams but not others. Check the first and don't bother looking at the rest.
 	if (!stream_playbacks.is_empty()) {
 		return AudioServer::get_singleton()->is_playback_paused(stream_playbacks[0]);
@@ -781,6 +862,7 @@ bool AudioStreamPlayer3D::get_stream_paused() const {
 }
 
 Ref<AudioStreamPlayback> AudioStreamPlayer3D::get_stream_playback() {
+	ZoneScopedS(60);
 	if (!stream_playbacks.is_empty()) {
 		return stream_playbacks[stream_playbacks.size() - 1];
 	}
@@ -788,25 +870,30 @@ Ref<AudioStreamPlayback> AudioStreamPlayer3D::get_stream_playback() {
 }
 
 void AudioStreamPlayer3D::set_max_polyphony(int p_max_polyphony) {
+	ZoneScopedS(60);
 	if (p_max_polyphony > 0) {
 		max_polyphony = p_max_polyphony;
 	}
 }
 
 int AudioStreamPlayer3D::get_max_polyphony() const {
+	ZoneScopedS(60);
 	return max_polyphony;
 }
 
 void AudioStreamPlayer3D::set_panning_strength(float p_panning_strength) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_panning_strength < 0, "Panning strength must be a positive number.");
 	panning_strength = p_panning_strength;
 }
 
 float AudioStreamPlayer3D::get_panning_strength() const {
+	ZoneScopedS(60);
 	return panning_strength;
 }
 
 void AudioStreamPlayer3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_stream", "stream"), &AudioStreamPlayer3D::set_stream);
 	ClassDB::bind_method(D_METHOD("get_stream"), &AudioStreamPlayer3D::get_stream);
 
@@ -913,6 +1000,7 @@ void AudioStreamPlayer3D::_bind_methods() {
 }
 
 AudioStreamPlayer3D::AudioStreamPlayer3D() {
+	ZoneScopedS(60);
 	velocity_tracker.instantiate();
 	AudioServer::get_singleton()->connect("bus_layout_changed", callable_mp(this, &AudioStreamPlayer3D::_bus_layout_changed));
 	set_disable_scale(true);

@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  gpu_particles_2d.cpp                                                 */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "gpu_particles_2d.h"
 
 #include "core/core_string_names.h"
@@ -38,6 +69,7 @@
 #endif
 
 void GPUParticles2D::set_emitting(bool p_emitting) {
+	ZoneScopedS(60);
 	RS::get_singleton()->particles_set_emitting(particles, p_emitting);
 
 	if (p_emitting && one_shot) {
@@ -48,18 +80,21 @@ void GPUParticles2D::set_emitting(bool p_emitting) {
 }
 
 void GPUParticles2D::set_amount(int p_amount) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_amount < 1, "Amount of particles cannot be smaller than 1.");
 	amount = p_amount;
 	RS::get_singleton()->particles_set_amount(particles, amount);
 }
 
 void GPUParticles2D::set_lifetime(double p_lifetime) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_lifetime <= 0, "Particles lifetime must be greater than 0.");
 	lifetime = p_lifetime;
 	RS::get_singleton()->particles_set_lifetime(particles, lifetime);
 }
 
 void GPUParticles2D::set_one_shot(bool p_enable) {
+	ZoneScopedS(60);
 	one_shot = p_enable;
 	RS::get_singleton()->particles_set_one_shot(particles, one_shot);
 
@@ -76,21 +111,25 @@ void GPUParticles2D::set_one_shot(bool p_enable) {
 }
 
 void GPUParticles2D::set_pre_process_time(double p_time) {
+	ZoneScopedS(60);
 	pre_process_time = p_time;
 	RS::get_singleton()->particles_set_pre_process_time(particles, pre_process_time);
 }
 
 void GPUParticles2D::set_explosiveness_ratio(real_t p_ratio) {
+	ZoneScopedS(60);
 	explosiveness_ratio = p_ratio;
 	RS::get_singleton()->particles_set_explosiveness_ratio(particles, explosiveness_ratio);
 }
 
 void GPUParticles2D::set_randomness_ratio(real_t p_ratio) {
+	ZoneScopedS(60);
 	randomness_ratio = p_ratio;
 	RS::get_singleton()->particles_set_randomness_ratio(particles, randomness_ratio);
 }
 
 void GPUParticles2D::set_visibility_rect(const Rect2 &p_visibility_rect) {
+	ZoneScopedS(60);
 	visibility_rect = p_visibility_rect;
 	AABB aabb;
 	aabb.position.x = p_visibility_rect.position.x;
@@ -104,6 +143,7 @@ void GPUParticles2D::set_visibility_rect(const Rect2 &p_visibility_rect) {
 }
 
 void GPUParticles2D::set_use_local_coordinates(bool p_enable) {
+	ZoneScopedS(60);
 	local_coords = p_enable;
 	RS::get_singleton()->particles_set_use_local_coordinates(particles, local_coords);
 	set_notify_transform(!p_enable);
@@ -113,6 +153,7 @@ void GPUParticles2D::set_use_local_coordinates(bool p_enable) {
 }
 
 void GPUParticles2D::_update_particle_emission_transform() {
+	ZoneScopedS(60);
 	Transform2D xf2d = get_global_transform();
 	Transform3D xf;
 	xf.basis.set_column(0, Vector3(xf2d.columns[0].x, xf2d.columns[0].y, 0));
@@ -123,6 +164,7 @@ void GPUParticles2D::_update_particle_emission_transform() {
 }
 
 void GPUParticles2D::set_process_material(const Ref<Material> &p_material) {
+	ZoneScopedS(60);
 	process_material = p_material;
 	Ref<ParticleProcessMaterial> pm = p_material;
 	if (pm.is_valid() && !pm->get_particle_flag(ParticleProcessMaterial::PARTICLE_FLAG_DISABLE_Z) && pm->get_gravity() == Vector3(0, -9.8, 0)) {
@@ -140,6 +182,7 @@ void GPUParticles2D::set_process_material(const Ref<Material> &p_material) {
 }
 
 void GPUParticles2D::set_trail_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	trail_enabled = p_enabled;
 	RS::get_singleton()->particles_set_trails(particles, trail_enabled, trail_lifetime);
 	queue_redraw();
@@ -148,6 +191,7 @@ void GPUParticles2D::set_trail_enabled(bool p_enabled) {
 }
 
 void GPUParticles2D::set_trail_lifetime(double p_seconds) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_seconds < 0.001);
 	trail_lifetime = p_seconds;
 	RS::get_singleton()->particles_set_trails(particles, trail_enabled, trail_lifetime);
@@ -155,6 +199,7 @@ void GPUParticles2D::set_trail_lifetime(double p_seconds) {
 }
 
 void GPUParticles2D::set_trail_sections(int p_sections) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_sections < 2);
 	ERR_FAIL_COND(p_sections > 128);
 
@@ -163,6 +208,7 @@ void GPUParticles2D::set_trail_sections(int p_sections) {
 }
 
 void GPUParticles2D::set_trail_section_subdivisions(int p_subdivisions) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_subdivisions < 1);
 	ERR_FAIL_COND(p_subdivisions > 1024);
 
@@ -172,20 +218,24 @@ void GPUParticles2D::set_trail_section_subdivisions(int p_subdivisions) {
 
 #ifdef TOOLS_ENABLED
 void GPUParticles2D::set_show_visibility_rect(bool p_show_visibility_rect) {
+	ZoneScopedS(60);
 	show_visibility_rect = p_show_visibility_rect;
 	queue_redraw();
 }
 #endif
 
 bool GPUParticles2D::is_trail_enabled() const {
+	ZoneScopedS(60);
 	return trail_enabled;
 }
 
 double GPUParticles2D::get_trail_lifetime() const {
+	ZoneScopedS(60);
 	return trail_lifetime;
 }
 
 void GPUParticles2D::_update_collision_size() {
+	ZoneScopedS(60);
 	real_t csize = collision_base_size;
 
 	if (texture.is_valid()) {
@@ -196,107 +246,132 @@ void GPUParticles2D::_update_collision_size() {
 }
 
 void GPUParticles2D::set_collision_base_size(real_t p_size) {
+	ZoneScopedS(60);
 	collision_base_size = p_size;
 	_update_collision_size();
 }
 
 real_t GPUParticles2D::get_collision_base_size() const {
+	ZoneScopedS(60);
 	return collision_base_size;
 }
 
 void GPUParticles2D::set_speed_scale(double p_scale) {
+	ZoneScopedS(60);
 	speed_scale = p_scale;
 	RS::get_singleton()->particles_set_speed_scale(particles, p_scale);
 }
 
 bool GPUParticles2D::is_emitting() const {
+	ZoneScopedS(60);
 	return RS::get_singleton()->particles_get_emitting(particles);
 }
 
 int GPUParticles2D::get_amount() const {
+	ZoneScopedS(60);
 	return amount;
 }
 
 double GPUParticles2D::get_lifetime() const {
+	ZoneScopedS(60);
 	return lifetime;
 }
 
 int GPUParticles2D::get_trail_sections() const {
+	ZoneScopedS(60);
 	return trail_sections;
 }
 int GPUParticles2D::get_trail_section_subdivisions() const {
+	ZoneScopedS(60);
 	return trail_section_subdivisions;
 }
 
 bool GPUParticles2D::get_one_shot() const {
+	ZoneScopedS(60);
 	return one_shot;
 }
 
 double GPUParticles2D::get_pre_process_time() const {
+	ZoneScopedS(60);
 	return pre_process_time;
 }
 
 real_t GPUParticles2D::get_explosiveness_ratio() const {
+	ZoneScopedS(60);
 	return explosiveness_ratio;
 }
 
 real_t GPUParticles2D::get_randomness_ratio() const {
+	ZoneScopedS(60);
 	return randomness_ratio;
 }
 
 Rect2 GPUParticles2D::get_visibility_rect() const {
+	ZoneScopedS(60);
 	return visibility_rect;
 }
 
 bool GPUParticles2D::get_use_local_coordinates() const {
+	ZoneScopedS(60);
 	return local_coords;
 }
 
 Ref<Material> GPUParticles2D::get_process_material() const {
+	ZoneScopedS(60);
 	return process_material;
 }
 
 double GPUParticles2D::get_speed_scale() const {
+	ZoneScopedS(60);
 	return speed_scale;
 }
 
 void GPUParticles2D::set_draw_order(DrawOrder p_order) {
+	ZoneScopedS(60);
 	draw_order = p_order;
 	RS::get_singleton()->particles_set_draw_order(particles, RS::ParticlesDrawOrder(p_order));
 }
 
 GPUParticles2D::DrawOrder GPUParticles2D::get_draw_order() const {
+	ZoneScopedS(60);
 	return draw_order;
 }
 
 void GPUParticles2D::set_fixed_fps(int p_count) {
+	ZoneScopedS(60);
 	fixed_fps = p_count;
 	RS::get_singleton()->particles_set_fixed_fps(particles, p_count);
 }
 
 int GPUParticles2D::get_fixed_fps() const {
+	ZoneScopedS(60);
 	return fixed_fps;
 }
 
 void GPUParticles2D::set_fractional_delta(bool p_enable) {
+	ZoneScopedS(60);
 	fractional_delta = p_enable;
 	RS::get_singleton()->particles_set_fractional_delta(particles, p_enable);
 }
 
 bool GPUParticles2D::get_fractional_delta() const {
+	ZoneScopedS(60);
 	return fractional_delta;
 }
 
 void GPUParticles2D::set_interpolate(bool p_enable) {
+	ZoneScopedS(60);
 	interpolate = p_enable;
 	RS::get_singleton()->particles_set_interpolate(particles, p_enable);
 }
 
 bool GPUParticles2D::get_interpolate() const {
+	ZoneScopedS(60);
 	return interpolate;
 }
 
 PackedStringArray GPUParticles2D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node2D::get_configuration_warnings();
 
 	if (RenderingServer::get_singleton()->is_low_end()) {
@@ -322,6 +397,7 @@ PackedStringArray GPUParticles2D::get_configuration_warnings() const {
 }
 
 Rect2 GPUParticles2D::capture_rect() const {
+	ZoneScopedS(60);
 	AABB aabb = RS::get_singleton()->particles_get_current_aabb(particles);
 	Rect2 r;
 	r.position.x = aabb.position.x;
@@ -332,6 +408,7 @@ Rect2 GPUParticles2D::capture_rect() const {
 }
 
 void GPUParticles2D::set_texture(const Ref<Texture2D> &p_texture) {
+	ZoneScopedS(60);
 	if (texture.is_valid()) {
 		texture->disconnect(CoreStringNames::get_singleton()->changed, callable_mp(this, &GPUParticles2D::_texture_changed));
 	}
@@ -346,6 +423,7 @@ void GPUParticles2D::set_texture(const Ref<Texture2D> &p_texture) {
 }
 
 Ref<Texture2D> GPUParticles2D::get_texture() const {
+	ZoneScopedS(60);
 	return texture;
 }
 
@@ -353,6 +431,7 @@ void GPUParticles2D::_validate_property(PropertyInfo &p_property) const {
 }
 
 void GPUParticles2D::emit_particle(const Transform2D &p_transform2d, const Vector2 &p_velocity2d, const Color &p_color, const Color &p_custom, uint32_t p_emit_flags) {
+	ZoneScopedS(60);
 	Transform3D emit_transform;
 	emit_transform.basis.set_column(0, Vector3(p_transform2d.columns[0].x, p_transform2d.columns[0].y, 0));
 	emit_transform.basis.set_column(1, Vector3(p_transform2d.columns[1].x, p_transform2d.columns[1].y, 0));
@@ -363,6 +442,7 @@ void GPUParticles2D::emit_particle(const Transform2D &p_transform2d, const Vecto
 }
 
 void GPUParticles2D::_attach_sub_emitter() {
+	ZoneScopedS(60);
 	Node *n = get_node_or_null(sub_emitter);
 	if (n) {
 		GPUParticles2D *sen = Object::cast_to<GPUParticles2D>(n);
@@ -373,6 +453,7 @@ void GPUParticles2D::_attach_sub_emitter() {
 }
 
 void GPUParticles2D::_texture_changed() {
+	ZoneScopedS(60);
 	// Changes to the texture need to trigger an update to make
 	// the editor redraw the sprite with the updated texture.
 	if (texture.is_valid()) {
@@ -381,6 +462,7 @@ void GPUParticles2D::_texture_changed() {
 }
 
 void GPUParticles2D::set_sub_emitter(const NodePath &p_path) {
+	ZoneScopedS(60);
 	if (is_inside_tree()) {
 		RS::get_singleton()->particles_set_subemitter(particles, RID());
 	}
@@ -393,15 +475,18 @@ void GPUParticles2D::set_sub_emitter(const NodePath &p_path) {
 }
 
 NodePath GPUParticles2D::get_sub_emitter() const {
+	ZoneScopedS(60);
 	return sub_emitter;
 }
 
 void GPUParticles2D::restart() {
+	ZoneScopedS(60);
 	RS::get_singleton()->particles_restart(particles);
 	RS::get_singleton()->particles_set_emitting(particles, true);
 }
 
 void GPUParticles2D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
 			RID texture_rid;
@@ -566,6 +651,7 @@ void GPUParticles2D::_notification(int p_what) {
 }
 
 void GPUParticles2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_emitting", "emitting"), &GPUParticles2D::set_emitting);
 	ClassDB::bind_method(D_METHOD("set_amount", "amount"), &GPUParticles2D::set_amount);
 	ClassDB::bind_method(D_METHOD("set_lifetime", "secs"), &GPUParticles2D::set_lifetime);
@@ -667,6 +753,7 @@ void GPUParticles2D::_bind_methods() {
 }
 
 GPUParticles2D::GPUParticles2D() {
+	ZoneScopedS(60);
 	particles = RS::get_singleton()->particles_create();
 	RS::get_singleton()->particles_set_mode(particles, RS::PARTICLES_MODE_2D);
 
@@ -694,6 +781,7 @@ GPUParticles2D::GPUParticles2D() {
 }
 
 GPUParticles2D::~GPUParticles2D() {
+	ZoneScopedS(60);
 	RS::get_singleton()->free(particles);
 	RS::get_singleton()->free(mesh);
 }

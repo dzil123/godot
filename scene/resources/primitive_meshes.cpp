@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  primitive_meshes.cpp                                                 */
 /*************************************************************************/
@@ -41,6 +42,7 @@
   PrimitiveMesh
 */
 void PrimitiveMesh::_update() const {
+	ZoneScopedS(60);
 	Array arr;
 	if (GDVIRTUAL_CALL(_create_mesh_array, arr)) {
 		ERR_FAIL_COND_MSG(arr.size() != RS::ARRAY_MAX, "_create_mesh_array must return an array of Mesh.ARRAY_MAX elements.");
@@ -109,6 +111,7 @@ void PrimitiveMesh::_update() const {
 }
 
 void PrimitiveMesh::_request_update() {
+	ZoneScopedS(60);
 	if (pending_request) {
 		return;
 	}
@@ -116,6 +119,7 @@ void PrimitiveMesh::_request_update() {
 }
 
 int PrimitiveMesh::get_surface_count() const {
+	ZoneScopedS(60);
 	if (pending_request) {
 		_update();
 	}
@@ -123,6 +127,7 @@ int PrimitiveMesh::get_surface_count() const {
 }
 
 int PrimitiveMesh::surface_get_array_len(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, 1, -1);
 	if (pending_request) {
 		_update();
@@ -132,6 +137,7 @@ int PrimitiveMesh::surface_get_array_len(int p_idx) const {
 }
 
 int PrimitiveMesh::surface_get_array_index_len(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, 1, -1);
 	if (pending_request) {
 		_update();
@@ -141,6 +147,7 @@ int PrimitiveMesh::surface_get_array_index_len(int p_idx) const {
 }
 
 Array PrimitiveMesh::surface_get_arrays(int p_surface) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_surface, 1, Array());
 	if (pending_request) {
 		_update();
@@ -150,40 +157,48 @@ Array PrimitiveMesh::surface_get_arrays(int p_surface) const {
 }
 
 Dictionary PrimitiveMesh::surface_get_lods(int p_surface) const {
+	ZoneScopedS(60);
 	return Dictionary(); //not really supported
 }
 
 TypedArray<Array> PrimitiveMesh::surface_get_blend_shape_arrays(int p_surface) const {
+	ZoneScopedS(60);
 	return TypedArray<Array>(); //not really supported
 }
 
 uint32_t PrimitiveMesh::surface_get_format(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, 1, 0);
 
 	return RS::ARRAY_FORMAT_VERTEX | RS::ARRAY_FORMAT_NORMAL | RS::ARRAY_FORMAT_TANGENT | RS::ARRAY_FORMAT_TEX_UV | RS::ARRAY_FORMAT_INDEX;
 }
 
 Mesh::PrimitiveType PrimitiveMesh::surface_get_primitive_type(int p_idx) const {
+	ZoneScopedS(60);
 	return primitive_type;
 }
 
 void PrimitiveMesh::surface_set_material(int p_idx, const Ref<Material> &p_material) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_idx, 1);
 
 	set_material(p_material);
 }
 
 Ref<Material> PrimitiveMesh::surface_get_material(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, 1, nullptr);
 
 	return material;
 }
 
 int PrimitiveMesh::get_blend_shape_count() const {
+	ZoneScopedS(60);
 	return 0;
 }
 
 StringName PrimitiveMesh::get_blend_shape_name(int p_index) const {
+	ZoneScopedS(60);
 	return StringName();
 }
 
@@ -191,6 +206,7 @@ void PrimitiveMesh::set_blend_shape_name(int p_index, const StringName &p_name) 
 }
 
 AABB PrimitiveMesh::get_aabb() const {
+	ZoneScopedS(60);
 	if (pending_request) {
 		_update();
 	}
@@ -199,6 +215,7 @@ AABB PrimitiveMesh::get_aabb() const {
 }
 
 RID PrimitiveMesh::get_rid() const {
+	ZoneScopedS(60);
 	if (pending_request) {
 		_update();
 	}
@@ -206,6 +223,7 @@ RID PrimitiveMesh::get_rid() const {
 }
 
 void PrimitiveMesh::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("_update"), &PrimitiveMesh::_update);
 
 	ClassDB::bind_method(D_METHOD("set_material", "material"), &PrimitiveMesh::set_material);
@@ -227,6 +245,7 @@ void PrimitiveMesh::_bind_methods() {
 }
 
 void PrimitiveMesh::set_material(const Ref<Material> &p_material) {
+	ZoneScopedS(60);
 	material = p_material;
 	if (!pending_request) {
 		// just apply it, else it'll happen when _update is called.
@@ -237,37 +256,45 @@ void PrimitiveMesh::set_material(const Ref<Material> &p_material) {
 }
 
 Ref<Material> PrimitiveMesh::get_material() const {
+	ZoneScopedS(60);
 	return material;
 }
 
 Array PrimitiveMesh::get_mesh_arrays() const {
+	ZoneScopedS(60);
 	return surface_get_arrays(0);
 }
 
 void PrimitiveMesh::set_custom_aabb(const AABB &p_custom) {
+	ZoneScopedS(60);
 	custom_aabb = p_custom;
 	RS::get_singleton()->mesh_set_custom_aabb(mesh, custom_aabb);
 	emit_changed();
 }
 
 AABB PrimitiveMesh::get_custom_aabb() const {
+	ZoneScopedS(60);
 	return custom_aabb;
 }
 
 void PrimitiveMesh::set_flip_faces(bool p_enable) {
+	ZoneScopedS(60);
 	flip_faces = p_enable;
 	_request_update();
 }
 
 bool PrimitiveMesh::get_flip_faces() const {
+	ZoneScopedS(60);
 	return flip_faces;
 }
 
 PrimitiveMesh::PrimitiveMesh() {
+	ZoneScopedS(60);
 	mesh = RenderingServer::get_singleton()->mesh_create();
 }
 
 PrimitiveMesh::~PrimitiveMesh() {
+	ZoneScopedS(60);
 	RenderingServer::get_singleton()->free(mesh);
 }
 
@@ -276,10 +303,12 @@ PrimitiveMesh::~PrimitiveMesh() {
 */
 
 void CapsuleMesh::_create_mesh_array(Array &p_arr) const {
+	ZoneScopedS(60);
 	create_mesh_array(p_arr, radius, height, radial_segments, rings);
 }
 
 void CapsuleMesh::create_mesh_array(Array &p_arr, const float radius, const float height, const int radial_segments, const int rings) {
+	ZoneScopedS(60);
 	int i, j, prevrow, thisrow, point;
 	float x, y, z, u, v, w;
 	float onethird = 1.0 / 3.0;
@@ -426,6 +455,7 @@ void CapsuleMesh::create_mesh_array(Array &p_arr, const float radius, const floa
 }
 
 void CapsuleMesh::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_radius", "radius"), &CapsuleMesh::set_radius);
 	ClassDB::bind_method(D_METHOD("get_radius"), &CapsuleMesh::get_radius);
 	ClassDB::bind_method(D_METHOD("set_height", "height"), &CapsuleMesh::set_height);
@@ -446,6 +476,7 @@ void CapsuleMesh::_bind_methods() {
 }
 
 void CapsuleMesh::set_radius(const float p_radius) {
+	ZoneScopedS(60);
 	radius = p_radius;
 	if (radius > height * 0.5) {
 		height = radius * 2.0;
@@ -454,10 +485,12 @@ void CapsuleMesh::set_radius(const float p_radius) {
 }
 
 float CapsuleMesh::get_radius() const {
+	ZoneScopedS(60);
 	return radius;
 }
 
 void CapsuleMesh::set_height(const float p_height) {
+	ZoneScopedS(60);
 	height = p_height;
 	if (radius > height * 0.5) {
 		radius = height * 0.5;
@@ -466,24 +499,29 @@ void CapsuleMesh::set_height(const float p_height) {
 }
 
 float CapsuleMesh::get_height() const {
+	ZoneScopedS(60);
 	return height;
 }
 
 void CapsuleMesh::set_radial_segments(const int p_segments) {
+	ZoneScopedS(60);
 	radial_segments = p_segments > 4 ? p_segments : 4;
 	_request_update();
 }
 
 int CapsuleMesh::get_radial_segments() const {
+	ZoneScopedS(60);
 	return radial_segments;
 }
 
 void CapsuleMesh::set_rings(const int p_rings) {
+	ZoneScopedS(60);
 	rings = p_rings > 1 ? p_rings : 1;
 	_request_update();
 }
 
 int CapsuleMesh::get_rings() const {
+	ZoneScopedS(60);
 	return rings;
 }
 
@@ -494,10 +532,12 @@ CapsuleMesh::CapsuleMesh() {}
 */
 
 void BoxMesh::_create_mesh_array(Array &p_arr) const {
+	ZoneScopedS(60);
 	BoxMesh::create_mesh_array(p_arr, size, subdivide_w, subdivide_h, subdivide_d);
 }
 
 void BoxMesh::create_mesh_array(Array &p_arr, Vector3 size, int subdivide_w, int subdivide_h, int subdivide_d) {
+	ZoneScopedS(60);
 	int i, j, prevrow, thisrow, point;
 	float x, y, z;
 	float onethird = 1.0 / 3.0;
@@ -690,6 +730,7 @@ void BoxMesh::create_mesh_array(Array &p_arr, Vector3 size, int subdivide_w, int
 }
 
 void BoxMesh::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_size", "size"), &BoxMesh::set_size);
 	ClassDB::bind_method(D_METHOD("get_size"), &BoxMesh::get_size);
 
@@ -707,38 +748,46 @@ void BoxMesh::_bind_methods() {
 }
 
 void BoxMesh::set_size(const Vector3 &p_size) {
+	ZoneScopedS(60);
 	size = p_size;
 	_request_update();
 }
 
 Vector3 BoxMesh::get_size() const {
+	ZoneScopedS(60);
 	return size;
 }
 
 void BoxMesh::set_subdivide_width(const int p_divisions) {
+	ZoneScopedS(60);
 	subdivide_w = p_divisions > 0 ? p_divisions : 0;
 	_request_update();
 }
 
 int BoxMesh::get_subdivide_width() const {
+	ZoneScopedS(60);
 	return subdivide_w;
 }
 
 void BoxMesh::set_subdivide_height(const int p_divisions) {
+	ZoneScopedS(60);
 	subdivide_h = p_divisions > 0 ? p_divisions : 0;
 	_request_update();
 }
 
 int BoxMesh::get_subdivide_height() const {
+	ZoneScopedS(60);
 	return subdivide_h;
 }
 
 void BoxMesh::set_subdivide_depth(const int p_divisions) {
+	ZoneScopedS(60);
 	subdivide_d = p_divisions > 0 ? p_divisions : 0;
 	_request_update();
 }
 
 int BoxMesh::get_subdivide_depth() const {
+	ZoneScopedS(60);
 	return subdivide_d;
 }
 
@@ -749,10 +798,12 @@ BoxMesh::BoxMesh() {}
 */
 
 void CylinderMesh::_create_mesh_array(Array &p_arr) const {
+	ZoneScopedS(60);
 	create_mesh_array(p_arr, top_radius, bottom_radius, height, radial_segments, rings, cap_top, cap_bottom);
 }
 
 void CylinderMesh::create_mesh_array(Array &p_arr, float top_radius, float bottom_radius, float height, int radial_segments, int rings, bool cap_top, bool cap_bottom) {
+	ZoneScopedS(60);
 	int i, j, prevrow, thisrow, point;
 	float x, y, z, u, v, radius;
 
@@ -890,6 +941,7 @@ void CylinderMesh::create_mesh_array(Array &p_arr, float top_radius, float botto
 }
 
 void CylinderMesh::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_top_radius", "radius"), &CylinderMesh::set_top_radius);
 	ClassDB::bind_method(D_METHOD("get_top_radius"), &CylinderMesh::get_top_radius);
 	ClassDB::bind_method(D_METHOD("set_bottom_radius", "radius"), &CylinderMesh::set_bottom_radius);
@@ -918,65 +970,79 @@ void CylinderMesh::_bind_methods() {
 }
 
 void CylinderMesh::set_top_radius(const float p_radius) {
+	ZoneScopedS(60);
 	top_radius = p_radius;
 	_request_update();
 }
 
 float CylinderMesh::get_top_radius() const {
+	ZoneScopedS(60);
 	return top_radius;
 }
 
 void CylinderMesh::set_bottom_radius(const float p_radius) {
+	ZoneScopedS(60);
 	bottom_radius = p_radius;
 	_request_update();
 }
 
 float CylinderMesh::get_bottom_radius() const {
+	ZoneScopedS(60);
 	return bottom_radius;
 }
 
 void CylinderMesh::set_height(const float p_height) {
+	ZoneScopedS(60);
 	height = p_height;
 	_request_update();
 }
 
 float CylinderMesh::get_height() const {
+	ZoneScopedS(60);
 	return height;
 }
 
 void CylinderMesh::set_radial_segments(const int p_segments) {
+	ZoneScopedS(60);
 	radial_segments = p_segments > 4 ? p_segments : 4;
 	_request_update();
 }
 
 int CylinderMesh::get_radial_segments() const {
+	ZoneScopedS(60);
 	return radial_segments;
 }
 
 void CylinderMesh::set_rings(const int p_rings) {
+	ZoneScopedS(60);
 	rings = p_rings > 0 ? p_rings : 0;
 	_request_update();
 }
 
 int CylinderMesh::get_rings() const {
+	ZoneScopedS(60);
 	return rings;
 }
 
 void CylinderMesh::set_cap_top(bool p_cap_top) {
+	ZoneScopedS(60);
 	cap_top = p_cap_top;
 	_request_update();
 }
 
 bool CylinderMesh::is_cap_top() const {
+	ZoneScopedS(60);
 	return cap_top;
 }
 
 void CylinderMesh::set_cap_bottom(bool p_cap_bottom) {
+	ZoneScopedS(60);
 	cap_bottom = p_cap_bottom;
 	_request_update();
 }
 
 bool CylinderMesh::is_cap_bottom() const {
+	ZoneScopedS(60);
 	return cap_bottom;
 }
 
@@ -987,6 +1053,7 @@ CylinderMesh::CylinderMesh() {}
 */
 
 void PlaneMesh::_create_mesh_array(Array &p_arr) const {
+	ZoneScopedS(60);
 	int i, j, prevrow, thisrow, point;
 	float x, z;
 
@@ -1061,6 +1128,7 @@ void PlaneMesh::_create_mesh_array(Array &p_arr) const {
 }
 
 void PlaneMesh::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_size", "size"), &PlaneMesh::set_size);
 	ClassDB::bind_method(D_METHOD("get_size"), &PlaneMesh::get_size);
 
@@ -1087,47 +1155,57 @@ void PlaneMesh::_bind_methods() {
 }
 
 void PlaneMesh::set_size(const Size2 &p_size) {
+	ZoneScopedS(60);
 	size = p_size;
 	_request_update();
 }
 
 Size2 PlaneMesh::get_size() const {
+	ZoneScopedS(60);
 	return size;
 }
 
 void PlaneMesh::set_subdivide_width(const int p_divisions) {
+	ZoneScopedS(60);
 	subdivide_w = p_divisions > 0 ? p_divisions : 0;
 	_request_update();
 }
 
 int PlaneMesh::get_subdivide_width() const {
+	ZoneScopedS(60);
 	return subdivide_w;
 }
 
 void PlaneMesh::set_subdivide_depth(const int p_divisions) {
+	ZoneScopedS(60);
 	subdivide_d = p_divisions > 0 ? p_divisions : 0;
 	_request_update();
 }
 
 int PlaneMesh::get_subdivide_depth() const {
+	ZoneScopedS(60);
 	return subdivide_d;
 }
 
 void PlaneMesh::set_center_offset(const Vector3 p_offset) {
+	ZoneScopedS(60);
 	center_offset = p_offset;
 	_request_update();
 }
 
 Vector3 PlaneMesh::get_center_offset() const {
+	ZoneScopedS(60);
 	return center_offset;
 }
 
 void PlaneMesh::set_orientation(const Orientation p_orientation) {
+	ZoneScopedS(60);
 	orientation = p_orientation;
 	_request_update();
 }
 
 PlaneMesh::Orientation PlaneMesh::get_orientation() const {
+	ZoneScopedS(60);
 	return orientation;
 }
 
@@ -1138,6 +1216,7 @@ PlaneMesh::PlaneMesh() {}
 */
 
 void PrismMesh::_create_mesh_array(Array &p_arr) const {
+	ZoneScopedS(60);
 	int i, j, prevrow, thisrow, point;
 	float x, y, z;
 	float onethird = 1.0 / 3.0;
@@ -1346,6 +1425,7 @@ void PrismMesh::_create_mesh_array(Array &p_arr) const {
 }
 
 void PrismMesh::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_left_to_right", "left_to_right"), &PrismMesh::set_left_to_right);
 	ClassDB::bind_method(D_METHOD("get_left_to_right"), &PrismMesh::get_left_to_right);
 
@@ -1367,47 +1447,57 @@ void PrismMesh::_bind_methods() {
 }
 
 void PrismMesh::set_left_to_right(const float p_left_to_right) {
+	ZoneScopedS(60);
 	left_to_right = p_left_to_right;
 	_request_update();
 }
 
 float PrismMesh::get_left_to_right() const {
+	ZoneScopedS(60);
 	return left_to_right;
 }
 
 void PrismMesh::set_size(const Vector3 &p_size) {
+	ZoneScopedS(60);
 	size = p_size;
 	_request_update();
 }
 
 Vector3 PrismMesh::get_size() const {
+	ZoneScopedS(60);
 	return size;
 }
 
 void PrismMesh::set_subdivide_width(const int p_divisions) {
+	ZoneScopedS(60);
 	subdivide_w = p_divisions > 0 ? p_divisions : 0;
 	_request_update();
 }
 
 int PrismMesh::get_subdivide_width() const {
+	ZoneScopedS(60);
 	return subdivide_w;
 }
 
 void PrismMesh::set_subdivide_height(const int p_divisions) {
+	ZoneScopedS(60);
 	subdivide_h = p_divisions > 0 ? p_divisions : 0;
 	_request_update();
 }
 
 int PrismMesh::get_subdivide_height() const {
+	ZoneScopedS(60);
 	return subdivide_h;
 }
 
 void PrismMesh::set_subdivide_depth(const int p_divisions) {
+	ZoneScopedS(60);
 	subdivide_d = p_divisions > 0 ? p_divisions : 0;
 	_request_update();
 }
 
 int PrismMesh::get_subdivide_depth() const {
+	ZoneScopedS(60);
 	return subdivide_d;
 }
 
@@ -1418,10 +1508,12 @@ PrismMesh::PrismMesh() {}
 */
 
 void SphereMesh::_create_mesh_array(Array &p_arr) const {
+	ZoneScopedS(60);
 	create_mesh_array(p_arr, radius, height, radial_segments, rings, is_hemisphere);
 }
 
 void SphereMesh::create_mesh_array(Array &p_arr, float radius, float height, int radial_segments, int rings, bool is_hemisphere) {
+	ZoneScopedS(60);
 	int i, j, prevrow, thisrow, point;
 	float x, y, z;
 
@@ -1495,6 +1587,7 @@ void SphereMesh::create_mesh_array(Array &p_arr, float radius, float height, int
 }
 
 void SphereMesh::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_radius", "radius"), &SphereMesh::set_radius);
 	ClassDB::bind_method(D_METHOD("get_radius"), &SphereMesh::get_radius);
 	ClassDB::bind_method(D_METHOD("set_height", "height"), &SphereMesh::set_height);
@@ -1516,47 +1609,57 @@ void SphereMesh::_bind_methods() {
 }
 
 void SphereMesh::set_radius(const float p_radius) {
+	ZoneScopedS(60);
 	radius = p_radius;
 	_request_update();
 }
 
 float SphereMesh::get_radius() const {
+	ZoneScopedS(60);
 	return radius;
 }
 
 void SphereMesh::set_height(const float p_height) {
+	ZoneScopedS(60);
 	height = p_height;
 	_request_update();
 }
 
 float SphereMesh::get_height() const {
+	ZoneScopedS(60);
 	return height;
 }
 
 void SphereMesh::set_radial_segments(const int p_radial_segments) {
+	ZoneScopedS(60);
 	radial_segments = p_radial_segments > 4 ? p_radial_segments : 4;
 	_request_update();
 }
 
 int SphereMesh::get_radial_segments() const {
+	ZoneScopedS(60);
 	return radial_segments;
 }
 
 void SphereMesh::set_rings(const int p_rings) {
+	ZoneScopedS(60);
 	rings = p_rings > 1 ? p_rings : 1;
 	_request_update();
 }
 
 int SphereMesh::get_rings() const {
+	ZoneScopedS(60);
 	return rings;
 }
 
 void SphereMesh::set_is_hemisphere(const bool p_is_hemisphere) {
+	ZoneScopedS(60);
 	is_hemisphere = p_is_hemisphere;
 	_request_update();
 }
 
 bool SphereMesh::get_is_hemisphere() const {
+	ZoneScopedS(60);
 	return is_hemisphere;
 }
 
@@ -1567,6 +1670,7 @@ SphereMesh::SphereMesh() {}
 */
 
 void TorusMesh::_create_mesh_array(Array &p_arr) const {
+	ZoneScopedS(60);
 	// set our bounding box
 
 	Vector<Vector3> points;
@@ -1632,6 +1736,7 @@ void TorusMesh::_create_mesh_array(Array &p_arr) const {
 }
 
 void TorusMesh::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_inner_radius", "radius"), &TorusMesh::set_inner_radius);
 	ClassDB::bind_method(D_METHOD("get_inner_radius"), &TorusMesh::get_inner_radius);
 
@@ -1651,40 +1756,48 @@ void TorusMesh::_bind_methods() {
 }
 
 void TorusMesh::set_inner_radius(const float p_inner_radius) {
+	ZoneScopedS(60);
 	inner_radius = p_inner_radius;
 	_request_update();
 }
 
 float TorusMesh::get_inner_radius() const {
+	ZoneScopedS(60);
 	return inner_radius;
 }
 
 void TorusMesh::set_outer_radius(const float p_outer_radius) {
+	ZoneScopedS(60);
 	outer_radius = p_outer_radius;
 	_request_update();
 }
 
 float TorusMesh::get_outer_radius() const {
+	ZoneScopedS(60);
 	return outer_radius;
 }
 
 void TorusMesh::set_rings(const int p_rings) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_rings < 3);
 	rings = p_rings;
 	_request_update();
 }
 
 int TorusMesh::get_rings() const {
+	ZoneScopedS(60);
 	return rings;
 }
 
 void TorusMesh::set_ring_segments(const int p_ring_segments) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_ring_segments < 3);
 	ring_segments = p_ring_segments;
 	_request_update();
 }
 
 int TorusMesh::get_ring_segments() const {
+	ZoneScopedS(60);
 	return ring_segments;
 }
 
@@ -1695,6 +1808,7 @@ TorusMesh::TorusMesh() {}
 */
 
 void PointMesh::_create_mesh_array(Array &p_arr) const {
+	ZoneScopedS(60);
 	Vector<Vector3> faces;
 	faces.resize(1);
 	faces.set(0, Vector3(0.0, 0.0, 0.0));
@@ -1703,54 +1817,66 @@ void PointMesh::_create_mesh_array(Array &p_arr) const {
 }
 
 PointMesh::PointMesh() {
+	ZoneScopedS(60);
 	primitive_type = PRIMITIVE_POINTS;
 }
 // TUBE TRAIL
 
 void TubeTrailMesh::set_radius(const float p_radius) {
+	ZoneScopedS(60);
 	radius = p_radius;
 	_request_update();
 }
 float TubeTrailMesh::get_radius() const {
+	ZoneScopedS(60);
 	return radius;
 }
 
 void TubeTrailMesh::set_radial_steps(const int p_radial_steps) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_radial_steps < 3 || p_radial_steps > 128);
 	radial_steps = p_radial_steps;
 	_request_update();
 }
 int TubeTrailMesh::get_radial_steps() const {
+	ZoneScopedS(60);
 	return radial_steps;
 }
 
 void TubeTrailMesh::set_sections(const int p_sections) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_sections < 2 || p_sections > 128);
 	sections = p_sections;
 	_request_update();
 }
 int TubeTrailMesh::get_sections() const {
+	ZoneScopedS(60);
 	return sections;
 }
 
 void TubeTrailMesh::set_section_length(float p_section_length) {
+	ZoneScopedS(60);
 	section_length = p_section_length;
 	_request_update();
 }
 float TubeTrailMesh::get_section_length() const {
+	ZoneScopedS(60);
 	return section_length;
 }
 
 void TubeTrailMesh::set_section_rings(const int p_section_rings) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_section_rings < 1 || p_section_rings > 1024);
 	section_rings = p_section_rings;
 	_request_update();
 }
 int TubeTrailMesh::get_section_rings() const {
+	ZoneScopedS(60);
 	return section_rings;
 }
 
 void TubeTrailMesh::set_curve(const Ref<Curve> &p_curve) {
+	ZoneScopedS(60);
 	if (curve == p_curve) {
 		return;
 	}
@@ -1764,17 +1890,21 @@ void TubeTrailMesh::set_curve(const Ref<Curve> &p_curve) {
 	_request_update();
 }
 Ref<Curve> TubeTrailMesh::get_curve() const {
+	ZoneScopedS(60);
 	return curve;
 }
 
 void TubeTrailMesh::_curve_changed() {
+	ZoneScopedS(60);
 	_request_update();
 }
 int TubeTrailMesh::get_builtin_bind_pose_count() const {
+	ZoneScopedS(60);
 	return sections + 1;
 }
 
 Transform3D TubeTrailMesh::get_builtin_bind_pose(int p_index) const {
+	ZoneScopedS(60);
 	float depth = section_length * sections;
 
 	Transform3D xform;
@@ -1785,6 +1915,7 @@ Transform3D TubeTrailMesh::get_builtin_bind_pose(int p_index) const {
 }
 
 void TubeTrailMesh::_create_mesh_array(Array &p_arr) const {
+	ZoneScopedS(60);
 	PackedVector3Array points;
 	PackedVector3Array normals;
 	PackedFloat32Array tangents;
@@ -1997,6 +2128,7 @@ void TubeTrailMesh::_create_mesh_array(Array &p_arr) const {
 }
 
 void TubeTrailMesh::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_radius", "radius"), &TubeTrailMesh::set_radius);
 	ClassDB::bind_method(D_METHOD("get_radius"), &TubeTrailMesh::get_radius);
 
@@ -2033,48 +2165,59 @@ TubeTrailMesh::TubeTrailMesh() {
 // TUBE TRAIL
 
 void RibbonTrailMesh::set_shape(Shape p_shape) {
+	ZoneScopedS(60);
 	shape = p_shape;
 	_request_update();
 }
 RibbonTrailMesh::Shape RibbonTrailMesh::get_shape() const {
+	ZoneScopedS(60);
 	return shape;
 }
 
 void RibbonTrailMesh::set_size(const float p_size) {
+	ZoneScopedS(60);
 	size = p_size;
 	_request_update();
 }
 float RibbonTrailMesh::get_size() const {
+	ZoneScopedS(60);
 	return size;
 }
 
 void RibbonTrailMesh::set_sections(const int p_sections) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_sections < 2 || p_sections > 128);
 	sections = p_sections;
 	_request_update();
 }
 int RibbonTrailMesh::get_sections() const {
+	ZoneScopedS(60);
 	return sections;
 }
 
 void RibbonTrailMesh::set_section_length(float p_section_length) {
+	ZoneScopedS(60);
 	section_length = p_section_length;
 	_request_update();
 }
 float RibbonTrailMesh::get_section_length() const {
+	ZoneScopedS(60);
 	return section_length;
 }
 
 void RibbonTrailMesh::set_section_segments(const int p_section_segments) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_section_segments < 1 || p_section_segments > 1024);
 	section_segments = p_section_segments;
 	_request_update();
 }
 int RibbonTrailMesh::get_section_segments() const {
+	ZoneScopedS(60);
 	return section_segments;
 }
 
 void RibbonTrailMesh::set_curve(const Ref<Curve> &p_curve) {
+	ZoneScopedS(60);
 	if (curve == p_curve) {
 		return;
 	}
@@ -2088,17 +2231,21 @@ void RibbonTrailMesh::set_curve(const Ref<Curve> &p_curve) {
 	_request_update();
 }
 Ref<Curve> RibbonTrailMesh::get_curve() const {
+	ZoneScopedS(60);
 	return curve;
 }
 
 void RibbonTrailMesh::_curve_changed() {
+	ZoneScopedS(60);
 	_request_update();
 }
 int RibbonTrailMesh::get_builtin_bind_pose_count() const {
+	ZoneScopedS(60);
 	return sections + 1;
 }
 
 Transform3D RibbonTrailMesh::get_builtin_bind_pose(int p_index) const {
+	ZoneScopedS(60);
 	float depth = section_length * sections;
 
 	Transform3D xform;
@@ -2109,6 +2256,7 @@ Transform3D RibbonTrailMesh::get_builtin_bind_pose(int p_index) const {
 }
 
 void RibbonTrailMesh::_create_mesh_array(Array &p_arr) const {
+	ZoneScopedS(60);
 	PackedVector3Array points;
 	PackedVector3Array normals;
 	PackedFloat32Array tangents;
@@ -2223,6 +2371,7 @@ void RibbonTrailMesh::_create_mesh_array(Array &p_arr) const {
 }
 
 void RibbonTrailMesh::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_size", "size"), &RibbonTrailMesh::set_size);
 	ClassDB::bind_method(D_METHOD("get_size"), &RibbonTrailMesh::get_size);
 
@@ -2260,6 +2409,7 @@ RibbonTrailMesh::RibbonTrailMesh() {
 /*************************************************************************/
 
 void TextMesh::_generate_glyph_mesh_data(const GlyphMeshKey &p_key, const Glyph &p_gl) const {
+	ZoneScopedS(60);
 	if (cache.has(p_key)) {
 		return;
 	}
@@ -2431,6 +2581,7 @@ void TextMesh::_generate_glyph_mesh_data(const GlyphMeshKey &p_key, const Glyph 
 }
 
 void TextMesh::_create_mesh_array(Array &p_arr) const {
+	ZoneScopedS(60);
 	Ref<Font> font = _get_font_or_default();
 	ERR_FAIL_COND(font.is_null());
 
@@ -2809,6 +2960,7 @@ void TextMesh::_create_mesh_array(Array &p_arr) const {
 }
 
 void TextMesh::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_horizontal_alignment", "alignment"), &TextMesh::set_horizontal_alignment);
 	ClassDB::bind_method(D_METHOD("get_horizontal_alignment"), &TextMesh::get_horizontal_alignment);
 
@@ -2888,6 +3040,7 @@ void TextMesh::_bind_methods() {
 }
 
 void TextMesh::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case MainLoop::NOTIFICATION_TRANSLATION_CHANGED: {
 			String new_text = tr(text);
@@ -2902,11 +3055,13 @@ void TextMesh::_notification(int p_what) {
 }
 
 TextMesh::TextMesh() {
+	ZoneScopedS(60);
 	primitive_type = PRIMITIVE_TRIANGLES;
 	text_rid = TS->create_shaped_text();
 }
 
 TextMesh::~TextMesh() {
+	ZoneScopedS(60);
 	for (int i = 0; i < lines_rid.size(); i++) {
 		TS->free_rid(lines_rid[i]);
 	}
@@ -2916,6 +3071,7 @@ TextMesh::~TextMesh() {
 }
 
 void TextMesh::set_horizontal_alignment(HorizontalAlignment p_alignment) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX((int)p_alignment, 4);
 	if (horizontal_alignment != p_alignment) {
 		if (horizontal_alignment == HORIZONTAL_ALIGNMENT_FILL || p_alignment == HORIZONTAL_ALIGNMENT_FILL) {
@@ -2927,10 +3083,12 @@ void TextMesh::set_horizontal_alignment(HorizontalAlignment p_alignment) {
 }
 
 HorizontalAlignment TextMesh::get_horizontal_alignment() const {
+	ZoneScopedS(60);
 	return horizontal_alignment;
 }
 
 void TextMesh::set_vertical_alignment(VerticalAlignment p_alignment) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX((int)p_alignment, 4);
 	if (vertical_alignment != p_alignment) {
 		vertical_alignment = p_alignment;
@@ -2939,10 +3097,12 @@ void TextMesh::set_vertical_alignment(VerticalAlignment p_alignment) {
 }
 
 VerticalAlignment TextMesh::get_vertical_alignment() const {
+	ZoneScopedS(60);
 	return vertical_alignment;
 }
 
 void TextMesh::set_text(const String &p_string) {
+	ZoneScopedS(60);
 	if (text != p_string) {
 		text = p_string;
 		xl_text = tr(text);
@@ -2952,16 +3112,19 @@ void TextMesh::set_text(const String &p_string) {
 }
 
 String TextMesh::get_text() const {
+	ZoneScopedS(60);
 	return text;
 }
 
 void TextMesh::_font_changed() {
+	ZoneScopedS(60);
 	dirty_font = true;
 	dirty_cache = true;
 	call_deferred(SNAME("_request_update"));
 }
 
 void TextMesh::set_font(const Ref<Font> &p_font) {
+	ZoneScopedS(60);
 	if (font_override != p_font) {
 		if (font_override.is_valid()) {
 			font_override->disconnect(CoreStringNames::get_singleton()->changed, Callable(this, "_font_changed"));
@@ -2977,10 +3140,12 @@ void TextMesh::set_font(const Ref<Font> &p_font) {
 }
 
 Ref<Font> TextMesh::get_font() const {
+	ZoneScopedS(60);
 	return font_override;
 }
 
 Ref<Font> TextMesh::_get_font_or_default() const {
+	ZoneScopedS(60);
 	if (font_override.is_valid()) {
 		return font_override;
 	}
@@ -3014,6 +3179,7 @@ Ref<Font> TextMesh::_get_font_or_default() const {
 }
 
 void TextMesh::set_font_size(int p_size) {
+	ZoneScopedS(60);
 	if (font_size != p_size) {
 		font_size = CLAMP(p_size, 1, 127);
 		dirty_font = true;
@@ -3023,10 +3189,12 @@ void TextMesh::set_font_size(int p_size) {
 }
 
 int TextMesh::get_font_size() const {
+	ZoneScopedS(60);
 	return font_size;
 }
 
 void TextMesh::set_line_spacing(float p_line_spacing) {
+	ZoneScopedS(60);
 	if (line_spacing != p_line_spacing) {
 		line_spacing = p_line_spacing;
 		_request_update();
@@ -3034,10 +3202,12 @@ void TextMesh::set_line_spacing(float p_line_spacing) {
 }
 
 float TextMesh::get_line_spacing() const {
+	ZoneScopedS(60);
 	return line_spacing;
 }
 
 void TextMesh::set_autowrap_mode(TextServer::AutowrapMode p_mode) {
+	ZoneScopedS(60);
 	if (autowrap_mode != p_mode) {
 		autowrap_mode = p_mode;
 		dirty_lines = true;
@@ -3046,10 +3216,12 @@ void TextMesh::set_autowrap_mode(TextServer::AutowrapMode p_mode) {
 }
 
 TextServer::AutowrapMode TextMesh::get_autowrap_mode() const {
+	ZoneScopedS(60);
 	return autowrap_mode;
 }
 
 void TextMesh::set_depth(real_t p_depth) {
+	ZoneScopedS(60);
 	if (depth != p_depth) {
 		depth = MAX(p_depth, 0.0);
 		_request_update();
@@ -3057,10 +3229,12 @@ void TextMesh::set_depth(real_t p_depth) {
 }
 
 real_t TextMesh::get_depth() const {
+	ZoneScopedS(60);
 	return depth;
 }
 
 void TextMesh::set_width(real_t p_width) {
+	ZoneScopedS(60);
 	if (width != p_width) {
 		width = p_width;
 		dirty_lines = true;
@@ -3069,10 +3243,12 @@ void TextMesh::set_width(real_t p_width) {
 }
 
 real_t TextMesh::get_width() const {
+	ZoneScopedS(60);
 	return width;
 }
 
 void TextMesh::set_pixel_size(real_t p_amount) {
+	ZoneScopedS(60);
 	if (pixel_size != p_amount) {
 		pixel_size = CLAMP(p_amount, 0.0001, 128.0);
 		dirty_cache = true;
@@ -3081,10 +3257,12 @@ void TextMesh::set_pixel_size(real_t p_amount) {
 }
 
 real_t TextMesh::get_pixel_size() const {
+	ZoneScopedS(60);
 	return pixel_size;
 }
 
 void TextMesh::set_offset(const Point2 &p_offset) {
+	ZoneScopedS(60);
 	if (lbl_offset != p_offset) {
 		lbl_offset = p_offset;
 		_request_update();
@@ -3092,10 +3270,12 @@ void TextMesh::set_offset(const Point2 &p_offset) {
 }
 
 Point2 TextMesh::get_offset() const {
+	ZoneScopedS(60);
 	return lbl_offset;
 }
 
 void TextMesh::set_curve_step(real_t p_step) {
+	ZoneScopedS(60);
 	if (curve_step != p_step) {
 		curve_step = CLAMP(p_step, 0.1, 10.0);
 		dirty_cache = true;
@@ -3104,10 +3284,12 @@ void TextMesh::set_curve_step(real_t p_step) {
 }
 
 real_t TextMesh::get_curve_step() const {
+	ZoneScopedS(60);
 	return curve_step;
 }
 
 void TextMesh::set_text_direction(TextServer::Direction p_text_direction) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND((int)p_text_direction < -1 || (int)p_text_direction > 3);
 	if (text_direction != p_text_direction) {
 		text_direction = p_text_direction;
@@ -3117,10 +3299,12 @@ void TextMesh::set_text_direction(TextServer::Direction p_text_direction) {
 }
 
 TextServer::Direction TextMesh::get_text_direction() const {
+	ZoneScopedS(60);
 	return text_direction;
 }
 
 void TextMesh::set_language(const String &p_language) {
+	ZoneScopedS(60);
 	if (language != p_language) {
 		language = p_language;
 		dirty_text = true;
@@ -3129,10 +3313,12 @@ void TextMesh::set_language(const String &p_language) {
 }
 
 String TextMesh::get_language() const {
+	ZoneScopedS(60);
 	return language;
 }
 
 void TextMesh::set_structured_text_bidi_override(TextServer::StructuredTextParser p_parser) {
+	ZoneScopedS(60);
 	if (st_parser != p_parser) {
 		st_parser = p_parser;
 		dirty_text = true;
@@ -3141,10 +3327,12 @@ void TextMesh::set_structured_text_bidi_override(TextServer::StructuredTextParse
 }
 
 TextServer::StructuredTextParser TextMesh::get_structured_text_bidi_override() const {
+	ZoneScopedS(60);
 	return st_parser;
 }
 
 void TextMesh::set_structured_text_bidi_override_options(Array p_args) {
+	ZoneScopedS(60);
 	if (st_args != p_args) {
 		st_args = p_args;
 		dirty_text = true;
@@ -3153,10 +3341,12 @@ void TextMesh::set_structured_text_bidi_override_options(Array p_args) {
 }
 
 Array TextMesh::get_structured_text_bidi_override_options() const {
+	ZoneScopedS(60);
 	return st_args;
 }
 
 void TextMesh::set_uppercase(bool p_uppercase) {
+	ZoneScopedS(60);
 	if (uppercase != p_uppercase) {
 		uppercase = p_uppercase;
 		dirty_text = true;
@@ -3165,5 +3355,6 @@ void TextMesh::set_uppercase(bool p_uppercase) {
 }
 
 bool TextMesh::is_uppercase() const {
+	ZoneScopedS(60);
 	return uppercase;
 }

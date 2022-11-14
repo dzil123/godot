@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  base_button.cpp                                                      */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "base_button.h"
 
 #include "core/os/keyboard.h"
@@ -35,6 +66,7 @@
 #include "scene/scene_string_names.h"
 
 void BaseButton::_unpress_group() {
+	ZoneScopedS(60);
 	if (!button_group.is_valid()) {
 		return;
 	}
@@ -53,6 +85,7 @@ void BaseButton::_unpress_group() {
 }
 
 void BaseButton::gui_input(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_event.is_null());
 
 	if (status.disabled) { // no interaction with disabled button
@@ -84,6 +117,7 @@ void BaseButton::gui_input(const Ref<InputEvent> &p_event) {
 }
 
 void BaseButton::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_MOUSE_ENTER: {
 			status.hovering = true;
@@ -133,18 +167,21 @@ void BaseButton::_notification(int p_what) {
 }
 
 void BaseButton::_pressed() {
+	ZoneScopedS(60);
 	GDVIRTUAL_CALL(_pressed);
 	pressed();
 	emit_signal(SNAME("pressed"));
 }
 
 void BaseButton::_toggled(bool p_pressed) {
+	ZoneScopedS(60);
 	GDVIRTUAL_CALL(_toggled, p_pressed);
 	toggled(p_pressed);
 	emit_signal(SNAME("toggled"), p_pressed);
 }
 
 void BaseButton::on_action_event(Ref<InputEvent> p_event) {
+	ZoneScopedS(60);
 	if (p_event->is_pressed()) {
 		status.press_attempt = true;
 		status.pressing_inside = true;
@@ -201,6 +238,7 @@ void BaseButton::toggled(bool p_pressed) {
 }
 
 void BaseButton::set_disabled(bool p_disabled) {
+	ZoneScopedS(60);
 	if (status.disabled == p_disabled) {
 		return;
 	}
@@ -218,10 +256,12 @@ void BaseButton::set_disabled(bool p_disabled) {
 }
 
 bool BaseButton::is_disabled() const {
+	ZoneScopedS(60);
 	return status.disabled;
 }
 
 void BaseButton::set_pressed(bool p_pressed) {
+	ZoneScopedS(60);
 	bool prev_pressed = status.pressed;
 	set_pressed_no_signal(p_pressed);
 
@@ -239,6 +279,7 @@ void BaseButton::set_pressed(bool p_pressed) {
 }
 
 void BaseButton::set_pressed_no_signal(bool p_pressed) {
+	ZoneScopedS(60);
 	if (!toggle_mode) {
 		return;
 	}
@@ -251,18 +292,22 @@ void BaseButton::set_pressed_no_signal(bool p_pressed) {
 }
 
 bool BaseButton::is_pressing() const {
+	ZoneScopedS(60);
 	return status.press_attempt;
 }
 
 bool BaseButton::is_pressed() const {
+	ZoneScopedS(60);
 	return toggle_mode ? status.pressed : status.press_attempt;
 }
 
 bool BaseButton::is_hovered() const {
+	ZoneScopedS(60);
 	return status.hovering;
 }
 
 BaseButton::DrawMode BaseButton::get_draw_mode() const {
+	ZoneScopedS(60);
 	if (status.disabled) {
 		return DRAW_DISABLED;
 	}
@@ -294,6 +339,7 @@ BaseButton::DrawMode BaseButton::get_draw_mode() const {
 }
 
 void BaseButton::set_toggle_mode(bool p_on) {
+	ZoneScopedS(60);
 	// Make sure to set 'pressed' to false if we are not in toggle mode
 	if (!p_on) {
 		set_pressed(false);
@@ -303,51 +349,63 @@ void BaseButton::set_toggle_mode(bool p_on) {
 }
 
 bool BaseButton::is_toggle_mode() const {
+	ZoneScopedS(60);
 	return toggle_mode;
 }
 
 void BaseButton::set_shortcut_in_tooltip(bool p_on) {
+	ZoneScopedS(60);
 	shortcut_in_tooltip = p_on;
 }
 
 bool BaseButton::is_shortcut_in_tooltip_enabled() const {
+	ZoneScopedS(60);
 	return shortcut_in_tooltip;
 }
 
 void BaseButton::set_action_mode(ActionMode p_mode) {
+	ZoneScopedS(60);
 	action_mode = p_mode;
 }
 
 BaseButton::ActionMode BaseButton::get_action_mode() const {
+	ZoneScopedS(60);
 	return action_mode;
 }
 
 void BaseButton::set_button_mask(MouseButton p_mask) {
+	ZoneScopedS(60);
 	button_mask = p_mask;
 }
 
 MouseButton BaseButton::get_button_mask() const {
+	ZoneScopedS(60);
 	return button_mask;
 }
 
 void BaseButton::set_keep_pressed_outside(bool p_on) {
+	ZoneScopedS(60);
 	keep_pressed_outside = p_on;
 }
 
 bool BaseButton::is_keep_pressed_outside() const {
+	ZoneScopedS(60);
 	return keep_pressed_outside;
 }
 
 void BaseButton::set_shortcut(const Ref<Shortcut> &p_shortcut) {
+	ZoneScopedS(60);
 	shortcut = p_shortcut;
 	set_process_shortcut_input(shortcut.is_valid());
 }
 
 Ref<Shortcut> BaseButton::get_shortcut() const {
+	ZoneScopedS(60);
 	return shortcut;
 }
 
 void BaseButton::shortcut_input(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_event.is_null());
 
 	if (!is_disabled() && is_visible_in_tree() && !p_event->is_echo() && shortcut.is_valid() && shortcut->matches_event(p_event)) {
@@ -358,6 +416,7 @@ void BaseButton::shortcut_input(const Ref<InputEvent> &p_event) {
 }
 
 String BaseButton::get_tooltip(const Point2 &p_pos) const {
+	ZoneScopedS(60);
 	String tooltip = Control::get_tooltip(p_pos);
 	if (shortcut_in_tooltip && shortcut.is_valid() && shortcut->has_valid_event()) {
 		String text = shortcut->get_name() + " (" + shortcut->get_as_text() + ")";
@@ -370,6 +429,7 @@ String BaseButton::get_tooltip(const Point2 &p_pos) const {
 }
 
 void BaseButton::set_button_group(const Ref<ButtonGroup> &p_group) {
+	ZoneScopedS(60);
 	if (button_group.is_valid()) {
 		button_group->buttons.erase(this);
 	}
@@ -384,22 +444,27 @@ void BaseButton::set_button_group(const Ref<ButtonGroup> &p_group) {
 }
 
 Ref<ButtonGroup> BaseButton::get_button_group() const {
+	ZoneScopedS(60);
 	return button_group;
 }
 
 bool BaseButton::_was_pressed_by_mouse() const {
+	ZoneScopedS(60);
 	return was_mouse_pressed;
 }
 
 void BaseButton::set_shortcut_feedback(bool p_feedback) {
+	ZoneScopedS(60);
 	shortcut_feedback = p_feedback;
 }
 
 bool BaseButton::is_shortcut_feedback() const {
+	ZoneScopedS(60);
 	return shortcut_feedback;
 }
 
 void BaseButton::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_pressed", "pressed"), &BaseButton::set_pressed);
 	ClassDB::bind_method(D_METHOD("is_pressed"), &BaseButton::is_pressed);
 	ClassDB::bind_method(D_METHOD("set_pressed_no_signal", "pressed"), &BaseButton::set_pressed_no_signal);
@@ -457,22 +522,26 @@ void BaseButton::_bind_methods() {
 }
 
 BaseButton::BaseButton() {
+	ZoneScopedS(60);
 	set_focus_mode(FOCUS_ALL);
 }
 
 BaseButton::~BaseButton() {
+	ZoneScopedS(60);
 	if (button_group.is_valid()) {
 		button_group->buttons.erase(this);
 	}
 }
 
 void ButtonGroup::get_buttons(List<BaseButton *> *r_buttons) {
+	ZoneScopedS(60);
 	for (BaseButton *E : buttons) {
 		r_buttons->push_back(E);
 	}
 }
 
 TypedArray<BaseButton> ButtonGroup::_get_buttons() {
+	ZoneScopedS(60);
 	TypedArray<BaseButton> btns;
 	for (const BaseButton *E : buttons) {
 		btns.push_back(E);
@@ -482,6 +551,7 @@ TypedArray<BaseButton> ButtonGroup::_get_buttons() {
 }
 
 BaseButton *ButtonGroup::get_pressed_button() {
+	ZoneScopedS(60);
 	for (BaseButton *E : buttons) {
 		if (E->is_pressed()) {
 			return E;
@@ -492,6 +562,7 @@ BaseButton *ButtonGroup::get_pressed_button() {
 }
 
 void ButtonGroup::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_pressed_button"), &ButtonGroup::get_pressed_button);
 	ClassDB::bind_method(D_METHOD("get_buttons"), &ButtonGroup::_get_buttons);
 
@@ -499,5 +570,6 @@ void ButtonGroup::_bind_methods() {
 }
 
 ButtonGroup::ButtonGroup() {
+	ZoneScopedS(60);
 	set_local_to_scene(true);
 }

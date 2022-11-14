@@ -28,11 +28,43 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  parallax_layer.cpp                                                   */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "parallax_layer.h"
 
 #include "parallax_background.h"
 
 void ParallaxLayer::set_motion_scale(const Size2 &p_scale) {
+	ZoneScopedS(60);
 	motion_scale = p_scale;
 
 	ParallaxBackground *pb = Object::cast_to<ParallaxBackground>(get_parent());
@@ -44,10 +76,12 @@ void ParallaxLayer::set_motion_scale(const Size2 &p_scale) {
 }
 
 Size2 ParallaxLayer::get_motion_scale() const {
+	ZoneScopedS(60);
 	return motion_scale;
 }
 
 void ParallaxLayer::set_motion_offset(const Size2 &p_offset) {
+	ZoneScopedS(60);
 	motion_offset = p_offset;
 
 	ParallaxBackground *pb = Object::cast_to<ParallaxBackground>(get_parent());
@@ -59,10 +93,12 @@ void ParallaxLayer::set_motion_offset(const Size2 &p_offset) {
 }
 
 Size2 ParallaxLayer::get_motion_offset() const {
+	ZoneScopedS(60);
 	return motion_offset;
 }
 
 void ParallaxLayer::_update_mirroring() {
+	ZoneScopedS(60);
 	if (!is_inside_tree()) {
 		return;
 	}
@@ -77,6 +113,7 @@ void ParallaxLayer::_update_mirroring() {
 }
 
 void ParallaxLayer::set_mirroring(const Size2 &p_mirroring) {
+	ZoneScopedS(60);
 	mirroring = p_mirroring;
 	if (mirroring.x < 0) {
 		mirroring.x = 0;
@@ -89,10 +126,12 @@ void ParallaxLayer::set_mirroring(const Size2 &p_mirroring) {
 }
 
 Size2 ParallaxLayer::get_mirroring() const {
+	ZoneScopedS(60);
 	return mirroring;
 }
 
 void ParallaxLayer::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			orig_offset = get_position();
@@ -112,6 +151,7 @@ void ParallaxLayer::_notification(int p_what) {
 }
 
 void ParallaxLayer::set_base_offset_and_scale(const Point2 &p_offset, real_t p_scale) {
+	ZoneScopedS(60);
 	if (!is_inside_tree()) {
 		return;
 	}
@@ -138,6 +178,7 @@ void ParallaxLayer::set_base_offset_and_scale(const Point2 &p_offset, real_t p_s
 }
 
 PackedStringArray ParallaxLayer::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (!Object::cast_to<ParallaxBackground>(get_parent())) {
@@ -148,6 +189,7 @@ PackedStringArray ParallaxLayer::get_configuration_warnings() const {
 }
 
 void ParallaxLayer::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_motion_scale", "scale"), &ParallaxLayer::set_motion_scale);
 	ClassDB::bind_method(D_METHOD("get_motion_scale"), &ParallaxLayer::get_motion_scale);
 	ClassDB::bind_method(D_METHOD("set_motion_offset", "offset"), &ParallaxLayer::set_motion_offset);

@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  tile_set.cpp                                                         */
 /*************************************************************************/
@@ -43,6 +44,7 @@
 /////////////////////////////// TileMapPattern //////////////////////////////////////
 
 void TileMapPattern::_set_tile_data(const Vector<int> &p_data) {
+	ZoneScopedS(60);
 	int c = p_data.size();
 	const int *r = p_data.ptr();
 
@@ -79,6 +81,7 @@ void TileMapPattern::_set_tile_data(const Vector<int> &p_data) {
 }
 
 Vector<int> TileMapPattern::_get_tile_data() const {
+	ZoneScopedS(60);
 	// Export tile data to raw format
 	Vector<int> data;
 	data.resize(pattern.size() * 3);
@@ -102,6 +105,7 @@ Vector<int> TileMapPattern::_get_tile_data() const {
 }
 
 void TileMapPattern::set_cell(const Vector2i &p_coords, int p_source_id, const Vector2i p_atlas_coords, int p_alternative_tile) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_coords.x < 0 || p_coords.y < 0, vformat("Cannot set cell with negative coords in a TileMapPattern. Wrong coords: %s", p_coords));
 
 	size = size.max(p_coords + Vector2i(1, 1));
@@ -110,10 +114,12 @@ void TileMapPattern::set_cell(const Vector2i &p_coords, int p_source_id, const V
 }
 
 bool TileMapPattern::has_cell(const Vector2i &p_coords) const {
+	ZoneScopedS(60);
 	return pattern.has(p_coords);
 }
 
 void TileMapPattern::remove_cell(const Vector2i &p_coords, bool p_update_size) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!pattern.has(p_coords));
 
 	pattern.erase(p_coords);
@@ -127,24 +133,28 @@ void TileMapPattern::remove_cell(const Vector2i &p_coords, bool p_update_size) {
 }
 
 int TileMapPattern::get_cell_source_id(const Vector2i &p_coords) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!pattern.has(p_coords), TileSet::INVALID_SOURCE);
 
 	return pattern[p_coords].source_id;
 }
 
 Vector2i TileMapPattern::get_cell_atlas_coords(const Vector2i &p_coords) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!pattern.has(p_coords), TileSetSource::INVALID_ATLAS_COORDS);
 
 	return pattern[p_coords].get_atlas_coords();
 }
 
 int TileMapPattern::get_cell_alternative_tile(const Vector2i &p_coords) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!pattern.has(p_coords), TileSetSource::INVALID_TILE_ALTERNATIVE);
 
 	return pattern[p_coords].alternative_tile;
 }
 
 TypedArray<Vector2i> TileMapPattern::get_used_cells() const {
+	ZoneScopedS(60);
 	// Returns the cells used in the tilemap.
 	TypedArray<Vector2i> a;
 	a.resize(pattern.size());
@@ -158,10 +168,12 @@ TypedArray<Vector2i> TileMapPattern::get_used_cells() const {
 }
 
 Size2i TileMapPattern::get_size() const {
+	ZoneScopedS(60);
 	return size;
 }
 
 void TileMapPattern::set_size(const Size2i &p_size) {
+	ZoneScopedS(60);
 	for (const KeyValue<Vector2i, TileMapCell> &E : pattern) {
 		Vector2i coords = E.key;
 		if (p_size.x <= coords.x || p_size.y <= coords.y) {
@@ -174,16 +186,19 @@ void TileMapPattern::set_size(const Size2i &p_size) {
 }
 
 bool TileMapPattern::is_empty() const {
+	ZoneScopedS(60);
 	return pattern.is_empty();
 };
 
 void TileMapPattern::clear() {
+	ZoneScopedS(60);
 	size = Size2i();
 	pattern.clear();
 	emit_changed();
 };
 
 bool TileMapPattern::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	if (p_name == "tile_data") {
 		if (p_value.is_array()) {
 			_set_tile_data(p_value);
@@ -195,6 +210,7 @@ bool TileMapPattern::_set(const StringName &p_name, const Variant &p_value) {
 }
 
 bool TileMapPattern::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	if (p_name == "tile_data") {
 		r_ret = _get_tile_data();
 		return true;
@@ -203,10 +219,12 @@ bool TileMapPattern::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void TileMapPattern::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	p_list->push_back(PropertyInfo(Variant::OBJECT, "tile_data", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL));
 }
 
 void TileMapPattern::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_cell", "coords", "source_id", "atlas_coords", "alternative_tile"), &TileMapPattern::set_cell, DEFVAL(TileSet::INVALID_SOURCE), DEFVAL(TileSetSource::INVALID_ATLAS_COORDS), DEFVAL(TileSetSource::INVALID_TILE_ALTERNATIVE));
 	ClassDB::bind_method(D_METHOD("has_cell", "coords"), &TileMapPattern::has_cell);
 	ClassDB::bind_method(D_METHOD("remove_cell", "coords", "update_size"), &TileMapPattern::remove_cell);
@@ -223,14 +241,17 @@ void TileMapPattern::_bind_methods() {
 /////////////////////////////// TileSet //////////////////////////////////////
 
 bool TileSet::TerrainsPattern::is_valid() const {
+	ZoneScopedS(60);
 	return valid;
 }
 
 bool TileSet::TerrainsPattern::is_erase_pattern() const {
+	ZoneScopedS(60);
 	return not_empty_terrains_count == 0;
 }
 
 bool TileSet::TerrainsPattern::operator<(const TerrainsPattern &p_terrains_pattern) const {
+	ZoneScopedS(60);
 	for (int i = 0; i < TileSet::CELL_NEIGHBOR_MAX; i++) {
 		if (is_valid_bit[i] != p_terrains_pattern.is_valid_bit[i]) {
 			return is_valid_bit[i] < p_terrains_pattern.is_valid_bit[i];
@@ -248,6 +269,7 @@ bool TileSet::TerrainsPattern::operator<(const TerrainsPattern &p_terrains_patte
 }
 
 bool TileSet::TerrainsPattern::operator==(const TerrainsPattern &p_terrains_pattern) const {
+	ZoneScopedS(60);
 	for (int i = 0; i < TileSet::CELL_NEIGHBOR_MAX; i++) {
 		if (is_valid_bit[i] != p_terrains_pattern.is_valid_bit[i]) {
 			return false;
@@ -263,16 +285,19 @@ bool TileSet::TerrainsPattern::operator==(const TerrainsPattern &p_terrains_patt
 }
 
 void TileSet::TerrainsPattern::set_terrain(int p_terrain) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_terrain < -1);
 
 	terrain = p_terrain;
 }
 
 int TileSet::TerrainsPattern::get_terrain() const {
+	ZoneScopedS(60);
 	return terrain;
 }
 
 void TileSet::TerrainsPattern::set_terrain_peering_bit(TileSet::CellNeighbor p_peering_bit, int p_terrain) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_peering_bit == TileSet::CELL_NEIGHBOR_MAX);
 	ERR_FAIL_COND(!is_valid_bit[p_peering_bit]);
 	ERR_FAIL_COND(p_terrain < -1);
@@ -288,12 +313,14 @@ void TileSet::TerrainsPattern::set_terrain_peering_bit(TileSet::CellNeighbor p_p
 }
 
 int TileSet::TerrainsPattern::get_terrain_peering_bit(TileSet::CellNeighbor p_peering_bit) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_peering_bit == TileSet::CELL_NEIGHBOR_MAX, -1);
 	ERR_FAIL_COND_V(!is_valid_bit[p_peering_bit], -1);
 	return bits[p_peering_bit];
 }
 
 void TileSet::TerrainsPattern::from_array(Array p_terrains) {
+	ZoneScopedS(60);
 	set_terrain(p_terrains[0]);
 	int in_array_index = 1;
 	for (int i = 0; i < TileSet::CELL_NEIGHBOR_MAX; i++) {
@@ -306,6 +333,7 @@ void TileSet::TerrainsPattern::from_array(Array p_terrains) {
 }
 
 Array TileSet::TerrainsPattern::as_array() const {
+	ZoneScopedS(60);
 	Array output;
 	output.push_back(get_terrain());
 	for (int i = 0; i < TileSet::CELL_NEIGHBOR_MAX; i++) {
@@ -317,6 +345,7 @@ Array TileSet::TerrainsPattern::as_array() const {
 }
 
 TileSet::TerrainsPattern::TerrainsPattern(const TileSet *p_tile_set, int p_terrain_set) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_terrain_set < 0);
 	for (int i = 0; i < TileSet::CELL_NEIGHBOR_MAX; i++) {
 		is_valid_bit[i] = (p_tile_set->is_valid_terrain_peering_bit(p_terrain_set, TileSet::CellNeighbor(i)));
@@ -348,6 +377,7 @@ const char *TileSet::CELL_NEIGHBOR_ENUM_TO_TEXT[] = {
 
 // -- Shape and layout --
 void TileSet::set_tile_shape(TileSet::TileShape p_shape) {
+	ZoneScopedS(60);
 	tile_shape = p_shape;
 
 	for (KeyValue<int, Ref<TileSetSource>> &E_source : sources) {
@@ -360,18 +390,22 @@ void TileSet::set_tile_shape(TileSet::TileShape p_shape) {
 	emit_changed();
 }
 TileSet::TileShape TileSet::get_tile_shape() const {
+	ZoneScopedS(60);
 	return tile_shape;
 }
 
 void TileSet::set_tile_layout(TileSet::TileLayout p_layout) {
+	ZoneScopedS(60);
 	tile_layout = p_layout;
 	emit_changed();
 }
 TileSet::TileLayout TileSet::get_tile_layout() const {
+	ZoneScopedS(60);
 	return tile_layout;
 }
 
 void TileSet::set_tile_offset_axis(TileSet::TileOffsetAxis p_alignment) {
+	ZoneScopedS(60);
 	tile_offset_axis = p_alignment;
 
 	for (KeyValue<int, Ref<TileSetSource>> &E_source : sources) {
@@ -383,10 +417,12 @@ void TileSet::set_tile_offset_axis(TileSet::TileOffsetAxis p_alignment) {
 	emit_changed();
 }
 TileSet::TileOffsetAxis TileSet::get_tile_offset_axis() const {
+	ZoneScopedS(60);
 	return tile_offset_axis;
 }
 
 void TileSet::set_tile_size(Size2i p_size) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_size.x < 1 || p_size.y < 1);
 	tile_size = p_size;
 	terrain_bits_meshes_dirty = true;
@@ -394,14 +430,17 @@ void TileSet::set_tile_size(Size2i p_size) {
 	emit_changed();
 }
 Size2i TileSet::get_tile_size() const {
+	ZoneScopedS(60);
 	return tile_size;
 }
 
 int TileSet::get_next_source_id() const {
+	ZoneScopedS(60);
 	return next_source_id;
 }
 
 void TileSet::_update_terrains_cache() {
+	ZoneScopedS(60);
 	if (terrains_cache_dirty) {
 		// Organizes tiles into structures.
 		per_terrain_pattern_tiles.resize(terrain_sets.size());
@@ -465,6 +504,7 @@ void TileSet::_update_terrains_cache() {
 }
 
 void TileSet::_compute_next_source_id() {
+	ZoneScopedS(60);
 	while (sources.has(next_source_id)) {
 		next_source_id = (next_source_id + 1) % 1073741824; // 2 ** 30
 	};
@@ -472,6 +512,7 @@ void TileSet::_compute_next_source_id() {
 
 // Sources management
 int TileSet::add_source(Ref<TileSetSource> p_tile_set_source, int p_atlas_source_id_override) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!p_tile_set_source.is_valid(), TileSet::INVALID_SOURCE);
 	ERR_FAIL_COND_V_MSG(p_atlas_source_id_override >= 0 && (sources.has(p_atlas_source_id_override)), TileSet::INVALID_SOURCE, vformat("Cannot create TileSet atlas source. Another atlas source exists with id %d.", p_atlas_source_id_override));
 
@@ -491,6 +532,7 @@ int TileSet::add_source(Ref<TileSetSource> p_tile_set_source, int p_atlas_source
 }
 
 void TileSet::remove_source(int p_source_id) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!sources.has(p_source_id), vformat("Cannot remove TileSet atlas source. No tileset atlas source with id %d.", p_source_id));
 
 	sources[p_source_id]->disconnect(CoreStringNames::get_singleton()->changed, callable_mp(this, &TileSet::_source_changed));
@@ -505,6 +547,7 @@ void TileSet::remove_source(int p_source_id) {
 }
 
 void TileSet::set_source_id(int p_source_id, int p_new_source_id) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_new_source_id < 0);
 	ERR_FAIL_COND_MSG(!sources.has(p_source_id), vformat("Cannot change TileSet atlas source ID. No tileset atlas source with id %d.", p_source_id));
 	if (p_source_id == p_new_source_id) {
@@ -527,26 +570,31 @@ void TileSet::set_source_id(int p_source_id, int p_new_source_id) {
 }
 
 bool TileSet::has_source(int p_source_id) const {
+	ZoneScopedS(60);
 	return sources.has(p_source_id);
 }
 
 Ref<TileSetSource> TileSet::get_source(int p_source_id) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!sources.has(p_source_id), nullptr, vformat("No TileSet atlas source with id %d.", p_source_id));
 
 	return sources[p_source_id];
 }
 
 int TileSet::get_source_count() const {
+	ZoneScopedS(60);
 	return source_ids.size();
 }
 
 int TileSet::get_source_id(int p_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_index, source_ids.size(), TileSet::INVALID_SOURCE);
 	return source_ids[p_index];
 }
 
 // Rendering
 void TileSet::set_uv_clipping(bool p_uv_clipping) {
+	ZoneScopedS(60);
 	if (uv_clipping == p_uv_clipping) {
 		return;
 	}
@@ -555,14 +603,17 @@ void TileSet::set_uv_clipping(bool p_uv_clipping) {
 }
 
 bool TileSet::is_uv_clipping() const {
+	ZoneScopedS(60);
 	return uv_clipping;
 };
 
 int TileSet::get_occlusion_layers_count() const {
+	ZoneScopedS(60);
 	return occlusion_layers.size();
 };
 
 void TileSet::add_occlusion_layer(int p_index) {
+	ZoneScopedS(60);
 	if (p_index < 0) {
 		p_index = occlusion_layers.size();
 	}
@@ -578,6 +629,7 @@ void TileSet::add_occlusion_layer(int p_index) {
 }
 
 void TileSet::move_occlusion_layer(int p_from_index, int p_to_pos) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_from_index, occlusion_layers.size());
 	ERR_FAIL_INDEX(p_to_pos, occlusion_layers.size() + 1);
 	occlusion_layers.insert(p_to_pos, occlusion_layers[p_from_index]);
@@ -590,6 +642,7 @@ void TileSet::move_occlusion_layer(int p_from_index, int p_to_pos) {
 }
 
 void TileSet::remove_occlusion_layer(int p_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, occlusion_layers.size());
 	occlusion_layers.remove_at(p_index);
 	for (KeyValue<int, Ref<TileSetSource>> source : sources) {
@@ -600,32 +653,38 @@ void TileSet::remove_occlusion_layer(int p_index) {
 }
 
 void TileSet::set_occlusion_layer_light_mask(int p_layer_index, int p_light_mask) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_layer_index, occlusion_layers.size());
 	occlusion_layers.write[p_layer_index].light_mask = p_light_mask;
 	emit_changed();
 }
 
 int TileSet::get_occlusion_layer_light_mask(int p_layer_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_layer_index, occlusion_layers.size(), 0);
 	return occlusion_layers[p_layer_index].light_mask;
 }
 
 void TileSet::set_occlusion_layer_sdf_collision(int p_layer_index, bool p_sdf_collision) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_layer_index, occlusion_layers.size());
 	occlusion_layers.write[p_layer_index].sdf_collision = p_sdf_collision;
 	emit_changed();
 }
 
 bool TileSet::get_occlusion_layer_sdf_collision(int p_layer_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_layer_index, occlusion_layers.size(), false);
 	return occlusion_layers[p_layer_index].sdf_collision;
 }
 
 int TileSet::get_physics_layers_count() const {
+	ZoneScopedS(60);
 	return physics_layers.size();
 }
 
 void TileSet::add_physics_layer(int p_index) {
+	ZoneScopedS(60);
 	if (p_index < 0) {
 		p_index = physics_layers.size();
 	}
@@ -641,6 +700,7 @@ void TileSet::add_physics_layer(int p_index) {
 }
 
 void TileSet::move_physics_layer(int p_from_index, int p_to_pos) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_from_index, physics_layers.size());
 	ERR_FAIL_INDEX(p_to_pos, physics_layers.size() + 1);
 	physics_layers.insert(p_to_pos, physics_layers[p_from_index]);
@@ -653,6 +713,7 @@ void TileSet::move_physics_layer(int p_from_index, int p_to_pos) {
 }
 
 void TileSet::remove_physics_layer(int p_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, physics_layers.size());
 	physics_layers.remove_at(p_index);
 	for (KeyValue<int, Ref<TileSetSource>> source : sources) {
@@ -663,43 +724,51 @@ void TileSet::remove_physics_layer(int p_index) {
 }
 
 void TileSet::set_physics_layer_collision_layer(int p_layer_index, uint32_t p_layer) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_layer_index, physics_layers.size());
 	physics_layers.write[p_layer_index].collision_layer = p_layer;
 	emit_changed();
 }
 
 uint32_t TileSet::get_physics_layer_collision_layer(int p_layer_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_layer_index, physics_layers.size(), 0);
 	return physics_layers[p_layer_index].collision_layer;
 }
 
 void TileSet::set_physics_layer_collision_mask(int p_layer_index, uint32_t p_mask) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_layer_index, physics_layers.size());
 	physics_layers.write[p_layer_index].collision_mask = p_mask;
 	emit_changed();
 }
 
 uint32_t TileSet::get_physics_layer_collision_mask(int p_layer_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_layer_index, physics_layers.size(), 0);
 	return physics_layers[p_layer_index].collision_mask;
 }
 
 void TileSet::set_physics_layer_physics_material(int p_layer_index, Ref<PhysicsMaterial> p_physics_material) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_layer_index, physics_layers.size());
 	physics_layers.write[p_layer_index].physics_material = p_physics_material;
 }
 
 Ref<PhysicsMaterial> TileSet::get_physics_layer_physics_material(int p_layer_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_layer_index, physics_layers.size(), Ref<PhysicsMaterial>());
 	return physics_layers[p_layer_index].physics_material;
 }
 
 // Terrains
 int TileSet::get_terrain_sets_count() const {
+	ZoneScopedS(60);
 	return terrain_sets.size();
 }
 
 void TileSet::add_terrain_set(int p_index) {
+	ZoneScopedS(60);
 	if (p_index < 0) {
 		p_index = terrain_sets.size();
 	}
@@ -716,6 +785,7 @@ void TileSet::add_terrain_set(int p_index) {
 }
 
 void TileSet::move_terrain_set(int p_from_index, int p_to_pos) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_from_index, terrain_sets.size());
 	ERR_FAIL_INDEX(p_to_pos, terrain_sets.size() + 1);
 	terrain_sets.insert(p_to_pos, terrain_sets[p_from_index]);
@@ -729,6 +799,7 @@ void TileSet::move_terrain_set(int p_from_index, int p_to_pos) {
 }
 
 void TileSet::remove_terrain_set(int p_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, terrain_sets.size());
 	terrain_sets.remove_at(p_index);
 	for (KeyValue<int, Ref<TileSetSource>> source : sources) {
@@ -740,6 +811,7 @@ void TileSet::remove_terrain_set(int p_index) {
 }
 
 void TileSet::set_terrain_set_mode(int p_terrain_set, TerrainMode p_terrain_mode) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_terrain_set, terrain_sets.size());
 	terrain_sets.write[p_terrain_set].mode = p_terrain_mode;
 	for (KeyValue<int, Ref<TileSetSource>> &E_source : sources) {
@@ -752,16 +824,19 @@ void TileSet::set_terrain_set_mode(int p_terrain_set, TerrainMode p_terrain_mode
 }
 
 TileSet::TerrainMode TileSet::get_terrain_set_mode(int p_terrain_set) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_terrain_set, terrain_sets.size(), TileSet::TERRAIN_MODE_MATCH_CORNERS_AND_SIDES);
 	return terrain_sets[p_terrain_set].mode;
 }
 
 int TileSet::get_terrains_count(int p_terrain_set) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_terrain_set, terrain_sets.size(), -1);
 	return terrain_sets[p_terrain_set].terrains.size();
 }
 
 void TileSet::add_terrain(int p_terrain_set, int p_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_terrain_set, terrain_sets.size());
 	Vector<Terrain> &terrains = terrain_sets.write[p_terrain_set].terrains;
 	if (p_index < 0) {
@@ -787,6 +862,7 @@ void TileSet::add_terrain(int p_terrain_set, int p_index) {
 }
 
 void TileSet::move_terrain(int p_terrain_set, int p_from_index, int p_to_pos) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_terrain_set, terrain_sets.size());
 	Vector<Terrain> &terrains = terrain_sets.write[p_terrain_set].terrains;
 
@@ -803,6 +879,7 @@ void TileSet::move_terrain(int p_terrain_set, int p_from_index, int p_to_pos) {
 }
 
 void TileSet::remove_terrain(int p_terrain_set, int p_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_terrain_set, terrain_sets.size());
 	Vector<Terrain> &terrains = terrain_sets.write[p_terrain_set].terrains;
 
@@ -817,6 +894,7 @@ void TileSet::remove_terrain(int p_terrain_set, int p_index) {
 }
 
 void TileSet::set_terrain_name(int p_terrain_set, int p_terrain_index, String p_name) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_terrain_set, terrain_sets.size());
 	ERR_FAIL_INDEX(p_terrain_index, terrain_sets[p_terrain_set].terrains.size());
 	terrain_sets.write[p_terrain_set].terrains.write[p_terrain_index].name = p_name;
@@ -824,12 +902,14 @@ void TileSet::set_terrain_name(int p_terrain_set, int p_terrain_index, String p_
 }
 
 String TileSet::get_terrain_name(int p_terrain_set, int p_terrain_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_terrain_set, terrain_sets.size(), String());
 	ERR_FAIL_INDEX_V(p_terrain_index, terrain_sets[p_terrain_set].terrains.size(), String());
 	return terrain_sets[p_terrain_set].terrains[p_terrain_index].name;
 }
 
 void TileSet::set_terrain_color(int p_terrain_set, int p_terrain_index, Color p_color) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_terrain_set, terrain_sets.size());
 	ERR_FAIL_INDEX(p_terrain_index, terrain_sets[p_terrain_set].terrains.size());
 	if (p_color.a != 1.0) {
@@ -841,12 +921,14 @@ void TileSet::set_terrain_color(int p_terrain_set, int p_terrain_index, Color p_
 }
 
 Color TileSet::get_terrain_color(int p_terrain_set, int p_terrain_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_terrain_set, terrain_sets.size(), Color());
 	ERR_FAIL_INDEX_V(p_terrain_index, terrain_sets[p_terrain_set].terrains.size(), Color());
 	return terrain_sets[p_terrain_set].terrains[p_terrain_index].color;
 }
 
 bool TileSet::is_valid_terrain_peering_bit_for_mode(TileSet::TerrainMode p_terrain_mode, TileSet::CellNeighbor p_peering_bit) const {
+	ZoneScopedS(60);
 	if (tile_shape == TileSet::TILE_SHAPE_SQUARE) {
 		if (p_terrain_mode == TileSet::TERRAIN_MODE_MATCH_CORNERS_AND_SIDES || p_terrain_mode == TileSet::TERRAIN_MODE_MATCH_SIDES) {
 			if (p_peering_bit == TileSet::CELL_NEIGHBOR_RIGHT_SIDE ||
@@ -930,6 +1012,7 @@ bool TileSet::is_valid_terrain_peering_bit_for_mode(TileSet::TerrainMode p_terra
 }
 
 bool TileSet::is_valid_terrain_peering_bit(int p_terrain_set, TileSet::CellNeighbor p_peering_bit) const {
+	ZoneScopedS(60);
 	if (p_terrain_set < 0 || p_terrain_set >= get_terrain_sets_count()) {
 		return false;
 	}
@@ -940,10 +1023,12 @@ bool TileSet::is_valid_terrain_peering_bit(int p_terrain_set, TileSet::CellNeigh
 
 // Navigation
 int TileSet::get_navigation_layers_count() const {
+	ZoneScopedS(60);
 	return navigation_layers.size();
 }
 
 void TileSet::add_navigation_layer(int p_index) {
+	ZoneScopedS(60);
 	if (p_index < 0) {
 		p_index = navigation_layers.size();
 	}
@@ -959,6 +1044,7 @@ void TileSet::add_navigation_layer(int p_index) {
 }
 
 void TileSet::move_navigation_layer(int p_from_index, int p_to_pos) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_from_index, navigation_layers.size());
 	ERR_FAIL_INDEX(p_to_pos, navigation_layers.size() + 1);
 	navigation_layers.insert(p_to_pos, navigation_layers[p_from_index]);
@@ -971,6 +1057,7 @@ void TileSet::move_navigation_layer(int p_from_index, int p_to_pos) {
 }
 
 void TileSet::remove_navigation_layer(int p_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, navigation_layers.size());
 	navigation_layers.remove_at(p_index);
 	for (KeyValue<int, Ref<TileSetSource>> source : sources) {
@@ -981,22 +1068,26 @@ void TileSet::remove_navigation_layer(int p_index) {
 }
 
 void TileSet::set_navigation_layer_layers(int p_layer_index, uint32_t p_layers) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_layer_index, navigation_layers.size());
 	navigation_layers.write[p_layer_index].layers = p_layers;
 	emit_changed();
 }
 
 uint32_t TileSet::get_navigation_layer_layers(int p_layer_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_layer_index, navigation_layers.size(), 0);
 	return navigation_layers[p_layer_index].layers;
 }
 
 // Custom data.
 int TileSet::get_custom_data_layers_count() const {
+	ZoneScopedS(60);
 	return custom_data_layers.size();
 }
 
 void TileSet::add_custom_data_layer(int p_index) {
+	ZoneScopedS(60);
 	if (p_index < 0) {
 		p_index = custom_data_layers.size();
 	}
@@ -1012,6 +1103,7 @@ void TileSet::add_custom_data_layer(int p_index) {
 }
 
 void TileSet::move_custom_data_layer(int p_from_index, int p_to_pos) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_from_index, custom_data_layers.size());
 	ERR_FAIL_INDEX(p_to_pos, custom_data_layers.size() + 1);
 	custom_data_layers.insert(p_to_pos, custom_data_layers[p_from_index]);
@@ -1024,6 +1116,7 @@ void TileSet::move_custom_data_layer(int p_from_index, int p_to_pos) {
 }
 
 void TileSet::remove_custom_data_layer(int p_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, custom_data_layers.size());
 	custom_data_layers.remove_at(p_index);
 	for (KeyValue<String, int> E : custom_data_layers_by_name) {
@@ -1041,6 +1134,7 @@ void TileSet::remove_custom_data_layer(int p_index) {
 }
 
 int TileSet::get_custom_data_layer_by_name(String p_value) const {
+	ZoneScopedS(60);
 	if (custom_data_layers_by_name.has(p_value)) {
 		return custom_data_layers_by_name[p_value];
 	} else {
@@ -1049,6 +1143,7 @@ int TileSet::get_custom_data_layer_by_name(String p_value) const {
 }
 
 void TileSet::set_custom_data_layer_name(int p_layer_id, String p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_layer_id, custom_data_layers.size());
 
 	// Exit if another property has the same name.
@@ -1071,11 +1166,13 @@ void TileSet::set_custom_data_layer_name(int p_layer_id, String p_value) {
 }
 
 String TileSet::get_custom_data_layer_name(int p_layer_id) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_layer_id, custom_data_layers.size(), "");
 	return custom_data_layers[p_layer_id].name;
 }
 
 void TileSet::set_custom_data_layer_type(int p_layer_id, Variant::Type p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_layer_id, custom_data_layers.size());
 	custom_data_layers.write[p_layer_id].type = p_value;
 
@@ -1087,11 +1184,13 @@ void TileSet::set_custom_data_layer_type(int p_layer_id, Variant::Type p_value) 
 }
 
 Variant::Type TileSet::get_custom_data_layer_type(int p_layer_id) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_layer_id, custom_data_layers.size(), Variant::NIL);
 	return custom_data_layers[p_layer_id].type;
 }
 
 void TileSet::set_source_level_tile_proxy(int p_source_from, int p_source_to) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_source_from == TileSet::INVALID_SOURCE || p_source_to == TileSet::INVALID_SOURCE);
 
 	source_level_proxies[p_source_from] = p_source_to;
@@ -1100,16 +1199,19 @@ void TileSet::set_source_level_tile_proxy(int p_source_from, int p_source_to) {
 }
 
 int TileSet::get_source_level_tile_proxy(int p_source_from) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!source_level_proxies.has(p_source_from), TileSet::INVALID_SOURCE);
 
 	return source_level_proxies[p_source_from];
 }
 
 bool TileSet::has_source_level_tile_proxy(int p_source_from) {
+	ZoneScopedS(60);
 	return source_level_proxies.has(p_source_from);
 }
 
 void TileSet::remove_source_level_tile_proxy(int p_source_from) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!source_level_proxies.has(p_source_from));
 
 	source_level_proxies.erase(p_source_from);
@@ -1118,6 +1220,7 @@ void TileSet::remove_source_level_tile_proxy(int p_source_from) {
 }
 
 void TileSet::set_coords_level_tile_proxy(int p_source_from, Vector2i p_coords_from, int p_source_to, Vector2i p_coords_to) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_source_from == TileSet::INVALID_SOURCE || p_source_to == TileSet::INVALID_SOURCE);
 	ERR_FAIL_COND(p_coords_from == TileSetSource::INVALID_ATLAS_COORDS || p_coords_to == TileSetSource::INVALID_ATLAS_COORDS);
 
@@ -1135,6 +1238,7 @@ void TileSet::set_coords_level_tile_proxy(int p_source_from, Vector2i p_coords_f
 }
 
 Array TileSet::get_coords_level_tile_proxy(int p_source_from, Vector2i p_coords_from) {
+	ZoneScopedS(60);
 	Array from;
 	from.push_back(p_source_from);
 	from.push_back(p_coords_from);
@@ -1145,6 +1249,7 @@ Array TileSet::get_coords_level_tile_proxy(int p_source_from, Vector2i p_coords_
 }
 
 bool TileSet::has_coords_level_tile_proxy(int p_source_from, Vector2i p_coords_from) {
+	ZoneScopedS(60);
 	Array from;
 	from.push_back(p_source_from);
 	from.push_back(p_coords_from);
@@ -1153,6 +1258,7 @@ bool TileSet::has_coords_level_tile_proxy(int p_source_from, Vector2i p_coords_f
 }
 
 void TileSet::remove_coords_level_tile_proxy(int p_source_from, Vector2i p_coords_from) {
+	ZoneScopedS(60);
 	Array from;
 	from.push_back(p_source_from);
 	from.push_back(p_coords_from);
@@ -1165,6 +1271,7 @@ void TileSet::remove_coords_level_tile_proxy(int p_source_from, Vector2i p_coord
 }
 
 void TileSet::set_alternative_level_tile_proxy(int p_source_from, Vector2i p_coords_from, int p_alternative_from, int p_source_to, Vector2i p_coords_to, int p_alternative_to) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_source_from == TileSet::INVALID_SOURCE || p_source_to == TileSet::INVALID_SOURCE);
 	ERR_FAIL_COND(p_coords_from == TileSetSource::INVALID_ATLAS_COORDS || p_coords_to == TileSetSource::INVALID_ATLAS_COORDS);
 
@@ -1184,6 +1291,7 @@ void TileSet::set_alternative_level_tile_proxy(int p_source_from, Vector2i p_coo
 }
 
 Array TileSet::get_alternative_level_tile_proxy(int p_source_from, Vector2i p_coords_from, int p_alternative_from) {
+	ZoneScopedS(60);
 	Array from;
 	from.push_back(p_source_from);
 	from.push_back(p_coords_from);
@@ -1195,6 +1303,7 @@ Array TileSet::get_alternative_level_tile_proxy(int p_source_from, Vector2i p_co
 }
 
 bool TileSet::has_alternative_level_tile_proxy(int p_source_from, Vector2i p_coords_from, int p_alternative_from) {
+	ZoneScopedS(60);
 	Array from;
 	from.push_back(p_source_from);
 	from.push_back(p_coords_from);
@@ -1204,6 +1313,7 @@ bool TileSet::has_alternative_level_tile_proxy(int p_source_from, Vector2i p_coo
 }
 
 void TileSet::remove_alternative_level_tile_proxy(int p_source_from, Vector2i p_coords_from, int p_alternative_from) {
+	ZoneScopedS(60);
 	Array from;
 	from.push_back(p_source_from);
 	from.push_back(p_coords_from);
@@ -1217,6 +1327,7 @@ void TileSet::remove_alternative_level_tile_proxy(int p_source_from, Vector2i p_
 }
 
 Array TileSet::get_source_level_tile_proxies() const {
+	ZoneScopedS(60);
 	Array output;
 	for (const KeyValue<int, int> &E : source_level_proxies) {
 		Array proxy;
@@ -1228,6 +1339,7 @@ Array TileSet::get_source_level_tile_proxies() const {
 }
 
 Array TileSet::get_coords_level_tile_proxies() const {
+	ZoneScopedS(60);
 	Array output;
 	for (const KeyValue<Array, Array> &E : coords_level_proxies) {
 		Array proxy;
@@ -1239,6 +1351,7 @@ Array TileSet::get_coords_level_tile_proxies() const {
 }
 
 Array TileSet::get_alternative_level_tile_proxies() const {
+	ZoneScopedS(60);
 	Array output;
 	for (const KeyValue<Array, Array> &E : alternative_level_proxies) {
 		Array proxy;
@@ -1250,6 +1363,7 @@ Array TileSet::get_alternative_level_tile_proxies() const {
 }
 
 Array TileSet::map_tile_proxy(int p_source_from, Vector2i p_coords_from, int p_alternative_from) const {
+	ZoneScopedS(60);
 	Array from;
 	from.push_back(p_source_from);
 	from.push_back(p_coords_from);
@@ -1293,6 +1407,7 @@ Array TileSet::map_tile_proxy(int p_source_from, Vector2i p_coords_from, int p_a
 }
 
 void TileSet::cleanup_invalid_tile_proxies() {
+	ZoneScopedS(60);
 	// Source level.
 	Vector<int> source_to_remove;
 	for (const KeyValue<int, int> &E : source_level_proxies) {
@@ -1332,6 +1447,7 @@ void TileSet::cleanup_invalid_tile_proxies() {
 }
 
 void TileSet::clear_tile_proxies() {
+	ZoneScopedS(60);
 	source_level_proxies.clear();
 	coords_level_proxies.clear();
 	alternative_level_proxies.clear();
@@ -1340,6 +1456,7 @@ void TileSet::clear_tile_proxies() {
 }
 
 int TileSet::add_pattern(Ref<TileMapPattern> p_pattern, int p_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!p_pattern.is_valid(), -1);
 	ERR_FAIL_COND_V_MSG(p_pattern->is_empty(), -1, "Cannot add an empty pattern to the TileSet.");
 	for (unsigned int i = 0; i < patterns.size(); i++) {
@@ -1355,21 +1472,25 @@ int TileSet::add_pattern(Ref<TileMapPattern> p_pattern, int p_index) {
 }
 
 Ref<TileMapPattern> TileSet::get_pattern(int p_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_index, (int)patterns.size(), Ref<TileMapPattern>());
 	return patterns[p_index];
 }
 
 void TileSet::remove_pattern(int p_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, (int)patterns.size());
 	patterns.remove_at(p_index);
 	emit_changed();
 }
 
 int TileSet::get_patterns_count() {
+	ZoneScopedS(60);
 	return patterns.size();
 }
 
 RBSet<TileSet::TerrainsPattern> TileSet::get_terrains_pattern_set(int p_terrain_set) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_terrain_set, terrain_sets.size(), RBSet<TileSet::TerrainsPattern>());
 	_update_terrains_cache();
 
@@ -1381,12 +1502,14 @@ RBSet<TileSet::TerrainsPattern> TileSet::get_terrains_pattern_set(int p_terrain_
 }
 
 RBSet<TileMapCell> TileSet::get_tiles_for_terrains_pattern(int p_terrain_set, TerrainsPattern p_terrain_tile_pattern) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_terrain_set, terrain_sets.size(), RBSet<TileMapCell>());
 	_update_terrains_cache();
 	return per_terrain_pattern_tiles[p_terrain_set][p_terrain_tile_pattern];
 }
 
 TileMapCell TileSet::get_random_tile_from_terrains_pattern(int p_terrain_set, TileSet::TerrainsPattern p_terrain_tile_pattern) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_terrain_set, terrain_sets.size(), TileMapCell());
 	_update_terrains_cache();
 
@@ -1437,6 +1560,7 @@ TileMapCell TileSet::get_random_tile_from_terrains_pattern(int p_terrain_set, Ti
 }
 
 Vector<Vector2> TileSet::get_tile_shape_polygon() {
+	ZoneScopedS(60);
 	Vector<Vector2> points;
 	if (tile_shape == TileSet::TILE_SHAPE_SQUARE) {
 		points.append(Vector2(-0.5, -0.5));
@@ -1475,6 +1599,7 @@ Vector<Vector2> TileSet::get_tile_shape_polygon() {
 }
 
 void TileSet::draw_tile_shape(CanvasItem *p_canvas_item, Transform2D p_transform, Color p_color, bool p_filled, Ref<Texture2D> p_texture) {
+	ZoneScopedS(60);
 	if (tile_meshes_dirty) {
 		Vector<Vector2> shape = get_tile_shape_polygon();
 		Vector<Vector2> uvs;
@@ -1519,6 +1644,7 @@ void TileSet::draw_tile_shape(CanvasItem *p_canvas_item, Transform2D p_transform
 }
 
 Vector<Point2> TileSet::get_terrain_polygon(int p_terrain_set) {
+	ZoneScopedS(60);
 	if (tile_shape == TileSet::TILE_SHAPE_SQUARE) {
 		return _get_square_terrain_polygon(tile_size);
 	} else if (tile_shape == TileSet::TILE_SHAPE_ISOMETRIC) {
@@ -1540,6 +1666,7 @@ Vector<Point2> TileSet::get_terrain_polygon(int p_terrain_set) {
 }
 
 Vector<Point2> TileSet::get_terrain_peering_bit_polygon(int p_terrain_set, TileSet::CellNeighbor p_bit) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_terrain_set < 0 || p_terrain_set >= get_terrain_sets_count(), Vector<Point2>());
 
 	TileSet::TerrainMode terrain_mode = get_terrain_set_mode(p_terrain_set);
@@ -1585,6 +1712,7 @@ Vector<Point2> TileSet::get_terrain_peering_bit_polygon(int p_terrain_set, TileS
 #define TERRAIN_ALPHA 0.6
 
 void TileSet::draw_terrains(CanvasItem *p_canvas_item, Transform2D p_transform, const TileData *p_tile_data) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!p_tile_data);
 
 	if (terrain_bits_meshes_dirty) {
@@ -1724,6 +1852,7 @@ void TileSet::draw_terrains(CanvasItem *p_canvas_item, Transform2D p_transform, 
 }
 
 Vector<Vector<Ref<Texture2D>>> TileSet::generate_terrains_icons(Size2i p_size) {
+	ZoneScopedS(60);
 	// Counts the number of matching terrain tiles and find the best matching icon.
 	struct Count {
 		int count = 0;
@@ -1817,11 +1946,13 @@ Vector<Vector<Ref<Texture2D>>> TileSet::generate_terrains_icons(Size2i p_size) {
 }
 
 void TileSet::_source_changed() {
+	ZoneScopedS(60);
 	terrains_cache_dirty = true;
 	emit_changed();
 }
 
 Vector<Point2> TileSet::_get_square_terrain_polygon(Vector2i p_size) {
+	ZoneScopedS(60);
 	Rect2 rect(-Vector2(p_size) / 6.0, Vector2(p_size) / 3.0);
 	return {
 		rect.position,
@@ -1832,6 +1963,7 @@ Vector<Point2> TileSet::_get_square_terrain_polygon(Vector2i p_size) {
 }
 
 Vector<Point2> TileSet::_get_square_corner_or_side_terrain_peering_bit_polygon(Vector2i p_size, TileSet::CellNeighbor p_bit) {
+	ZoneScopedS(60);
 	Rect2 bit_rect;
 	bit_rect.size = Vector2(p_size) / 3;
 	switch (p_bit) {
@@ -1875,6 +2007,7 @@ Vector<Point2> TileSet::_get_square_corner_or_side_terrain_peering_bit_polygon(V
 }
 
 Vector<Point2> TileSet::_get_square_corner_terrain_peering_bit_polygon(Vector2i p_size, TileSet::CellNeighbor p_bit) {
+	ZoneScopedS(60);
 	Vector2 unit = Vector2(p_size) / 6.0;
 	Vector<Vector2> polygon;
 	switch (p_bit) {
@@ -1917,6 +2050,7 @@ Vector<Point2> TileSet::_get_square_corner_terrain_peering_bit_polygon(Vector2i 
 }
 
 Vector<Point2> TileSet::_get_square_side_terrain_peering_bit_polygon(Vector2i p_size, TileSet::CellNeighbor p_bit) {
+	ZoneScopedS(60);
 	Vector2 unit = Vector2(p_size) / 6.0;
 	Vector<Vector2> polygon;
 	switch (p_bit) {
@@ -1951,6 +2085,7 @@ Vector<Point2> TileSet::_get_square_side_terrain_peering_bit_polygon(Vector2i p_
 }
 
 Vector<Point2> TileSet::_get_isometric_terrain_polygon(Vector2i p_size) {
+	ZoneScopedS(60);
 	Vector2 unit = Vector2(p_size) / 6.0;
 	return {
 		Vector2(1, 0) * unit,
@@ -1961,6 +2096,7 @@ Vector<Point2> TileSet::_get_isometric_terrain_polygon(Vector2i p_size) {
 }
 
 Vector<Point2> TileSet::_get_isometric_corner_or_side_terrain_peering_bit_polygon(Vector2i p_size, TileSet::CellNeighbor p_bit) {
+	ZoneScopedS(60);
 	Vector2 unit = Vector2(p_size) / 6.0;
 	Vector<Vector2> polygon;
 	switch (p_bit) {
@@ -2019,6 +2155,7 @@ Vector<Point2> TileSet::_get_isometric_corner_or_side_terrain_peering_bit_polygo
 }
 
 Vector<Point2> TileSet::_get_isometric_corner_terrain_peering_bit_polygon(Vector2i p_size, TileSet::CellNeighbor p_bit) {
+	ZoneScopedS(60);
 	Vector2 unit = Vector2(p_size) / 6.0;
 	Vector<Vector2> polygon;
 	switch (p_bit) {
@@ -2061,6 +2198,7 @@ Vector<Point2> TileSet::_get_isometric_corner_terrain_peering_bit_polygon(Vector
 }
 
 Vector<Point2> TileSet::_get_isometric_side_terrain_peering_bit_polygon(Vector2i p_size, TileSet::CellNeighbor p_bit) {
+	ZoneScopedS(60);
 	Vector2 unit = Vector2(p_size) / 6.0;
 	Vector<Vector2> polygon;
 	switch (p_bit) {
@@ -2095,6 +2233,7 @@ Vector<Point2> TileSet::_get_isometric_side_terrain_peering_bit_polygon(Vector2i
 }
 
 Vector<Point2> TileSet::_get_half_offset_terrain_polygon(Vector2i p_size, float p_overlap, TileSet::TileOffsetAxis p_offset_axis) {
+	ZoneScopedS(60);
 	Vector2 unit = Vector2(p_size) / 6.0;
 	if (p_offset_axis == TileSet::TILE_OFFSET_AXIS_HORIZONTAL) {
 		return {
@@ -2118,6 +2257,7 @@ Vector<Point2> TileSet::_get_half_offset_terrain_polygon(Vector2i p_size, float 
 }
 
 Vector<Point2> TileSet::_get_half_offset_corner_or_side_terrain_peering_bit_polygon(Vector2i p_size, float p_overlap, TileSet::TileOffsetAxis p_offset_axis, TileSet::CellNeighbor p_bit) {
+	ZoneScopedS(60);
 	Vector<Vector2> point_list = {
 		Vector2(3, (3.0 * (1.0 - p_overlap * 2.0)) / 2.0),
 		Vector2(3, 3.0 * (1.0 - p_overlap * 2.0)),
@@ -2276,6 +2416,7 @@ Vector<Point2> TileSet::_get_half_offset_corner_or_side_terrain_peering_bit_poly
 }
 
 Vector<Point2> TileSet::_get_half_offset_corner_terrain_peering_bit_polygon(Vector2i p_size, float p_overlap, TileSet::TileOffsetAxis p_offset_axis, TileSet::CellNeighbor p_bit) {
+	ZoneScopedS(60);
 	Vector<Vector2> point_list = {
 		Vector2(3, 0),
 		Vector2(3, 3.0 * (1.0 - p_overlap * 2.0)),
@@ -2380,6 +2521,7 @@ Vector<Point2> TileSet::_get_half_offset_corner_terrain_peering_bit_polygon(Vect
 }
 
 Vector<Point2> TileSet::_get_half_offset_side_terrain_peering_bit_polygon(Vector2i p_size, float p_overlap, TileSet::TileOffsetAxis p_offset_axis, TileSet::CellNeighbor p_bit) {
+	ZoneScopedS(60);
 	Vector<Vector2> point_list = {
 		Vector2(3, 3.0 * (1.0 - p_overlap * 2.0)),
 		Vector2(0, 3),
@@ -2466,6 +2608,7 @@ Vector<Point2> TileSet::_get_half_offset_side_terrain_peering_bit_polygon(Vector
 }
 
 void TileSet::reset_state() {
+	ZoneScopedS(60);
 	// Rendering
 	occlusion_layers.clear();
 	tile_lines_mesh.instantiate();
@@ -2509,6 +2652,7 @@ const int TileSetSource::INVALID_TILE_ALTERNATIVE = -1;
 
 #ifndef DISABLE_DEPRECATED
 void TileSet::_compatibility_conversion() {
+	ZoneScopedS(60);
 	for (KeyValue<int, CompatibilityTileData *> &E : compatibility_data) {
 		CompatibilityTileData *ctd = E.value;
 
@@ -2733,6 +2877,7 @@ void TileSet::_compatibility_conversion() {
 }
 
 Array TileSet::compatibility_tilemap_map(int p_tile_id, Vector2i p_coords, bool p_flip_h, bool p_flip_v, bool p_transpose) {
+	ZoneScopedS(60);
 	Array cannot_convert_array;
 	cannot_convert_array.push_back(TileSet::INVALID_SOURCE);
 	cannot_convert_array.push_back(TileSetAtlasSource::INVALID_ATLAS_COORDS);
@@ -2771,6 +2916,7 @@ Array TileSet::compatibility_tilemap_map(int p_tile_id, Vector2i p_coords, bool 
 #endif // DISABLE_DEPRECATED
 
 bool TileSet::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	Vector<String> components = String(p_name).split("/", true, 2);
 
 #ifndef DISABLE_DEPRECATED
@@ -3094,6 +3240,7 @@ bool TileSet::_set(const StringName &p_name, const Variant &p_value) {
 }
 
 bool TileSet::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	Vector<String> components = String(p_name).split("/", true, 2);
 
 	if (components.size() == 2 && components[0].begins_with("occlusion_layer_") && components[0].trim_prefix("occlusion_layer_").is_valid_int()) {
@@ -3220,6 +3367,7 @@ bool TileSet::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void TileSet::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	PropertyInfo property_info;
 	// Rendering.
 	p_list->push_back(PropertyInfo(Variant::NIL, "Rendering", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_GROUP));
@@ -3302,6 +3450,7 @@ void TileSet::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 void TileSet::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (p_property.name == "tile_layout" && tile_shape == TILE_SHAPE_SQUARE) {
 		p_property.usage ^= PROPERTY_USAGE_READ_ONLY;
 	} else if (p_property.name == "tile_offset_axis" && tile_shape == TILE_SHAPE_SQUARE) {
@@ -3310,6 +3459,7 @@ void TileSet::_validate_property(PropertyInfo &p_property) const {
 }
 
 void TileSet::_bind_methods() {
+	ZoneScopedS(60);
 	// Sources management.
 	ClassDB::bind_method(D_METHOD("get_next_source_id"), &TileSet::get_next_source_id);
 	ClassDB::bind_method(D_METHOD("add_source", "source", "atlas_source_id_override"), &TileSet::add_source, DEFVAL(TileSet::INVALID_SOURCE));
@@ -3472,6 +3622,7 @@ void TileSet::_bind_methods() {
 }
 
 TileSet::TileSet() {
+	ZoneScopedS(60);
 	// Instantiate the tile meshes.
 	tile_lines_mesh.instantiate();
 	tile_filled_mesh.instantiate();
@@ -3491,14 +3642,17 @@ TileSet::~TileSet() {
 /////////////////////////////// TileSetSource //////////////////////////////////////
 
 void TileSetSource::set_tile_set(const TileSet *p_tile_set) {
+	ZoneScopedS(60);
 	tile_set = p_tile_set;
 }
 
 void TileSetSource::reset_state() {
+	ZoneScopedS(60);
 	tile_set = nullptr;
 };
 
 void TileSetSource::_bind_methods() {
+	ZoneScopedS(60);
 	// Base tiles
 	ClassDB::bind_method(D_METHOD("get_tiles_count"), &TileSetSource::get_tiles_count);
 	ClassDB::bind_method(D_METHOD("get_tile_id", "index"), &TileSetSource::get_tile_id);
@@ -3513,6 +3667,7 @@ void TileSetSource::_bind_methods() {
 /////////////////////////////// TileSetAtlasSource //////////////////////////////////////
 
 void TileSetAtlasSource::set_tile_set(const TileSet *p_tile_set) {
+	ZoneScopedS(60);
 	tile_set = p_tile_set;
 
 	// Set the TileSet on all TileData.
@@ -3524,10 +3679,12 @@ void TileSetAtlasSource::set_tile_set(const TileSet *p_tile_set) {
 }
 
 const TileSet *TileSetAtlasSource::get_tile_set() const {
+	ZoneScopedS(60);
 	return tile_set;
 }
 
 void TileSetAtlasSource::notify_tile_data_properties_should_change() {
+	ZoneScopedS(60);
 	// Set the TileSet on all TileData.
 	for (KeyValue<Vector2i, TileAlternativesData> &E_tile : tiles) {
 		for (KeyValue<int, TileData *> &E_alternative : E_tile.value.alternatives) {
@@ -3537,6 +3694,7 @@ void TileSetAtlasSource::notify_tile_data_properties_should_change() {
 }
 
 void TileSetAtlasSource::add_occlusion_layer(int p_to_pos) {
+	ZoneScopedS(60);
 	for (KeyValue<Vector2i, TileAlternativesData> E_tile : tiles) {
 		for (KeyValue<int, TileData *> E_alternative : E_tile.value.alternatives) {
 			E_alternative.value->add_occlusion_layer(p_to_pos);
@@ -3545,6 +3703,7 @@ void TileSetAtlasSource::add_occlusion_layer(int p_to_pos) {
 }
 
 void TileSetAtlasSource::move_occlusion_layer(int p_from_index, int p_to_pos) {
+	ZoneScopedS(60);
 	for (KeyValue<Vector2i, TileAlternativesData> E_tile : tiles) {
 		for (KeyValue<int, TileData *> E_alternative : E_tile.value.alternatives) {
 			E_alternative.value->move_occlusion_layer(p_from_index, p_to_pos);
@@ -3553,6 +3712,7 @@ void TileSetAtlasSource::move_occlusion_layer(int p_from_index, int p_to_pos) {
 }
 
 void TileSetAtlasSource::remove_occlusion_layer(int p_index) {
+	ZoneScopedS(60);
 	for (KeyValue<Vector2i, TileAlternativesData> E_tile : tiles) {
 		for (KeyValue<int, TileData *> E_alternative : E_tile.value.alternatives) {
 			E_alternative.value->remove_occlusion_layer(p_index);
@@ -3561,6 +3721,7 @@ void TileSetAtlasSource::remove_occlusion_layer(int p_index) {
 }
 
 void TileSetAtlasSource::add_physics_layer(int p_to_pos) {
+	ZoneScopedS(60);
 	for (KeyValue<Vector2i, TileAlternativesData> E_tile : tiles) {
 		for (KeyValue<int, TileData *> E_alternative : E_tile.value.alternatives) {
 			E_alternative.value->add_physics_layer(p_to_pos);
@@ -3569,6 +3730,7 @@ void TileSetAtlasSource::add_physics_layer(int p_to_pos) {
 }
 
 void TileSetAtlasSource::move_physics_layer(int p_from_index, int p_to_pos) {
+	ZoneScopedS(60);
 	for (KeyValue<Vector2i, TileAlternativesData> E_tile : tiles) {
 		for (KeyValue<int, TileData *> E_alternative : E_tile.value.alternatives) {
 			E_alternative.value->move_physics_layer(p_from_index, p_to_pos);
@@ -3577,6 +3739,7 @@ void TileSetAtlasSource::move_physics_layer(int p_from_index, int p_to_pos) {
 }
 
 void TileSetAtlasSource::remove_physics_layer(int p_index) {
+	ZoneScopedS(60);
 	for (KeyValue<Vector2i, TileAlternativesData> E_tile : tiles) {
 		for (KeyValue<int, TileData *> E_alternative : E_tile.value.alternatives) {
 			E_alternative.value->remove_physics_layer(p_index);
@@ -3585,6 +3748,7 @@ void TileSetAtlasSource::remove_physics_layer(int p_index) {
 }
 
 void TileSetAtlasSource::add_terrain_set(int p_to_pos) {
+	ZoneScopedS(60);
 	for (KeyValue<Vector2i, TileAlternativesData> E_tile : tiles) {
 		for (KeyValue<int, TileData *> E_alternative : E_tile.value.alternatives) {
 			E_alternative.value->add_terrain_set(p_to_pos);
@@ -3593,6 +3757,7 @@ void TileSetAtlasSource::add_terrain_set(int p_to_pos) {
 }
 
 void TileSetAtlasSource::move_terrain_set(int p_from_index, int p_to_pos) {
+	ZoneScopedS(60);
 	for (KeyValue<Vector2i, TileAlternativesData> E_tile : tiles) {
 		for (KeyValue<int, TileData *> E_alternative : E_tile.value.alternatives) {
 			E_alternative.value->move_terrain_set(p_from_index, p_to_pos);
@@ -3601,6 +3766,7 @@ void TileSetAtlasSource::move_terrain_set(int p_from_index, int p_to_pos) {
 }
 
 void TileSetAtlasSource::remove_terrain_set(int p_index) {
+	ZoneScopedS(60);
 	for (KeyValue<Vector2i, TileAlternativesData> E_tile : tiles) {
 		for (KeyValue<int, TileData *> E_alternative : E_tile.value.alternatives) {
 			E_alternative.value->remove_terrain_set(p_index);
@@ -3609,6 +3775,7 @@ void TileSetAtlasSource::remove_terrain_set(int p_index) {
 }
 
 void TileSetAtlasSource::add_terrain(int p_terrain_set, int p_to_pos) {
+	ZoneScopedS(60);
 	for (KeyValue<Vector2i, TileAlternativesData> E_tile : tiles) {
 		for (KeyValue<int, TileData *> E_alternative : E_tile.value.alternatives) {
 			E_alternative.value->add_terrain(p_terrain_set, p_to_pos);
@@ -3617,6 +3784,7 @@ void TileSetAtlasSource::add_terrain(int p_terrain_set, int p_to_pos) {
 }
 
 void TileSetAtlasSource::move_terrain(int p_terrain_set, int p_from_index, int p_to_pos) {
+	ZoneScopedS(60);
 	for (KeyValue<Vector2i, TileAlternativesData> E_tile : tiles) {
 		for (KeyValue<int, TileData *> E_alternative : E_tile.value.alternatives) {
 			E_alternative.value->move_terrain(p_terrain_set, p_from_index, p_to_pos);
@@ -3625,6 +3793,7 @@ void TileSetAtlasSource::move_terrain(int p_terrain_set, int p_from_index, int p
 }
 
 void TileSetAtlasSource::remove_terrain(int p_terrain_set, int p_index) {
+	ZoneScopedS(60);
 	for (KeyValue<Vector2i, TileAlternativesData> E_tile : tiles) {
 		for (KeyValue<int, TileData *> E_alternative : E_tile.value.alternatives) {
 			E_alternative.value->remove_terrain(p_terrain_set, p_index);
@@ -3633,6 +3802,7 @@ void TileSetAtlasSource::remove_terrain(int p_terrain_set, int p_index) {
 }
 
 void TileSetAtlasSource::add_navigation_layer(int p_to_pos) {
+	ZoneScopedS(60);
 	for (KeyValue<Vector2i, TileAlternativesData> E_tile : tiles) {
 		for (KeyValue<int, TileData *> E_alternative : E_tile.value.alternatives) {
 			E_alternative.value->add_navigation_layer(p_to_pos);
@@ -3641,6 +3811,7 @@ void TileSetAtlasSource::add_navigation_layer(int p_to_pos) {
 }
 
 void TileSetAtlasSource::move_navigation_layer(int p_from_index, int p_to_pos) {
+	ZoneScopedS(60);
 	for (KeyValue<Vector2i, TileAlternativesData> E_tile : tiles) {
 		for (KeyValue<int, TileData *> E_alternative : E_tile.value.alternatives) {
 			E_alternative.value->move_navigation_layer(p_from_index, p_to_pos);
@@ -3649,6 +3820,7 @@ void TileSetAtlasSource::move_navigation_layer(int p_from_index, int p_to_pos) {
 }
 
 void TileSetAtlasSource::remove_navigation_layer(int p_index) {
+	ZoneScopedS(60);
 	for (KeyValue<Vector2i, TileAlternativesData> E_tile : tiles) {
 		for (KeyValue<int, TileData *> E_alternative : E_tile.value.alternatives) {
 			E_alternative.value->remove_navigation_layer(p_index);
@@ -3657,6 +3829,7 @@ void TileSetAtlasSource::remove_navigation_layer(int p_index) {
 }
 
 void TileSetAtlasSource::add_custom_data_layer(int p_to_pos) {
+	ZoneScopedS(60);
 	for (KeyValue<Vector2i, TileAlternativesData> E_tile : tiles) {
 		for (KeyValue<int, TileData *> E_alternative : E_tile.value.alternatives) {
 			E_alternative.value->add_custom_data_layer(p_to_pos);
@@ -3665,6 +3838,7 @@ void TileSetAtlasSource::add_custom_data_layer(int p_to_pos) {
 }
 
 void TileSetAtlasSource::move_custom_data_layer(int p_from_index, int p_to_pos) {
+	ZoneScopedS(60);
 	for (KeyValue<Vector2i, TileAlternativesData> E_tile : tiles) {
 		for (KeyValue<int, TileData *> E_alternative : E_tile.value.alternatives) {
 			E_alternative.value->move_custom_data_layer(p_from_index, p_to_pos);
@@ -3673,6 +3847,7 @@ void TileSetAtlasSource::move_custom_data_layer(int p_from_index, int p_to_pos) 
 }
 
 void TileSetAtlasSource::remove_custom_data_layer(int p_index) {
+	ZoneScopedS(60);
 	for (KeyValue<Vector2i, TileAlternativesData> E_tile : tiles) {
 		for (KeyValue<int, TileData *> E_alternative : E_tile.value.alternatives) {
 			E_alternative.value->remove_custom_data_layer(p_index);
@@ -3681,6 +3856,7 @@ void TileSetAtlasSource::remove_custom_data_layer(int p_index) {
 }
 
 void TileSetAtlasSource::reset_state() {
+	ZoneScopedS(60);
 	tile_set = nullptr;
 
 	for (KeyValue<Vector2i, TileAlternativesData> &E_tile : tiles) {
@@ -3695,6 +3871,7 @@ void TileSetAtlasSource::reset_state() {
 }
 
 void TileSetAtlasSource::set_texture(Ref<Texture2D> p_texture) {
+	ZoneScopedS(60);
 	if (texture.is_valid()) {
 		texture->disconnect(SNAME("changed"), callable_mp(this, &TileSetAtlasSource::_queue_update_padded_texture));
 	}
@@ -3711,10 +3888,12 @@ void TileSetAtlasSource::set_texture(Ref<Texture2D> p_texture) {
 }
 
 Ref<Texture2D> TileSetAtlasSource::get_texture() const {
+	ZoneScopedS(60);
 	return texture;
 }
 
 void TileSetAtlasSource::set_margins(Vector2i p_margins) {
+	ZoneScopedS(60);
 	if (p_margins.x < 0 || p_margins.y < 0) {
 		WARN_PRINT("Atlas source margins should be positive.");
 		margins = Vector2i(MAX(0, p_margins.x), MAX(0, p_margins.y));
@@ -3728,10 +3907,12 @@ void TileSetAtlasSource::set_margins(Vector2i p_margins) {
 }
 
 Vector2i TileSetAtlasSource::get_margins() const {
+	ZoneScopedS(60);
 	return margins;
 }
 
 void TileSetAtlasSource::set_separation(Vector2i p_separation) {
+	ZoneScopedS(60);
 	if (p_separation.x < 0 || p_separation.y < 0) {
 		WARN_PRINT("Atlas source separation should be positive.");
 		separation = Vector2i(MAX(0, p_separation.x), MAX(0, p_separation.y));
@@ -3745,10 +3926,12 @@ void TileSetAtlasSource::set_separation(Vector2i p_separation) {
 }
 
 Vector2i TileSetAtlasSource::get_separation() const {
+	ZoneScopedS(60);
 	return separation;
 }
 
 void TileSetAtlasSource::set_texture_region_size(Vector2i p_tile_size) {
+	ZoneScopedS(60);
 	if (p_tile_size.x <= 0 || p_tile_size.y <= 0) {
 		WARN_PRINT("Atlas source tile_size should be strictly positive.");
 		texture_region_size = Vector2i(MAX(1, p_tile_size.x), MAX(1, p_tile_size.y));
@@ -3762,10 +3945,12 @@ void TileSetAtlasSource::set_texture_region_size(Vector2i p_tile_size) {
 }
 
 Vector2i TileSetAtlasSource::get_texture_region_size() const {
+	ZoneScopedS(60);
 	return texture_region_size;
 }
 
 void TileSetAtlasSource::set_use_texture_padding(bool p_use_padding) {
+	ZoneScopedS(60);
 	if (use_texture_padding == p_use_padding) {
 		return;
 	}
@@ -3775,10 +3960,12 @@ void TileSetAtlasSource::set_use_texture_padding(bool p_use_padding) {
 }
 
 bool TileSetAtlasSource::get_use_texture_padding() const {
+	ZoneScopedS(60);
 	return use_texture_padding;
 }
 
 Vector2i TileSetAtlasSource::get_atlas_grid_size() const {
+	ZoneScopedS(60);
 	Ref<Texture2D> txt = get_texture();
 	if (!txt.is_valid()) {
 		return Vector2i();
@@ -3798,6 +3985,7 @@ Vector2i TileSetAtlasSource::get_atlas_grid_size() const {
 }
 
 bool TileSetAtlasSource::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	Vector<String> components = String(p_name).split("/", true, 2);
 
 	// Compute the vector2i if we have coordinates.
@@ -3873,6 +4061,7 @@ bool TileSetAtlasSource::_set(const StringName &p_name, const Variant &p_value) 
 }
 
 bool TileSetAtlasSource::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	Vector<String> components = String(p_name).split("/", true, 2);
 
 	// Properties.
@@ -3932,6 +4121,7 @@ bool TileSetAtlasSource::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void TileSetAtlasSource::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	// Atlases data.
 	PropertyInfo property_info;
 	for (const KeyValue<Vector2i, TileAlternativesData> &E_tile : tiles) {
@@ -4012,6 +4202,7 @@ void TileSetAtlasSource::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 void TileSetAtlasSource::create_tile(const Vector2i p_atlas_coords, const Vector2i p_size) {
+	ZoneScopedS(60);
 	// Create a tile if it does not exists.
 	ERR_FAIL_COND(p_atlas_coords.x < 0 || p_atlas_coords.y < 0);
 	ERR_FAIL_COND(p_size.x <= 0 || p_size.y <= 0);
@@ -4042,6 +4233,7 @@ void TileSetAtlasSource::create_tile(const Vector2i p_atlas_coords, const Vector
 }
 
 void TileSetAtlasSource::remove_tile(Vector2i p_atlas_coords) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!tiles.has(p_atlas_coords), vformat("TileSetAtlasSource has no tile at %s.", String(p_atlas_coords)));
 
 	// Remove all covered positions from the mapping cache
@@ -4063,10 +4255,12 @@ void TileSetAtlasSource::remove_tile(Vector2i p_atlas_coords) {
 }
 
 bool TileSetAtlasSource::has_tile(Vector2i p_atlas_coords) const {
+	ZoneScopedS(60);
 	return tiles.has(p_atlas_coords);
 }
 
 Vector2i TileSetAtlasSource::get_tile_at_coords(Vector2i p_atlas_coords) const {
+	ZoneScopedS(60);
 	if (!_coords_mapping_cache.has(p_atlas_coords)) {
 		return INVALID_ATLAS_COORDS;
 	}
@@ -4075,6 +4269,7 @@ Vector2i TileSetAtlasSource::get_tile_at_coords(Vector2i p_atlas_coords) const {
 }
 
 void TileSetAtlasSource::set_tile_animation_columns(const Vector2i p_atlas_coords, int p_frame_columns) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!tiles.has(p_atlas_coords), vformat("TileSetAtlasSource has no tile at %s.", Vector2i(p_atlas_coords)));
 	ERR_FAIL_COND(p_frame_columns < 0);
 
@@ -4093,11 +4288,13 @@ void TileSetAtlasSource::set_tile_animation_columns(const Vector2i p_atlas_coord
 }
 
 int TileSetAtlasSource::get_tile_animation_columns(const Vector2i p_atlas_coords) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!tiles.has(p_atlas_coords), 1, vformat("TileSetAtlasSource has no tile at %s.", Vector2i(p_atlas_coords)));
 	return tiles[p_atlas_coords].animation_columns;
 }
 
 void TileSetAtlasSource::set_tile_animation_separation(const Vector2i p_atlas_coords, const Vector2i p_separation) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!tiles.has(p_atlas_coords), vformat("TileSetAtlasSource has no tile at %s.", Vector2i(p_atlas_coords)));
 	ERR_FAIL_COND(p_separation.x < 0 || p_separation.y < 0);
 
@@ -4116,11 +4313,13 @@ void TileSetAtlasSource::set_tile_animation_separation(const Vector2i p_atlas_co
 }
 
 Vector2i TileSetAtlasSource::get_tile_animation_separation(const Vector2i p_atlas_coords) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!tiles.has(p_atlas_coords), Vector2i(), vformat("TileSetAtlasSource has no tile at %s.", Vector2i(p_atlas_coords)));
 	return tiles[p_atlas_coords].animation_separation;
 }
 
 void TileSetAtlasSource::set_tile_animation_speed(const Vector2i p_atlas_coords, real_t p_speed) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!tiles.has(p_atlas_coords), vformat("TileSetAtlasSource has no tile at %s.", Vector2i(p_atlas_coords)));
 	ERR_FAIL_COND(p_speed <= 0);
 
@@ -4130,11 +4329,13 @@ void TileSetAtlasSource::set_tile_animation_speed(const Vector2i p_atlas_coords,
 }
 
 real_t TileSetAtlasSource::get_tile_animation_speed(const Vector2i p_atlas_coords) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!tiles.has(p_atlas_coords), 1.0, vformat("TileSetAtlasSource has no tile at %s.", Vector2i(p_atlas_coords)));
 	return tiles[p_atlas_coords].animation_speed;
 }
 
 void TileSetAtlasSource::set_tile_animation_frames_count(const Vector2i p_atlas_coords, int p_frames_count) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!tiles.has(p_atlas_coords), vformat("TileSetAtlasSource has no tile at %s.", Vector2i(p_atlas_coords)));
 	ERR_FAIL_COND(p_frames_count < 1);
 
@@ -4163,11 +4364,13 @@ void TileSetAtlasSource::set_tile_animation_frames_count(const Vector2i p_atlas_
 }
 
 int TileSetAtlasSource::get_tile_animation_frames_count(const Vector2i p_atlas_coords) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!tiles.has(p_atlas_coords), 1, vformat("TileSetAtlasSource has no tile at %s.", Vector2i(p_atlas_coords)));
 	return tiles[p_atlas_coords].animation_frames_durations.size();
 }
 
 void TileSetAtlasSource::set_tile_animation_frame_duration(const Vector2i p_atlas_coords, int p_frame_index, real_t p_duration) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!tiles.has(p_atlas_coords), vformat("TileSetAtlasSource has no tile at %s.", Vector2i(p_atlas_coords)));
 	ERR_FAIL_INDEX(p_frame_index, (int)tiles[p_atlas_coords].animation_frames_durations.size());
 	ERR_FAIL_COND(p_duration <= 0.0);
@@ -4178,12 +4381,14 @@ void TileSetAtlasSource::set_tile_animation_frame_duration(const Vector2i p_atla
 }
 
 real_t TileSetAtlasSource::get_tile_animation_frame_duration(const Vector2i p_atlas_coords, int p_frame_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!tiles.has(p_atlas_coords), 1, vformat("TileSetAtlasSource has no tile at %s.", Vector2i(p_atlas_coords)));
 	ERR_FAIL_INDEX_V(p_frame_index, (int)tiles[p_atlas_coords].animation_frames_durations.size(), 0.0);
 	return tiles[p_atlas_coords].animation_frames_durations[p_frame_index];
 }
 
 real_t TileSetAtlasSource::get_tile_animation_total_duration(const Vector2i p_atlas_coords) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!tiles.has(p_atlas_coords), 1, vformat("TileSetAtlasSource has no tile at %s.", Vector2i(p_atlas_coords)));
 
 	real_t sum = 0.0;
@@ -4194,21 +4399,25 @@ real_t TileSetAtlasSource::get_tile_animation_total_duration(const Vector2i p_at
 }
 
 Vector2i TileSetAtlasSource::get_tile_size_in_atlas(Vector2i p_atlas_coords) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!tiles.has(p_atlas_coords), Vector2i(-1, -1), vformat("TileSetAtlasSource has no tile at %s.", String(p_atlas_coords)));
 
 	return tiles[p_atlas_coords].size_in_atlas;
 }
 
 int TileSetAtlasSource::get_tiles_count() const {
+	ZoneScopedS(60);
 	return tiles_ids.size();
 }
 
 Vector2i TileSetAtlasSource::get_tile_id(int p_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_index, tiles_ids.size(), TileSetSource::INVALID_ATLAS_COORDS);
 	return tiles_ids[p_index];
 }
 
 bool TileSetAtlasSource::has_room_for_tile(Vector2i p_atlas_coords, Vector2i p_size, int p_animation_columns, Vector2i p_animation_separation, int p_frames_count, Vector2i p_ignored_tile) const {
+	ZoneScopedS(60);
 	if (p_atlas_coords.x < 0 || p_atlas_coords.y < 0) {
 		return false;
 	}
@@ -4234,6 +4443,7 @@ bool TileSetAtlasSource::has_room_for_tile(Vector2i p_atlas_coords, Vector2i p_s
 }
 
 PackedVector2Array TileSetAtlasSource::get_tiles_to_be_removed_on_change(Ref<Texture2D> p_texture, Vector2i p_margins, Vector2i p_separation, Vector2i p_texture_region_size) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_margins.x < 0 || p_margins.y < 0, PackedVector2Array());
 	ERR_FAIL_COND_V(p_separation.x < 0 || p_separation.y < 0, PackedVector2Array());
 	ERR_FAIL_COND_V(p_texture_region_size.x <= 0 || p_texture_region_size.y <= 0, PackedVector2Array());
@@ -4265,6 +4475,7 @@ PackedVector2Array TileSetAtlasSource::get_tiles_to_be_removed_on_change(Ref<Tex
 }
 
 Rect2i TileSetAtlasSource::get_tile_texture_region(Vector2i p_atlas_coords, int p_frame) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!tiles.has(p_atlas_coords), Rect2i(), vformat("TileSetAtlasSource has no tile at %s.", String(p_atlas_coords)));
 	ERR_FAIL_INDEX_V(p_frame, (int)tiles[p_atlas_coords].animation_frames_durations.size(), Rect2i());
 
@@ -4280,6 +4491,7 @@ Rect2i TileSetAtlasSource::get_tile_texture_region(Vector2i p_atlas_coords, int 
 }
 
 Vector2i TileSetAtlasSource::get_tile_effective_texture_offset(Vector2i p_atlas_coords, int p_alternative_tile) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!tiles.has(p_atlas_coords), Vector2i(), vformat("TileSetAtlasSource has no tile at %s.", Vector2i(p_atlas_coords)));
 	ERR_FAIL_COND_V_MSG(!has_alternative_tile(p_atlas_coords, p_alternative_tile), Vector2i(), vformat("TileSetAtlasSource has no alternative tile with id %d at %s.", p_alternative_tile, String(p_atlas_coords)));
 	ERR_FAIL_COND_V(!tile_set, Vector2i());
@@ -4296,6 +4508,7 @@ Vector2i TileSetAtlasSource::get_tile_effective_texture_offset(Vector2i p_atlas_
 
 // Getters for texture and tile region (padded or not)
 Ref<Texture2D> TileSetAtlasSource::get_runtime_texture() const {
+	ZoneScopedS(60);
 	if (use_texture_padding) {
 		return padded_texture;
 	} else {
@@ -4304,6 +4517,7 @@ Ref<Texture2D> TileSetAtlasSource::get_runtime_texture() const {
 }
 
 Rect2i TileSetAtlasSource::get_runtime_tile_texture_region(Vector2i p_atlas_coords, int p_frame) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!tiles.has(p_atlas_coords), Rect2i(), vformat("TileSetAtlasSource has no tile at %s.", String(p_atlas_coords)));
 	ERR_FAIL_INDEX_V(p_frame, (int)tiles[p_atlas_coords].animation_frames_durations.size(), Rect2i());
 
@@ -4320,6 +4534,7 @@ Rect2i TileSetAtlasSource::get_runtime_tile_texture_region(Vector2i p_atlas_coor
 }
 
 void TileSetAtlasSource::move_tile_in_atlas(Vector2i p_atlas_coords, Vector2i p_new_atlas_coords, Vector2i p_new_size) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!tiles.has(p_atlas_coords), vformat("TileSetAtlasSource has no tile at %s.", String(p_atlas_coords)));
 
 	TileAlternativesData &tad = tiles[p_atlas_coords];
@@ -4355,6 +4570,7 @@ void TileSetAtlasSource::move_tile_in_atlas(Vector2i p_atlas_coords, Vector2i p_
 }
 
 int TileSetAtlasSource::create_alternative_tile(const Vector2i p_atlas_coords, int p_alternative_id_override) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!tiles.has(p_atlas_coords), TileSetSource::INVALID_TILE_ALTERNATIVE, vformat("TileSetAtlasSource has no tile at %s.", String(p_atlas_coords)));
 	ERR_FAIL_COND_V_MSG(p_alternative_id_override >= 0 && tiles[p_atlas_coords].alternatives.has(p_alternative_id_override), TileSetSource::INVALID_TILE_ALTERNATIVE, vformat("Cannot create alternative tile. Another alternative exists with id %d.", p_alternative_id_override));
 
@@ -4374,6 +4590,7 @@ int TileSetAtlasSource::create_alternative_tile(const Vector2i p_atlas_coords, i
 }
 
 void TileSetAtlasSource::remove_alternative_tile(const Vector2i p_atlas_coords, int p_alternative_tile) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!tiles.has(p_atlas_coords), vformat("TileSetAtlasSource has no tile at %s.", String(p_atlas_coords)));
 	ERR_FAIL_COND_MSG(!tiles[p_atlas_coords].alternatives.has(p_alternative_tile), vformat("TileSetAtlasSource has no alternative with id %d for tile coords %s.", p_alternative_tile, String(p_atlas_coords)));
 	ERR_FAIL_COND_MSG(p_alternative_tile == 0, "Cannot remove the alternative with id 0, the base tile alternative cannot be removed.");
@@ -4387,6 +4604,7 @@ void TileSetAtlasSource::remove_alternative_tile(const Vector2i p_atlas_coords, 
 }
 
 void TileSetAtlasSource::set_alternative_tile_id(const Vector2i p_atlas_coords, int p_alternative_tile, int p_new_id) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!tiles.has(p_atlas_coords), vformat("TileSetAtlasSource has no tile at %s.", String(p_atlas_coords)));
 	ERR_FAIL_COND_MSG(!tiles[p_atlas_coords].alternatives.has(p_alternative_tile), vformat("TileSetAtlasSource has no alternative with id %d for tile coords %s.", p_alternative_tile, String(p_atlas_coords)));
 	ERR_FAIL_COND_MSG(p_alternative_tile == 0, "Cannot change the alternative with id 0, the base tile alternative cannot be modified.");
@@ -4404,21 +4622,25 @@ void TileSetAtlasSource::set_alternative_tile_id(const Vector2i p_atlas_coords, 
 }
 
 bool TileSetAtlasSource::has_alternative_tile(const Vector2i p_atlas_coords, int p_alternative_tile) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!tiles.has(p_atlas_coords), false, vformat("The TileSetAtlasSource atlas has no tile at %s.", String(p_atlas_coords)));
 	return tiles[p_atlas_coords].alternatives.has(p_alternative_tile);
 }
 
 int TileSetAtlasSource::get_next_alternative_tile_id(const Vector2i p_atlas_coords) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!tiles.has(p_atlas_coords), TileSetSource::INVALID_TILE_ALTERNATIVE, vformat("The TileSetAtlasSource atlas has no tile at %s.", String(p_atlas_coords)));
 	return tiles[p_atlas_coords].next_alternative_id;
 }
 
 int TileSetAtlasSource::get_alternative_tiles_count(const Vector2i p_atlas_coords) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!tiles.has(p_atlas_coords), -1, vformat("The TileSetAtlasSource atlas has no tile at %s.", String(p_atlas_coords)));
 	return tiles[p_atlas_coords].alternatives_ids.size();
 }
 
 int TileSetAtlasSource::get_alternative_tile_id(const Vector2i p_atlas_coords, int p_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!tiles.has(p_atlas_coords), TileSetSource::INVALID_TILE_ALTERNATIVE, vformat("The TileSetAtlasSource atlas has no tile at %s.", String(p_atlas_coords)));
 	ERR_FAIL_INDEX_V(p_index, tiles[p_atlas_coords].alternatives_ids.size(), TileSetSource::INVALID_TILE_ALTERNATIVE);
 
@@ -4426,6 +4648,7 @@ int TileSetAtlasSource::get_alternative_tile_id(const Vector2i p_atlas_coords, i
 }
 
 TileData *TileSetAtlasSource::get_tile_data(const Vector2i p_atlas_coords, int p_alternative_tile) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!tiles.has(p_atlas_coords), nullptr, vformat("The TileSetAtlasSource atlas has no tile at %s.", String(p_atlas_coords)));
 	ERR_FAIL_COND_V_MSG(!tiles[p_atlas_coords].alternatives.has(p_alternative_tile), nullptr, vformat("TileSetAtlasSource has no alternative with id %d for tile coords %s.", p_alternative_tile, String(p_atlas_coords)));
 
@@ -4433,6 +4656,7 @@ TileData *TileSetAtlasSource::get_tile_data(const Vector2i p_atlas_coords, int p
 }
 
 void TileSetAtlasSource::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_texture", "texture"), &TileSetAtlasSource::set_texture);
 	ClassDB::bind_method(D_METHOD("get_texture"), &TileSetAtlasSource::get_texture);
 	ClassDB::bind_method(D_METHOD("set_margins", "margins"), &TileSetAtlasSource::set_margins);
@@ -4491,6 +4715,7 @@ void TileSetAtlasSource::_bind_methods() {
 }
 
 TileSetAtlasSource::~TileSetAtlasSource() {
+	ZoneScopedS(60);
 	// Free everything needed.
 	for (KeyValue<Vector2i, TileAlternativesData> &E_alternatives : tiles) {
 		for (KeyValue<int, TileData *> &E_tile_data : E_alternatives.value.alternatives) {
@@ -4500,6 +4725,7 @@ TileSetAtlasSource::~TileSetAtlasSource() {
 }
 
 TileData *TileSetAtlasSource::_get_atlas_tile_data(Vector2i p_atlas_coords, int p_alternative_tile) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!tiles.has(p_atlas_coords), nullptr, vformat("TileSetAtlasSource has no tile at %s.", String(p_atlas_coords)));
 	ERR_FAIL_COND_V_MSG(!tiles[p_atlas_coords].alternatives.has(p_alternative_tile), nullptr, vformat("TileSetAtlasSource has no alternative with id %d for tile coords %s.", p_alternative_tile, String(p_atlas_coords)));
 
@@ -4507,6 +4733,7 @@ TileData *TileSetAtlasSource::_get_atlas_tile_data(Vector2i p_atlas_coords, int 
 }
 
 const TileData *TileSetAtlasSource::_get_atlas_tile_data(Vector2i p_atlas_coords, int p_alternative_tile) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!tiles.has(p_atlas_coords), nullptr, vformat("TileSetAtlasSource has no tile at %s.", String(p_atlas_coords)));
 	ERR_FAIL_COND_V_MSG(!tiles[p_atlas_coords].alternatives.has(p_alternative_tile), nullptr, vformat("TileSetAtlasSource has no alternative with id %d for tile coords %s.", p_alternative_tile, String(p_atlas_coords)));
 
@@ -4514,6 +4741,7 @@ const TileData *TileSetAtlasSource::_get_atlas_tile_data(Vector2i p_atlas_coords
 }
 
 void TileSetAtlasSource::_compute_next_alternative_id(const Vector2i p_atlas_coords) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!tiles.has(p_atlas_coords), vformat("TileSetAtlasSource has no tile at %s.", String(p_atlas_coords)));
 
 	while (tiles[p_atlas_coords].alternatives.has(tiles[p_atlas_coords].next_alternative_id)) {
@@ -4522,6 +4750,7 @@ void TileSetAtlasSource::_compute_next_alternative_id(const Vector2i p_atlas_coo
 }
 
 void TileSetAtlasSource::_clear_coords_mapping_cache(Vector2i p_atlas_coords) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!tiles.has(p_atlas_coords), vformat("TileSetAtlasSource has no tile at %s.", Vector2i(p_atlas_coords)));
 	TileAlternativesData &tad = tiles[p_atlas_coords];
 	for (int frame = 0; frame < (int)tad.animation_frames_durations.size(); frame++) {
@@ -4543,6 +4772,7 @@ void TileSetAtlasSource::_clear_coords_mapping_cache(Vector2i p_atlas_coords) {
 }
 
 void TileSetAtlasSource::_create_coords_mapping_cache(Vector2i p_atlas_coords) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!tiles.has(p_atlas_coords), vformat("TileSetAtlasSource has no tile at %s.", Vector2i(p_atlas_coords)));
 
 	TileAlternativesData &tad = tiles[p_atlas_coords];
@@ -4561,6 +4791,7 @@ void TileSetAtlasSource::_create_coords_mapping_cache(Vector2i p_atlas_coords) {
 }
 
 void TileSetAtlasSource::_clear_tiles_outside_texture() {
+	ZoneScopedS(60);
 	LocalVector<Vector2i> to_remove;
 
 	for (const KeyValue<Vector2i, TileSetAtlasSource::TileAlternativesData> &E : tiles) {
@@ -4575,11 +4806,13 @@ void TileSetAtlasSource::_clear_tiles_outside_texture() {
 }
 
 void TileSetAtlasSource::_queue_update_padded_texture() {
+	ZoneScopedS(60);
 	padded_texture_needs_update = true;
 	call_deferred(SNAME("_update_padded_texture"));
 }
 
 void TileSetAtlasSource::_update_padded_texture() {
+	ZoneScopedS(60);
 	if (!padded_texture_needs_update) {
 		return;
 	}
@@ -4642,29 +4875,35 @@ void TileSetAtlasSource::_update_padded_texture() {
 /////////////////////////////// TileSetScenesCollectionSource //////////////////////////////////////
 
 void TileSetScenesCollectionSource::_compute_next_alternative_id() {
+	ZoneScopedS(60);
 	while (scenes.has(next_scene_id)) {
 		next_scene_id = (next_scene_id % 1073741823) + 1; // 2 ** 30
 	};
 }
 
 int TileSetScenesCollectionSource::get_tiles_count() const {
+	ZoneScopedS(60);
 	return 1;
 }
 
 Vector2i TileSetScenesCollectionSource::get_tile_id(int p_tile_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_tile_index != 0, TileSetSource::INVALID_ATLAS_COORDS);
 	return Vector2i();
 }
 
 bool TileSetScenesCollectionSource::has_tile(Vector2i p_atlas_coords) const {
+	ZoneScopedS(60);
 	return p_atlas_coords == Vector2i();
 }
 
 int TileSetScenesCollectionSource::get_alternative_tiles_count(const Vector2i p_atlas_coords) const {
+	ZoneScopedS(60);
 	return scenes_ids.size();
 }
 
 int TileSetScenesCollectionSource::get_alternative_tile_id(const Vector2i p_atlas_coords, int p_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_atlas_coords != Vector2i(), TileSetSource::INVALID_TILE_ALTERNATIVE);
 	ERR_FAIL_INDEX_V(p_index, scenes_ids.size(), TileSetSource::INVALID_TILE_ALTERNATIVE);
 
@@ -4672,11 +4911,13 @@ int TileSetScenesCollectionSource::get_alternative_tile_id(const Vector2i p_atla
 }
 
 bool TileSetScenesCollectionSource::has_alternative_tile(const Vector2i p_atlas_coords, int p_alternative_tile) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_atlas_coords != Vector2i(), false);
 	return scenes.has(p_alternative_tile);
 }
 
 int TileSetScenesCollectionSource::create_scene_tile(Ref<PackedScene> p_packed_scene, int p_id_override) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(p_id_override >= 0 && scenes.has(p_id_override), INVALID_TILE_ALTERNATIVE, vformat("Cannot create scene tile. Another scene tile exists with id %d.", p_id_override));
 
 	int new_scene_id = p_id_override >= 0 ? p_id_override : next_scene_id;
@@ -4693,6 +4934,7 @@ int TileSetScenesCollectionSource::create_scene_tile(Ref<PackedScene> p_packed_s
 }
 
 void TileSetScenesCollectionSource::set_scene_tile_id(int p_id, int p_new_id) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_new_id < 0);
 	ERR_FAIL_COND(!has_scene_tile_id(p_id));
 	ERR_FAIL_COND(has_scene_tile_id(p_new_id));
@@ -4711,6 +4953,7 @@ void TileSetScenesCollectionSource::set_scene_tile_id(int p_id, int p_new_id) {
 }
 
 void TileSetScenesCollectionSource::set_scene_tile_scene(int p_id, Ref<PackedScene> p_packed_scene) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!scenes.has(p_id));
 	if (p_packed_scene.is_valid()) {
 		// Check if it extends CanvasItem.
@@ -4735,11 +4978,13 @@ void TileSetScenesCollectionSource::set_scene_tile_scene(int p_id, Ref<PackedSce
 }
 
 Ref<PackedScene> TileSetScenesCollectionSource::get_scene_tile_scene(int p_id) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!scenes.has(p_id), Ref<PackedScene>());
 	return scenes[p_id].scene;
 }
 
 void TileSetScenesCollectionSource::set_scene_tile_display_placeholder(int p_id, bool p_display_placeholder) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!scenes.has(p_id));
 
 	scenes[p_id].display_placeholder = p_display_placeholder;
@@ -4748,11 +4993,13 @@ void TileSetScenesCollectionSource::set_scene_tile_display_placeholder(int p_id,
 }
 
 bool TileSetScenesCollectionSource::get_scene_tile_display_placeholder(int p_id) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!scenes.has(p_id), false);
 	return scenes[p_id].display_placeholder;
 }
 
 void TileSetScenesCollectionSource::remove_scene_tile(int p_id) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!scenes.has(p_id));
 
 	scenes.erase(p_id);
@@ -4761,10 +5008,12 @@ void TileSetScenesCollectionSource::remove_scene_tile(int p_id) {
 }
 
 int TileSetScenesCollectionSource::get_next_scene_tile_id() const {
+	ZoneScopedS(60);
 	return next_scene_id;
 }
 
 bool TileSetScenesCollectionSource::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	Vector<String> components = String(p_name).split("/", true, 2);
 
 	if (components.size() >= 2 && components[0] == "scenes" && components[1].is_valid_int()) {
@@ -4789,6 +5038,7 @@ bool TileSetScenesCollectionSource::_set(const StringName &p_name, const Variant
 }
 
 bool TileSetScenesCollectionSource::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	Vector<String> components = String(p_name).split("/", true, 2);
 
 	if (components.size() >= 2 && components[0] == "scenes" && components[1].is_valid_int() && scenes.has(components[1].to_int())) {
@@ -4805,6 +5055,7 @@ bool TileSetScenesCollectionSource::_get(const StringName &p_name, Variant &r_re
 }
 
 void TileSetScenesCollectionSource::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	for (int i = 0; i < scenes_ids.size(); i++) {
 		p_list->push_back(PropertyInfo(Variant::OBJECT, vformat("scenes/%d/scene", scenes_ids[i]), PROPERTY_HINT_RESOURCE_TYPE, "TileSetScenesCollectionSource"));
 
@@ -4817,6 +5068,7 @@ void TileSetScenesCollectionSource::_get_property_list(List<PropertyInfo> *p_lis
 }
 
 void TileSetScenesCollectionSource::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_scene_tiles_count"), &TileSetScenesCollectionSource::get_scene_tiles_count);
 	ClassDB::bind_method(D_METHOD("get_scene_tile_id", "index"), &TileSetScenesCollectionSource::get_scene_tile_id);
 	ClassDB::bind_method(D_METHOD("has_scene_tile_id", "id"), &TileSetScenesCollectionSource::has_scene_tile_id);
@@ -4833,11 +5085,13 @@ void TileSetScenesCollectionSource::_bind_methods() {
 /////////////////////////////// TileData //////////////////////////////////////
 
 void TileData::set_tile_set(const TileSet *p_tile_set) {
+	ZoneScopedS(60);
 	tile_set = p_tile_set;
 	notify_tile_data_properties_should_change();
 }
 
 void TileData::notify_tile_data_properties_should_change() {
+	ZoneScopedS(60);
 	if (!tile_set) {
 		return;
 	}
@@ -4872,6 +5126,7 @@ void TileData::notify_tile_data_properties_should_change() {
 }
 
 void TileData::add_occlusion_layer(int p_to_pos) {
+	ZoneScopedS(60);
 	if (p_to_pos < 0) {
 		p_to_pos = occluders.size();
 	}
@@ -4880,6 +5135,7 @@ void TileData::add_occlusion_layer(int p_to_pos) {
 }
 
 void TileData::move_occlusion_layer(int p_from_index, int p_to_pos) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_from_index, occluders.size());
 	ERR_FAIL_INDEX(p_to_pos, occluders.size() + 1);
 	occluders.insert(p_to_pos, occluders[p_from_index]);
@@ -4887,11 +5143,13 @@ void TileData::move_occlusion_layer(int p_from_index, int p_to_pos) {
 }
 
 void TileData::remove_occlusion_layer(int p_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, occluders.size());
 	occluders.remove_at(p_index);
 }
 
 void TileData::add_physics_layer(int p_to_pos) {
+	ZoneScopedS(60);
 	if (p_to_pos < 0) {
 		p_to_pos = physics.size();
 	}
@@ -4900,6 +5158,7 @@ void TileData::add_physics_layer(int p_to_pos) {
 }
 
 void TileData::move_physics_layer(int p_from_index, int p_to_pos) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_from_index, physics.size());
 	ERR_FAIL_INDEX(p_to_pos, physics.size() + 1);
 	physics.insert(p_to_pos, physics[p_from_index]);
@@ -4907,17 +5166,20 @@ void TileData::move_physics_layer(int p_from_index, int p_to_pos) {
 }
 
 void TileData::remove_physics_layer(int p_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, physics.size());
 	physics.remove_at(p_index);
 }
 
 void TileData::add_terrain_set(int p_to_pos) {
+	ZoneScopedS(60);
 	if (p_to_pos >= 0 && p_to_pos <= terrain_set) {
 		terrain_set += 1;
 	}
 }
 
 void TileData::move_terrain_set(int p_from_index, int p_to_pos) {
+	ZoneScopedS(60);
 	if (p_from_index == terrain_set) {
 		terrain_set = (p_from_index < p_to_pos) ? p_to_pos - 1 : p_to_pos;
 	} else {
@@ -4931,6 +5193,7 @@ void TileData::move_terrain_set(int p_from_index, int p_to_pos) {
 }
 
 void TileData::remove_terrain_set(int p_index) {
+	ZoneScopedS(60);
 	if (p_index == terrain_set) {
 		terrain_set = -1;
 		for (int i = 0; i < 16; i++) {
@@ -4942,6 +5205,7 @@ void TileData::remove_terrain_set(int p_index) {
 }
 
 void TileData::add_terrain(int p_terrain_set, int p_to_pos) {
+	ZoneScopedS(60);
 	if (terrain_set == p_terrain_set) {
 		for (int i = 0; i < 16; i++) {
 			if (p_to_pos >= 0 && p_to_pos <= terrain_peering_bits[i]) {
@@ -4952,6 +5216,7 @@ void TileData::add_terrain(int p_terrain_set, int p_to_pos) {
 }
 
 void TileData::move_terrain(int p_terrain_set, int p_from_index, int p_to_pos) {
+	ZoneScopedS(60);
 	if (terrain_set == p_terrain_set) {
 		for (int i = 0; i < 16; i++) {
 			if (p_from_index == terrain_peering_bits[i]) {
@@ -4969,6 +5234,7 @@ void TileData::move_terrain(int p_terrain_set, int p_from_index, int p_to_pos) {
 }
 
 void TileData::remove_terrain(int p_terrain_set, int p_index) {
+	ZoneScopedS(60);
 	if (terrain_set == p_terrain_set) {
 		if (terrain == p_index) {
 			terrain = -1;
@@ -4985,6 +5251,7 @@ void TileData::remove_terrain(int p_terrain_set, int p_index) {
 }
 
 void TileData::add_navigation_layer(int p_to_pos) {
+	ZoneScopedS(60);
 	if (p_to_pos < 0) {
 		p_to_pos = navigation.size();
 	}
@@ -4993,6 +5260,7 @@ void TileData::add_navigation_layer(int p_to_pos) {
 }
 
 void TileData::move_navigation_layer(int p_from_index, int p_to_pos) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_from_index, navigation.size());
 	ERR_FAIL_INDEX(p_to_pos, navigation.size() + 1);
 	navigation.insert(p_to_pos, navigation[p_from_index]);
@@ -5000,11 +5268,13 @@ void TileData::move_navigation_layer(int p_from_index, int p_to_pos) {
 }
 
 void TileData::remove_navigation_layer(int p_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, navigation.size());
 	navigation.remove_at(p_index);
 }
 
 void TileData::add_custom_data_layer(int p_to_pos) {
+	ZoneScopedS(60);
 	if (p_to_pos < 0) {
 		p_to_pos = custom_data.size();
 	}
@@ -5013,6 +5283,7 @@ void TileData::add_custom_data_layer(int p_to_pos) {
 }
 
 void TileData::move_custom_data_layer(int p_from_index, int p_to_pos) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_from_index, custom_data.size());
 	ERR_FAIL_INDEX(p_to_pos, custom_data.size() + 1);
 	custom_data.insert(p_to_pos, custom_data[p_from_index]);
@@ -5020,19 +5291,23 @@ void TileData::move_custom_data_layer(int p_from_index, int p_to_pos) {
 }
 
 void TileData::remove_custom_data_layer(int p_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, custom_data.size());
 	custom_data.remove_at(p_index);
 }
 
 void TileData::set_allow_transform(bool p_allow_transform) {
+	ZoneScopedS(60);
 	allow_transform = p_allow_transform;
 }
 
 bool TileData::is_allowing_transform() const {
+	ZoneScopedS(60);
 	return allow_transform;
 }
 
 TileData *TileData::duplicate() {
+	ZoneScopedS(60);
 	TileData *output = memnew(TileData);
 	output->tile_set = tile_set;
 
@@ -5065,109 +5340,132 @@ TileData *TileData::duplicate() {
 
 // Rendering
 void TileData::set_flip_h(bool p_flip_h) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!allow_transform && p_flip_h, "Transform is only allowed for alternative tiles (with its alternative_id != 0)");
 	flip_h = p_flip_h;
 	emit_signal(SNAME("changed"));
 }
 bool TileData::get_flip_h() const {
+	ZoneScopedS(60);
 	return flip_h;
 }
 
 void TileData::set_flip_v(bool p_flip_v) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!allow_transform && p_flip_v, "Transform is only allowed for alternative tiles (with its alternative_id != 0)");
 	flip_v = p_flip_v;
 	emit_signal(SNAME("changed"));
 }
 
 bool TileData::get_flip_v() const {
+	ZoneScopedS(60);
 	return flip_v;
 }
 
 void TileData::set_transpose(bool p_transpose) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!allow_transform && p_transpose, "Transform is only allowed for alternative tiles (with its alternative_id != 0)");
 	transpose = p_transpose;
 	emit_signal(SNAME("changed"));
 }
 bool TileData::get_transpose() const {
+	ZoneScopedS(60);
 	return transpose;
 }
 
 void TileData::set_texture_offset(Vector2i p_texture_offset) {
+	ZoneScopedS(60);
 	tex_offset = p_texture_offset;
 	emit_signal(SNAME("changed"));
 }
 
 Vector2i TileData::get_texture_offset() const {
+	ZoneScopedS(60);
 	return tex_offset;
 }
 
 void TileData::set_material(Ref<Material> p_material) {
+	ZoneScopedS(60);
 	material = p_material;
 	emit_signal(SNAME("changed"));
 }
 Ref<Material> TileData::get_material() const {
+	ZoneScopedS(60);
 	return material;
 }
 
 void TileData::set_modulate(Color p_modulate) {
+	ZoneScopedS(60);
 	modulate = p_modulate;
 	emit_signal(SNAME("changed"));
 }
 Color TileData::get_modulate() const {
+	ZoneScopedS(60);
 	return modulate;
 }
 
 void TileData::set_z_index(int p_z_index) {
+	ZoneScopedS(60);
 	z_index = p_z_index;
 	emit_signal(SNAME("changed"));
 }
 int TileData::get_z_index() const {
+	ZoneScopedS(60);
 	return z_index;
 }
 
 void TileData::set_y_sort_origin(int p_y_sort_origin) {
+	ZoneScopedS(60);
 	y_sort_origin = p_y_sort_origin;
 	emit_signal(SNAME("changed"));
 }
 int TileData::get_y_sort_origin() const {
+	ZoneScopedS(60);
 	return y_sort_origin;
 }
 
 void TileData::set_occluder(int p_layer_id, Ref<OccluderPolygon2D> p_occluder_polygon) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_layer_id, occluders.size());
 	occluders.write[p_layer_id] = p_occluder_polygon;
 	emit_signal(SNAME("changed"));
 }
 
 Ref<OccluderPolygon2D> TileData::get_occluder(int p_layer_id) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_layer_id, occluders.size(), Ref<OccluderPolygon2D>());
 	return occluders[p_layer_id];
 }
 
 // Physics
 void TileData::set_constant_linear_velocity(int p_layer_id, const Vector2 &p_velocity) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_layer_id, physics.size());
 	physics.write[p_layer_id].linear_velocity = p_velocity;
 	emit_signal(SNAME("changed"));
 }
 
 Vector2 TileData::get_constant_linear_velocity(int p_layer_id) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_layer_id, physics.size(), Vector2());
 	return physics[p_layer_id].linear_velocity;
 }
 
 void TileData::set_constant_angular_velocity(int p_layer_id, real_t p_velocity) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_layer_id, physics.size());
 	physics.write[p_layer_id].angular_velocity = p_velocity;
 	emit_signal(SNAME("changed"));
 }
 
 real_t TileData::get_constant_angular_velocity(int p_layer_id) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_layer_id, physics.size(), 0.0);
 	return physics[p_layer_id].angular_velocity;
 }
 
 void TileData::set_collision_polygons_count(int p_layer_id, int p_polygons_count) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_layer_id, physics.size());
 	ERR_FAIL_COND(p_polygons_count < 0);
 	if (p_polygons_count == physics.write[p_layer_id].polygons.size()) {
@@ -5179,17 +5477,20 @@ void TileData::set_collision_polygons_count(int p_layer_id, int p_polygons_count
 }
 
 int TileData::get_collision_polygons_count(int p_layer_id) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_layer_id, physics.size(), 0);
 	return physics[p_layer_id].polygons.size();
 }
 
 void TileData::add_collision_polygon(int p_layer_id) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_layer_id, physics.size());
 	physics.write[p_layer_id].polygons.push_back(PhysicsLayerTileData::PolygonShapeTileData());
 	emit_signal(SNAME("changed"));
 }
 
 void TileData::remove_collision_polygon(int p_layer_id, int p_polygon_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_layer_id, physics.size());
 	ERR_FAIL_INDEX(p_polygon_index, physics[p_layer_id].polygons.size());
 	physics.write[p_layer_id].polygons.remove_at(p_polygon_index);
@@ -5197,6 +5498,7 @@ void TileData::remove_collision_polygon(int p_layer_id, int p_polygon_index) {
 }
 
 void TileData::set_collision_polygon_points(int p_layer_id, int p_polygon_index, Vector<Vector2> p_polygon) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_layer_id, physics.size());
 	ERR_FAIL_INDEX(p_polygon_index, physics[p_layer_id].polygons.size());
 	ERR_FAIL_COND_MSG(p_polygon.size() != 0 && p_polygon.size() < 3, "Invalid polygon. Needs either 0 or more than 3 points.");
@@ -5221,12 +5523,14 @@ void TileData::set_collision_polygon_points(int p_layer_id, int p_polygon_index,
 }
 
 Vector<Vector2> TileData::get_collision_polygon_points(int p_layer_id, int p_polygon_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_layer_id, physics.size(), Vector<Vector2>());
 	ERR_FAIL_INDEX_V(p_polygon_index, physics[p_layer_id].polygons.size(), Vector<Vector2>());
 	return physics[p_layer_id].polygons[p_polygon_index].polygon;
 }
 
 void TileData::set_collision_polygon_one_way(int p_layer_id, int p_polygon_index, bool p_one_way) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_layer_id, physics.size());
 	ERR_FAIL_INDEX(p_polygon_index, physics[p_layer_id].polygons.size());
 	physics.write[p_layer_id].polygons.write[p_polygon_index].one_way = p_one_way;
@@ -5234,12 +5538,14 @@ void TileData::set_collision_polygon_one_way(int p_layer_id, int p_polygon_index
 }
 
 bool TileData::is_collision_polygon_one_way(int p_layer_id, int p_polygon_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_layer_id, physics.size(), false);
 	ERR_FAIL_INDEX_V(p_polygon_index, physics[p_layer_id].polygons.size(), false);
 	return physics[p_layer_id].polygons[p_polygon_index].one_way;
 }
 
 void TileData::set_collision_polygon_one_way_margin(int p_layer_id, int p_polygon_index, float p_one_way_margin) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_layer_id, physics.size());
 	ERR_FAIL_INDEX(p_polygon_index, physics[p_layer_id].polygons.size());
 	physics.write[p_layer_id].polygons.write[p_polygon_index].one_way_margin = p_one_way_margin;
@@ -5247,18 +5553,21 @@ void TileData::set_collision_polygon_one_way_margin(int p_layer_id, int p_polygo
 }
 
 float TileData::get_collision_polygon_one_way_margin(int p_layer_id, int p_polygon_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_layer_id, physics.size(), 0.0);
 	ERR_FAIL_INDEX_V(p_polygon_index, physics[p_layer_id].polygons.size(), 0.0);
 	return physics[p_layer_id].polygons[p_polygon_index].one_way_margin;
 }
 
 int TileData::get_collision_polygon_shapes_count(int p_layer_id, int p_polygon_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_layer_id, physics.size(), 0);
 	ERR_FAIL_INDEX_V(p_polygon_index, physics[p_layer_id].polygons.size(), 0);
 	return physics[p_layer_id].polygons[p_polygon_index].shapes.size();
 }
 
 Ref<ConvexPolygonShape2D> TileData::get_collision_polygon_shape(int p_layer_id, int p_polygon_index, int shape_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_layer_id, physics.size(), Ref<ConvexPolygonShape2D>());
 	ERR_FAIL_INDEX_V(p_polygon_index, physics[p_layer_id].polygons.size(), Ref<ConvexPolygonShape2D>());
 	ERR_FAIL_INDEX_V(shape_index, (int)physics[p_layer_id].polygons[p_polygon_index].shapes.size(), Ref<ConvexPolygonShape2D>());
@@ -5267,6 +5576,7 @@ Ref<ConvexPolygonShape2D> TileData::get_collision_polygon_shape(int p_layer_id, 
 
 // Terrain
 void TileData::set_terrain_set(int p_terrain_set) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_terrain_set < -1);
 	if (p_terrain_set == terrain_set) {
 		return;
@@ -5284,10 +5594,12 @@ void TileData::set_terrain_set(int p_terrain_set) {
 }
 
 int TileData::get_terrain_set() const {
+	ZoneScopedS(60);
 	return terrain_set;
 }
 
 void TileData::set_terrain(int p_terrain) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(terrain_set < 0);
 	ERR_FAIL_COND(p_terrain < -1);
 	if (tile_set) {
@@ -5298,10 +5610,12 @@ void TileData::set_terrain(int p_terrain) {
 }
 
 int TileData::get_terrain() const {
+	ZoneScopedS(60);
 	return terrain;
 }
 
 void TileData::set_terrain_peering_bit(TileSet::CellNeighbor p_peering_bit, int p_terrain_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_peering_bit, TileSet::CellNeighbor::CELL_NEIGHBOR_MAX);
 	ERR_FAIL_COND(terrain_set < 0);
 	ERR_FAIL_COND(p_terrain_index < -1);
@@ -5314,17 +5628,20 @@ void TileData::set_terrain_peering_bit(TileSet::CellNeighbor p_peering_bit, int 
 }
 
 int TileData::get_terrain_peering_bit(TileSet::CellNeighbor p_peering_bit) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!is_valid_terrain_peering_bit(p_peering_bit), -1);
 	return terrain_peering_bits[p_peering_bit];
 }
 
 bool TileData::is_valid_terrain_peering_bit(TileSet::CellNeighbor p_peering_bit) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!tile_set, false);
 
 	return tile_set->is_valid_terrain_peering_bit(terrain_set, p_peering_bit);
 }
 
 TileSet::TerrainsPattern TileData::get_terrains_pattern() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!tile_set, TileSet::TerrainsPattern());
 
 	TileSet::TerrainsPattern output(tile_set, terrain_set);
@@ -5339,28 +5656,33 @@ TileSet::TerrainsPattern TileData::get_terrains_pattern() const {
 
 // Navigation
 void TileData::set_navigation_polygon(int p_layer_id, Ref<NavigationPolygon> p_navigation_polygon) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_layer_id, navigation.size());
 	navigation.write[p_layer_id] = p_navigation_polygon;
 	emit_signal(SNAME("changed"));
 }
 
 Ref<NavigationPolygon> TileData::get_navigation_polygon(int p_layer_id) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_layer_id, navigation.size(), Ref<NavigationPolygon>());
 	return navigation[p_layer_id];
 }
 
 // Misc
 void TileData::set_probability(float p_probability) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_probability < 0.0);
 	probability = p_probability;
 	emit_signal(SNAME("changed"));
 }
 float TileData::get_probability() const {
+	ZoneScopedS(60);
 	return probability;
 }
 
 // Custom data
 void TileData::set_custom_data(String p_layer_name, Variant p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!tile_set);
 	int p_layer_id = tile_set->get_custom_data_layer_by_name(p_layer_name);
 	ERR_FAIL_COND_MSG(p_layer_id < 0, vformat("TileSet has no layer with name: %s", p_layer_name));
@@ -5368,6 +5690,7 @@ void TileData::set_custom_data(String p_layer_name, Variant p_value) {
 }
 
 Variant TileData::get_custom_data(String p_layer_name) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!tile_set, Variant());
 	int p_layer_id = tile_set->get_custom_data_layer_by_name(p_layer_name);
 	ERR_FAIL_COND_V_MSG(p_layer_id < 0, Variant(), vformat("TileSet has no layer with name: %s", p_layer_name));
@@ -5375,17 +5698,20 @@ Variant TileData::get_custom_data(String p_layer_name) const {
 }
 
 void TileData::set_custom_data_by_layer_id(int p_layer_id, Variant p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_layer_id, custom_data.size());
 	custom_data.write[p_layer_id] = p_value;
 	emit_signal(SNAME("changed"));
 }
 
 Variant TileData::get_custom_data_by_layer_id(int p_layer_id) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_layer_id, custom_data.size(), Variant());
 	return custom_data[p_layer_id];
 }
 
 bool TileData::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	Vector<String> components = String(p_name).split("/", true, 2);
 
 	if (components.size() == 2 && components[0].begins_with("occlusion_layer_") && components[0].trim_prefix("occlusion_layer_").is_valid_int()) {
@@ -5507,6 +5833,7 @@ bool TileData::_set(const StringName &p_name, const Variant &p_value) {
 }
 
 bool TileData::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	Vector<String> components = String(p_name).split("/", true, 2);
 
 	if (tile_set) {
@@ -5593,6 +5920,7 @@ bool TileData::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void TileData::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	PropertyInfo property_info;
 	// Add the groups manually.
 	if (tile_set) {
@@ -5679,6 +6007,7 @@ void TileData::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 void TileData::_bind_methods() {
+	ZoneScopedS(60);
 	// Rendering.
 	ClassDB::bind_method(D_METHOD("set_flip_h", "flip_h"), &TileData::set_flip_h);
 	ClassDB::bind_method(D_METHOD("get_flip_h"), &TileData::get_flip_h);

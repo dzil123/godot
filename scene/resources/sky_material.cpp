@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  sky_material.cpp                                                     */
 /*************************************************************************/
@@ -37,115 +38,140 @@ Mutex ProceduralSkyMaterial::shader_mutex;
 RID ProceduralSkyMaterial::shader_cache[2];
 
 void ProceduralSkyMaterial::set_sky_top_color(const Color &p_sky_top) {
+	ZoneScopedS(60);
 	sky_top_color = p_sky_top;
 	RS::get_singleton()->material_set_param(_get_material(), "sky_top_color", sky_top_color);
 }
 
 Color ProceduralSkyMaterial::get_sky_top_color() const {
+	ZoneScopedS(60);
 	return sky_top_color;
 }
 
 void ProceduralSkyMaterial::set_sky_horizon_color(const Color &p_sky_horizon) {
+	ZoneScopedS(60);
 	sky_horizon_color = p_sky_horizon;
 	RS::get_singleton()->material_set_param(_get_material(), "sky_horizon_color", sky_horizon_color);
 }
 
 Color ProceduralSkyMaterial::get_sky_horizon_color() const {
+	ZoneScopedS(60);
 	return sky_horizon_color;
 }
 
 void ProceduralSkyMaterial::set_sky_curve(float p_curve) {
+	ZoneScopedS(60);
 	sky_curve = p_curve;
 	RS::get_singleton()->material_set_param(_get_material(), "sky_curve", sky_curve);
 }
 
 float ProceduralSkyMaterial::get_sky_curve() const {
+	ZoneScopedS(60);
 	return sky_curve;
 }
 
 void ProceduralSkyMaterial::set_sky_energy_multiplier(float p_multiplier) {
+	ZoneScopedS(60);
 	sky_energy_multiplier = p_multiplier;
 	RS::get_singleton()->material_set_param(_get_material(), "sky_energy", sky_energy_multiplier);
 }
 
 float ProceduralSkyMaterial::get_sky_energy_multiplier() const {
+	ZoneScopedS(60);
 	return sky_energy_multiplier;
 }
 
 void ProceduralSkyMaterial::set_sky_cover(const Ref<Texture2D> &p_sky_cover) {
+	ZoneScopedS(60);
 	sky_cover = p_sky_cover;
 	RID tex_rid = p_sky_cover.is_valid() ? p_sky_cover->get_rid() : RID();
 	RS::get_singleton()->material_set_param(_get_material(), "sky_cover", tex_rid);
 }
 
 Ref<Texture2D> ProceduralSkyMaterial::get_sky_cover() const {
+	ZoneScopedS(60);
 	return sky_cover;
 }
 
 void ProceduralSkyMaterial::set_sky_cover_modulate(const Color &p_sky_cover_modulate) {
+	ZoneScopedS(60);
 	sky_cover_modulate = p_sky_cover_modulate;
 	RS::get_singleton()->material_set_param(_get_material(), "sky_cover_modulate", sky_cover_modulate);
 }
 
 Color ProceduralSkyMaterial::get_sky_cover_modulate() const {
+	ZoneScopedS(60);
 	return sky_cover_modulate;
 }
 
 void ProceduralSkyMaterial::set_ground_bottom_color(const Color &p_ground_bottom) {
+	ZoneScopedS(60);
 	ground_bottom_color = p_ground_bottom;
 	RS::get_singleton()->material_set_param(_get_material(), "ground_bottom_color", ground_bottom_color);
 }
 
 Color ProceduralSkyMaterial::get_ground_bottom_color() const {
+	ZoneScopedS(60);
 	return ground_bottom_color;
 }
 
 void ProceduralSkyMaterial::set_ground_horizon_color(const Color &p_ground_horizon) {
+	ZoneScopedS(60);
 	ground_horizon_color = p_ground_horizon;
 	RS::get_singleton()->material_set_param(_get_material(), "ground_horizon_color", ground_horizon_color);
 }
 
 Color ProceduralSkyMaterial::get_ground_horizon_color() const {
+	ZoneScopedS(60);
 	return ground_horizon_color;
 }
 
 void ProceduralSkyMaterial::set_ground_curve(float p_curve) {
+	ZoneScopedS(60);
 	ground_curve = p_curve;
 	RS::get_singleton()->material_set_param(_get_material(), "ground_curve", ground_curve);
 }
 
 float ProceduralSkyMaterial::get_ground_curve() const {
+	ZoneScopedS(60);
 	return ground_curve;
 }
 
 void ProceduralSkyMaterial::set_ground_energy_multiplier(float p_multiplier) {
+	ZoneScopedS(60);
 	ground_energy_multiplier = p_multiplier;
 	RS::get_singleton()->material_set_param(_get_material(), "ground_energy", ground_energy_multiplier);
 }
 
 float ProceduralSkyMaterial::get_ground_energy_multiplier() const {
+	ZoneScopedS(60);
 	return ground_energy_multiplier;
 }
 
 void ProceduralSkyMaterial::set_sun_angle_max(float p_angle) {
+	ZoneScopedS(60);
 	sun_angle_max = p_angle;
 	RS::get_singleton()->material_set_param(_get_material(), "sun_angle_max", Math::deg_to_rad(sun_angle_max));
 }
 
 float ProceduralSkyMaterial::get_sun_angle_max() const {
+	ZoneScopedS(60);
 	return sun_angle_max;
 }
 
 void ProceduralSkyMaterial::set_sun_curve(float p_curve) {
+	ZoneScopedS(60);
 	sun_curve = p_curve;
 	RS::get_singleton()->material_set_param(_get_material(), "sun_curve", sun_curve);
 }
 
 float ProceduralSkyMaterial::get_sun_curve() const {
+	ZoneScopedS(60);
 	return sun_curve;
 }
 
 void ProceduralSkyMaterial::set_use_debanding(bool p_use_debanding) {
+	ZoneScopedS(60);
 	use_debanding = p_use_debanding;
 	_update_shader();
 	// Only set if shader already compiled
@@ -155,14 +181,17 @@ void ProceduralSkyMaterial::set_use_debanding(bool p_use_debanding) {
 }
 
 bool ProceduralSkyMaterial::get_use_debanding() const {
+	ZoneScopedS(60);
 	return use_debanding;
 }
 
 Shader::Mode ProceduralSkyMaterial::get_shader_mode() const {
+	ZoneScopedS(60);
 	return Shader::MODE_SKY;
 }
 
 RID ProceduralSkyMaterial::get_rid() const {
+	ZoneScopedS(60);
 	_update_shader();
 	if (!shader_set) {
 		RS::get_singleton()->material_set_shader(_get_material(), shader_cache[1 - int(use_debanding)]);
@@ -173,17 +202,20 @@ RID ProceduralSkyMaterial::get_rid() const {
 }
 
 RID ProceduralSkyMaterial::get_shader_rid() const {
+	ZoneScopedS(60);
 	_update_shader();
 	return shader_cache[int(use_debanding)];
 }
 
 void ProceduralSkyMaterial::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if ((p_property.name == "sky_luminance" || p_property.name == "ground_luminance") && !GLOBAL_GET("rendering/lights_and_shadows/use_physical_light_units")) {
 		p_property.usage = PROPERTY_USAGE_NO_EDITOR;
 	}
 }
 
 void ProceduralSkyMaterial::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_sky_top_color", "color"), &ProceduralSkyMaterial::set_sky_top_color);
 	ClassDB::bind_method(D_METHOD("get_sky_top_color"), &ProceduralSkyMaterial::get_sky_top_color);
 
@@ -246,6 +278,7 @@ void ProceduralSkyMaterial::_bind_methods() {
 }
 
 void ProceduralSkyMaterial::cleanup_shader() {
+	ZoneScopedS(60);
 	if (shader_cache[0].is_valid()) {
 		RS::get_singleton()->free(shader_cache[0]);
 		RS::get_singleton()->free(shader_cache[1]);
@@ -253,6 +286,7 @@ void ProceduralSkyMaterial::cleanup_shader() {
 }
 
 void ProceduralSkyMaterial::_update_shader() {
+	ZoneScopedS(60);
 	shader_mutex.lock();
 	if (shader_cache[0].is_null()) {
 		for (int i = 0; i < 2; i++) {
@@ -341,6 +375,7 @@ void sky() {
 }
 
 ProceduralSkyMaterial::ProceduralSkyMaterial() {
+	ZoneScopedS(60);
 	set_sky_top_color(Color(0.385, 0.454, 0.55));
 	set_sky_horizon_color(Color(0.6463, 0.6558, 0.6708));
 	set_sky_curve(0.15);
@@ -364,16 +399,19 @@ ProceduralSkyMaterial::~ProceduralSkyMaterial() {
 /* PanoramaSkyMaterial */
 
 void PanoramaSkyMaterial::set_panorama(const Ref<Texture2D> &p_panorama) {
+	ZoneScopedS(60);
 	panorama = p_panorama;
 	RID tex_rid = p_panorama.is_valid() ? p_panorama->get_rid() : RID();
 	RS::get_singleton()->material_set_param(_get_material(), "source_panorama", tex_rid);
 }
 
 Ref<Texture2D> PanoramaSkyMaterial::get_panorama() const {
+	ZoneScopedS(60);
 	return panorama;
 }
 
 void PanoramaSkyMaterial::set_filtering_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	filter = p_enabled;
 	notify_property_list_changed();
 	_update_shader();
@@ -384,14 +422,17 @@ void PanoramaSkyMaterial::set_filtering_enabled(bool p_enabled) {
 }
 
 bool PanoramaSkyMaterial::is_filtering_enabled() const {
+	ZoneScopedS(60);
 	return filter;
 }
 
 Shader::Mode PanoramaSkyMaterial::get_shader_mode() const {
+	ZoneScopedS(60);
 	return Shader::MODE_SKY;
 }
 
 RID PanoramaSkyMaterial::get_rid() const {
+	ZoneScopedS(60);
 	_update_shader();
 	// Don't compile shaders until first use, then compile both
 	if (!shader_set) {
@@ -403,11 +444,13 @@ RID PanoramaSkyMaterial::get_rid() const {
 }
 
 RID PanoramaSkyMaterial::get_shader_rid() const {
+	ZoneScopedS(60);
 	_update_shader();
 	return shader_cache[int(filter)];
 }
 
 void PanoramaSkyMaterial::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_panorama", "texture"), &PanoramaSkyMaterial::set_panorama);
 	ClassDB::bind_method(D_METHOD("get_panorama"), &PanoramaSkyMaterial::get_panorama);
 
@@ -422,6 +465,7 @@ Mutex PanoramaSkyMaterial::shader_mutex;
 RID PanoramaSkyMaterial::shader_cache[2];
 
 void PanoramaSkyMaterial::cleanup_shader() {
+	ZoneScopedS(60);
 	if (shader_cache[0].is_valid()) {
 		RS::get_singleton()->free(shader_cache[0]);
 		RS::get_singleton()->free(shader_cache[1]);
@@ -429,6 +473,7 @@ void PanoramaSkyMaterial::cleanup_shader() {
 }
 
 void PanoramaSkyMaterial::_update_shader() {
+	ZoneScopedS(60);
 	shader_mutex.lock();
 	if (shader_cache[0].is_null()) {
 		for (int i = 0; i < 2; i++) {
@@ -463,87 +508,106 @@ PanoramaSkyMaterial::~PanoramaSkyMaterial() {
 /* PhysicalSkyMaterial */
 
 void PhysicalSkyMaterial::set_rayleigh_coefficient(float p_rayleigh) {
+	ZoneScopedS(60);
 	rayleigh = p_rayleigh;
 	RS::get_singleton()->material_set_param(_get_material(), "rayleigh", rayleigh);
 }
 
 float PhysicalSkyMaterial::get_rayleigh_coefficient() const {
+	ZoneScopedS(60);
 	return rayleigh;
 }
 
 void PhysicalSkyMaterial::set_rayleigh_color(Color p_rayleigh_color) {
+	ZoneScopedS(60);
 	rayleigh_color = p_rayleigh_color;
 	RS::get_singleton()->material_set_param(_get_material(), "rayleigh_color", rayleigh_color);
 }
 
 Color PhysicalSkyMaterial::get_rayleigh_color() const {
+	ZoneScopedS(60);
 	return rayleigh_color;
 }
 
 void PhysicalSkyMaterial::set_mie_coefficient(float p_mie) {
+	ZoneScopedS(60);
 	mie = p_mie;
 	RS::get_singleton()->material_set_param(_get_material(), "mie", mie);
 }
 
 float PhysicalSkyMaterial::get_mie_coefficient() const {
+	ZoneScopedS(60);
 	return mie;
 }
 
 void PhysicalSkyMaterial::set_mie_eccentricity(float p_eccentricity) {
+	ZoneScopedS(60);
 	mie_eccentricity = p_eccentricity;
 	RS::get_singleton()->material_set_param(_get_material(), "mie_eccentricity", mie_eccentricity);
 }
 
 float PhysicalSkyMaterial::get_mie_eccentricity() const {
+	ZoneScopedS(60);
 	return mie_eccentricity;
 }
 
 void PhysicalSkyMaterial::set_mie_color(Color p_mie_color) {
+	ZoneScopedS(60);
 	mie_color = p_mie_color;
 	RS::get_singleton()->material_set_param(_get_material(), "mie_color", mie_color);
 }
 
 Color PhysicalSkyMaterial::get_mie_color() const {
+	ZoneScopedS(60);
 	return mie_color;
 }
 
 void PhysicalSkyMaterial::set_turbidity(float p_turbidity) {
+	ZoneScopedS(60);
 	turbidity = p_turbidity;
 	RS::get_singleton()->material_set_param(_get_material(), "turbidity", turbidity);
 }
 
 float PhysicalSkyMaterial::get_turbidity() const {
+	ZoneScopedS(60);
 	return turbidity;
 }
 
 void PhysicalSkyMaterial::set_sun_disk_scale(float p_sun_disk_scale) {
+	ZoneScopedS(60);
 	sun_disk_scale = p_sun_disk_scale;
 	RS::get_singleton()->material_set_param(_get_material(), "sun_disk_scale", sun_disk_scale);
 }
 
 float PhysicalSkyMaterial::get_sun_disk_scale() const {
+	ZoneScopedS(60);
 	return sun_disk_scale;
 }
 
 void PhysicalSkyMaterial::set_ground_color(Color p_ground_color) {
+	ZoneScopedS(60);
 	ground_color = p_ground_color;
 	RS::get_singleton()->material_set_param(_get_material(), "ground_color", ground_color);
 }
 
 Color PhysicalSkyMaterial::get_ground_color() const {
+	ZoneScopedS(60);
 	return ground_color;
 }
 
 void PhysicalSkyMaterial::set_energy_multiplier(float p_multiplier) {
+	ZoneScopedS(60);
 	energy_multiplier = p_multiplier;
 	RS::get_singleton()->material_set_param(_get_material(), "exposure", energy_multiplier);
 }
 
 float PhysicalSkyMaterial::get_energy_multiplier() const {
+	ZoneScopedS(60);
 	return energy_multiplier;
 }
 
 void PhysicalSkyMaterial::set_use_debanding(bool p_use_debanding) {
+	ZoneScopedS(60);
 	use_debanding = p_use_debanding;
 	_update_shader();
 	// Only set if shader already compiled
@@ -553,24 +617,29 @@ void PhysicalSkyMaterial::set_use_debanding(bool p_use_debanding) {
 }
 
 bool PhysicalSkyMaterial::get_use_debanding() const {
+	ZoneScopedS(60);
 	return use_debanding;
 }
 
 void PhysicalSkyMaterial::set_night_sky(const Ref<Texture2D> &p_night_sky) {
+	ZoneScopedS(60);
 	night_sky = p_night_sky;
 	RID tex_rid = p_night_sky.is_valid() ? p_night_sky->get_rid() : RID();
 	RS::get_singleton()->material_set_param(_get_material(), "night_sky", tex_rid);
 }
 
 Ref<Texture2D> PhysicalSkyMaterial::get_night_sky() const {
+	ZoneScopedS(60);
 	return night_sky;
 }
 
 Shader::Mode PhysicalSkyMaterial::get_shader_mode() const {
+	ZoneScopedS(60);
 	return Shader::MODE_SKY;
 }
 
 RID PhysicalSkyMaterial::get_rid() const {
+	ZoneScopedS(60);
 	_update_shader();
 	if (!shader_set) {
 		RS::get_singleton()->material_set_shader(_get_material(), shader_cache[1 - int(use_debanding)]);
@@ -581,11 +650,13 @@ RID PhysicalSkyMaterial::get_rid() const {
 }
 
 RID PhysicalSkyMaterial::get_shader_rid() const {
+	ZoneScopedS(60);
 	_update_shader();
 	return shader_cache[int(use_debanding)];
 }
 
 void PhysicalSkyMaterial::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (p_property.name == "exposure_value" && !GLOBAL_GET("rendering/lights_and_shadows/use_physical_light_units")) {
 		p_property.usage = PROPERTY_USAGE_NO_EDITOR;
 	}
@@ -595,6 +666,7 @@ Mutex PhysicalSkyMaterial::shader_mutex;
 RID PhysicalSkyMaterial::shader_cache[2];
 
 void PhysicalSkyMaterial::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_rayleigh_coefficient", "rayleigh"), &PhysicalSkyMaterial::set_rayleigh_coefficient);
 	ClassDB::bind_method(D_METHOD("get_rayleigh_coefficient"), &PhysicalSkyMaterial::get_rayleigh_coefficient);
 
@@ -646,6 +718,7 @@ void PhysicalSkyMaterial::_bind_methods() {
 }
 
 void PhysicalSkyMaterial::cleanup_shader() {
+	ZoneScopedS(60);
 	if (shader_cache[0].is_valid()) {
 		RS::get_singleton()->free(shader_cache[0]);
 		RS::get_singleton()->free(shader_cache[1]);
@@ -653,6 +726,7 @@ void PhysicalSkyMaterial::cleanup_shader() {
 }
 
 void PhysicalSkyMaterial::_update_shader() {
+	ZoneScopedS(60);
 	shader_mutex.lock();
 	if (shader_cache[0].is_null()) {
 		for (int i = 0; i < 2; i++) {
@@ -751,6 +825,7 @@ void sky() {
 }
 
 PhysicalSkyMaterial::PhysicalSkyMaterial() {
+	ZoneScopedS(60);
 	set_rayleigh_coefficient(2.0);
 	set_rayleigh_color(Color(0.3, 0.405, 0.6));
 	set_mie_coefficient(0.005);

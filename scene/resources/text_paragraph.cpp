@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  text_paragraph.cpp                                                   */
 /*************************************************************************/
@@ -31,6 +32,7 @@
 #include "scene/resources/text_paragraph.h"
 
 void TextParagraph::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("clear"), &TextParagraph::clear);
 
 	ClassDB::bind_method(D_METHOD("set_direction", "direction"), &TextParagraph::set_direction);
@@ -134,6 +136,7 @@ void TextParagraph::_bind_methods() {
 }
 
 void TextParagraph::_shape_lines() {
+	ZoneScopedS(60);
 	if (lines_dirty) {
 		for (int i = 0; i < (int)lines_rid.size(); i++) {
 			TS->free_rid(lines_rid[i]);
@@ -250,10 +253,12 @@ void TextParagraph::_shape_lines() {
 }
 
 RID TextParagraph::get_rid() const {
+	ZoneScopedS(60);
 	return rid;
 }
 
 RID TextParagraph::get_line_rid(int p_line) const {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	const_cast<TextParagraph *>(this)->_shape_lines();
@@ -262,10 +267,12 @@ RID TextParagraph::get_line_rid(int p_line) const {
 }
 
 RID TextParagraph::get_dropcap_rid() const {
+	ZoneScopedS(60);
 	return dropcap_rid;
 }
 
 void TextParagraph::clear() {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	for (int i = 0; i < (int)lines_rid.size(); i++) {
@@ -277,6 +284,7 @@ void TextParagraph::clear() {
 }
 
 void TextParagraph::set_preserve_invalid(bool p_enabled) {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	TS->shaped_text_set_preserve_invalid(rid, p_enabled);
@@ -285,12 +293,14 @@ void TextParagraph::set_preserve_invalid(bool p_enabled) {
 }
 
 bool TextParagraph::get_preserve_invalid() const {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	return TS->shaped_text_get_preserve_invalid(rid);
 }
 
 void TextParagraph::set_preserve_control(bool p_enabled) {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	TS->shaped_text_set_preserve_control(rid, p_enabled);
@@ -299,12 +309,14 @@ void TextParagraph::set_preserve_control(bool p_enabled) {
 }
 
 bool TextParagraph::get_preserve_control() const {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	return TS->shaped_text_get_preserve_control(rid);
 }
 
 void TextParagraph::set_direction(TextServer::Direction p_direction) {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	TS->shaped_text_set_direction(rid, p_direction);
@@ -313,6 +325,7 @@ void TextParagraph::set_direction(TextServer::Direction p_direction) {
 }
 
 TextServer::Direction TextParagraph::get_direction() const {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	const_cast<TextParagraph *>(this)->_shape_lines();
@@ -320,6 +333,7 @@ TextServer::Direction TextParagraph::get_direction() const {
 }
 
 void TextParagraph::set_custom_punctuation(const String &p_punct) {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	TS->shaped_text_set_custom_punctuation(rid, p_punct);
@@ -327,12 +341,14 @@ void TextParagraph::set_custom_punctuation(const String &p_punct) {
 }
 
 String TextParagraph::get_custom_punctuation() const {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	return TS->shaped_text_get_custom_punctuation(rid);
 }
 
 void TextParagraph::set_orientation(TextServer::Orientation p_orientation) {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	TS->shaped_text_set_orientation(rid, p_orientation);
@@ -341,6 +357,7 @@ void TextParagraph::set_orientation(TextServer::Orientation p_orientation) {
 }
 
 TextServer::Orientation TextParagraph::get_orientation() const {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	const_cast<TextParagraph *>(this)->_shape_lines();
@@ -348,6 +365,7 @@ TextServer::Orientation TextParagraph::get_orientation() const {
 }
 
 bool TextParagraph::set_dropcap(const String &p_text, const Ref<Font> &p_font, int p_font_size, const Rect2 &p_dropcap_margins, const String &p_language) {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 	ERR_FAIL_COND_V(p_font.is_null(), false);
 	TS->shaped_text_clear(dropcap_rid);
@@ -361,6 +379,7 @@ bool TextParagraph::set_dropcap(const String &p_text, const Ref<Font> &p_font, i
 }
 
 void TextParagraph::clear_dropcap() {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 	dropcap_margins = Rect2();
 	TS->shaped_text_clear(dropcap_rid);
@@ -368,6 +387,7 @@ void TextParagraph::clear_dropcap() {
 }
 
 bool TextParagraph::add_string(const String &p_text, const Ref<Font> &p_font, int p_font_size, const String &p_language, const Variant &p_meta) {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 	ERR_FAIL_COND_V(p_font.is_null(), false);
 	bool res = TS->shaped_text_add_string(rid, p_text, p_font->get_rids(), p_font_size, p_font->get_opentype_features(), p_language, p_meta);
@@ -379,6 +399,7 @@ bool TextParagraph::add_string(const String &p_text, const Ref<Font> &p_font, in
 }
 
 void TextParagraph::set_bidi_override(const Array &p_override) {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	TS->shaped_text_set_bidi_override(rid, p_override);
@@ -386,6 +407,7 @@ void TextParagraph::set_bidi_override(const Array &p_override) {
 }
 
 bool TextParagraph::add_object(Variant p_key, const Size2 &p_size, InlineAlignment p_inline_align, int p_length) {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	bool res = TS->shaped_text_add_object(rid, p_key, p_size, p_inline_align, p_length);
@@ -394,6 +416,7 @@ bool TextParagraph::add_object(Variant p_key, const Size2 &p_size, InlineAlignme
 }
 
 bool TextParagraph::resize_object(Variant p_key, const Size2 &p_size, InlineAlignment p_inline_align) {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	bool res = TS->shaped_text_resize_object(rid, p_key, p_size, p_inline_align);
@@ -402,6 +425,7 @@ bool TextParagraph::resize_object(Variant p_key, const Size2 &p_size, InlineAlig
 }
 
 void TextParagraph::set_alignment(HorizontalAlignment p_alignment) {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	if (alignment != p_alignment) {
@@ -415,10 +439,12 @@ void TextParagraph::set_alignment(HorizontalAlignment p_alignment) {
 }
 
 HorizontalAlignment TextParagraph::get_alignment() const {
+	ZoneScopedS(60);
 	return alignment;
 }
 
 void TextParagraph::tab_align(const Vector<float> &p_tab_stops) {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	tab_stops = p_tab_stops;
@@ -426,6 +452,7 @@ void TextParagraph::tab_align(const Vector<float> &p_tab_stops) {
 }
 
 void TextParagraph::set_justification_flags(BitField<TextServer::JustificationFlag> p_flags) {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	if (jst_flags != p_flags) {
@@ -435,10 +462,12 @@ void TextParagraph::set_justification_flags(BitField<TextServer::JustificationFl
 }
 
 BitField<TextServer::JustificationFlag> TextParagraph::get_justification_flags() const {
+	ZoneScopedS(60);
 	return jst_flags;
 }
 
 void TextParagraph::set_break_flags(BitField<TextServer::LineBreakFlag> p_flags) {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	if (brk_flags != p_flags) {
@@ -448,10 +477,12 @@ void TextParagraph::set_break_flags(BitField<TextServer::LineBreakFlag> p_flags)
 }
 
 BitField<TextServer::LineBreakFlag> TextParagraph::get_break_flags() const {
+	ZoneScopedS(60);
 	return brk_flags;
 }
 
 void TextParagraph::set_text_overrun_behavior(TextServer::OverrunBehavior p_behavior) {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	if (overrun_behavior != p_behavior) {
@@ -461,10 +492,12 @@ void TextParagraph::set_text_overrun_behavior(TextServer::OverrunBehavior p_beha
 }
 
 TextServer::OverrunBehavior TextParagraph::get_text_overrun_behavior() const {
+	ZoneScopedS(60);
 	return overrun_behavior;
 }
 
 void TextParagraph::set_width(float p_width) {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	if (width != p_width) {
@@ -474,10 +507,12 @@ void TextParagraph::set_width(float p_width) {
 }
 
 float TextParagraph::get_width() const {
+	ZoneScopedS(60);
 	return width;
 }
 
 Size2 TextParagraph::get_non_wrapped_size() const {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	const_cast<TextParagraph *>(this)->_shape_lines();
@@ -489,6 +524,7 @@ Size2 TextParagraph::get_non_wrapped_size() const {
 }
 
 Size2 TextParagraph::get_size() const {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	const_cast<TextParagraph *>(this)->_shape_lines();
@@ -508,6 +544,7 @@ Size2 TextParagraph::get_size() const {
 }
 
 int TextParagraph::get_line_count() const {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	const_cast<TextParagraph *>(this)->_shape_lines();
@@ -515,6 +552,7 @@ int TextParagraph::get_line_count() const {
 }
 
 void TextParagraph::set_max_lines_visible(int p_lines) {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	if (p_lines != max_lines_visible) {
@@ -524,10 +562,12 @@ void TextParagraph::set_max_lines_visible(int p_lines) {
 }
 
 int TextParagraph::get_max_lines_visible() const {
+	ZoneScopedS(60);
 	return max_lines_visible;
 }
 
 Array TextParagraph::get_line_objects(int p_line) const {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	const_cast<TextParagraph *>(this)->_shape_lines();
@@ -536,6 +576,7 @@ Array TextParagraph::get_line_objects(int p_line) const {
 }
 
 Rect2 TextParagraph::get_line_object_rect(int p_line, Variant p_key) const {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	const_cast<TextParagraph *>(this)->_shape_lines();
@@ -627,6 +668,7 @@ Rect2 TextParagraph::get_line_object_rect(int p_line, Variant p_key) const {
 }
 
 Size2 TextParagraph::get_line_size(int p_line) const {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	const_cast<TextParagraph *>(this)->_shape_lines();
@@ -639,6 +681,7 @@ Size2 TextParagraph::get_line_size(int p_line) const {
 }
 
 Vector2i TextParagraph::get_line_range(int p_line) const {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	const_cast<TextParagraph *>(this)->_shape_lines();
@@ -647,6 +690,7 @@ Vector2i TextParagraph::get_line_range(int p_line) const {
 }
 
 float TextParagraph::get_line_ascent(int p_line) const {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	const_cast<TextParagraph *>(this)->_shape_lines();
@@ -655,6 +699,7 @@ float TextParagraph::get_line_ascent(int p_line) const {
 }
 
 float TextParagraph::get_line_descent(int p_line) const {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	const_cast<TextParagraph *>(this)->_shape_lines();
@@ -663,6 +708,7 @@ float TextParagraph::get_line_descent(int p_line) const {
 }
 
 float TextParagraph::get_line_width(int p_line) const {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	const_cast<TextParagraph *>(this)->_shape_lines();
@@ -671,6 +717,7 @@ float TextParagraph::get_line_width(int p_line) const {
 }
 
 float TextParagraph::get_line_underline_position(int p_line) const {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	const_cast<TextParagraph *>(this)->_shape_lines();
@@ -679,6 +726,7 @@ float TextParagraph::get_line_underline_position(int p_line) const {
 }
 
 float TextParagraph::get_line_underline_thickness(int p_line) const {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	const_cast<TextParagraph *>(this)->_shape_lines();
@@ -687,16 +735,19 @@ float TextParagraph::get_line_underline_thickness(int p_line) const {
 }
 
 Size2 TextParagraph::get_dropcap_size() const {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	return TS->shaped_text_get_size(dropcap_rid) + dropcap_margins.size + dropcap_margins.position;
 }
 
 int TextParagraph::get_dropcap_lines() const {
+	ZoneScopedS(60);
 	return dropcap_lines;
 }
 
 void TextParagraph::draw(RID p_canvas, const Vector2 &p_pos, const Color &p_color, const Color &p_dc_color) const {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	const_cast<TextParagraph *>(this)->_shape_lines();
@@ -800,6 +851,7 @@ void TextParagraph::draw(RID p_canvas, const Vector2 &p_pos, const Color &p_colo
 }
 
 void TextParagraph::draw_outline(RID p_canvas, const Vector2 &p_pos, int p_outline_size, const Color &p_color, const Color &p_dc_color) const {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	const_cast<TextParagraph *>(this)->_shape_lines();
@@ -902,6 +954,7 @@ void TextParagraph::draw_outline(RID p_canvas, const Vector2 &p_pos, int p_outli
 }
 
 int TextParagraph::hit_test(const Point2 &p_coords) const {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	const_cast<TextParagraph *>(this)->_shape_lines();
@@ -932,6 +985,7 @@ int TextParagraph::hit_test(const Point2 &p_coords) const {
 }
 
 void TextParagraph::draw_dropcap(RID p_canvas, const Vector2 &p_pos, const Color &p_color) const {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	Vector2 ofs = p_pos;
@@ -956,6 +1010,7 @@ void TextParagraph::draw_dropcap(RID p_canvas, const Vector2 &p_pos, const Color
 }
 
 void TextParagraph::draw_dropcap_outline(RID p_canvas, const Vector2 &p_pos, int p_outline_size, const Color &p_color) const {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	Vector2 ofs = p_pos;
@@ -980,6 +1035,7 @@ void TextParagraph::draw_dropcap_outline(RID p_canvas, const Vector2 &p_pos, int
 }
 
 void TextParagraph::draw_line(RID p_canvas, const Vector2 &p_pos, int p_line, const Color &p_color) const {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	const_cast<TextParagraph *>(this)->_shape_lines();
@@ -996,6 +1052,7 @@ void TextParagraph::draw_line(RID p_canvas, const Vector2 &p_pos, int p_line, co
 }
 
 void TextParagraph::draw_line_outline(RID p_canvas, const Vector2 &p_pos, int p_line, int p_outline_size, const Color &p_color) const {
+	ZoneScopedS(60);
 	_THREAD_SAFE_METHOD_
 
 	const_cast<TextParagraph *>(this)->_shape_lines();
@@ -1011,6 +1068,7 @@ void TextParagraph::draw_line_outline(RID p_canvas, const Vector2 &p_pos, int p_
 }
 
 TextParagraph::TextParagraph(const String &p_text, const Ref<Font> &p_font, int p_font_size, const String &p_language, float p_width, TextServer::Direction p_direction, TextServer::Orientation p_orientation) {
+	ZoneScopedS(60);
 	rid = TS->create_shaped_text(p_direction, p_orientation);
 	if (p_font.is_valid()) {
 		TS->shaped_text_add_string(rid, p_text, p_font->get_rids(), p_font_size, p_font->get_opentype_features(), p_language);
@@ -1022,11 +1080,13 @@ TextParagraph::TextParagraph(const String &p_text, const Ref<Font> &p_font, int 
 }
 
 TextParagraph::TextParagraph() {
+	ZoneScopedS(60);
 	rid = TS->create_shaped_text();
 	dropcap_rid = TS->create_shaped_text();
 }
 
 TextParagraph::~TextParagraph() {
+	ZoneScopedS(60);
 	for (int i = 0; i < (int)lines_rid.size(); i++) {
 		TS->free_rid(lines_rid[i]);
 	}

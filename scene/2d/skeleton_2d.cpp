@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  skeleton_2d.cpp                                                      */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "skeleton_2d.h"
 
 #ifdef TOOLS_ENABLED
@@ -37,6 +68,7 @@
 #endif //TOOLS_ENABLED
 
 bool Bone2D::_set(const StringName &p_path, const Variant &p_value) {
+	ZoneScopedS(60);
 	String path = p_path;
 
 	if (path.begins_with("auto_calculate_length_and_angle")) {
@@ -59,6 +91,7 @@ bool Bone2D::_set(const StringName &p_path, const Variant &p_value) {
 }
 
 bool Bone2D::_get(const StringName &p_path, Variant &r_ret) const {
+	ZoneScopedS(60);
 	String path = p_path;
 
 	if (path.begins_with("auto_calculate_length_and_angle")) {
@@ -81,6 +114,7 @@ bool Bone2D::_get(const StringName &p_path, Variant &r_ret) const {
 }
 
 void Bone2D::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	p_list->push_back(PropertyInfo(Variant::BOOL, PNAME("auto_calculate_length_and_angle"), PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT));
 	if (!autocalculate_length_and_angle) {
 		p_list->push_back(PropertyInfo(Variant::FLOAT, PNAME("length"), PROPERTY_HINT_RANGE, "1, 1024, 1", PROPERTY_USAGE_DEFAULT));
@@ -93,6 +127,7 @@ void Bone2D::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 void Bone2D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			Node *parent = get_parent();
@@ -317,6 +352,7 @@ void Bone2D::_notification(int p_what) {
 
 #ifdef TOOLS_ENABLED
 bool Bone2D::_editor_get_bone_shape(Vector<Vector2> *p_shape, Vector<Vector2> *p_outline_shape, Bone2D *p_other_bone) {
+	ZoneScopedS(60);
 	int bone_width = EDITOR_GET("editors/2d/bone_width");
 	int bone_outline_width = EDITOR_GET("editors/2d/bone_outline_size");
 
@@ -362,16 +398,19 @@ bool Bone2D::_editor_get_bone_shape(Vector<Vector2> *p_shape, Vector<Vector2> *p
 }
 
 void Bone2D::_editor_set_show_bone_gizmo(bool p_show_gizmo) {
+	ZoneScopedS(60);
 	_editor_show_bone_gizmo = p_show_gizmo;
 	queue_redraw();
 }
 
 bool Bone2D::_editor_get_show_bone_gizmo() const {
+	ZoneScopedS(60);
 	return _editor_show_bone_gizmo;
 }
 #endif // TOOLS_ENABLED
 
 void Bone2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_rest", "rest"), &Bone2D::set_rest);
 	ClassDB::bind_method(D_METHOD("get_rest"), &Bone2D::get_rest);
 	ClassDB::bind_method(D_METHOD("apply_rest"), &Bone2D::apply_rest);
@@ -392,6 +431,7 @@ void Bone2D::_bind_methods() {
 }
 
 void Bone2D::set_rest(const Transform2D &p_rest) {
+	ZoneScopedS(60);
 	rest = p_rest;
 	if (skeleton) {
 		skeleton->_make_bone_setup_dirty();
@@ -401,10 +441,12 @@ void Bone2D::set_rest(const Transform2D &p_rest) {
 }
 
 Transform2D Bone2D::get_rest() const {
+	ZoneScopedS(60);
 	return rest;
 }
 
 Transform2D Bone2D::get_skeleton_rest() const {
+	ZoneScopedS(60);
 	if (parent_bone) {
 		return parent_bone->get_skeleton_rest() * rest;
 	} else {
@@ -413,26 +455,31 @@ Transform2D Bone2D::get_skeleton_rest() const {
 }
 
 void Bone2D::apply_rest() {
+	ZoneScopedS(60);
 	set_transform(rest);
 }
 
 void Bone2D::set_default_length(real_t p_length) {
+	ZoneScopedS(60);
 	WARN_DEPRECATED_MSG("set_default_length is deprecated. Please use set_length instead!");
 	set_length(p_length);
 }
 
 real_t Bone2D::get_default_length() const {
+	ZoneScopedS(60);
 	WARN_DEPRECATED_MSG("get_default_length is deprecated. Please use get_length instead!");
 	return get_length();
 }
 
 int Bone2D::get_index_in_skeleton() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!skeleton, -1);
 	skeleton->_update_bone_setup();
 	return skeleton_index;
 }
 
 PackedStringArray Bone2D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 	if (!skeleton) {
 		if (parent_bone) {
@@ -450,6 +497,7 @@ PackedStringArray Bone2D::get_configuration_warnings() const {
 }
 
 void Bone2D::calculate_length_and_rotation() {
+	ZoneScopedS(60);
 	// if there is at least a single child Bone2D node, we can calculate
 	// the length and direction. We will always just use the first Bone2D for this.
 	bool calculated = false;
@@ -476,6 +524,7 @@ void Bone2D::calculate_length_and_rotation() {
 }
 
 void Bone2D::set_autocalculate_length_and_angle(bool p_autocalculate) {
+	ZoneScopedS(60);
 	autocalculate_length_and_angle = p_autocalculate;
 	if (autocalculate_length_and_angle) {
 		calculate_length_and_rotation();
@@ -484,10 +533,12 @@ void Bone2D::set_autocalculate_length_and_angle(bool p_autocalculate) {
 }
 
 bool Bone2D::get_autocalculate_length_and_angle() const {
+	ZoneScopedS(60);
 	return autocalculate_length_and_angle;
 }
 
 void Bone2D::set_length(real_t p_length) {
+	ZoneScopedS(60);
 	length = p_length;
 
 #ifdef TOOLS_ENABLED
@@ -496,10 +547,12 @@ void Bone2D::set_length(real_t p_length) {
 }
 
 real_t Bone2D::get_length() const {
+	ZoneScopedS(60);
 	return length;
 }
 
 void Bone2D::set_bone_angle(real_t p_angle) {
+	ZoneScopedS(60);
 	bone_angle = p_angle;
 
 #ifdef TOOLS_ENABLED
@@ -508,10 +561,12 @@ void Bone2D::set_bone_angle(real_t p_angle) {
 }
 
 real_t Bone2D::get_bone_angle() const {
+	ZoneScopedS(60);
 	return bone_angle;
 }
 
 Bone2D::Bone2D() {
+	ZoneScopedS(60);
 	skeleton = nullptr;
 	parent_bone = nullptr;
 	skeleton_index = -1;
@@ -537,6 +592,7 @@ Bone2D::~Bone2D() {
 //////////////////////////////////////
 
 bool Skeleton2D::_set(const StringName &p_path, const Variant &p_value) {
+	ZoneScopedS(60);
 	String path = p_path;
 
 	if (path.begins_with("modification_stack")) {
@@ -547,6 +603,7 @@ bool Skeleton2D::_set(const StringName &p_path, const Variant &p_value) {
 }
 
 bool Skeleton2D::_get(const StringName &p_path, Variant &r_ret) const {
+	ZoneScopedS(60);
 	String path = p_path;
 
 	if (path.begins_with("modification_stack")) {
@@ -557,6 +614,7 @@ bool Skeleton2D::_get(const StringName &p_path, Variant &r_ret) const {
 }
 
 void Skeleton2D::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	p_list->push_back(
 			PropertyInfo(Variant::OBJECT, PNAME("modification_stack"),
 					PROPERTY_HINT_RESOURCE_TYPE,
@@ -565,6 +623,7 @@ void Skeleton2D::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 void Skeleton2D::_make_bone_setup_dirty() {
+	ZoneScopedS(60);
 	if (bone_setup_dirty) {
 		return;
 	}
@@ -575,6 +634,7 @@ void Skeleton2D::_make_bone_setup_dirty() {
 }
 
 void Skeleton2D::_update_bone_setup() {
+	ZoneScopedS(60);
 	if (!bone_setup_dirty) {
 		return;
 	}
@@ -603,6 +663,7 @@ void Skeleton2D::_update_bone_setup() {
 }
 
 void Skeleton2D::_make_transform_dirty() {
+	ZoneScopedS(60);
 	if (transform_dirty) {
 		return;
 	}
@@ -613,6 +674,7 @@ void Skeleton2D::_make_transform_dirty() {
 }
 
 void Skeleton2D::_update_transform() {
+	ZoneScopedS(60);
 	if (bone_setup_dirty) {
 		_update_bone_setup();
 		return; //above will update transform anyway
@@ -639,6 +701,7 @@ void Skeleton2D::_update_transform() {
 }
 
 int Skeleton2D::get_bone_count() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!is_inside_tree(), 0);
 
 	if (bone_setup_dirty) {
@@ -649,6 +712,7 @@ int Skeleton2D::get_bone_count() const {
 }
 
 Bone2D *Skeleton2D::get_bone(int p_idx) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!is_inside_tree(), nullptr);
 	ERR_FAIL_INDEX_V(p_idx, bones.size(), nullptr);
 
@@ -656,6 +720,7 @@ Bone2D *Skeleton2D::get_bone(int p_idx) {
 }
 
 void Skeleton2D::_notification(int p_what) {
+	ZoneScopedS(60);
 	if (p_what == NOTIFICATION_READY) {
 		if (bone_setup_dirty) {
 			_update_bone_setup();
@@ -689,10 +754,12 @@ void Skeleton2D::_notification(int p_what) {
 }
 
 RID Skeleton2D::get_skeleton() const {
+	ZoneScopedS(60);
 	return skeleton;
 }
 
 void Skeleton2D::set_bone_local_pose_override(int p_bone_idx, Transform2D p_override, real_t p_amount, bool p_persistent) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_MSG(p_bone_idx, bones.size(), "Bone index is out of range!");
 	bones.write[p_bone_idx].local_pose_override = p_override;
 	bones.write[p_bone_idx].local_pose_override_amount = p_amount;
@@ -700,11 +767,13 @@ void Skeleton2D::set_bone_local_pose_override(int p_bone_idx, Transform2D p_over
 }
 
 Transform2D Skeleton2D::get_bone_local_pose_override(int p_bone_idx) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V_MSG(p_bone_idx, bones.size(), Transform2D(), "Bone index is out of range!");
 	return bones[p_bone_idx].local_pose_override;
 }
 
 void Skeleton2D::set_modification_stack(Ref<SkeletonModificationStack2D> p_stack) {
+	ZoneScopedS(60);
 	if (modification_stack.is_valid()) {
 		modification_stack->is_setup = false;
 		modification_stack->set_skeleton(nullptr);
@@ -727,10 +796,12 @@ void Skeleton2D::set_modification_stack(Ref<SkeletonModificationStack2D> p_stack
 }
 
 Ref<SkeletonModificationStack2D> Skeleton2D::get_modification_stack() const {
+	ZoneScopedS(60);
 	return modification_stack;
 }
 
 void Skeleton2D::execute_modifications(real_t p_delta, int p_execution_mode) {
+	ZoneScopedS(60);
 	if (!modification_stack.is_valid()) {
 		return;
 	}
@@ -779,6 +850,7 @@ void Skeleton2D::execute_modifications(real_t p_delta, int p_execution_mode) {
 }
 
 void Skeleton2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("_update_bone_setup"), &Skeleton2D::_update_bone_setup);
 	ClassDB::bind_method(D_METHOD("_update_transform"), &Skeleton2D::_update_transform);
 
@@ -798,10 +870,12 @@ void Skeleton2D::_bind_methods() {
 }
 
 Skeleton2D::Skeleton2D() {
+	ZoneScopedS(60);
 	skeleton = RS::get_singleton()->skeleton_create();
 	set_notify_transform(true);
 }
 
 Skeleton2D::~Skeleton2D() {
+	ZoneScopedS(60);
 	RS::get_singleton()->free(skeleton);
 }

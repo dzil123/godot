@@ -28,11 +28,43 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  collision_object_3d.cpp                                              */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "collision_object_3d.h"
 
 #include "scene/scene_string_names.h"
 
 void CollisionObject3D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			if (_are_collision_shapes_visible()) {
@@ -122,6 +154,7 @@ void CollisionObject3D::_notification(int p_what) {
 }
 
 void CollisionObject3D::set_collision_layer(uint32_t p_layer) {
+	ZoneScopedS(60);
 	collision_layer = p_layer;
 	if (area) {
 		PhysicsServer3D::get_singleton()->area_set_collision_layer(get_rid(), p_layer);
@@ -131,10 +164,12 @@ void CollisionObject3D::set_collision_layer(uint32_t p_layer) {
 }
 
 uint32_t CollisionObject3D::get_collision_layer() const {
+	ZoneScopedS(60);
 	return collision_layer;
 }
 
 void CollisionObject3D::set_collision_mask(uint32_t p_mask) {
+	ZoneScopedS(60);
 	collision_mask = p_mask;
 	if (area) {
 		PhysicsServer3D::get_singleton()->area_set_collision_mask(get_rid(), p_mask);
@@ -144,10 +179,12 @@ void CollisionObject3D::set_collision_mask(uint32_t p_mask) {
 }
 
 uint32_t CollisionObject3D::get_collision_mask() const {
+	ZoneScopedS(60);
 	return collision_mask;
 }
 
 void CollisionObject3D::set_collision_layer_value(int p_layer_number, bool p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_layer_number < 1, "Collision layer number must be between 1 and 32 inclusive.");
 	ERR_FAIL_COND_MSG(p_layer_number > 32, "Collision layer number must be between 1 and 32 inclusive.");
 	uint32_t collision_layer_new = get_collision_layer();
@@ -160,12 +197,14 @@ void CollisionObject3D::set_collision_layer_value(int p_layer_number, bool p_val
 }
 
 bool CollisionObject3D::get_collision_layer_value(int p_layer_number) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(p_layer_number < 1, false, "Collision layer number must be between 1 and 32 inclusive.");
 	ERR_FAIL_COND_V_MSG(p_layer_number > 32, false, "Collision layer number must be between 1 and 32 inclusive.");
 	return get_collision_layer() & (1 << (p_layer_number - 1));
 }
 
 void CollisionObject3D::set_collision_mask_value(int p_layer_number, bool p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_layer_number < 1, "Collision layer number must be between 1 and 32 inclusive.");
 	ERR_FAIL_COND_MSG(p_layer_number > 32, "Collision layer number must be between 1 and 32 inclusive.");
 	uint32_t mask = get_collision_mask();
@@ -178,12 +217,14 @@ void CollisionObject3D::set_collision_mask_value(int p_layer_number, bool p_valu
 }
 
 bool CollisionObject3D::get_collision_mask_value(int p_layer_number) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(p_layer_number < 1, false, "Collision layer number must be between 1 and 32 inclusive.");
 	ERR_FAIL_COND_V_MSG(p_layer_number > 32, false, "Collision layer number must be between 1 and 32 inclusive.");
 	return get_collision_mask() & (1 << (p_layer_number - 1));
 }
 
 void CollisionObject3D::set_collision_priority(real_t p_priority) {
+	ZoneScopedS(60);
 	collision_priority = p_priority;
 	if (!area) {
 		PhysicsServer3D::get_singleton()->body_set_collision_priority(get_rid(), p_priority);
@@ -191,10 +232,12 @@ void CollisionObject3D::set_collision_priority(real_t p_priority) {
 }
 
 real_t CollisionObject3D::get_collision_priority() const {
+	ZoneScopedS(60);
 	return collision_priority;
 }
 
 void CollisionObject3D::set_disable_mode(DisableMode p_mode) {
+	ZoneScopedS(60);
 	if (disable_mode == p_mode) {
 		return;
 	}
@@ -215,10 +258,12 @@ void CollisionObject3D::set_disable_mode(DisableMode p_mode) {
 }
 
 CollisionObject3D::DisableMode CollisionObject3D::get_disable_mode() const {
+	ZoneScopedS(60);
 	return disable_mode;
 }
 
 void CollisionObject3D::_apply_disabled() {
+	ZoneScopedS(60);
 	switch (disable_mode) {
 		case DISABLE_MODE_REMOVE: {
 			if (is_inside_tree()) {
@@ -243,6 +288,7 @@ void CollisionObject3D::_apply_disabled() {
 }
 
 void CollisionObject3D::_apply_enabled() {
+	ZoneScopedS(60);
 	switch (disable_mode) {
 		case DISABLE_MODE_REMOVE: {
 			if (is_inside_tree()) {
@@ -268,11 +314,13 @@ void CollisionObject3D::_apply_enabled() {
 }
 
 void CollisionObject3D::_input_event_call(Camera3D *p_camera, const Ref<InputEvent> &p_input_event, const Vector3 &p_pos, const Vector3 &p_normal, int p_shape) {
+	ZoneScopedS(60);
 	GDVIRTUAL_CALL(_input_event, p_camera, p_input_event, p_pos, p_normal, p_shape);
 	emit_signal(SceneStringNames::get_singleton()->input_event, p_camera, p_input_event, p_pos, p_normal, p_shape);
 }
 
 void CollisionObject3D::_mouse_enter() {
+	ZoneScopedS(60);
 	if (get_script_instance()) {
 		get_script_instance()->call(SceneStringNames::get_singleton()->_mouse_enter);
 	}
@@ -280,6 +328,7 @@ void CollisionObject3D::_mouse_enter() {
 }
 
 void CollisionObject3D::_mouse_exit() {
+	ZoneScopedS(60);
 	if (get_script_instance()) {
 		get_script_instance()->call(SceneStringNames::get_singleton()->_mouse_exit);
 	}
@@ -287,6 +336,7 @@ void CollisionObject3D::_mouse_exit() {
 }
 
 void CollisionObject3D::set_body_mode(PhysicsServer3D::BodyMode p_mode) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(area);
 
 	if (body_mode == p_mode) {
@@ -303,14 +353,17 @@ void CollisionObject3D::set_body_mode(PhysicsServer3D::BodyMode p_mode) {
 }
 
 void CollisionObject3D::set_only_update_transform_changes(bool p_enable) {
+	ZoneScopedS(60);
 	only_update_transform_changes = p_enable;
 }
 
 bool CollisionObject3D::is_only_update_transform_changes_enabled() const {
+	ZoneScopedS(60);
 	return only_update_transform_changes;
 }
 
 void CollisionObject3D::_update_pickable() {
+	ZoneScopedS(60);
 	if (!is_inside_tree()) {
 		return;
 	}
@@ -324,10 +377,12 @@ void CollisionObject3D::_update_pickable() {
 }
 
 bool CollisionObject3D::_are_collision_shapes_visible() {
+	ZoneScopedS(60);
 	return is_inside_tree() && get_tree()->is_debugging_collisions_hint() && !Engine::get_singleton()->is_editor_hint();
 }
 
 void CollisionObject3D::_update_shape_data(uint32_t p_owner) {
+	ZoneScopedS(60);
 	if (_are_collision_shapes_visible()) {
 		if (debug_shapes_to_update.is_empty()) {
 			callable_mp(this, &CollisionObject3D::_update_debug_shapes).call_deferred();
@@ -337,6 +392,7 @@ void CollisionObject3D::_update_shape_data(uint32_t p_owner) {
 }
 
 void CollisionObject3D::_shape_changed(const Ref<Shape3D> &p_shape) {
+	ZoneScopedS(60);
 	for (KeyValue<uint32_t, ShapeData> &E : shapes) {
 		ShapeData &shapedata = E.value;
 		ShapeData::ShapeBase *shape_bases = shapedata.shapes.ptrw();
@@ -351,6 +407,7 @@ void CollisionObject3D::_shape_changed(const Ref<Shape3D> &p_shape) {
 }
 
 void CollisionObject3D::_update_debug_shapes() {
+	ZoneScopedS(60);
 	if (!is_inside_tree()) {
 		debug_shapes_to_update.clear();
 		return;
@@ -392,6 +449,7 @@ void CollisionObject3D::_update_debug_shapes() {
 }
 
 void CollisionObject3D::_clear_debug_shapes() {
+	ZoneScopedS(60);
 	for (KeyValue<uint32_t, ShapeData> &E : shapes) {
 		ShapeData &shapedata = E.value;
 		ShapeData::ShapeBase *shape_bases = shapedata.shapes.ptrw();
@@ -410,6 +468,7 @@ void CollisionObject3D::_clear_debug_shapes() {
 }
 
 void CollisionObject3D::_on_transform_changed() {
+	ZoneScopedS(60);
 	if (debug_shapes_count > 0 && !debug_shape_old_transform.is_equal_approx(get_global_transform())) {
 		debug_shape_old_transform = get_global_transform();
 		for (KeyValue<uint32_t, ShapeData> &E : shapes) {
@@ -426,15 +485,18 @@ void CollisionObject3D::_on_transform_changed() {
 }
 
 void CollisionObject3D::set_ray_pickable(bool p_ray_pickable) {
+	ZoneScopedS(60);
 	ray_pickable = p_ray_pickable;
 	_update_pickable();
 }
 
 bool CollisionObject3D::is_ray_pickable() const {
+	ZoneScopedS(60);
 	return ray_pickable;
 }
 
 void CollisionObject3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_collision_layer", "layer"), &CollisionObject3D::set_collision_layer);
 	ClassDB::bind_method(D_METHOD("get_collision_layer"), &CollisionObject3D::get_collision_layer);
 	ClassDB::bind_method(D_METHOD("set_collision_mask", "mask"), &CollisionObject3D::set_collision_mask);
@@ -493,6 +555,7 @@ void CollisionObject3D::_bind_methods() {
 }
 
 uint32_t CollisionObject3D::create_shape_owner(Object *p_owner) {
+	ZoneScopedS(60);
 	ShapeData sd;
 	uint32_t id;
 
@@ -510,6 +573,7 @@ uint32_t CollisionObject3D::create_shape_owner(Object *p_owner) {
 }
 
 void CollisionObject3D::remove_shape_owner(uint32_t owner) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!shapes.has(owner));
 
 	shape_owner_clear_shapes(owner);
@@ -518,6 +582,7 @@ void CollisionObject3D::remove_shape_owner(uint32_t owner) {
 }
 
 void CollisionObject3D::shape_owner_set_disabled(uint32_t p_owner, bool p_disabled) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!shapes.has(p_owner));
 
 	ShapeData &sd = shapes[p_owner];
@@ -537,18 +602,21 @@ void CollisionObject3D::shape_owner_set_disabled(uint32_t p_owner, bool p_disabl
 }
 
 bool CollisionObject3D::is_shape_owner_disabled(uint32_t p_owner) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!shapes.has(p_owner), false);
 
 	return shapes[p_owner].disabled;
 }
 
 void CollisionObject3D::get_shape_owners(List<uint32_t> *r_owners) {
+	ZoneScopedS(60);
 	for (const KeyValue<uint32_t, ShapeData> &E : shapes) {
 		r_owners->push_back(E.key);
 	}
 }
 
 PackedInt32Array CollisionObject3D::_get_shape_owners() {
+	ZoneScopedS(60);
 	PackedInt32Array ret;
 	for (const KeyValue<uint32_t, ShapeData> &E : shapes) {
 		ret.push_back(E.key);
@@ -558,6 +626,7 @@ PackedInt32Array CollisionObject3D::_get_shape_owners() {
 }
 
 void CollisionObject3D::shape_owner_set_transform(uint32_t p_owner, const Transform3D &p_transform) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!shapes.has(p_owner));
 
 	ShapeData &sd = shapes[p_owner];
@@ -573,18 +642,21 @@ void CollisionObject3D::shape_owner_set_transform(uint32_t p_owner, const Transf
 	_update_shape_data(p_owner);
 }
 Transform3D CollisionObject3D::shape_owner_get_transform(uint32_t p_owner) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!shapes.has(p_owner), Transform3D());
 
 	return shapes[p_owner].xform;
 }
 
 Object *CollisionObject3D::shape_owner_get_owner(uint32_t p_owner) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!shapes.has(p_owner), nullptr);
 
 	return ObjectDB::get_instance(shapes[p_owner].owner_id);
 }
 
 void CollisionObject3D::shape_owner_add_shape(uint32_t p_owner, const Ref<Shape3D> &p_shape) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!shapes.has(p_owner));
 	ERR_FAIL_COND(p_shape.is_null());
 
@@ -606,12 +678,14 @@ void CollisionObject3D::shape_owner_add_shape(uint32_t p_owner, const Ref<Shape3
 }
 
 int CollisionObject3D::shape_owner_get_shape_count(uint32_t p_owner) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!shapes.has(p_owner), 0);
 
 	return shapes[p_owner].shapes.size();
 }
 
 Ref<Shape3D> CollisionObject3D::shape_owner_get_shape(uint32_t p_owner, int p_shape) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!shapes.has(p_owner), Ref<Shape3D>());
 	ERR_FAIL_INDEX_V(p_shape, shapes[p_owner].shapes.size(), Ref<Shape3D>());
 
@@ -619,6 +693,7 @@ Ref<Shape3D> CollisionObject3D::shape_owner_get_shape(uint32_t p_owner, int p_sh
 }
 
 int CollisionObject3D::shape_owner_get_shape_index(uint32_t p_owner, int p_shape) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!shapes.has(p_owner), -1);
 	ERR_FAIL_INDEX_V(p_shape, shapes[p_owner].shapes.size(), -1);
 
@@ -626,6 +701,7 @@ int CollisionObject3D::shape_owner_get_shape_index(uint32_t p_owner, int p_shape
 }
 
 void CollisionObject3D::shape_owner_remove_shape(uint32_t p_owner, int p_shape) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!shapes.has(p_owner));
 	ERR_FAIL_INDEX(p_shape, shapes[p_owner].shapes.size());
 
@@ -660,6 +736,7 @@ void CollisionObject3D::shape_owner_remove_shape(uint32_t p_owner, int p_shape) 
 }
 
 void CollisionObject3D::shape_owner_clear_shapes(uint32_t p_owner) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!shapes.has(p_owner));
 
 	while (shape_owner_get_shape_count(p_owner) > 0) {
@@ -668,6 +745,7 @@ void CollisionObject3D::shape_owner_clear_shapes(uint32_t p_owner) {
 }
 
 uint32_t CollisionObject3D::shape_find_owner(int p_shape_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_shape_index, total_subshapes, UINT32_MAX);
 
 	for (const KeyValue<uint32_t, ShapeData> &E : shapes) {
@@ -683,6 +761,7 @@ uint32_t CollisionObject3D::shape_find_owner(int p_shape_index) const {
 }
 
 CollisionObject3D::CollisionObject3D(RID p_rid, bool p_area) {
+	ZoneScopedS(60);
 	rid = p_rid;
 	area = p_area;
 	set_notify_transform(true);
@@ -696,14 +775,17 @@ CollisionObject3D::CollisionObject3D(RID p_rid, bool p_area) {
 }
 
 void CollisionObject3D::set_capture_input_on_drag(bool p_capture) {
+	ZoneScopedS(60);
 	capture_input_on_drag = p_capture;
 }
 
 bool CollisionObject3D::get_capture_input_on_drag() const {
+	ZoneScopedS(60);
 	return capture_input_on_drag;
 }
 
 PackedStringArray CollisionObject3D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (shapes.is_empty()) {
@@ -714,6 +796,7 @@ PackedStringArray CollisionObject3D::get_configuration_warnings() const {
 }
 
 CollisionObject3D::CollisionObject3D() {
+	ZoneScopedS(60);
 	set_notify_transform(true);
 	//owner=
 
@@ -721,5 +804,6 @@ CollisionObject3D::CollisionObject3D() {
 }
 
 CollisionObject3D::~CollisionObject3D() {
+	ZoneScopedS(60);
 	PhysicsServer3D::get_singleton()->free(rid);
 }

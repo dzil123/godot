@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  skeleton_modification_2d_lookat.cpp                                  */
 /*************************************************************************/
@@ -28,14 +29,15 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "skeleton_modification_2d_lookat.h"
 #include "scene/2d/skeleton_2d.h"
+#include "skeleton_modification_2d_lookat.h"
 
 #ifdef TOOLS_ENABLED
 #include "editor/editor_settings.h"
 #endif // TOOLS_ENABLED
 
 bool SkeletonModification2DLookAt::_set(const StringName &p_path, const Variant &p_value) {
+	ZoneScopedS(60);
 	String path = p_path;
 
 	if (path.begins_with("enable_constraint")) {
@@ -62,6 +64,7 @@ bool SkeletonModification2DLookAt::_set(const StringName &p_path, const Variant 
 }
 
 bool SkeletonModification2DLookAt::_get(const StringName &p_path, Variant &r_ret) const {
+	ZoneScopedS(60);
 	String path = p_path;
 
 	if (path.begins_with("enable_constraint")) {
@@ -88,6 +91,7 @@ bool SkeletonModification2DLookAt::_get(const StringName &p_path, Variant &r_ret
 }
 
 void SkeletonModification2DLookAt::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	p_list->push_back(PropertyInfo(Variant::BOOL, "enable_constraint", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT));
 	if (enable_constraint) {
 		p_list->push_back(PropertyInfo(Variant::FLOAT, "constraint_angle_min", PROPERTY_HINT_RANGE, "-360, 360, 0.01", PROPERTY_USAGE_DEFAULT));
@@ -105,6 +109,7 @@ void SkeletonModification2DLookAt::_get_property_list(List<PropertyInfo> *p_list
 }
 
 void SkeletonModification2DLookAt::_execute(float p_delta) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!stack || !is_setup || stack->skeleton == nullptr,
 			"Modification is not setup and therefore cannot execute!");
 	if (!enabled) {
@@ -175,6 +180,7 @@ void SkeletonModification2DLookAt::_execute(float p_delta) {
 }
 
 void SkeletonModification2DLookAt::_setup_modification(SkeletonModificationStack2D *p_stack) {
+	ZoneScopedS(60);
 	stack = p_stack;
 
 	if (stack != nullptr) {
@@ -185,6 +191,7 @@ void SkeletonModification2DLookAt::_setup_modification(SkeletonModificationStack
 }
 
 void SkeletonModification2DLookAt::_draw_editor_gizmo() {
+	ZoneScopedS(60);
 	if (!enabled || !is_setup) {
 		return;
 	}
@@ -195,6 +202,7 @@ void SkeletonModification2DLookAt::_draw_editor_gizmo() {
 }
 
 void SkeletonModification2DLookAt::update_bone2d_cache() {
+	ZoneScopedS(60);
 	if (!is_setup || !stack) {
 		ERR_PRINT_ONCE("Cannot update Bone2D cache: modification is not properly setup!");
 		return;
@@ -226,19 +234,23 @@ void SkeletonModification2DLookAt::update_bone2d_cache() {
 }
 
 void SkeletonModification2DLookAt::set_bone2d_node(const NodePath &p_target_node) {
+	ZoneScopedS(60);
 	bone2d_node = p_target_node;
 	update_bone2d_cache();
 }
 
 NodePath SkeletonModification2DLookAt::get_bone2d_node() const {
+	ZoneScopedS(60);
 	return bone2d_node;
 }
 
 int SkeletonModification2DLookAt::get_bone_index() const {
+	ZoneScopedS(60);
 	return bone_idx;
 }
 
 void SkeletonModification2DLookAt::set_bone_index(int p_bone_idx) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_bone_idx < 0, "Bone index is out of range: The index is too low!");
 
 	if (is_setup && stack) {
@@ -260,6 +272,7 @@ void SkeletonModification2DLookAt::set_bone_index(int p_bone_idx) {
 }
 
 void SkeletonModification2DLookAt::update_target_cache() {
+	ZoneScopedS(60);
 	if (!is_setup || !stack) {
 		ERR_PRINT_ONCE("Cannot update target cache: modification is not properly setup!");
 		return;
@@ -281,23 +294,28 @@ void SkeletonModification2DLookAt::update_target_cache() {
 }
 
 void SkeletonModification2DLookAt::set_target_node(const NodePath &p_target_node) {
+	ZoneScopedS(60);
 	target_node = p_target_node;
 	update_target_cache();
 }
 
 NodePath SkeletonModification2DLookAt::get_target_node() const {
+	ZoneScopedS(60);
 	return target_node;
 }
 
 float SkeletonModification2DLookAt::get_additional_rotation() const {
+	ZoneScopedS(60);
 	return additional_rotation;
 }
 
 void SkeletonModification2DLookAt::set_additional_rotation(float p_rotation) {
+	ZoneScopedS(60);
 	additional_rotation = p_rotation;
 }
 
 void SkeletonModification2DLookAt::set_enable_constraint(bool p_constraint) {
+	ZoneScopedS(60);
 	enable_constraint = p_constraint;
 	notify_property_list_changed();
 #ifdef TOOLS_ENABLED
@@ -308,10 +326,12 @@ void SkeletonModification2DLookAt::set_enable_constraint(bool p_constraint) {
 }
 
 bool SkeletonModification2DLookAt::get_enable_constraint() const {
+	ZoneScopedS(60);
 	return enable_constraint;
 }
 
 void SkeletonModification2DLookAt::set_constraint_angle_min(float p_angle_min) {
+	ZoneScopedS(60);
 	constraint_angle_min = p_angle_min;
 #ifdef TOOLS_ENABLED
 	if (stack && is_setup) {
@@ -321,10 +341,12 @@ void SkeletonModification2DLookAt::set_constraint_angle_min(float p_angle_min) {
 }
 
 float SkeletonModification2DLookAt::get_constraint_angle_min() const {
+	ZoneScopedS(60);
 	return constraint_angle_min;
 }
 
 void SkeletonModification2DLookAt::set_constraint_angle_max(float p_angle_max) {
+	ZoneScopedS(60);
 	constraint_angle_max = p_angle_max;
 #ifdef TOOLS_ENABLED
 	if (stack && is_setup) {
@@ -334,10 +356,12 @@ void SkeletonModification2DLookAt::set_constraint_angle_max(float p_angle_max) {
 }
 
 float SkeletonModification2DLookAt::get_constraint_angle_max() const {
+	ZoneScopedS(60);
 	return constraint_angle_max;
 }
 
 void SkeletonModification2DLookAt::set_constraint_angle_invert(bool p_invert) {
+	ZoneScopedS(60);
 	constraint_angle_invert = p_invert;
 #ifdef TOOLS_ENABLED
 	if (stack && is_setup) {
@@ -347,10 +371,12 @@ void SkeletonModification2DLookAt::set_constraint_angle_invert(bool p_invert) {
 }
 
 bool SkeletonModification2DLookAt::get_constraint_angle_invert() const {
+	ZoneScopedS(60);
 	return constraint_angle_invert;
 }
 
 void SkeletonModification2DLookAt::set_constraint_in_localspace(bool p_constraint_in_localspace) {
+	ZoneScopedS(60);
 	constraint_in_localspace = p_constraint_in_localspace;
 #ifdef TOOLS_ENABLED
 	if (stack && is_setup) {
@@ -360,10 +386,12 @@ void SkeletonModification2DLookAt::set_constraint_in_localspace(bool p_constrain
 }
 
 bool SkeletonModification2DLookAt::get_constraint_in_localspace() const {
+	ZoneScopedS(60);
 	return constraint_in_localspace;
 }
 
 void SkeletonModification2DLookAt::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_bone2d_node", "bone2d_nodepath"), &SkeletonModification2DLookAt::set_bone2d_node);
 	ClassDB::bind_method(D_METHOD("get_bone2d_node"), &SkeletonModification2DLookAt::get_bone2d_node);
 	ClassDB::bind_method(D_METHOD("set_bone_index", "bone_idx"), &SkeletonModification2DLookAt::set_bone_index);
@@ -390,6 +418,7 @@ void SkeletonModification2DLookAt::_bind_methods() {
 }
 
 SkeletonModification2DLookAt::SkeletonModification2DLookAt() {
+	ZoneScopedS(60);
 	stack = nullptr;
 	is_setup = false;
 	bone_idx = -1;

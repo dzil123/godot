@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  concave_polygon_shape_3d.cpp                                         */
 /*************************************************************************/
@@ -33,6 +34,7 @@
 #include "servers/physics_server_3d.h"
 
 Vector<Vector3> ConcavePolygonShape3D::get_debug_mesh_lines() const {
+	ZoneScopedS(60);
 	HashSet<DrawEdge, DrawEdge> edges;
 
 	int index_count = faces.size();
@@ -60,6 +62,7 @@ Vector<Vector3> ConcavePolygonShape3D::get_debug_mesh_lines() const {
 }
 
 real_t ConcavePolygonShape3D::get_enclosing_radius() const {
+	ZoneScopedS(60);
 	Vector<Vector3> data = get_faces();
 	const Vector3 *read = data.ptr();
 	real_t r = 0.0;
@@ -70,6 +73,7 @@ real_t ConcavePolygonShape3D::get_enclosing_radius() const {
 }
 
 void ConcavePolygonShape3D::_update_shape() {
+	ZoneScopedS(60);
 	Dictionary d;
 	d["faces"] = faces;
 	d["backface_collision"] = backface_collision;
@@ -79,16 +83,19 @@ void ConcavePolygonShape3D::_update_shape() {
 }
 
 void ConcavePolygonShape3D::set_faces(const Vector<Vector3> &p_faces) {
+	ZoneScopedS(60);
 	faces = p_faces;
 	_update_shape();
 	notify_change_to_owners();
 }
 
 Vector<Vector3> ConcavePolygonShape3D::get_faces() const {
+	ZoneScopedS(60);
 	return faces;
 }
 
 void ConcavePolygonShape3D::set_backface_collision_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	backface_collision = p_enabled;
 
 	if (!faces.is_empty()) {
@@ -98,10 +105,12 @@ void ConcavePolygonShape3D::set_backface_collision_enabled(bool p_enabled) {
 }
 
 bool ConcavePolygonShape3D::is_backface_collision_enabled() const {
+	ZoneScopedS(60);
 	return backface_collision;
 }
 
 void ConcavePolygonShape3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_faces", "faces"), &ConcavePolygonShape3D::set_faces);
 	ClassDB::bind_method(D_METHOD("get_faces"), &ConcavePolygonShape3D::get_faces);
 

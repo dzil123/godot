@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  theme_db.cpp                                                         */
 /*************************************************************************/
@@ -41,6 +42,7 @@
 
 // Default engine theme creation and configuration.
 void ThemeDB::initialize_theme() {
+	ZoneScopedS(60);
 	// Allow creating the default theme at a different scale to suit higher/lower base resolutions.
 	float default_theme_scale = GLOBAL_DEF("gui/theme/default_theme_scale", 1.0);
 	ProjectSettings::get_singleton()->set_custom_property_info("gui/theme/default_theme_scale", PropertyInfo(Variant::FLOAT, "gui/theme/default_theme_scale", PROPERTY_HINT_RANGE, "0.5,8,0.01", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_RESTART_IF_CHANGED));
@@ -94,6 +96,7 @@ void ThemeDB::initialize_theme() {
 }
 
 void ThemeDB::initialize_theme_noproject() {
+	ZoneScopedS(60);
 	if (RenderingServer::get_singleton()) {
 		make_default_theme(1.0, Ref<Font>());
 	}
@@ -102,24 +105,29 @@ void ThemeDB::initialize_theme_noproject() {
 // Universal fallback Theme resources.
 
 void ThemeDB::set_default_theme(const Ref<Theme> &p_default) {
+	ZoneScopedS(60);
 	default_theme = p_default;
 }
 
 Ref<Theme> ThemeDB::get_default_theme() {
+	ZoneScopedS(60);
 	return default_theme;
 }
 
 void ThemeDB::set_project_theme(const Ref<Theme> &p_project_default) {
+	ZoneScopedS(60);
 	project_theme = p_project_default;
 }
 
 Ref<Theme> ThemeDB::get_project_theme() {
+	ZoneScopedS(60);
 	return project_theme;
 }
 
 // Universal fallback values for theme item types.
 
 void ThemeDB::set_fallback_base_scale(float p_base_scale) {
+	ZoneScopedS(60);
 	if (fallback_base_scale == p_base_scale) {
 		return;
 	}
@@ -129,10 +137,12 @@ void ThemeDB::set_fallback_base_scale(float p_base_scale) {
 }
 
 float ThemeDB::get_fallback_base_scale() {
+	ZoneScopedS(60);
 	return fallback_base_scale;
 }
 
 void ThemeDB::set_fallback_font(const Ref<Font> &p_font) {
+	ZoneScopedS(60);
 	if (fallback_font == p_font) {
 		return;
 	}
@@ -142,10 +152,12 @@ void ThemeDB::set_fallback_font(const Ref<Font> &p_font) {
 }
 
 Ref<Font> ThemeDB::get_fallback_font() {
+	ZoneScopedS(60);
 	return fallback_font;
 }
 
 void ThemeDB::set_fallback_font_size(int p_font_size) {
+	ZoneScopedS(60);
 	if (fallback_font_size == p_font_size) {
 		return;
 	}
@@ -155,10 +167,12 @@ void ThemeDB::set_fallback_font_size(int p_font_size) {
 }
 
 int ThemeDB::get_fallback_font_size() {
+	ZoneScopedS(60);
 	return fallback_font_size;
 }
 
 void ThemeDB::set_fallback_icon(const Ref<Texture2D> &p_icon) {
+	ZoneScopedS(60);
 	if (fallback_icon == p_icon) {
 		return;
 	}
@@ -168,10 +182,12 @@ void ThemeDB::set_fallback_icon(const Ref<Texture2D> &p_icon) {
 }
 
 Ref<Texture2D> ThemeDB::get_fallback_icon() {
+	ZoneScopedS(60);
 	return fallback_icon;
 }
 
 void ThemeDB::set_fallback_stylebox(const Ref<StyleBox> &p_stylebox) {
+	ZoneScopedS(60);
 	if (fallback_stylebox == p_stylebox) {
 		return;
 	}
@@ -181,11 +197,13 @@ void ThemeDB::set_fallback_stylebox(const Ref<StyleBox> &p_stylebox) {
 }
 
 Ref<StyleBox> ThemeDB::get_fallback_stylebox() {
+	ZoneScopedS(60);
 	return fallback_stylebox;
 }
 
 // Object methods.
 void ThemeDB::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_default_theme"), &ThemeDB::get_default_theme);
 	ClassDB::bind_method(D_METHOD("get_project_theme"), &ThemeDB::get_project_theme);
 
@@ -214,10 +232,12 @@ void ThemeDB::_bind_methods() {
 ThemeDB *ThemeDB::singleton = nullptr;
 
 ThemeDB *ThemeDB::get_singleton() {
+	ZoneScopedS(60);
 	return singleton;
 }
 
 ThemeDB::ThemeDB() {
+	ZoneScopedS(60);
 	singleton = this;
 
 	// Universal default values, final fallback for every theme.
@@ -226,6 +246,7 @@ ThemeDB::ThemeDB() {
 }
 
 ThemeDB::~ThemeDB() {
+	ZoneScopedS(60);
 	default_theme.unref();
 	project_theme.unref();
 

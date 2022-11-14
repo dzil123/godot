@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  syntax_highlighter.cpp                                               */
 /*************************************************************************/
@@ -34,6 +35,7 @@
 #include "scene/gui/text_edit.h"
 
 Dictionary SyntaxHighlighter::get_line_syntax_highlighting(int p_line) {
+	ZoneScopedS(60);
 	if (highlighting_cache.has(p_line)) {
 		return highlighting_cache[p_line];
 	}
@@ -52,6 +54,7 @@ Dictionary SyntaxHighlighter::get_line_syntax_highlighting(int p_line) {
 }
 
 void SyntaxHighlighter::_lines_edited_from(int p_from_line, int p_to_line) {
+	ZoneScopedS(60);
 	if (highlighting_cache.size() < 1) {
 		return;
 	}
@@ -65,6 +68,7 @@ void SyntaxHighlighter::_lines_edited_from(int p_from_line, int p_to_line) {
 }
 
 void SyntaxHighlighter::clear_highlighting_cache() {
+	ZoneScopedS(60);
 	highlighting_cache.clear();
 
 	if (GDVIRTUAL_CALL(_clear_highlighting_cache)) {
@@ -74,6 +78,7 @@ void SyntaxHighlighter::clear_highlighting_cache() {
 }
 
 void SyntaxHighlighter::update_cache() {
+	ZoneScopedS(60);
 	clear_highlighting_cache();
 
 	if (text_edit == nullptr) {
@@ -86,6 +91,7 @@ void SyntaxHighlighter::update_cache() {
 }
 
 void SyntaxHighlighter::set_text_edit(TextEdit *p_text_edit) {
+	ZoneScopedS(60);
 	if (text_edit && ObjectDB::get_instance(text_edit_instance_id)) {
 		text_edit->disconnect("lines_edited_from", callable_mp(this, &SyntaxHighlighter::_lines_edited_from));
 	}
@@ -100,10 +106,12 @@ void SyntaxHighlighter::set_text_edit(TextEdit *p_text_edit) {
 }
 
 TextEdit *SyntaxHighlighter::get_text_edit() {
+	ZoneScopedS(60);
 	return text_edit;
 }
 
 void SyntaxHighlighter::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_line_syntax_highlighting", "line"), &SyntaxHighlighter::get_line_syntax_highlighting);
 	ClassDB::bind_method(D_METHOD("update_cache"), &SyntaxHighlighter::update_cache);
 	ClassDB::bind_method(D_METHOD("clear_highlighting_cache"), &SyntaxHighlighter::clear_highlighting_cache);
@@ -117,6 +125,7 @@ void SyntaxHighlighter::_bind_methods() {
 ////////////////////////////////////////////////////////////////////////////////
 
 Dictionary CodeHighlighter::_get_line_syntax_highlighting_impl(int p_line) {
+	ZoneScopedS(60);
 	Dictionary color_map;
 
 	bool prev_is_char = false;
@@ -415,82 +424,99 @@ Dictionary CodeHighlighter::_get_line_syntax_highlighting_impl(int p_line) {
 }
 
 void CodeHighlighter::_clear_highlighting_cache() {
+	ZoneScopedS(60);
 	color_region_cache.clear();
 }
 
 void CodeHighlighter::_update_cache() {
+	ZoneScopedS(60);
 	font_color = text_edit->get_theme_color(SNAME("font_color"));
 }
 
 void CodeHighlighter::add_keyword_color(const String &p_keyword, const Color &p_color) {
+	ZoneScopedS(60);
 	keywords[p_keyword] = p_color;
 	clear_highlighting_cache();
 }
 
 void CodeHighlighter::remove_keyword_color(const String &p_keyword) {
+	ZoneScopedS(60);
 	keywords.erase(p_keyword);
 	clear_highlighting_cache();
 }
 
 bool CodeHighlighter::has_keyword_color(const String &p_keyword) const {
+	ZoneScopedS(60);
 	return keywords.has(p_keyword);
 }
 
 Color CodeHighlighter::get_keyword_color(const String &p_keyword) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!keywords.has(p_keyword), Color());
 	return keywords[p_keyword];
 }
 
 void CodeHighlighter::set_keyword_colors(const Dictionary p_keywords) {
+	ZoneScopedS(60);
 	keywords.clear();
 	keywords = p_keywords;
 	clear_highlighting_cache();
 }
 
 void CodeHighlighter::clear_keyword_colors() {
+	ZoneScopedS(60);
 	keywords.clear();
 	clear_highlighting_cache();
 }
 
 Dictionary CodeHighlighter::get_keyword_colors() const {
+	ZoneScopedS(60);
 	return keywords;
 }
 
 void CodeHighlighter::add_member_keyword_color(const String &p_member_keyword, const Color &p_color) {
+	ZoneScopedS(60);
 	member_keywords[p_member_keyword] = p_color;
 	clear_highlighting_cache();
 }
 
 void CodeHighlighter::remove_member_keyword_color(const String &p_member_keyword) {
+	ZoneScopedS(60);
 	member_keywords.erase(p_member_keyword);
 	clear_highlighting_cache();
 }
 
 bool CodeHighlighter::has_member_keyword_color(const String &p_member_keyword) const {
+	ZoneScopedS(60);
 	return member_keywords.has(p_member_keyword);
 }
 
 Color CodeHighlighter::get_member_keyword_color(const String &p_member_keyword) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!member_keywords.has(p_member_keyword), Color());
 	return member_keywords[p_member_keyword];
 }
 
 void CodeHighlighter::set_member_keyword_colors(const Dictionary &p_member_keywords) {
+	ZoneScopedS(60);
 	member_keywords.clear();
 	member_keywords = p_member_keywords;
 	clear_highlighting_cache();
 }
 
 void CodeHighlighter::clear_member_keyword_colors() {
+	ZoneScopedS(60);
 	member_keywords.clear();
 	clear_highlighting_cache();
 }
 
 Dictionary CodeHighlighter::get_member_keyword_colors() const {
+	ZoneScopedS(60);
 	return member_keywords;
 }
 
 void CodeHighlighter::add_color_region(const String &p_start_key, const String &p_end_key, const Color &p_color, bool p_line_only) {
+	ZoneScopedS(60);
 	for (int i = 0; i < p_start_key.length(); i++) {
 		ERR_FAIL_COND_MSG(!is_symbol(p_start_key[i]), "color regions must start with a symbol");
 	}
@@ -519,6 +545,7 @@ void CodeHighlighter::add_color_region(const String &p_start_key, const String &
 }
 
 void CodeHighlighter::remove_color_region(const String &p_start_key) {
+	ZoneScopedS(60);
 	for (int i = 0; i < color_regions.size(); i++) {
 		if (color_regions[i].start_key == p_start_key) {
 			color_regions.remove_at(i);
@@ -529,6 +556,7 @@ void CodeHighlighter::remove_color_region(const String &p_start_key) {
 }
 
 bool CodeHighlighter::has_color_region(const String &p_start_key) const {
+	ZoneScopedS(60);
 	for (int i = 0; i < color_regions.size(); i++) {
 		if (color_regions[i].start_key == p_start_key) {
 			return true;
@@ -538,6 +566,7 @@ bool CodeHighlighter::has_color_region(const String &p_start_key) const {
 }
 
 void CodeHighlighter::set_color_regions(const Dictionary &p_color_regions) {
+	ZoneScopedS(60);
 	color_regions.clear();
 
 	List<Variant> keys;
@@ -555,11 +584,13 @@ void CodeHighlighter::set_color_regions(const Dictionary &p_color_regions) {
 }
 
 void CodeHighlighter::clear_color_regions() {
+	ZoneScopedS(60);
 	color_regions.clear();
 	clear_highlighting_cache();
 }
 
 Dictionary CodeHighlighter::get_color_regions() const {
+	ZoneScopedS(60);
 	Dictionary r_color_regions;
 	for (int i = 0; i < color_regions.size(); i++) {
 		ColorRegion region = color_regions[i];
@@ -569,6 +600,7 @@ Dictionary CodeHighlighter::get_color_regions() const {
 }
 
 void CodeHighlighter::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("add_keyword_color", "keyword", "color"), &CodeHighlighter::add_keyword_color);
 	ClassDB::bind_method(D_METHOD("remove_keyword_color", "keyword"), &CodeHighlighter::remove_keyword_color);
 	ClassDB::bind_method(D_METHOD("has_keyword_color", "keyword"), &CodeHighlighter::has_keyword_color);
@@ -618,37 +650,45 @@ void CodeHighlighter::_bind_methods() {
 }
 
 void CodeHighlighter::set_number_color(Color p_color) {
+	ZoneScopedS(60);
 	number_color = p_color;
 	clear_highlighting_cache();
 }
 
 Color CodeHighlighter::get_number_color() const {
+	ZoneScopedS(60);
 	return number_color;
 }
 
 void CodeHighlighter::set_symbol_color(Color p_color) {
+	ZoneScopedS(60);
 	symbol_color = p_color;
 	clear_highlighting_cache();
 }
 
 Color CodeHighlighter::get_symbol_color() const {
+	ZoneScopedS(60);
 	return symbol_color;
 }
 
 void CodeHighlighter::set_function_color(Color p_color) {
+	ZoneScopedS(60);
 	function_color = p_color;
 	clear_highlighting_cache();
 }
 
 Color CodeHighlighter::get_function_color() const {
+	ZoneScopedS(60);
 	return function_color;
 }
 
 void CodeHighlighter::set_member_variable_color(Color p_color) {
+	ZoneScopedS(60);
 	member_color = p_color;
 	clear_highlighting_cache();
 }
 
 Color CodeHighlighter::get_member_variable_color() const {
+	ZoneScopedS(60);
 	return member_color;
 }

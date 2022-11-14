@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  mesh_instance_3d.cpp                                                 */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "mesh_instance_3d.h"
 
 #include "collision_shape_3d.h"
@@ -35,6 +66,7 @@
 #include "physics_body_3d.h"
 
 bool MeshInstance3D::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	//this is not _too_ bad performance wise, really. it only arrives here if the property was not set anywhere else.
 	//add to it that it's probably found on first call to _set anyway.
 
@@ -62,6 +94,7 @@ bool MeshInstance3D::_set(const StringName &p_name, const Variant &p_value) {
 }
 
 bool MeshInstance3D::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	if (!get_instance().is_valid()) {
 		return false;
 	}
@@ -84,6 +117,7 @@ bool MeshInstance3D::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void MeshInstance3D::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	List<String> ls;
 	for (const KeyValue<StringName, int> &E : blend_shape_properties) {
 		ls.push_back(E.key);
@@ -103,6 +137,7 @@ void MeshInstance3D::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 void MeshInstance3D::set_mesh(const Ref<Mesh> &p_mesh) {
+	ZoneScopedS(60);
 	if (mesh == p_mesh) {
 		return;
 	}
@@ -128,16 +163,19 @@ void MeshInstance3D::set_mesh(const Ref<Mesh> &p_mesh) {
 }
 
 Ref<Mesh> MeshInstance3D::get_mesh() const {
+	ZoneScopedS(60);
 	return mesh;
 }
 
 int MeshInstance3D::get_blend_shape_count() const {
+	ZoneScopedS(60);
 	if (mesh.is_null()) {
 		return 0;
 	}
 	return mesh->get_blend_shape_count();
 }
 int MeshInstance3D::find_blend_shape_by_name(const StringName &p_name) {
+	ZoneScopedS(60);
 	if (mesh.is_null()) {
 		return -1;
 	}
@@ -149,11 +187,13 @@ int MeshInstance3D::find_blend_shape_by_name(const StringName &p_name) {
 	return -1;
 }
 float MeshInstance3D::get_blend_shape_value(int p_blend_shape) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(mesh.is_null(), 0.0);
 	ERR_FAIL_INDEX_V(p_blend_shape, (int)blend_shape_tracks.size(), 0);
 	return blend_shape_tracks[p_blend_shape];
 }
 void MeshInstance3D::set_blend_shape_value(int p_blend_shape, float p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(mesh.is_null());
 	ERR_FAIL_INDEX(p_blend_shape, (int)blend_shape_tracks.size());
 	blend_shape_tracks[p_blend_shape] = p_value;
@@ -161,6 +201,7 @@ void MeshInstance3D::set_blend_shape_value(int p_blend_shape, float p_value) {
 }
 
 void MeshInstance3D::_resolve_skeleton_path() {
+	ZoneScopedS(60);
 	Ref<SkinReference> new_skin_reference;
 
 	if (!skeleton_path.is_empty()) {
@@ -187,6 +228,7 @@ void MeshInstance3D::_resolve_skeleton_path() {
 }
 
 void MeshInstance3D::set_skin(const Ref<Skin> &p_skin) {
+	ZoneScopedS(60);
 	skin_internal = p_skin;
 	skin = p_skin;
 	if (!is_inside_tree()) {
@@ -196,10 +238,12 @@ void MeshInstance3D::set_skin(const Ref<Skin> &p_skin) {
 }
 
 Ref<Skin> MeshInstance3D::get_skin() const {
+	ZoneScopedS(60);
 	return skin;
 }
 
 void MeshInstance3D::set_skeleton_path(const NodePath &p_skeleton) {
+	ZoneScopedS(60);
 	skeleton_path = p_skeleton;
 	if (!is_inside_tree()) {
 		return;
@@ -208,10 +252,12 @@ void MeshInstance3D::set_skeleton_path(const NodePath &p_skeleton) {
 }
 
 NodePath MeshInstance3D::get_skeleton_path() {
+	ZoneScopedS(60);
 	return skeleton_path;
 }
 
 AABB MeshInstance3D::get_aabb() const {
+	ZoneScopedS(60);
 	if (!mesh.is_null()) {
 		return mesh->get_aabb();
 	}
@@ -220,6 +266,7 @@ AABB MeshInstance3D::get_aabb() const {
 }
 
 Node *MeshInstance3D::create_trimesh_collision_node() {
+	ZoneScopedS(60);
 	if (mesh.is_null()) {
 		return nullptr;
 	}
@@ -237,6 +284,7 @@ Node *MeshInstance3D::create_trimesh_collision_node() {
 }
 
 void MeshInstance3D::create_trimesh_collision() {
+	ZoneScopedS(60);
 	StaticBody3D *static_body = Object::cast_to<StaticBody3D>(create_trimesh_collision_node());
 	ERR_FAIL_COND(!static_body);
 	static_body->set_name(String(get_name()) + "_col");
@@ -250,6 +298,7 @@ void MeshInstance3D::create_trimesh_collision() {
 }
 
 Node *MeshInstance3D::create_convex_collision_node(bool p_clean, bool p_simplify) {
+	ZoneScopedS(60);
 	if (mesh.is_null()) {
 		return nullptr;
 	}
@@ -267,6 +316,7 @@ Node *MeshInstance3D::create_convex_collision_node(bool p_clean, bool p_simplify
 }
 
 void MeshInstance3D::create_convex_collision(bool p_clean, bool p_simplify) {
+	ZoneScopedS(60);
 	StaticBody3D *static_body = Object::cast_to<StaticBody3D>(create_convex_collision_node(p_clean, p_simplify));
 	ERR_FAIL_COND(!static_body);
 	static_body->set_name(String(get_name()) + "_col");
@@ -280,6 +330,7 @@ void MeshInstance3D::create_convex_collision(bool p_clean, bool p_simplify) {
 }
 
 Node *MeshInstance3D::create_multiple_convex_collisions_node() {
+	ZoneScopedS(60);
 	if (mesh.is_null()) {
 		return nullptr;
 	}
@@ -300,6 +351,7 @@ Node *MeshInstance3D::create_multiple_convex_collisions_node() {
 }
 
 void MeshInstance3D::create_multiple_convex_collisions() {
+	ZoneScopedS(60);
 	StaticBody3D *static_body = Object::cast_to<StaticBody3D>(create_multiple_convex_collisions_node());
 	ERR_FAIL_COND(!static_body);
 	static_body->set_name(String(get_name()) + "_col");
@@ -316,6 +368,7 @@ void MeshInstance3D::create_multiple_convex_collisions() {
 }
 
 void MeshInstance3D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			_resolve_skeleton_path();
@@ -324,10 +377,12 @@ void MeshInstance3D::_notification(int p_what) {
 }
 
 int MeshInstance3D::get_surface_override_material_count() const {
+	ZoneScopedS(60);
 	return surface_override_materials.size();
 }
 
 void MeshInstance3D::set_surface_override_material(int p_surface, const Ref<Material> &p_material) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_surface, surface_override_materials.size());
 
 	surface_override_materials.write[p_surface] = p_material;
@@ -340,12 +395,14 @@ void MeshInstance3D::set_surface_override_material(int p_surface, const Ref<Mate
 }
 
 Ref<Material> MeshInstance3D::get_surface_override_material(int p_surface) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_surface, surface_override_materials.size(), Ref<Material>());
 
 	return surface_override_materials[p_surface];
 }
 
 Ref<Material> MeshInstance3D::get_active_material(int p_surface) const {
+	ZoneScopedS(60);
 	Ref<Material> mat_override = get_material_override();
 	if (mat_override.is_valid()) {
 		return mat_override;
@@ -365,6 +422,7 @@ Ref<Material> MeshInstance3D::get_active_material(int p_surface) const {
 }
 
 void MeshInstance3D::_mesh_changed() {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(mesh.is_null());
 	surface_override_materials.resize(mesh->get_surface_count());
 
@@ -391,6 +449,7 @@ void MeshInstance3D::_mesh_changed() {
 }
 
 MeshInstance3D *MeshInstance3D::create_debug_tangents_node() {
+	ZoneScopedS(60);
 	Vector<Vector3> lines;
 	Vector<Color> colors;
 
@@ -464,6 +523,7 @@ MeshInstance3D *MeshInstance3D::create_debug_tangents_node() {
 }
 
 void MeshInstance3D::create_debug_tangents() {
+	ZoneScopedS(60);
 	MeshInstance3D *mi = create_debug_tangents_node();
 	if (!mi) {
 		return;
@@ -478,6 +538,7 @@ void MeshInstance3D::create_debug_tangents() {
 }
 
 void MeshInstance3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_mesh", "mesh"), &MeshInstance3D::set_mesh);
 	ClassDB::bind_method(D_METHOD("get_mesh"), &MeshInstance3D::get_mesh);
 	ClassDB::bind_method(D_METHOD("set_skeleton_path", "skeleton_path"), &MeshInstance3D::set_skeleton_path);

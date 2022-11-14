@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  scroll_bar.cpp                                                       */
 /*************************************************************************/
@@ -38,10 +39,12 @@
 bool ScrollBar::focus_by_default = false;
 
 void ScrollBar::set_can_focus_by_default(bool p_can_focus) {
+	ZoneScopedS(60);
 	focus_by_default = p_can_focus;
 }
 
 void ScrollBar::gui_input(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_event.is_null());
 
 	Ref<InputEventMouseMotion> m = p_event;
@@ -218,6 +221,7 @@ void ScrollBar::gui_input(const Ref<InputEvent> &p_event) {
 }
 
 void ScrollBar::_update_theme_item_cache() {
+	ZoneScopedS(60);
 	Range::_update_theme_item_cache();
 
 	theme_cache.scroll_style = get_theme_stylebox(SNAME("scroll"));
@@ -236,6 +240,7 @@ void ScrollBar::_update_theme_item_cache() {
 }
 
 void ScrollBar::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
 			RID ci = get_canvas_item();
@@ -432,12 +437,14 @@ void ScrollBar::_notification(int p_what) {
 }
 
 double ScrollBar::get_grabber_min_size() const {
+	ZoneScopedS(60);
 	Ref<StyleBox> grabber = theme_cache.grabber_style;
 	Size2 gminsize = grabber->get_minimum_size() + grabber->get_center_size();
 	return (orientation == VERTICAL) ? gminsize.height : gminsize.width;
 }
 
 double ScrollBar::get_grabber_size() const {
+	ZoneScopedS(60);
 	float range = get_max() - get_min();
 	if (range <= 0) {
 		return 0;
@@ -450,6 +457,7 @@ double ScrollBar::get_grabber_size() const {
 }
 
 double ScrollBar::get_area_size() const {
+	ZoneScopedS(60);
 	switch (orientation) {
 		case VERTICAL: {
 			double area = get_size().height;
@@ -474,6 +482,7 @@ double ScrollBar::get_area_size() const {
 }
 
 double ScrollBar::get_area_offset() const {
+	ZoneScopedS(60);
 	double ofs = 0.0;
 
 	if (orientation == VERTICAL) {
@@ -490,10 +499,12 @@ double ScrollBar::get_area_offset() const {
 }
 
 double ScrollBar::get_grabber_offset() const {
+	ZoneScopedS(60);
 	return (get_area_size()) * get_as_ratio();
 }
 
 Size2 ScrollBar::get_minimum_size() const {
+	ZoneScopedS(60);
 	Ref<Texture2D> incr = theme_cache.increment_icon;
 	Ref<Texture2D> decr = theme_cache.decrement_icon;
 	Ref<StyleBox> bg = theme_cache.scroll_style;
@@ -519,14 +530,17 @@ Size2 ScrollBar::get_minimum_size() const {
 }
 
 void ScrollBar::set_custom_step(float p_custom_step) {
+	ZoneScopedS(60);
 	custom_step = p_custom_step;
 }
 
 float ScrollBar::get_custom_step() const {
+	ZoneScopedS(60);
 	return custom_step;
 }
 
 void ScrollBar::_drag_node_exit() {
+	ZoneScopedS(60);
 	if (drag_node) {
 		drag_node->disconnect("gui_input", callable_mp(this, &ScrollBar::_drag_node_input));
 	}
@@ -534,6 +548,7 @@ void ScrollBar::_drag_node_exit() {
 }
 
 void ScrollBar::_drag_node_input(const Ref<InputEvent> &p_input) {
+	ZoneScopedS(60);
 	if (!drag_node_enabled) {
 		return;
 	}
@@ -595,6 +610,7 @@ void ScrollBar::_drag_node_input(const Ref<InputEvent> &p_input) {
 }
 
 void ScrollBar::set_drag_node(const NodePath &p_path) {
+	ZoneScopedS(60);
 	if (is_inside_tree()) {
 		if (drag_node) {
 			drag_node->disconnect("gui_input", callable_mp(this, &ScrollBar::_drag_node_input));
@@ -619,22 +635,27 @@ void ScrollBar::set_drag_node(const NodePath &p_path) {
 }
 
 NodePath ScrollBar::get_drag_node() const {
+	ZoneScopedS(60);
 	return drag_node_path;
 }
 
 void ScrollBar::set_drag_node_enabled(bool p_enable) {
+	ZoneScopedS(60);
 	drag_node_enabled = p_enable;
 }
 
 void ScrollBar::set_smooth_scroll_enabled(bool p_enable) {
+	ZoneScopedS(60);
 	smooth_scroll_enabled = p_enable;
 }
 
 bool ScrollBar::is_smooth_scroll_enabled() const {
+	ZoneScopedS(60);
 	return smooth_scroll_enabled;
 }
 
 void ScrollBar::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_custom_step", "step"), &ScrollBar::set_custom_step);
 	ClassDB::bind_method(D_METHOD("get_custom_step"), &ScrollBar::get_custom_step);
 
@@ -644,6 +665,7 @@ void ScrollBar::_bind_methods() {
 }
 
 ScrollBar::ScrollBar(Orientation p_orientation) {
+	ZoneScopedS(60);
 	orientation = p_orientation;
 
 	if (focus_by_default) {

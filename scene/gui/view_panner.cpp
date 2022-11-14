@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  view_panner.cpp                                                      */
 /*************************************************************************/
@@ -35,6 +36,7 @@
 #include "core/os/keyboard.h"
 
 bool ViewPanner::gui_input(const Ref<InputEvent> &p_event, Rect2 p_canvas_rect) {
+	ZoneScopedS(60);
 	Ref<InputEventMouseButton> mb = p_event;
 	if (mb.is_valid()) {
 		Vector2 scroll_vec = Vector2((mb->get_button_index() == MouseButton::WHEEL_RIGHT) - (mb->get_button_index() == MouseButton::WHEEL_LEFT), (mb->get_button_index() == MouseButton::WHEEL_DOWN) - (mb->get_button_index() == MouseButton::WHEEL_UP));
@@ -125,11 +127,13 @@ bool ViewPanner::gui_input(const Ref<InputEvent> &p_event, Rect2 p_canvas_rect) 
 }
 
 void ViewPanner::release_pan_key() {
+	ZoneScopedS(60);
 	pan_key_pressed = false;
 	is_dragging = false;
 }
 
 void ViewPanner::callback_helper(Callable p_callback, Vector<Variant> p_args) {
+	ZoneScopedS(60);
 	const Variant **argptr = (const Variant **)alloca(sizeof(Variant *) * p_args.size());
 	for (int i = 0; i < p_args.size(); i++) {
 		argptr[i] = &p_args[i];
@@ -141,43 +145,52 @@ void ViewPanner::callback_helper(Callable p_callback, Vector<Variant> p_args) {
 }
 
 void ViewPanner::set_callbacks(Callable p_scroll_callback, Callable p_pan_callback, Callable p_zoom_callback) {
+	ZoneScopedS(60);
 	scroll_callback = p_scroll_callback;
 	pan_callback = p_pan_callback;
 	zoom_callback = p_zoom_callback;
 }
 
 void ViewPanner::set_control_scheme(ControlScheme p_scheme) {
+	ZoneScopedS(60);
 	control_scheme = p_scheme;
 }
 
 void ViewPanner::set_enable_rmb(bool p_enable) {
+	ZoneScopedS(60);
 	enable_rmb = p_enable;
 }
 
 void ViewPanner::set_pan_shortcut(Ref<Shortcut> p_shortcut) {
+	ZoneScopedS(60);
 	pan_view_shortcut = p_shortcut;
 	pan_key_pressed = false;
 }
 
 void ViewPanner::set_simple_panning_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	simple_panning_enabled = p_enabled;
 }
 
 void ViewPanner::setup(ControlScheme p_scheme, Ref<Shortcut> p_shortcut, bool p_simple_panning) {
+	ZoneScopedS(60);
 	set_control_scheme(p_scheme);
 	set_pan_shortcut(p_shortcut);
 	set_simple_panning_enabled(p_simple_panning);
 }
 
 bool ViewPanner::is_panning() const {
+	ZoneScopedS(60);
 	return is_dragging || pan_key_pressed;
 }
 
 void ViewPanner::set_force_drag(bool p_force) {
+	ZoneScopedS(60);
 	force_drag = p_force;
 }
 
 ViewPanner::ViewPanner() {
+	ZoneScopedS(60);
 	Array inputs;
 	inputs.append(InputEventKey::create_reference(Key::SPACE));
 

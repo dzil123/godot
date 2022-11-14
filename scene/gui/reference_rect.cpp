@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  reference_rect.cpp                                                   */
 /*************************************************************************/
@@ -33,6 +34,7 @@
 #include "core/config/engine.h"
 
 void ReferenceRect::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
 			if (!is_inside_tree()) {
@@ -46,6 +48,7 @@ void ReferenceRect::_notification(int p_what) {
 }
 
 void ReferenceRect::set_border_color(const Color &p_color) {
+	ZoneScopedS(60);
 	if (border_color == p_color) {
 		return;
 	}
@@ -55,10 +58,12 @@ void ReferenceRect::set_border_color(const Color &p_color) {
 }
 
 Color ReferenceRect::get_border_color() const {
+	ZoneScopedS(60);
 	return border_color;
 }
 
 void ReferenceRect::set_border_width(float p_width) {
+	ZoneScopedS(60);
 	float width_max = MAX(0.0, p_width);
 	if (border_width == width_max) {
 		return;
@@ -69,10 +74,12 @@ void ReferenceRect::set_border_width(float p_width) {
 }
 
 float ReferenceRect::get_border_width() const {
+	ZoneScopedS(60);
 	return border_width;
 }
 
 void ReferenceRect::set_editor_only(const bool &p_enabled) {
+	ZoneScopedS(60);
 	if (editor_only == p_enabled) {
 		return;
 	}
@@ -82,10 +89,12 @@ void ReferenceRect::set_editor_only(const bool &p_enabled) {
 }
 
 bool ReferenceRect::get_editor_only() const {
+	ZoneScopedS(60);
 	return editor_only;
 }
 
 void ReferenceRect::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_border_color"), &ReferenceRect::get_border_color);
 	ClassDB::bind_method(D_METHOD("set_border_color", "color"), &ReferenceRect::set_border_color);
 

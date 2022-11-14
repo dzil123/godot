@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  height_map_shape_3d.cpp                                              */
 /*************************************************************************/
@@ -33,6 +34,7 @@
 #include "servers/physics_server_3d.h"
 
 Vector<Vector3> HeightMapShape3D::get_debug_mesh_lines() const {
+	ZoneScopedS(60);
 	Vector<Vector3> points;
 
 	if ((map_width != 0) && (map_depth != 0)) {
@@ -82,10 +84,12 @@ Vector<Vector3> HeightMapShape3D::get_debug_mesh_lines() const {
 }
 
 real_t HeightMapShape3D::get_enclosing_radius() const {
+	ZoneScopedS(60);
 	return Vector3(real_t(map_width), max_height - min_height, real_t(map_depth)).length();
 }
 
 void HeightMapShape3D::_update_shape() {
+	ZoneScopedS(60);
 	Dictionary d;
 	d["width"] = map_width;
 	d["depth"] = map_depth;
@@ -97,6 +101,7 @@ void HeightMapShape3D::_update_shape() {
 }
 
 void HeightMapShape3D::set_map_width(int p_new) {
+	ZoneScopedS(60);
 	if (p_new < 1) {
 		// ignore
 	} else if (map_width != p_new) {
@@ -117,10 +122,12 @@ void HeightMapShape3D::set_map_width(int p_new) {
 }
 
 int HeightMapShape3D::get_map_width() const {
+	ZoneScopedS(60);
 	return map_width;
 }
 
 void HeightMapShape3D::set_map_depth(int p_new) {
+	ZoneScopedS(60);
 	if (p_new < 1) {
 		// ignore
 	} else if (map_depth != p_new) {
@@ -141,10 +148,12 @@ void HeightMapShape3D::set_map_depth(int p_new) {
 }
 
 int HeightMapShape3D::get_map_depth() const {
+	ZoneScopedS(60);
 	return map_depth;
 }
 
 void HeightMapShape3D::set_map_data(Vector<real_t> p_new) {
+	ZoneScopedS(60);
 	int size = (map_width * map_depth);
 	if (p_new.size() != size) {
 		// fail
@@ -176,10 +185,12 @@ void HeightMapShape3D::set_map_data(Vector<real_t> p_new) {
 }
 
 Vector<real_t> HeightMapShape3D::get_map_data() const {
+	ZoneScopedS(60);
 	return map_data;
 }
 
 void HeightMapShape3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_map_width", "width"), &HeightMapShape3D::set_map_width);
 	ClassDB::bind_method(D_METHOD("get_map_width"), &HeightMapShape3D::get_map_width);
 	ClassDB::bind_method(D_METHOD("set_map_depth", "height"), &HeightMapShape3D::set_map_depth);

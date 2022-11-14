@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  navigation_mesh.cpp                                                  */
 /*************************************************************************/
@@ -35,6 +36,7 @@
 #endif // DEBUG_ENABLED
 
 void NavigationMesh::create_from_mesh(const Ref<Mesh> &p_mesh) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_mesh.is_null());
 
 	vertices = Vector<Vector3>();
@@ -73,33 +75,40 @@ void NavigationMesh::create_from_mesh(const Ref<Mesh> &p_mesh) {
 }
 
 void NavigationMesh::set_sample_partition_type(SamplePartitionType p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_value, SAMPLE_PARTITION_MAX);
 	partition_type = p_value;
 }
 
 NavigationMesh::SamplePartitionType NavigationMesh::get_sample_partition_type() const {
+	ZoneScopedS(60);
 	return partition_type;
 }
 
 void NavigationMesh::set_parsed_geometry_type(ParsedGeometryType p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_value, PARSED_GEOMETRY_MAX);
 	parsed_geometry_type = p_value;
 	notify_property_list_changed();
 }
 
 NavigationMesh::ParsedGeometryType NavigationMesh::get_parsed_geometry_type() const {
+	ZoneScopedS(60);
 	return parsed_geometry_type;
 }
 
 void NavigationMesh::set_collision_mask(uint32_t p_mask) {
+	ZoneScopedS(60);
 	collision_mask = p_mask;
 }
 
 uint32_t NavigationMesh::get_collision_mask() const {
+	ZoneScopedS(60);
 	return collision_mask;
 }
 
 void NavigationMesh::set_collision_mask_value(int p_layer_number, bool p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_layer_number < 1, "Collision layer number must be between 1 and 32 inclusive.");
 	ERR_FAIL_COND_MSG(p_layer_number > 32, "Collision layer number must be between 1 and 32 inclusive.");
 	uint32_t mask = get_collision_mask();
@@ -112,198 +121,242 @@ void NavigationMesh::set_collision_mask_value(int p_layer_number, bool p_value) 
 }
 
 bool NavigationMesh::get_collision_mask_value(int p_layer_number) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(p_layer_number < 1, false, "Collision layer number must be between 1 and 32 inclusive.");
 	ERR_FAIL_COND_V_MSG(p_layer_number > 32, false, "Collision layer number must be between 1 and 32 inclusive.");
 	return get_collision_mask() & (1 << (p_layer_number - 1));
 }
 
 void NavigationMesh::set_source_geometry_mode(SourceGeometryMode p_geometry_mode) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_geometry_mode, SOURCE_GEOMETRY_MAX);
 	source_geometry_mode = p_geometry_mode;
 	notify_property_list_changed();
 }
 
 NavigationMesh::SourceGeometryMode NavigationMesh::get_source_geometry_mode() const {
+	ZoneScopedS(60);
 	return source_geometry_mode;
 }
 
 void NavigationMesh::set_source_group_name(StringName p_group_name) {
+	ZoneScopedS(60);
 	source_group_name = p_group_name;
 }
 
 StringName NavigationMesh::get_source_group_name() const {
+	ZoneScopedS(60);
 	return source_group_name;
 }
 
 void NavigationMesh::set_cell_size(float p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_value <= 0);
 	cell_size = p_value;
 }
 
 float NavigationMesh::get_cell_size() const {
+	ZoneScopedS(60);
 	return cell_size;
 }
 
 void NavigationMesh::set_cell_height(float p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_value <= 0);
 	cell_height = p_value;
 }
 
 float NavigationMesh::get_cell_height() const {
+	ZoneScopedS(60);
 	return cell_height;
 }
 
 void NavigationMesh::set_agent_height(float p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_value < 0);
 	agent_height = p_value;
 }
 
 float NavigationMesh::get_agent_height() const {
+	ZoneScopedS(60);
 	return agent_height;
 }
 
 void NavigationMesh::set_agent_radius(float p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_value < 0);
 	agent_radius = p_value;
 }
 
 float NavigationMesh::get_agent_radius() {
+	ZoneScopedS(60);
 	return agent_radius;
 }
 
 void NavigationMesh::set_agent_max_climb(float p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_value < 0);
 	agent_max_climb = p_value;
 }
 
 float NavigationMesh::get_agent_max_climb() const {
+	ZoneScopedS(60);
 	return agent_max_climb;
 }
 
 void NavigationMesh::set_agent_max_slope(float p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_value < 0 || p_value > 90);
 	agent_max_slope = p_value;
 }
 
 float NavigationMesh::get_agent_max_slope() const {
+	ZoneScopedS(60);
 	return agent_max_slope;
 }
 
 void NavigationMesh::set_region_min_size(float p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_value < 0);
 	region_min_size = p_value;
 }
 
 float NavigationMesh::get_region_min_size() const {
+	ZoneScopedS(60);
 	return region_min_size;
 }
 
 void NavigationMesh::set_region_merge_size(float p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_value < 0);
 	region_merge_size = p_value;
 }
 
 float NavigationMesh::get_region_merge_size() const {
+	ZoneScopedS(60);
 	return region_merge_size;
 }
 
 void NavigationMesh::set_edge_max_length(float p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_value < 0);
 	edge_max_length = p_value;
 }
 
 float NavigationMesh::get_edge_max_length() const {
+	ZoneScopedS(60);
 	return edge_max_length;
 }
 
 void NavigationMesh::set_edge_max_error(float p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_value < 0);
 	edge_max_error = p_value;
 }
 
 float NavigationMesh::get_edge_max_error() const {
+	ZoneScopedS(60);
 	return edge_max_error;
 }
 
 void NavigationMesh::set_verts_per_poly(float p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_value < 3);
 	verts_per_poly = p_value;
 }
 
 float NavigationMesh::get_verts_per_poly() const {
+	ZoneScopedS(60);
 	return verts_per_poly;
 }
 
 void NavigationMesh::set_detail_sample_distance(float p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_value < 0.1);
 	detail_sample_distance = p_value;
 }
 
 float NavigationMesh::get_detail_sample_distance() const {
+	ZoneScopedS(60);
 	return detail_sample_distance;
 }
 
 void NavigationMesh::set_detail_sample_max_error(float p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_value < 0);
 	detail_sample_max_error = p_value;
 }
 
 float NavigationMesh::get_detail_sample_max_error() const {
+	ZoneScopedS(60);
 	return detail_sample_max_error;
 }
 
 void NavigationMesh::set_filter_low_hanging_obstacles(bool p_value) {
+	ZoneScopedS(60);
 	filter_low_hanging_obstacles = p_value;
 }
 
 bool NavigationMesh::get_filter_low_hanging_obstacles() const {
+	ZoneScopedS(60);
 	return filter_low_hanging_obstacles;
 }
 
 void NavigationMesh::set_filter_ledge_spans(bool p_value) {
+	ZoneScopedS(60);
 	filter_ledge_spans = p_value;
 }
 
 bool NavigationMesh::get_filter_ledge_spans() const {
+	ZoneScopedS(60);
 	return filter_ledge_spans;
 }
 
 void NavigationMesh::set_filter_walkable_low_height_spans(bool p_value) {
+	ZoneScopedS(60);
 	filter_walkable_low_height_spans = p_value;
 }
 
 bool NavigationMesh::get_filter_walkable_low_height_spans() const {
+	ZoneScopedS(60);
 	return filter_walkable_low_height_spans;
 }
 
 void NavigationMesh::set_filter_baking_aabb(const AABB &p_aabb) {
+	ZoneScopedS(60);
 	filter_baking_aabb = p_aabb;
 	notify_property_list_changed();
 }
 
 AABB NavigationMesh::get_filter_baking_aabb() const {
+	ZoneScopedS(60);
 	return filter_baking_aabb;
 }
 
 void NavigationMesh::set_filter_baking_aabb_offset(const Vector3 &p_aabb_offset) {
+	ZoneScopedS(60);
 	filter_baking_aabb_offset = p_aabb_offset;
 	notify_property_list_changed();
 }
 
 Vector3 NavigationMesh::get_filter_baking_aabb_offset() const {
+	ZoneScopedS(60);
 	return filter_baking_aabb_offset;
 }
 
 void NavigationMesh::set_vertices(const Vector<Vector3> &p_vertices) {
+	ZoneScopedS(60);
 	vertices = p_vertices;
 	notify_property_list_changed();
 }
 
 Vector<Vector3> NavigationMesh::get_vertices() const {
+	ZoneScopedS(60);
 	return vertices;
 }
 
 void NavigationMesh::_set_polygons(const Array &p_array) {
+	ZoneScopedS(60);
 	polygons.resize(p_array.size());
 	for (int i = 0; i < p_array.size(); i++) {
 		polygons.write[i].indices = p_array[i];
@@ -312,6 +365,7 @@ void NavigationMesh::_set_polygons(const Array &p_array) {
 }
 
 Array NavigationMesh::_get_polygons() const {
+	ZoneScopedS(60);
 	Array ret;
 	ret.resize(polygons.size());
 	for (int i = 0; i < ret.size(); i++) {
@@ -322,6 +376,7 @@ Array NavigationMesh::_get_polygons() const {
 }
 
 void NavigationMesh::add_polygon(const Vector<int> &p_polygon) {
+	ZoneScopedS(60);
 	Polygon polygon;
 	polygon.indices = p_polygon;
 	polygons.push_back(polygon);
@@ -329,20 +384,24 @@ void NavigationMesh::add_polygon(const Vector<int> &p_polygon) {
 }
 
 int NavigationMesh::get_polygon_count() const {
+	ZoneScopedS(60);
 	return polygons.size();
 }
 
 Vector<int> NavigationMesh::get_polygon(int p_idx) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, polygons.size(), Vector<int>());
 	return polygons[p_idx].indices;
 }
 
 void NavigationMesh::clear_polygons() {
+	ZoneScopedS(60);
 	polygons.clear();
 }
 
 #ifdef DEBUG_ENABLED
 Ref<ArrayMesh> NavigationMesh::get_debug_mesh() {
+	ZoneScopedS(60);
 	if (debug_mesh.is_valid()) {
 		// Blocks further updates for now, code below is intended for dynamic updates e.g. when settings change.
 		return debug_mesh;
@@ -435,6 +494,7 @@ Ref<ArrayMesh> NavigationMesh::get_debug_mesh() {
 #endif // DEBUG_ENABLED
 
 void NavigationMesh::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_sample_partition_type", "sample_partition_type"), &NavigationMesh::set_sample_partition_type);
 	ClassDB::bind_method(D_METHOD("get_sample_partition_type"), &NavigationMesh::get_sample_partition_type);
 
@@ -573,6 +633,7 @@ void NavigationMesh::_bind_methods() {
 }
 
 void NavigationMesh::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (p_property.name == "geometry_collision_mask") {
 		if (parsed_geometry_type == PARSED_GEOMETRY_MESH_INSTANCES) {
 			p_property.usage = PROPERTY_USAGE_NONE;
@@ -590,6 +651,7 @@ void NavigationMesh::_validate_property(PropertyInfo &p_property) const {
 
 #ifndef DISABLE_DEPRECATED
 bool NavigationMesh::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	String prop_name = p_name;
 	if (prop_name.find("/") != -1) {
 		// Compatibility with pre-3.5 "category/path" property names.
@@ -608,6 +670,7 @@ bool NavigationMesh::_set(const StringName &p_name, const Variant &p_value) {
 }
 
 bool NavigationMesh::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	String prop_name = p_name;
 	if (prop_name.find("/") != -1) {
 		// Compatibility with pre-3.5 "category/path" property names.

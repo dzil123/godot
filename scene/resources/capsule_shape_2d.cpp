@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  capsule_shape_2d.cpp                                                 */
 /*************************************************************************/
@@ -35,6 +36,7 @@
 #include "servers/rendering_server.h"
 
 Vector<Vector2> CapsuleShape2D::_get_points() const {
+	ZoneScopedS(60);
 	Vector<Vector2> points;
 	const real_t turn_step = Math_TAU / 24.0;
 	for (int i = 0; i < 24; i++) {
@@ -50,15 +52,18 @@ Vector<Vector2> CapsuleShape2D::_get_points() const {
 }
 
 bool CapsuleShape2D::_edit_is_selected_on_click(const Point2 &p_point, double p_tolerance) const {
+	ZoneScopedS(60);
 	return Geometry2D::is_point_in_polygon(p_point, _get_points());
 }
 
 void CapsuleShape2D::_update_shape() {
+	ZoneScopedS(60);
 	PhysicsServer2D::get_singleton()->shape_set_data(get_rid(), Vector2(radius, height));
 	emit_changed();
 }
 
 void CapsuleShape2D::set_radius(real_t p_radius) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_radius < 0, "CapsuleShape2D radius cannot be negative.");
 	radius = p_radius;
 	if (radius > height * 0.5) {
@@ -68,10 +73,12 @@ void CapsuleShape2D::set_radius(real_t p_radius) {
 }
 
 real_t CapsuleShape2D::get_radius() const {
+	ZoneScopedS(60);
 	return radius;
 }
 
 void CapsuleShape2D::set_height(real_t p_height) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_height < 0, "CapsuleShape2D height cannot be negative.");
 	height = p_height;
 	if (radius > height * 0.5) {
@@ -81,10 +88,12 @@ void CapsuleShape2D::set_height(real_t p_height) {
 }
 
 real_t CapsuleShape2D::get_height() const {
+	ZoneScopedS(60);
 	return height;
 }
 
 void CapsuleShape2D::draw(const RID &p_to_rid, const Color &p_color) {
+	ZoneScopedS(60);
 	Vector<Vector2> points = _get_points();
 	Vector<Color> col = { p_color };
 	RenderingServer::get_singleton()->canvas_item_add_polygon(p_to_rid, points, col);
@@ -95,14 +104,17 @@ void CapsuleShape2D::draw(const RID &p_to_rid, const Color &p_color) {
 }
 
 Rect2 CapsuleShape2D::get_rect() const {
+	ZoneScopedS(60);
 	return Rect2(0, 0, radius, height);
 }
 
 real_t CapsuleShape2D::get_enclosing_radius() const {
+	ZoneScopedS(60);
 	return height * 0.5;
 }
 
 void CapsuleShape2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_radius", "radius"), &CapsuleShape2D::set_radius);
 	ClassDB::bind_method(D_METHOD("get_radius"), &CapsuleShape2D::get_radius);
 

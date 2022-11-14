@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  skeleton_modification_2d_jiggle.cpp                                  */
 /*************************************************************************/
@@ -34,6 +35,7 @@
 #include "scene/resources/world_2d.h"
 
 bool SkeletonModification2DJiggle::_set(const StringName &p_path, const Variant &p_value) {
+	ZoneScopedS(60);
 	String path = p_path;
 
 	if (path.begins_with("joint_data/")) {
@@ -70,6 +72,7 @@ bool SkeletonModification2DJiggle::_set(const StringName &p_path, const Variant 
 }
 
 bool SkeletonModification2DJiggle::_get(const StringName &p_path, Variant &r_ret) const {
+	ZoneScopedS(60);
 	String path = p_path;
 
 	if (path.begins_with("joint_data/")) {
@@ -106,6 +109,7 @@ bool SkeletonModification2DJiggle::_get(const StringName &p_path, Variant &r_ret
 }
 
 void SkeletonModification2DJiggle::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	p_list->push_back(PropertyInfo(Variant::BOOL, "use_colliders", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT));
 	if (use_colliders) {
 		p_list->push_back(PropertyInfo(Variant::INT, "collision_mask", PROPERTY_HINT_LAYERS_2D_PHYSICS, "", PROPERTY_USAGE_DEFAULT));
@@ -131,6 +135,7 @@ void SkeletonModification2DJiggle::_get_property_list(List<PropertyInfo> *p_list
 }
 
 void SkeletonModification2DJiggle::_execute(float p_delta) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!stack || !is_setup || stack->skeleton == nullptr,
 			"Modification is not setup and therefore cannot execute!");
 	if (!enabled) {
@@ -153,6 +158,7 @@ void SkeletonModification2DJiggle::_execute(float p_delta) {
 }
 
 void SkeletonModification2DJiggle::_execute_jiggle_joint(int p_joint_idx, Node2D *p_target, float p_delta) {
+	ZoneScopedS(60);
 	// Adopted from: https://wiki.unity3d.com/index.php/JiggleBone
 	// With modifications by TwistedTwigleg.
 
@@ -228,6 +234,7 @@ void SkeletonModification2DJiggle::_execute_jiggle_joint(int p_joint_idx, Node2D
 }
 
 void SkeletonModification2DJiggle::_update_jiggle_joint_data() {
+	ZoneScopedS(60);
 	for (int i = 0; i < jiggle_data_chain.size(); i++) {
 		if (!jiggle_data_chain[i].override_defaults) {
 			set_jiggle_joint_stiffness(i, stiffness);
@@ -240,6 +247,7 @@ void SkeletonModification2DJiggle::_update_jiggle_joint_data() {
 }
 
 void SkeletonModification2DJiggle::_setup_modification(SkeletonModificationStack2D *p_stack) {
+	ZoneScopedS(60);
 	stack = p_stack;
 
 	if (stack) {
@@ -260,6 +268,7 @@ void SkeletonModification2DJiggle::_setup_modification(SkeletonModificationStack
 }
 
 void SkeletonModification2DJiggle::update_target_cache() {
+	ZoneScopedS(60);
 	if (!is_setup || !stack) {
 		ERR_PRINT_ONCE("Cannot update target cache: modification is not properly setup!");
 		return;
@@ -281,6 +290,7 @@ void SkeletonModification2DJiggle::update_target_cache() {
 }
 
 void SkeletonModification2DJiggle::jiggle_joint_update_bone2d_cache(int p_joint_idx) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_MSG(p_joint_idx, jiggle_data_chain.size(), "Cannot update bone2d cache: joint index out of range!");
 	if (!is_setup || !stack) {
 		ERR_PRINT_ONCE("Cannot update Jiggle " + itos(p_joint_idx) + " Bone2D cache: modification is not properly setup!");
@@ -310,35 +320,42 @@ void SkeletonModification2DJiggle::jiggle_joint_update_bone2d_cache(int p_joint_
 }
 
 void SkeletonModification2DJiggle::set_target_node(const NodePath &p_target_node) {
+	ZoneScopedS(60);
 	target_node = p_target_node;
 	update_target_cache();
 }
 
 NodePath SkeletonModification2DJiggle::get_target_node() const {
+	ZoneScopedS(60);
 	return target_node;
 }
 
 void SkeletonModification2DJiggle::set_stiffness(float p_stiffness) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_stiffness < 0, "Stiffness cannot be set to a negative value!");
 	stiffness = p_stiffness;
 	_update_jiggle_joint_data();
 }
 
 float SkeletonModification2DJiggle::get_stiffness() const {
+	ZoneScopedS(60);
 	return stiffness;
 }
 
 void SkeletonModification2DJiggle::set_mass(float p_mass) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_mass < 0, "Mass cannot be set to a negative value!");
 	mass = p_mass;
 	_update_jiggle_joint_data();
 }
 
 float SkeletonModification2DJiggle::get_mass() const {
+	ZoneScopedS(60);
 	return mass;
 }
 
 void SkeletonModification2DJiggle::set_damping(float p_damping) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_damping < 0, "Damping cannot be set to a negative value!");
 	ERR_FAIL_COND_MSG(p_damping > 1, "Damping cannot be more than one!");
 	damping = p_damping;
@@ -346,56 +363,68 @@ void SkeletonModification2DJiggle::set_damping(float p_damping) {
 }
 
 float SkeletonModification2DJiggle::get_damping() const {
+	ZoneScopedS(60);
 	return damping;
 }
 
 void SkeletonModification2DJiggle::set_use_gravity(bool p_use_gravity) {
+	ZoneScopedS(60);
 	use_gravity = p_use_gravity;
 	_update_jiggle_joint_data();
 }
 
 bool SkeletonModification2DJiggle::get_use_gravity() const {
+	ZoneScopedS(60);
 	return use_gravity;
 }
 
 void SkeletonModification2DJiggle::set_gravity(Vector2 p_gravity) {
+	ZoneScopedS(60);
 	gravity = p_gravity;
 	_update_jiggle_joint_data();
 }
 
 Vector2 SkeletonModification2DJiggle::get_gravity() const {
+	ZoneScopedS(60);
 	return gravity;
 }
 
 void SkeletonModification2DJiggle::set_use_colliders(bool p_use_colliders) {
+	ZoneScopedS(60);
 	use_colliders = p_use_colliders;
 	notify_property_list_changed();
 }
 
 bool SkeletonModification2DJiggle::get_use_colliders() const {
+	ZoneScopedS(60);
 	return use_colliders;
 }
 
 void SkeletonModification2DJiggle::set_collision_mask(int p_mask) {
+	ZoneScopedS(60);
 	collision_mask = p_mask;
 }
 
 int SkeletonModification2DJiggle::get_collision_mask() const {
+	ZoneScopedS(60);
 	return collision_mask;
 }
 
 // Jiggle joint data functions
 int SkeletonModification2DJiggle::get_jiggle_data_chain_length() {
+	ZoneScopedS(60);
 	return jiggle_data_chain.size();
 }
 
 void SkeletonModification2DJiggle::set_jiggle_data_chain_length(int p_length) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_length < 0);
 	jiggle_data_chain.resize(p_length);
 	notify_property_list_changed();
 }
 
 void SkeletonModification2DJiggle::set_jiggle_joint_bone2d_node(int p_joint_idx, const NodePath &p_target_node) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_MSG(p_joint_idx, jiggle_data_chain.size(), "Jiggle joint out of range!");
 	jiggle_data_chain.write[p_joint_idx].bone2d_node = p_target_node;
 	jiggle_joint_update_bone2d_cache(p_joint_idx);
@@ -404,11 +433,13 @@ void SkeletonModification2DJiggle::set_jiggle_joint_bone2d_node(int p_joint_idx,
 }
 
 NodePath SkeletonModification2DJiggle::get_jiggle_joint_bone2d_node(int p_joint_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V_MSG(p_joint_idx, jiggle_data_chain.size(), NodePath(), "Jiggle joint out of range!");
 	return jiggle_data_chain[p_joint_idx].bone2d_node;
 }
 
 void SkeletonModification2DJiggle::set_jiggle_joint_bone_index(int p_joint_idx, int p_bone_idx) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_MSG(p_joint_idx, jiggle_data_chain.size(), "Jiggle joint out of range!");
 	ERR_FAIL_COND_MSG(p_bone_idx < 0, "Bone index is out of range: The index is too low!");
 
@@ -431,11 +462,13 @@ void SkeletonModification2DJiggle::set_jiggle_joint_bone_index(int p_joint_idx, 
 }
 
 int SkeletonModification2DJiggle::get_jiggle_joint_bone_index(int p_joint_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V_MSG(p_joint_idx, jiggle_data_chain.size(), -1, "Jiggle joint out of range!");
 	return jiggle_data_chain[p_joint_idx].bone_idx;
 }
 
 void SkeletonModification2DJiggle::set_jiggle_joint_override(int p_joint_idx, bool p_override) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_joint_idx, jiggle_data_chain.size());
 	jiggle_data_chain.write[p_joint_idx].override_defaults = p_override;
 	_update_jiggle_joint_data();
@@ -443,65 +476,77 @@ void SkeletonModification2DJiggle::set_jiggle_joint_override(int p_joint_idx, bo
 }
 
 bool SkeletonModification2DJiggle::get_jiggle_joint_override(int p_joint_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_joint_idx, jiggle_data_chain.size(), false);
 	return jiggle_data_chain[p_joint_idx].override_defaults;
 }
 
 void SkeletonModification2DJiggle::set_jiggle_joint_stiffness(int p_joint_idx, float p_stiffness) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_stiffness < 0, "Stiffness cannot be set to a negative value!");
 	ERR_FAIL_INDEX(p_joint_idx, jiggle_data_chain.size());
 	jiggle_data_chain.write[p_joint_idx].stiffness = p_stiffness;
 }
 
 float SkeletonModification2DJiggle::get_jiggle_joint_stiffness(int p_joint_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_joint_idx, jiggle_data_chain.size(), -1);
 	return jiggle_data_chain[p_joint_idx].stiffness;
 }
 
 void SkeletonModification2DJiggle::set_jiggle_joint_mass(int p_joint_idx, float p_mass) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_mass < 0, "Mass cannot be set to a negative value!");
 	ERR_FAIL_INDEX(p_joint_idx, jiggle_data_chain.size());
 	jiggle_data_chain.write[p_joint_idx].mass = p_mass;
 }
 
 float SkeletonModification2DJiggle::get_jiggle_joint_mass(int p_joint_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_joint_idx, jiggle_data_chain.size(), -1);
 	return jiggle_data_chain[p_joint_idx].mass;
 }
 
 void SkeletonModification2DJiggle::set_jiggle_joint_damping(int p_joint_idx, float p_damping) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_damping < 0, "Damping cannot be set to a negative value!");
 	ERR_FAIL_INDEX(p_joint_idx, jiggle_data_chain.size());
 	jiggle_data_chain.write[p_joint_idx].damping = p_damping;
 }
 
 float SkeletonModification2DJiggle::get_jiggle_joint_damping(int p_joint_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_joint_idx, jiggle_data_chain.size(), -1);
 	return jiggle_data_chain[p_joint_idx].damping;
 }
 
 void SkeletonModification2DJiggle::set_jiggle_joint_use_gravity(int p_joint_idx, bool p_use_gravity) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_joint_idx, jiggle_data_chain.size());
 	jiggle_data_chain.write[p_joint_idx].use_gravity = p_use_gravity;
 	notify_property_list_changed();
 }
 
 bool SkeletonModification2DJiggle::get_jiggle_joint_use_gravity(int p_joint_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_joint_idx, jiggle_data_chain.size(), false);
 	return jiggle_data_chain[p_joint_idx].use_gravity;
 }
 
 void SkeletonModification2DJiggle::set_jiggle_joint_gravity(int p_joint_idx, Vector2 p_gravity) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_joint_idx, jiggle_data_chain.size());
 	jiggle_data_chain.write[p_joint_idx].gravity = p_gravity;
 }
 
 Vector2 SkeletonModification2DJiggle::get_jiggle_joint_gravity(int p_joint_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_joint_idx, jiggle_data_chain.size(), Vector2(0, 0));
 	return jiggle_data_chain[p_joint_idx].gravity;
 }
 
 void SkeletonModification2DJiggle::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_target_node", "target_nodepath"), &SkeletonModification2DJiggle::set_target_node);
 	ClassDB::bind_method(D_METHOD("get_target_node"), &SkeletonModification2DJiggle::get_target_node);
 
@@ -554,6 +599,7 @@ void SkeletonModification2DJiggle::_bind_methods() {
 }
 
 SkeletonModification2DJiggle::SkeletonModification2DJiggle() {
+	ZoneScopedS(60);
 	stack = nullptr;
 	is_setup = false;
 	jiggle_data_chain = Vector<Jiggle_Joint_Data2D>();

@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  file_dialog.cpp                                                      */
 /*************************************************************************/
@@ -41,11 +42,13 @@ FileDialog::RegisterFunc FileDialog::register_func = nullptr;
 FileDialog::RegisterFunc FileDialog::unregister_func = nullptr;
 
 void FileDialog::popup_file_dialog() {
+	ZoneScopedS(60);
 	popup_centered_clamped(Size2i(700, 500), 0.8f);
 	_focus_file_text();
 }
 
 void FileDialog::_focus_file_text() {
+	ZoneScopedS(60);
 	int lp = file->get_text().rfind(".");
 	if (lp != -1) {
 		file->select(0, lp);
@@ -56,10 +59,12 @@ void FileDialog::_focus_file_text() {
 }
 
 VBoxContainer *FileDialog::get_vbox() {
+	ZoneScopedS(60);
 	return vbox;
 }
 
 void FileDialog::_update_theme_item_cache() {
+	ZoneScopedS(60);
 	ConfirmationDialog::_update_theme_item_cache();
 
 	theme_cache.parent_folder = get_theme_icon(SNAME("parent_folder"));
@@ -82,6 +87,7 @@ void FileDialog::_update_theme_item_cache() {
 }
 
 void FileDialog::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_VISIBILITY_CHANGED: {
 			if (!is_visible()) {
@@ -136,6 +142,7 @@ void FileDialog::_notification(int p_what) {
 }
 
 void FileDialog::shortcut_input(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_event.is_null());
 
 	Ref<InputEventKey> k = p_event;
@@ -171,10 +178,12 @@ void FileDialog::shortcut_input(const Ref<InputEvent> &p_event) {
 }
 
 void FileDialog::set_enable_multiple_selection(bool p_enable) {
+	ZoneScopedS(60);
 	tree->set_select_mode(p_enable ? Tree::SELECT_MULTI : Tree::SELECT_SINGLE);
 }
 
 Vector<String> FileDialog::get_selected_files() const {
+	ZoneScopedS(60);
 	Vector<String> list;
 
 	TreeItem *item = tree->get_root();
@@ -188,6 +197,7 @@ Vector<String> FileDialog::get_selected_files() const {
 }
 
 void FileDialog::update_dir() {
+	ZoneScopedS(60);
 	if (root_prefix.is_empty()) {
 		dir->set_text(dir_access->get_current_dir(false));
 	} else {
@@ -210,22 +220,26 @@ void FileDialog::update_dir() {
 }
 
 void FileDialog::_dir_submitted(String p_dir) {
+	ZoneScopedS(60);
 	_change_dir(root_prefix.path_join(p_dir));
 	file->set_text("");
 	_push_history();
 }
 
 void FileDialog::_file_submitted(const String &p_file) {
+	ZoneScopedS(60);
 	_action_pressed();
 }
 
 void FileDialog::_save_confirm_pressed() {
+	ZoneScopedS(60);
 	String f = dir_access->get_current_dir().path_join(file->get_text());
 	emit_signal(SNAME("file_selected"), f);
 	hide();
 }
 
 void FileDialog::_post_popup() {
+	ZoneScopedS(60);
 	ConfirmationDialog::_post_popup();
 	if (mode == FILE_MODE_SAVE_FILE) {
 		file->grab_focus();
@@ -249,6 +263,7 @@ void FileDialog::_post_popup() {
 }
 
 void FileDialog::_push_history() {
+	ZoneScopedS(60);
 	local_history.resize(local_history_pos + 1);
 	String new_path = dir_access->get_current_dir();
 	if (local_history.size() == 0 || new_path != local_history[local_history_pos]) {
@@ -260,6 +275,7 @@ void FileDialog::_push_history() {
 }
 
 void FileDialog::_action_pressed() {
+	ZoneScopedS(60);
 	if (mode == FILE_MODE_OPEN_FILES) {
 		TreeItem *ti = tree->get_next_selected(nullptr);
 		String fbase = dir_access->get_current_dir();
@@ -363,12 +379,14 @@ void FileDialog::_action_pressed() {
 }
 
 void FileDialog::_cancel_pressed() {
+	ZoneScopedS(60);
 	file->set_text("");
 	invalidate();
 	hide();
 }
 
 bool FileDialog::_is_open_should_be_disabled() {
+	ZoneScopedS(60);
 	if (mode == FILE_MODE_OPEN_ANY || mode == FILE_MODE_SAVE_FILE) {
 		return false;
 	}
@@ -394,11 +412,13 @@ bool FileDialog::_is_open_should_be_disabled() {
 }
 
 void FileDialog::_go_up() {
+	ZoneScopedS(60);
 	_change_dir("..");
 	_push_history();
 }
 
 void FileDialog::_go_back() {
+	ZoneScopedS(60);
 	if (local_history_pos <= 0) {
 		return;
 	}
@@ -411,6 +431,7 @@ void FileDialog::_go_back() {
 }
 
 void FileDialog::_go_forward() {
+	ZoneScopedS(60);
 	if (local_history_pos == local_history.size() - 1) {
 		return;
 	}
@@ -423,6 +444,7 @@ void FileDialog::_go_forward() {
 }
 
 void FileDialog::deselect_all() {
+	ZoneScopedS(60);
 	// Clear currently selected items in file manager.
 	tree->deselect_all();
 
@@ -447,10 +469,12 @@ void FileDialog::deselect_all() {
 }
 
 void FileDialog::_tree_multi_selected(Object *p_object, int p_cell, bool p_selected) {
+	ZoneScopedS(60);
 	_tree_selected();
 }
 
 void FileDialog::_tree_selected() {
+	ZoneScopedS(60);
 	TreeItem *ti = tree->get_selected();
 	if (!ti) {
 		return;
@@ -467,6 +491,7 @@ void FileDialog::_tree_selected() {
 }
 
 void FileDialog::_tree_item_activated() {
+	ZoneScopedS(60);
 	TreeItem *ti = tree->get_selected();
 	if (!ti) {
 		return;
@@ -486,6 +511,7 @@ void FileDialog::_tree_item_activated() {
 }
 
 void FileDialog::update_file_name() {
+	ZoneScopedS(60);
 	int idx = filter->get_selected() - 1;
 	if ((idx == -1 && filter->get_item_count() == 2) || (filter->get_item_count() > 2 && idx >= 0 && idx < filter->get_item_count() - 2)) {
 		if (idx == -1) {
@@ -505,6 +531,7 @@ void FileDialog::update_file_name() {
 }
 
 void FileDialog::update_file_list() {
+	ZoneScopedS(60);
 	tree->clear();
 
 	// Scroll back to the top after opening a directory
@@ -638,11 +665,13 @@ void FileDialog::update_file_list() {
 }
 
 void FileDialog::_filter_selected(int) {
+	ZoneScopedS(60);
 	update_file_name();
 	update_file_list();
 }
 
 void FileDialog::update_filters() {
+	ZoneScopedS(60);
 	filter->clear();
 
 	if (filters.size() > 1) {
@@ -678,12 +707,14 @@ void FileDialog::update_filters() {
 }
 
 void FileDialog::clear_filters() {
+	ZoneScopedS(60);
 	filters.clear();
 	update_filters();
 	invalidate();
 }
 
 void FileDialog::add_filter(const String &p_filter, const String &p_description) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_filter.begins_with("."), "Filter must be \"filename.extension\", can't start with dot.");
 	if (p_description.is_empty()) {
 		filters.push_back(p_filter);
@@ -695,6 +726,7 @@ void FileDialog::add_filter(const String &p_filter, const String &p_description)
 }
 
 void FileDialog::set_filters(const Vector<String> &p_filters) {
+	ZoneScopedS(60);
 	if (filters == p_filters) {
 		return;
 	}
@@ -704,28 +736,34 @@ void FileDialog::set_filters(const Vector<String> &p_filters) {
 }
 
 Vector<String> FileDialog::get_filters() const {
+	ZoneScopedS(60);
 	return filters;
 }
 
 String FileDialog::get_current_dir() const {
+	ZoneScopedS(60);
 	return dir->get_text();
 }
 
 String FileDialog::get_current_file() const {
+	ZoneScopedS(60);
 	return file->get_text();
 }
 
 String FileDialog::get_current_path() const {
+	ZoneScopedS(60);
 	return dir->get_text().path_join(file->get_text());
 }
 
 void FileDialog::set_current_dir(const String &p_dir) {
+	ZoneScopedS(60);
 	_change_dir(p_dir);
 
 	_push_history();
 }
 
 void FileDialog::set_current_file(const String &p_file) {
+	ZoneScopedS(60);
 	if (file->get_text() == p_file) {
 		return;
 	}
@@ -736,6 +774,7 @@ void FileDialog::set_current_file(const String &p_file) {
 }
 
 void FileDialog::set_current_path(const String &p_path) {
+	ZoneScopedS(60);
 	if (!p_path.size()) {
 		return;
 	}
@@ -751,6 +790,7 @@ void FileDialog::set_current_path(const String &p_path) {
 }
 
 void FileDialog::set_root_subfolder(const String &p_root) {
+	ZoneScopedS(60);
 	root_subfolder = p_root;
 	ERR_FAIL_COND_MSG(!dir_access->dir_exists(p_root), "root_subfolder must be an existing sub-directory.");
 
@@ -768,18 +808,22 @@ void FileDialog::set_root_subfolder(const String &p_root) {
 }
 
 String FileDialog::get_root_subfolder() const {
+	ZoneScopedS(60);
 	return root_subfolder;
 }
 
 void FileDialog::set_mode_overrides_title(bool p_override) {
+	ZoneScopedS(60);
 	mode_overrides_title = p_override;
 }
 
 bool FileDialog::is_mode_overriding_title() const {
+	ZoneScopedS(60);
 	return mode_overrides_title;
 }
 
 void FileDialog::set_file_mode(FileMode p_mode) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX((int)p_mode, 5);
 	if (mode == p_mode) {
 		return;
@@ -831,10 +875,12 @@ void FileDialog::set_file_mode(FileMode p_mode) {
 }
 
 FileDialog::FileMode FileDialog::get_file_mode() const {
+	ZoneScopedS(60);
 	return mode;
 }
 
 void FileDialog::set_access(Access p_access) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_access, 3);
 	if (access == p_access) {
 		return;
@@ -860,6 +906,7 @@ void FileDialog::set_access(Access p_access) {
 }
 
 void FileDialog::invalidate() {
+	ZoneScopedS(60);
 	if (is_visible()) {
 		update_file_list();
 		invalidated = false;
@@ -869,10 +916,12 @@ void FileDialog::invalidate() {
 }
 
 FileDialog::Access FileDialog::get_access() const {
+	ZoneScopedS(60);
 	return access;
 }
 
 void FileDialog::_make_dir_confirm() {
+	ZoneScopedS(60);
 	Error err = dir_access->make_dir(makedirname->get_text().strip_edges());
 	if (err == OK) {
 		_change_dir(makedirname->get_text().strip_edges());
@@ -885,11 +934,13 @@ void FileDialog::_make_dir_confirm() {
 }
 
 void FileDialog::_make_dir() {
+	ZoneScopedS(60);
 	makedialog->popup_centered(Size2(250, 80));
 	makedirname->grab_focus();
 }
 
 void FileDialog::_select_drive(int p_idx) {
+	ZoneScopedS(60);
 	String d = drives->get_item_text(p_idx);
 	_change_dir(d);
 	file->set_text("");
@@ -897,6 +948,7 @@ void FileDialog::_select_drive(int p_idx) {
 }
 
 void FileDialog::_change_dir(const String &p_new_dir) {
+	ZoneScopedS(60);
 	if (root_prefix.is_empty()) {
 		dir_access->change_dir(p_new_dir);
 	} else {
@@ -913,6 +965,7 @@ void FileDialog::_change_dir(const String &p_new_dir) {
 }
 
 void FileDialog::_update_drives(bool p_select) {
+	ZoneScopedS(60);
 	int dc = dir_access->get_drive_count();
 	if (dc == 0 || access != ACCESS_FILESYSTEM) {
 		drives->hide();
@@ -939,6 +992,7 @@ void FileDialog::_update_drives(bool p_select) {
 bool FileDialog::default_show_hidden_files = false;
 
 void FileDialog::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("_cancel_pressed"), &FileDialog::_cancel_pressed);
 
 	ClassDB::bind_method(D_METHOD("clear_filters"), &FileDialog::clear_filters);
@@ -996,6 +1050,7 @@ void FileDialog::_bind_methods() {
 }
 
 void FileDialog::set_show_hidden_files(bool p_show) {
+	ZoneScopedS(60);
 	if (show_hidden_files == p_show) {
 		return;
 	}
@@ -1004,14 +1059,17 @@ void FileDialog::set_show_hidden_files(bool p_show) {
 }
 
 bool FileDialog::is_showing_hidden_files() const {
+	ZoneScopedS(60);
 	return show_hidden_files;
 }
 
 void FileDialog::set_default_show_hidden_files(bool p_show) {
+	ZoneScopedS(60);
 	default_show_hidden_files = p_show;
 }
 
 FileDialog::FileDialog() {
+	ZoneScopedS(60);
 	show_hidden_files = default_show_hidden_files;
 
 	vbox = memnew(VBoxContainer);
@@ -1147,6 +1205,7 @@ FileDialog::FileDialog() {
 }
 
 FileDialog::~FileDialog() {
+	ZoneScopedS(60);
 	if (unregister_func) {
 		unregister_func(this);
 	}

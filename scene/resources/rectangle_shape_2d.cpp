@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  rectangle_shape_2d.cpp                                               */
 /*************************************************************************/
@@ -33,12 +34,14 @@
 #include "servers/physics_server_2d.h"
 #include "servers/rendering_server.h"
 void RectangleShape2D::_update_shape() {
+	ZoneScopedS(60);
 	PhysicsServer2D::get_singleton()->shape_set_data(get_rid(), size * 0.5);
 	emit_changed();
 }
 
 #ifndef DISABLE_DEPRECATED
 bool RectangleShape2D::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	if (p_name == "extents") { // Compatibility with Godot 3.x.
 		// Convert to `size`, twice as big.
 		set_size((Size2)p_value * 2);
@@ -48,6 +51,7 @@ bool RectangleShape2D::_set(const StringName &p_name, const Variant &p_value) {
 }
 
 bool RectangleShape2D::_get(const StringName &p_name, Variant &r_property) const {
+	ZoneScopedS(60);
 	if (p_name == "extents") { // Compatibility with Godot 3.x.
 		// Convert to `extents`, half as big.
 		r_property = size / 2;
@@ -58,16 +62,19 @@ bool RectangleShape2D::_get(const StringName &p_name, Variant &r_property) const
 #endif // DISABLE_DEPRECATED
 
 void RectangleShape2D::set_size(const Size2 &p_size) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_size.x < 0 || p_size.y < 0, "RectangleShape2D size cannot be negative.");
 	size = p_size;
 	_update_shape();
 }
 
 Size2 RectangleShape2D::get_size() const {
+	ZoneScopedS(60);
 	return size;
 }
 
 void RectangleShape2D::draw(const RID &p_to_rid, const Color &p_color) {
+	ZoneScopedS(60);
 	RenderingServer::get_singleton()->canvas_item_add_rect(p_to_rid, Rect2(-size * 0.5, size), p_color);
 	if (is_collision_outline_enabled()) {
 		// Draw an outlined rectangle to make individual shapes easier to distinguish.
@@ -90,14 +97,17 @@ void RectangleShape2D::draw(const RID &p_to_rid, const Color &p_color) {
 }
 
 Rect2 RectangleShape2D::get_rect() const {
+	ZoneScopedS(60);
 	return Rect2(-size * 0.5, size);
 }
 
 real_t RectangleShape2D::get_enclosing_radius() const {
+	ZoneScopedS(60);
 	return size.length() / 2;
 }
 
 void RectangleShape2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_size", "size"), &RectangleShape2D::set_size);
 	ClassDB::bind_method(D_METHOD("get_size"), &RectangleShape2D::get_size);
 

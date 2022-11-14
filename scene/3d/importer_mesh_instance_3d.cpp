@@ -28,25 +28,61 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  importer_mesh_instance_3d.cpp                                        */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "importer_mesh_instance_3d.h"
 
 #include "scene/resources/importer_mesh.h"
 
 void ImporterMeshInstance3D::set_mesh(const Ref<ImporterMesh> &p_mesh) {
+	ZoneScopedS(60);
 	mesh = p_mesh;
 }
 Ref<ImporterMesh> ImporterMeshInstance3D::get_mesh() const {
+	ZoneScopedS(60);
 	return mesh;
 }
 
 void ImporterMeshInstance3D::set_skin(const Ref<Skin> &p_skin) {
+	ZoneScopedS(60);
 	skin = p_skin;
 }
 Ref<Skin> ImporterMeshInstance3D::get_skin() const {
+	ZoneScopedS(60);
 	return skin;
 }
 
 void ImporterMeshInstance3D::set_surface_material(int p_idx, const Ref<Material> &p_material) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_idx < 0);
 	if (p_idx >= surface_materials.size()) {
 		surface_materials.resize(p_idx + 1);
@@ -55,6 +91,7 @@ void ImporterMeshInstance3D::set_surface_material(int p_idx, const Ref<Material>
 	surface_materials.write[p_idx] = p_material;
 }
 Ref<Material> ImporterMeshInstance3D::get_surface_material(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_idx < 0, Ref<Material>());
 	if (p_idx >= surface_materials.size()) {
 		return Ref<Material>();
@@ -63,13 +100,16 @@ Ref<Material> ImporterMeshInstance3D::get_surface_material(int p_idx) const {
 }
 
 void ImporterMeshInstance3D::set_skeleton_path(const NodePath &p_path) {
+	ZoneScopedS(60);
 	skeleton_path = p_path;
 }
 NodePath ImporterMeshInstance3D::get_skeleton_path() const {
+	ZoneScopedS(60);
 	return skeleton_path;
 }
 
 void ImporterMeshInstance3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_mesh", "mesh"), &ImporterMeshInstance3D::set_mesh);
 	ClassDB::bind_method(D_METHOD("get_mesh"), &ImporterMeshInstance3D::get_mesh);
 

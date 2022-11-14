@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  label_settings.cpp                                                   */
 /*************************************************************************/
@@ -33,10 +34,12 @@
 #include "core/core_string_names.h"
 
 void LabelSettings::_font_changed() {
+	ZoneScopedS(60);
 	emit_changed();
 }
 
 void LabelSettings::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_line_spacing", "spacing"), &LabelSettings::set_line_spacing);
 	ClassDB::bind_method(D_METHOD("get_line_spacing"), &LabelSettings::get_line_spacing);
 
@@ -82,6 +85,7 @@ void LabelSettings::_bind_methods() {
 }
 
 void LabelSettings::set_line_spacing(real_t p_spacing) {
+	ZoneScopedS(60);
 	if (line_spacing != p_spacing) {
 		line_spacing = p_spacing;
 		emit_changed();
@@ -89,10 +93,12 @@ void LabelSettings::set_line_spacing(real_t p_spacing) {
 }
 
 real_t LabelSettings::get_line_spacing() const {
+	ZoneScopedS(60);
 	return line_spacing;
 }
 
 void LabelSettings::set_font(const Ref<Font> &p_font) {
+	ZoneScopedS(60);
 	if (font != p_font) {
 		if (font.is_valid()) {
 			font->disconnect(CoreStringNames::get_singleton()->changed, callable_mp(this, &LabelSettings::_font_changed));
@@ -106,10 +112,12 @@ void LabelSettings::set_font(const Ref<Font> &p_font) {
 }
 
 Ref<Font> LabelSettings::get_font() const {
+	ZoneScopedS(60);
 	return font;
 }
 
 void LabelSettings::set_font_size(int p_size) {
+	ZoneScopedS(60);
 	if (font_size != p_size) {
 		font_size = p_size;
 		emit_changed();
@@ -117,10 +125,12 @@ void LabelSettings::set_font_size(int p_size) {
 }
 
 int LabelSettings::get_font_size() const {
+	ZoneScopedS(60);
 	return font_size;
 }
 
 void LabelSettings::set_font_color(const Color &p_color) {
+	ZoneScopedS(60);
 	if (font_color != p_color) {
 		font_color = p_color;
 		emit_changed();
@@ -128,10 +138,12 @@ void LabelSettings::set_font_color(const Color &p_color) {
 }
 
 Color LabelSettings::get_font_color() const {
+	ZoneScopedS(60);
 	return font_color;
 }
 
 void LabelSettings::set_outline_size(int p_size) {
+	ZoneScopedS(60);
 	if (outline_size != p_size) {
 		outline_size = p_size;
 		emit_changed();
@@ -139,10 +151,12 @@ void LabelSettings::set_outline_size(int p_size) {
 }
 
 int LabelSettings::get_outline_size() const {
+	ZoneScopedS(60);
 	return outline_size;
 }
 
 void LabelSettings::set_outline_color(const Color &p_color) {
+	ZoneScopedS(60);
 	if (outline_color != p_color) {
 		outline_color = p_color;
 		emit_changed();
@@ -150,10 +164,12 @@ void LabelSettings::set_outline_color(const Color &p_color) {
 }
 
 Color LabelSettings::get_outline_color() const {
+	ZoneScopedS(60);
 	return outline_color;
 }
 
 void LabelSettings::set_shadow_size(int p_size) {
+	ZoneScopedS(60);
 	if (shadow_size != p_size) {
 		shadow_size = p_size;
 		emit_changed();
@@ -161,10 +177,12 @@ void LabelSettings::set_shadow_size(int p_size) {
 }
 
 int LabelSettings::get_shadow_size() const {
+	ZoneScopedS(60);
 	return shadow_size;
 }
 
 void LabelSettings::set_shadow_color(const Color &p_color) {
+	ZoneScopedS(60);
 	if (shadow_color != p_color) {
 		shadow_color = p_color;
 		emit_changed();
@@ -172,10 +190,12 @@ void LabelSettings::set_shadow_color(const Color &p_color) {
 }
 
 Color LabelSettings::get_shadow_color() const {
+	ZoneScopedS(60);
 	return shadow_color;
 }
 
 void LabelSettings::set_shadow_offset(const Vector2 &p_offset) {
+	ZoneScopedS(60);
 	if (shadow_offset != p_offset) {
 		shadow_offset = p_offset;
 		emit_changed();
@@ -183,5 +203,6 @@ void LabelSettings::set_shadow_offset(const Vector2 &p_offset) {
 }
 
 Vector2 LabelSettings::get_shadow_offset() const {
+	ZoneScopedS(60);
 	return shadow_offset;
 }

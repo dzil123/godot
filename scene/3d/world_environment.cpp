@@ -28,12 +28,44 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  world_environment.cpp                                                */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "world_environment.h"
 
 #include "scene/3d/node_3d.h"
 #include "scene/main/window.h"
 
 void WorldEnvironment::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case Node3D::NOTIFICATION_ENTER_WORLD:
 		case Node3D::NOTIFICATION_ENTER_TREE: {
@@ -64,6 +96,7 @@ void WorldEnvironment::_notification(int p_what) {
 }
 
 void WorldEnvironment::_update_current_environment() {
+	ZoneScopedS(60);
 	WorldEnvironment *first = Object::cast_to<WorldEnvironment>(get_tree()->get_first_node_in_group("_world_environment_" + itos(get_viewport()->find_world_3d()->get_scenario().get_id())));
 
 	if (first) {
@@ -75,6 +108,7 @@ void WorldEnvironment::_update_current_environment() {
 }
 
 void WorldEnvironment::_update_current_camera_attributes() {
+	ZoneScopedS(60);
 	WorldEnvironment *first = Object::cast_to<WorldEnvironment>(get_tree()->get_first_node_in_group("_world_camera_attributes_" + itos(get_viewport()->find_world_3d()->get_scenario().get_id())));
 	if (first) {
 		get_viewport()->find_world_3d()->set_camera_attributes(first->camera_attributes);
@@ -86,6 +120,7 @@ void WorldEnvironment::_update_current_camera_attributes() {
 }
 
 void WorldEnvironment::set_environment(const Ref<Environment> &p_environment) {
+	ZoneScopedS(60);
 	if (environment == p_environment) {
 		return;
 	}
@@ -107,10 +142,12 @@ void WorldEnvironment::set_environment(const Ref<Environment> &p_environment) {
 }
 
 Ref<Environment> WorldEnvironment::get_environment() const {
+	ZoneScopedS(60);
 	return environment;
 }
 
 void WorldEnvironment::set_camera_attributes(const Ref<CameraAttributes> &p_camera_attributes) {
+	ZoneScopedS(60);
 	if (camera_attributes == p_camera_attributes) {
 		return;
 	}
@@ -132,10 +169,12 @@ void WorldEnvironment::set_camera_attributes(const Ref<CameraAttributes> &p_came
 }
 
 Ref<CameraAttributes> WorldEnvironment::get_camera_attributes() const {
+	ZoneScopedS(60);
 	return camera_attributes;
 }
 
 PackedStringArray WorldEnvironment::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (!environment.is_valid() && !camera_attributes.is_valid()) {
@@ -158,6 +197,7 @@ PackedStringArray WorldEnvironment::get_configuration_warnings() const {
 }
 
 void WorldEnvironment::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_environment", "env"), &WorldEnvironment::set_environment);
 	ClassDB::bind_method(D_METHOD("get_environment"), &WorldEnvironment::get_environment);
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "environment", PROPERTY_HINT_RESOURCE_TYPE, "Environment"), "set_environment", "get_environment");

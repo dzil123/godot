@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  popup_menu.cpp                                                       */
 /*************************************************************************/
@@ -39,6 +40,7 @@
 #include "scene/gui/menu_bar.h"
 
 String PopupMenu::_get_accel_text(const Item &p_item) const {
+	ZoneScopedS(60);
 	if (p_item.shortcut.is_valid()) {
 		return p_item.shortcut->get_as_text();
 	} else if (p_item.accel != Key::NONE) {
@@ -48,6 +50,7 @@ String PopupMenu::_get_accel_text(const Item &p_item) const {
 }
 
 Size2 PopupMenu::_get_contents_minimum_size() const {
+	ZoneScopedS(60);
 	Size2 minsize = theme_cache.panel_style->get_minimum_size(); // Accounts for margin in the margin container
 	minsize.x += scroll_container->get_v_scroll_bar()->get_size().width * 2; // Adds a buffer so that the scrollbar does not render over the top of content
 
@@ -106,6 +109,7 @@ Size2 PopupMenu::_get_contents_minimum_size() const {
 }
 
 int PopupMenu::_get_item_height(int p_item) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_item, items.size(), 0);
 
 	int icon_height = items[p_item].get_icon_size().height;
@@ -127,6 +131,7 @@ int PopupMenu::_get_item_height(int p_item) const {
 }
 
 int PopupMenu::_get_items_total_height() const {
+	ZoneScopedS(60);
 	// Get total height of all items by taking max of icon height and font height
 	int items_total_height = 0;
 	for (int i = 0; i < items.size(); i++) {
@@ -138,6 +143,7 @@ int PopupMenu::_get_items_total_height() const {
 }
 
 int PopupMenu::_get_mouse_over(const Point2 &p_over) const {
+	ZoneScopedS(60);
 	if (p_over.x < 0 || p_over.x >= get_size().width) {
 		return -1;
 	}
@@ -163,6 +169,7 @@ int PopupMenu::_get_mouse_over(const Point2 &p_over) const {
 }
 
 void PopupMenu::_activate_submenu(int p_over, bool p_by_keyboard) {
+	ZoneScopedS(60);
 	Node *n = get_node(items[p_over].submenu);
 	ERR_FAIL_COND_MSG(!n, "Item subnode does not exist: " + items[p_over].submenu + ".");
 	Popup *submenu_popup = Object::cast_to<Popup>(n);
@@ -239,6 +246,7 @@ void PopupMenu::_activate_submenu(int p_over, bool p_by_keyboard) {
 }
 
 void PopupMenu::_parent_focused() {
+	ZoneScopedS(60);
 	if (is_embedded()) {
 		Point2 mouse_pos_adjusted;
 		Window *window_parent = Object::cast_to<Window>(get_parent()->get_viewport());
@@ -262,6 +270,7 @@ void PopupMenu::_parent_focused() {
 }
 
 void PopupMenu::_submenu_timeout() {
+	ZoneScopedS(60);
 	if (mouse_over == submenu_over) {
 		_activate_submenu(mouse_over);
 	}
@@ -270,6 +279,7 @@ void PopupMenu::_submenu_timeout() {
 }
 
 void PopupMenu::gui_input(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_event.is_null());
 
 	if (!items.is_empty()) {
@@ -509,6 +519,7 @@ void PopupMenu::gui_input(const Ref<InputEvent> &p_event) {
 }
 
 void PopupMenu::_draw_items() {
+	ZoneScopedS(60);
 	control->set_custom_minimum_size(Size2(0, _get_items_total_height()));
 	RID ci = control->get_canvas_item();
 
@@ -710,11 +721,13 @@ void PopupMenu::_draw_items() {
 }
 
 void PopupMenu::_draw_background() {
+	ZoneScopedS(60);
 	RID ci2 = margin_container->get_canvas_item();
 	theme_cache.panel_style->draw(ci2, Rect2(Point2(), margin_container->get_size()));
 }
 
 void PopupMenu::_minimum_lifetime_timeout() {
+	ZoneScopedS(60);
 	close_allowed = true;
 	// If the mouse still isn't in this popup after timer expires, close.
 	if (!activated_by_keyboard && !get_visible_rect().has_point(get_mouse_position())) {
@@ -723,6 +736,7 @@ void PopupMenu::_minimum_lifetime_timeout() {
 }
 
 void PopupMenu::_close_pressed() {
+	ZoneScopedS(60);
 	// Only apply minimum lifetime to submenus.
 	PopupMenu *parent_pum = Object::cast_to<PopupMenu>(get_parent());
 	if (!parent_pum) {
@@ -740,6 +754,7 @@ void PopupMenu::_close_pressed() {
 }
 
 void PopupMenu::_shape_item(int p_item) {
+	ZoneScopedS(60);
 	if (items.write[p_item].dirty) {
 		items.write[p_item].text_buf->clear();
 
@@ -761,10 +776,12 @@ void PopupMenu::_shape_item(int p_item) {
 }
 
 void PopupMenu::_menu_changed() {
+	ZoneScopedS(60);
 	emit_signal(SNAME("menu_changed"));
 }
 
 void PopupMenu::add_child_notify(Node *p_child) {
+	ZoneScopedS(60);
 	Window::add_child_notify(p_child);
 
 	PopupMenu *pm = Object::cast_to<PopupMenu>(p_child);
@@ -776,6 +793,7 @@ void PopupMenu::add_child_notify(Node *p_child) {
 }
 
 void PopupMenu::remove_child_notify(Node *p_child) {
+	ZoneScopedS(60);
 	Window::remove_child_notify(p_child);
 
 	PopupMenu *pm = Object::cast_to<PopupMenu>(p_child);
@@ -787,6 +805,7 @@ void PopupMenu::remove_child_notify(Node *p_child) {
 }
 
 void PopupMenu::_update_theme_item_cache() {
+	ZoneScopedS(60);
 	Popup::_update_theme_item_cache();
 
 	theme_cache.panel_style = get_theme_stylebox(SNAME("panel"));
@@ -832,6 +851,7 @@ void PopupMenu::_update_theme_item_cache() {
 }
 
 void PopupMenu::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			PopupMenu *pm = Object::cast_to<PopupMenu>(get_parent());
@@ -939,6 +959,7 @@ void PopupMenu::_notification(int p_what) {
 	item.accel = p_accel;
 
 void PopupMenu::add_item(const String &p_label, int p_id, Key p_accel) {
+	ZoneScopedS(60);
 	Item item;
 	ITEM_SETUP_WITH_ACCEL(p_label, p_id, p_accel);
 	items.push_back(item);
@@ -950,6 +971,7 @@ void PopupMenu::add_item(const String &p_label, int p_id, Key p_accel) {
 }
 
 void PopupMenu::add_icon_item(const Ref<Texture2D> &p_icon, const String &p_label, int p_id, Key p_accel) {
+	ZoneScopedS(60);
 	Item item;
 	ITEM_SETUP_WITH_ACCEL(p_label, p_id, p_accel);
 	item.icon = p_icon;
@@ -962,6 +984,7 @@ void PopupMenu::add_icon_item(const Ref<Texture2D> &p_icon, const String &p_labe
 }
 
 void PopupMenu::add_check_item(const String &p_label, int p_id, Key p_accel) {
+	ZoneScopedS(60);
 	Item item;
 	ITEM_SETUP_WITH_ACCEL(p_label, p_id, p_accel);
 	item.checkable_type = Item::CHECKABLE_TYPE_CHECK_BOX;
@@ -973,6 +996,7 @@ void PopupMenu::add_check_item(const String &p_label, int p_id, Key p_accel) {
 }
 
 void PopupMenu::add_icon_check_item(const Ref<Texture2D> &p_icon, const String &p_label, int p_id, Key p_accel) {
+	ZoneScopedS(60);
 	Item item;
 	ITEM_SETUP_WITH_ACCEL(p_label, p_id, p_accel);
 	item.icon = p_icon;
@@ -984,6 +1008,7 @@ void PopupMenu::add_icon_check_item(const Ref<Texture2D> &p_icon, const String &
 }
 
 void PopupMenu::add_radio_check_item(const String &p_label, int p_id, Key p_accel) {
+	ZoneScopedS(60);
 	Item item;
 	ITEM_SETUP_WITH_ACCEL(p_label, p_id, p_accel);
 	item.checkable_type = Item::CHECKABLE_TYPE_RADIO_BUTTON;
@@ -995,6 +1020,7 @@ void PopupMenu::add_radio_check_item(const String &p_label, int p_id, Key p_acce
 }
 
 void PopupMenu::add_icon_radio_check_item(const Ref<Texture2D> &p_icon, const String &p_label, int p_id, Key p_accel) {
+	ZoneScopedS(60);
 	Item item;
 	ITEM_SETUP_WITH_ACCEL(p_label, p_id, p_accel);
 	item.icon = p_icon;
@@ -1007,6 +1033,7 @@ void PopupMenu::add_icon_radio_check_item(const Ref<Texture2D> &p_icon, const St
 }
 
 void PopupMenu::add_multistate_item(const String &p_label, int p_max_states, int p_default_state, int p_id, Key p_accel) {
+	ZoneScopedS(60);
 	Item item;
 	ITEM_SETUP_WITH_ACCEL(p_label, p_id, p_accel);
 	item.max_states = p_max_states;
@@ -1028,6 +1055,7 @@ void PopupMenu::add_multistate_item(const String &p_label, int p_max_states, int
 	item.shortcut_is_global = p_global;
 
 void PopupMenu::add_shortcut(const Ref<Shortcut> &p_shortcut, int p_id, bool p_global) {
+	ZoneScopedS(60);
 	Item item;
 	ITEM_SETUP_WITH_SHORTCUT(p_shortcut, p_id, p_global);
 	items.push_back(item);
@@ -1038,6 +1066,7 @@ void PopupMenu::add_shortcut(const Ref<Shortcut> &p_shortcut, int p_id, bool p_g
 }
 
 void PopupMenu::add_icon_shortcut(const Ref<Texture2D> &p_icon, const Ref<Shortcut> &p_shortcut, int p_id, bool p_global) {
+	ZoneScopedS(60);
 	Item item;
 	ITEM_SETUP_WITH_SHORTCUT(p_shortcut, p_id, p_global);
 	item.icon = p_icon;
@@ -1049,6 +1078,7 @@ void PopupMenu::add_icon_shortcut(const Ref<Texture2D> &p_icon, const Ref<Shortc
 }
 
 void PopupMenu::add_check_shortcut(const Ref<Shortcut> &p_shortcut, int p_id, bool p_global) {
+	ZoneScopedS(60);
 	Item item;
 	ITEM_SETUP_WITH_SHORTCUT(p_shortcut, p_id, p_global);
 	item.checkable_type = Item::CHECKABLE_TYPE_CHECK_BOX;
@@ -1060,6 +1090,7 @@ void PopupMenu::add_check_shortcut(const Ref<Shortcut> &p_shortcut, int p_id, bo
 }
 
 void PopupMenu::add_icon_check_shortcut(const Ref<Texture2D> &p_icon, const Ref<Shortcut> &p_shortcut, int p_id, bool p_global) {
+	ZoneScopedS(60);
 	Item item;
 	ITEM_SETUP_WITH_SHORTCUT(p_shortcut, p_id, p_global);
 	item.icon = p_icon;
@@ -1072,6 +1103,7 @@ void PopupMenu::add_icon_check_shortcut(const Ref<Texture2D> &p_icon, const Ref<
 }
 
 void PopupMenu::add_radio_check_shortcut(const Ref<Shortcut> &p_shortcut, int p_id, bool p_global) {
+	ZoneScopedS(60);
 	Item item;
 	ITEM_SETUP_WITH_SHORTCUT(p_shortcut, p_id, p_global);
 	item.checkable_type = Item::CHECKABLE_TYPE_RADIO_BUTTON;
@@ -1083,6 +1115,7 @@ void PopupMenu::add_radio_check_shortcut(const Ref<Shortcut> &p_shortcut, int p_
 }
 
 void PopupMenu::add_icon_radio_check_shortcut(const Ref<Texture2D> &p_icon, const Ref<Shortcut> &p_shortcut, int p_id, bool p_global) {
+	ZoneScopedS(60);
 	Item item;
 	ITEM_SETUP_WITH_SHORTCUT(p_shortcut, p_id, p_global);
 	item.icon = p_icon;
@@ -1095,6 +1128,7 @@ void PopupMenu::add_icon_radio_check_shortcut(const Ref<Texture2D> &p_icon, cons
 }
 
 void PopupMenu::add_submenu_item(const String &p_label, const String &p_submenu, int p_id) {
+	ZoneScopedS(60);
 	Item item;
 	item.text = p_label;
 	item.xl_text = atr(p_label);
@@ -1113,6 +1147,7 @@ void PopupMenu::add_submenu_item(const String &p_label, const String &p_submenu,
 /* Methods to modify existing items. */
 
 void PopupMenu::set_item_text(int p_idx, const String &p_text) {
+	ZoneScopedS(60);
 	if (p_idx < 0) {
 		p_idx += get_item_count();
 	}
@@ -1131,6 +1166,7 @@ void PopupMenu::set_item_text(int p_idx, const String &p_text) {
 }
 
 void PopupMenu::set_item_text_direction(int p_item, Control::TextDirection p_text_direction) {
+	ZoneScopedS(60);
 	if (p_item < 0) {
 		p_item += get_item_count();
 	}
@@ -1144,6 +1180,7 @@ void PopupMenu::set_item_text_direction(int p_item, Control::TextDirection p_tex
 }
 
 void PopupMenu::set_item_language(int p_item, const String &p_language) {
+	ZoneScopedS(60);
 	if (p_item < 0) {
 		p_item += get_item_count();
 	}
@@ -1156,6 +1193,7 @@ void PopupMenu::set_item_language(int p_item, const String &p_language) {
 }
 
 void PopupMenu::set_item_icon(int p_idx, const Ref<Texture2D> &p_icon) {
+	ZoneScopedS(60);
 	if (p_idx < 0) {
 		p_idx += get_item_count();
 	}
@@ -1173,6 +1211,7 @@ void PopupMenu::set_item_icon(int p_idx, const Ref<Texture2D> &p_icon) {
 }
 
 void PopupMenu::set_item_checked(int p_idx, bool p_checked) {
+	ZoneScopedS(60);
 	if (p_idx < 0) {
 		p_idx += get_item_count();
 	}
@@ -1190,6 +1229,7 @@ void PopupMenu::set_item_checked(int p_idx, bool p_checked) {
 }
 
 void PopupMenu::set_item_id(int p_idx, int p_id) {
+	ZoneScopedS(60);
 	if (p_idx < 0) {
 		p_idx += get_item_count();
 	}
@@ -1207,6 +1247,7 @@ void PopupMenu::set_item_id(int p_idx, int p_id) {
 }
 
 void PopupMenu::set_item_accelerator(int p_idx, Key p_accel) {
+	ZoneScopedS(60);
 	if (p_idx < 0) {
 		p_idx += get_item_count();
 	}
@@ -1225,6 +1266,7 @@ void PopupMenu::set_item_accelerator(int p_idx, Key p_accel) {
 }
 
 void PopupMenu::set_item_metadata(int p_idx, const Variant &p_meta) {
+	ZoneScopedS(60);
 	if (p_idx < 0) {
 		p_idx += get_item_count();
 	}
@@ -1241,6 +1283,7 @@ void PopupMenu::set_item_metadata(int p_idx, const Variant &p_meta) {
 }
 
 void PopupMenu::set_item_disabled(int p_idx, bool p_disabled) {
+	ZoneScopedS(60);
 	if (p_idx < 0) {
 		p_idx += get_item_count();
 	}
@@ -1257,6 +1300,7 @@ void PopupMenu::set_item_disabled(int p_idx, bool p_disabled) {
 }
 
 void PopupMenu::set_item_submenu(int p_idx, const String &p_submenu) {
+	ZoneScopedS(60);
 	if (p_idx < 0) {
 		p_idx += get_item_count();
 	}
@@ -1273,6 +1317,7 @@ void PopupMenu::set_item_submenu(int p_idx, const String &p_submenu) {
 }
 
 void PopupMenu::toggle_item_checked(int p_idx) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_idx, items.size());
 	items.write[p_idx].checked = !items[p_idx].checked;
 	control->queue_redraw();
@@ -1281,21 +1326,25 @@ void PopupMenu::toggle_item_checked(int p_idx) {
 }
 
 String PopupMenu::get_item_text(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, items.size(), "");
 	return items[p_idx].text;
 }
 
 Control::TextDirection PopupMenu::get_item_text_direction(int p_item) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_item, items.size(), Control::TEXT_DIRECTION_INHERITED);
 	return items[p_item].text_direction;
 }
 
 String PopupMenu::get_item_language(int p_item) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_item, items.size(), "");
 	return items[p_item].language;
 }
 
 int PopupMenu::get_item_idx_from_text(const String &text) const {
+	ZoneScopedS(60);
 	for (int idx = 0; idx < items.size(); idx++) {
 		if (items[idx].text == text) {
 			return idx;
@@ -1306,36 +1355,43 @@ int PopupMenu::get_item_idx_from_text(const String &text) const {
 }
 
 Ref<Texture2D> PopupMenu::get_item_icon(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, items.size(), Ref<Texture2D>());
 	return items[p_idx].icon;
 }
 
 Key PopupMenu::get_item_accelerator(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, items.size(), Key::NONE);
 	return items[p_idx].accel;
 }
 
 Variant PopupMenu::get_item_metadata(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, items.size(), Variant());
 	return items[p_idx].metadata;
 }
 
 bool PopupMenu::is_item_disabled(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, items.size(), false);
 	return items[p_idx].disabled;
 }
 
 bool PopupMenu::is_item_checked(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, items.size(), false);
 	return items[p_idx].checked;
 }
 
 int PopupMenu::get_item_id(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, items.size(), 0);
 	return items[p_idx].id;
 }
 
 int PopupMenu::get_item_index(int p_id) const {
+	ZoneScopedS(60);
 	for (int i = 0; i < items.size(); i++) {
 		if (items[i].id == p_id) {
 			return i;
@@ -1346,36 +1402,43 @@ int PopupMenu::get_item_index(int p_id) const {
 }
 
 String PopupMenu::get_item_submenu(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, items.size(), "");
 	return items[p_idx].submenu;
 }
 
 String PopupMenu::get_item_tooltip(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, items.size(), "");
 	return items[p_idx].tooltip;
 }
 
 Ref<Shortcut> PopupMenu::get_item_shortcut(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, items.size(), Ref<Shortcut>());
 	return items[p_idx].shortcut;
 }
 
 int PopupMenu::get_item_indent(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, items.size(), 0);
 	return items[p_idx].indent;
 }
 
 int PopupMenu::get_item_max_states(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, items.size(), -1);
 	return items[p_idx].max_states;
 }
 
 int PopupMenu::get_item_state(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, items.size(), -1);
 	return items[p_idx].state;
 }
 
 void PopupMenu::set_item_as_separator(int p_idx, bool p_separator) {
+	ZoneScopedS(60);
 	if (p_idx < 0) {
 		p_idx += get_item_count();
 	}
@@ -1390,11 +1453,13 @@ void PopupMenu::set_item_as_separator(int p_idx, bool p_separator) {
 }
 
 bool PopupMenu::is_item_separator(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, items.size(), false);
 	return items[p_idx].separator;
 }
 
 void PopupMenu::set_item_as_checkable(int p_idx, bool p_checkable) {
+	ZoneScopedS(60);
 	if (p_idx < 0) {
 		p_idx += get_item_count();
 	}
@@ -1411,6 +1476,7 @@ void PopupMenu::set_item_as_checkable(int p_idx, bool p_checkable) {
 }
 
 void PopupMenu::set_item_as_radio_checkable(int p_idx, bool p_radio_checkable) {
+	ZoneScopedS(60);
 	if (p_idx < 0) {
 		p_idx += get_item_count();
 	}
@@ -1427,6 +1493,7 @@ void PopupMenu::set_item_as_radio_checkable(int p_idx, bool p_radio_checkable) {
 }
 
 void PopupMenu::set_item_tooltip(int p_idx, const String &p_tooltip) {
+	ZoneScopedS(60);
 	if (p_idx < 0) {
 		p_idx += get_item_count();
 	}
@@ -1442,6 +1509,7 @@ void PopupMenu::set_item_tooltip(int p_idx, const String &p_tooltip) {
 }
 
 void PopupMenu::set_item_shortcut(int p_idx, const Ref<Shortcut> &p_shortcut, bool p_global) {
+	ZoneScopedS(60);
 	if (p_idx < 0) {
 		p_idx += get_item_count();
 	}
@@ -1467,6 +1535,7 @@ void PopupMenu::set_item_shortcut(int p_idx, const Ref<Shortcut> &p_shortcut, bo
 }
 
 void PopupMenu::set_item_indent(int p_idx, int p_indent) {
+	ZoneScopedS(60);
 	if (p_idx < 0) {
 		p_idx += get_item_count();
 	}
@@ -1483,6 +1552,7 @@ void PopupMenu::set_item_indent(int p_idx, int p_indent) {
 }
 
 void PopupMenu::set_item_multistate(int p_idx, int p_state) {
+	ZoneScopedS(60);
 	if (p_idx < 0) {
 		p_idx += get_item_count();
 	}
@@ -1498,6 +1568,7 @@ void PopupMenu::set_item_multistate(int p_idx, int p_state) {
 }
 
 void PopupMenu::set_item_shortcut_disabled(int p_idx, bool p_disabled) {
+	ZoneScopedS(60);
 	if (p_idx < 0) {
 		p_idx += get_item_count();
 	}
@@ -1513,6 +1584,7 @@ void PopupMenu::set_item_shortcut_disabled(int p_idx, bool p_disabled) {
 }
 
 void PopupMenu::toggle_item_multistate(int p_idx) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_idx, items.size());
 	if (0 >= items[p_idx].max_states) {
 		return;
@@ -1528,26 +1600,31 @@ void PopupMenu::toggle_item_multistate(int p_idx) {
 }
 
 bool PopupMenu::is_item_checkable(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, items.size(), false);
 	return items[p_idx].checkable_type;
 }
 
 bool PopupMenu::is_item_radio_checkable(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, items.size(), false);
 	return items[p_idx].checkable_type == Item::CHECKABLE_TYPE_RADIO_BUTTON;
 }
 
 bool PopupMenu::is_item_shortcut_global(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, items.size(), false);
 	return items[p_idx].shortcut_is_global;
 }
 
 bool PopupMenu::is_item_shortcut_disabled(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, items.size(), false);
 	return items[p_idx].shortcut_is_disabled;
 }
 
 void PopupMenu::set_focused_item(int p_idx) {
+	ZoneScopedS(60);
 	if (p_idx != -1) {
 		ERR_FAIL_INDEX(p_idx, items.size());
 	}
@@ -1565,10 +1642,12 @@ void PopupMenu::set_focused_item(int p_idx) {
 }
 
 int PopupMenu::get_focused_item() const {
+	ZoneScopedS(60);
 	return mouse_over;
 }
 
 void PopupMenu::set_item_count(int p_count) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_count < 0);
 	int prev_size = items.size();
 
@@ -1591,10 +1670,12 @@ void PopupMenu::set_item_count(int p_count) {
 }
 
 int PopupMenu::get_item_count() const {
+	ZoneScopedS(60);
 	return items.size();
 }
 
 void PopupMenu::scroll_to_item(int p_item) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_item, items.size());
 
 	// Scroll item into view (upwards).
@@ -1609,6 +1690,7 @@ void PopupMenu::scroll_to_item(int p_item) {
 }
 
 bool PopupMenu::activate_item_by_event(const Ref<InputEvent> &p_event, bool p_for_global_only) {
+	ZoneScopedS(60);
 	Key code = Key::NONE;
 	Ref<InputEventKey> k = p_event;
 
@@ -1666,6 +1748,7 @@ bool PopupMenu::activate_item_by_event(const Ref<InputEvent> &p_event, bool p_fo
 }
 
 void PopupMenu::activate_item(int p_item) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_item, items.size());
 	ERR_FAIL_COND(items[p_item].separator);
 	int id = items[p_item].id >= 0 ? items[p_item].id : p_item;
@@ -1720,6 +1803,7 @@ void PopupMenu::activate_item(int p_item) {
 }
 
 void PopupMenu::remove_item(int p_idx) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_idx, items.size());
 
 	if (items[p_idx].shortcut.is_valid()) {
@@ -1733,6 +1817,7 @@ void PopupMenu::remove_item(int p_idx) {
 }
 
 void PopupMenu::add_separator(const String &p_text, int p_id) {
+	ZoneScopedS(60);
 	Item sep;
 	sep.separator = true;
 	sep.id = p_id;
@@ -1746,6 +1831,7 @@ void PopupMenu::add_separator(const String &p_text, int p_id) {
 }
 
 void PopupMenu::clear() {
+	ZoneScopedS(60);
 	for (int i = 0; i < items.size(); i++) {
 		if (items[i].shortcut.is_valid()) {
 			_unref_shortcut(items[i].shortcut);
@@ -1760,6 +1846,7 @@ void PopupMenu::clear() {
 }
 
 void PopupMenu::_ref_shortcut(Ref<Shortcut> p_sc) {
+	ZoneScopedS(60);
 	if (!shortcut_refcount.has(p_sc)) {
 		shortcut_refcount[p_sc] = 1;
 		p_sc->connect("changed", callable_mp(this, &PopupMenu::_shortcut_changed));
@@ -1769,6 +1856,7 @@ void PopupMenu::_ref_shortcut(Ref<Shortcut> p_sc) {
 }
 
 void PopupMenu::_unref_shortcut(Ref<Shortcut> p_sc) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!shortcut_refcount.has(p_sc));
 	shortcut_refcount[p_sc]--;
 	if (shortcut_refcount[p_sc] == 0) {
@@ -1778,6 +1866,7 @@ void PopupMenu::_unref_shortcut(Ref<Shortcut> p_sc) {
 }
 
 void PopupMenu::_shortcut_changed() {
+	ZoneScopedS(60);
 	for (int i = 0; i < items.size(); i++) {
 		items.write[i].dirty = true;
 	}
@@ -1786,30 +1875,37 @@ void PopupMenu::_shortcut_changed() {
 
 // Hide on item selection determines whether or not the popup will close after item selection
 void PopupMenu::set_hide_on_item_selection(bool p_enabled) {
+	ZoneScopedS(60);
 	hide_on_item_selection = p_enabled;
 }
 
 bool PopupMenu::is_hide_on_item_selection() const {
+	ZoneScopedS(60);
 	return hide_on_item_selection;
 }
 
 void PopupMenu::set_hide_on_checkable_item_selection(bool p_enabled) {
+	ZoneScopedS(60);
 	hide_on_checkable_item_selection = p_enabled;
 }
 
 bool PopupMenu::is_hide_on_checkable_item_selection() const {
+	ZoneScopedS(60);
 	return hide_on_checkable_item_selection;
 }
 
 void PopupMenu::set_hide_on_multistate_item_selection(bool p_enabled) {
+	ZoneScopedS(60);
 	hide_on_multistate_item_selection = p_enabled;
 }
 
 bool PopupMenu::is_hide_on_multistate_item_selection() const {
+	ZoneScopedS(60);
 	return hide_on_multistate_item_selection;
 }
 
 void PopupMenu::set_submenu_popup_delay(float p_time) {
+	ZoneScopedS(60);
 	if (p_time <= 0) {
 		p_time = 0.01;
 	}
@@ -1818,18 +1914,22 @@ void PopupMenu::set_submenu_popup_delay(float p_time) {
 }
 
 float PopupMenu::get_submenu_popup_delay() const {
+	ZoneScopedS(60);
 	return submenu_timer->get_wait_time();
 }
 
 void PopupMenu::set_allow_search(bool p_allow) {
+	ZoneScopedS(60);
 	allow_search = p_allow;
 }
 
 bool PopupMenu::get_allow_search() const {
+	ZoneScopedS(60);
 	return allow_search;
 }
 
 String PopupMenu::get_tooltip(const Point2 &p_pos) const {
+	ZoneScopedS(60);
 	int over = _get_mouse_over(p_pos);
 	if (over < 0 || over >= items.size()) {
 		return "";
@@ -1838,10 +1938,12 @@ String PopupMenu::get_tooltip(const Point2 &p_pos) const {
 }
 
 void PopupMenu::set_parent_rect(const Rect2 &p_rect) {
+	ZoneScopedS(60);
 	parent_rect = p_rect;
 }
 
 void PopupMenu::get_translatable_strings(List<String> *p_strings) const {
+	ZoneScopedS(60);
 	for (int i = 0; i < items.size(); i++) {
 		if (!items[i].xl_text.is_empty()) {
 			p_strings->push_back(items[i].xl_text);
@@ -1850,14 +1952,17 @@ void PopupMenu::get_translatable_strings(List<String> *p_strings) const {
 }
 
 void PopupMenu::add_autohide_area(const Rect2 &p_area) {
+	ZoneScopedS(60);
 	autohide_areas.push_back(p_area);
 }
 
 void PopupMenu::clear_autohide_areas() {
+	ZoneScopedS(60);
 	autohide_areas.clear();
 }
 
 void PopupMenu::take_mouse_focus() {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!is_inside_tree());
 
 	if (get_parent()) {
@@ -1866,6 +1971,7 @@ void PopupMenu::take_mouse_focus() {
 }
 
 bool PopupMenu::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	Vector<String> components = String(p_name).split("/", true, 2);
 	if (components.size() >= 2 && components[0].begins_with("item_") && components[0].trim_prefix("item_").is_valid_int()) {
 		int item_index = components[0].trim_prefix("item_").to_int();
@@ -1945,6 +2051,7 @@ bool PopupMenu::_set(const StringName &p_name, const Variant &p_value) {
 }
 
 bool PopupMenu::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	Vector<String> components = String(p_name).split("/", true, 2);
 	if (components.size() >= 2 && components[0].begins_with("item_") && components[0].trim_prefix("item_").is_valid_int()) {
 		int item_index = components[0].trim_prefix("item_").to_int();
@@ -1976,6 +2083,7 @@ bool PopupMenu::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void PopupMenu::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	for (int i = 0; i < items.size(); i++) {
 		p_list->push_back(PropertyInfo(Variant::STRING, vformat("item_%d/text", i)));
 
@@ -2005,6 +2113,7 @@ void PopupMenu::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 void PopupMenu::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("add_item", "label", "id", "accel"), &PopupMenu::add_item, DEFVAL(-1), DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("add_icon_item", "texture", "label", "id", "accel"), &PopupMenu::add_icon_item, DEFVAL(-1), DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("add_check_item", "label", "id", "accel"), &PopupMenu::add_check_item, DEFVAL(-1), DEFVAL(0));
@@ -2106,12 +2215,14 @@ void PopupMenu::_bind_methods() {
 }
 
 void PopupMenu::popup(const Rect2 &p_bounds) {
+	ZoneScopedS(60);
 	moved = Vector2();
 	popup_time_msec = OS::get_singleton()->get_ticks_msec();
 	Popup::popup(p_bounds);
 }
 
 PopupMenu::PopupMenu() {
+	ZoneScopedS(60);
 	// Margin Container
 	margin_container = memnew(MarginContainer);
 	margin_container->set_anchors_and_offsets_preset(Control::PRESET_FULL_RECT);

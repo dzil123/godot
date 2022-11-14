@@ -28,26 +28,61 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  animation_blend_tree.cpp                                             */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "animation_blend_tree.h"
 
 #include "scene/resources/animation.h"
 #include "scene/scene_string_names.h"
 
 void AnimationNodeAnimation::set_animation(const StringName &p_name) {
+	ZoneScopedS(60);
 	animation = p_name;
 }
 
 StringName AnimationNodeAnimation::get_animation() const {
+	ZoneScopedS(60);
 	return animation;
 }
 
 Vector<String> (*AnimationNodeAnimation::get_editable_animation_list)() = nullptr;
 
 void AnimationNodeAnimation::get_parameter_list(List<PropertyInfo> *r_list) const {
+	ZoneScopedS(60);
 	r_list->push_back(PropertyInfo(Variant::FLOAT, time, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE));
 }
 
 void AnimationNodeAnimation::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (p_property.name == "animation" && get_editable_animation_list) {
 		Vector<String> names = get_editable_animation_list();
 		String anims;
@@ -65,6 +100,7 @@ void AnimationNodeAnimation::_validate_property(PropertyInfo &p_property) const 
 }
 
 double AnimationNodeAnimation::process(double p_time, bool p_seek, bool p_seek_root) {
+	ZoneScopedS(60);
 	AnimationPlayer *ap = state->player;
 	ERR_FAIL_COND_V(!ap, 0);
 
@@ -141,26 +177,32 @@ double AnimationNodeAnimation::process(double p_time, bool p_seek, bool p_seek_r
 }
 
 String AnimationNodeAnimation::get_caption() const {
+	ZoneScopedS(60);
 	return "Animation";
 }
 
 void AnimationNodeAnimation::set_play_mode(PlayMode p_play_mode) {
+	ZoneScopedS(60);
 	play_mode = p_play_mode;
 }
 
 AnimationNodeAnimation::PlayMode AnimationNodeAnimation::get_play_mode() const {
+	ZoneScopedS(60);
 	return play_mode;
 }
 
 void AnimationNodeAnimation::set_backward(bool p_backward) {
+	ZoneScopedS(60);
 	backward = p_backward;
 }
 
 bool AnimationNodeAnimation::is_backward() const {
+	ZoneScopedS(60);
 	return backward;
 }
 
 void AnimationNodeAnimation::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_animation", "name"), &AnimationNodeAnimation::set_animation);
 	ClassDB::bind_method(D_METHOD("get_animation"), &AnimationNodeAnimation::get_animation);
 
@@ -180,6 +222,7 @@ AnimationNodeAnimation::AnimationNodeAnimation() {
 ////////////////////////////////////////////////////////
 
 void AnimationNodeSync::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_use_sync", "enable"), &AnimationNodeSync::set_use_sync);
 	ClassDB::bind_method(D_METHOD("is_using_sync"), &AnimationNodeSync::is_using_sync);
 
@@ -187,10 +230,12 @@ void AnimationNodeSync::_bind_methods() {
 }
 
 void AnimationNodeSync::set_use_sync(bool p_sync) {
+	ZoneScopedS(60);
 	sync = p_sync;
 }
 
 bool AnimationNodeSync::is_using_sync() const {
+	ZoneScopedS(60);
 	return sync;
 }
 
@@ -200,6 +245,7 @@ AnimationNodeSync::AnimationNodeSync() {
 ////////////////////////////////////////////////////////
 
 void AnimationNodeOneShot::get_parameter_list(List<PropertyInfo> *r_list) const {
+	ZoneScopedS(60);
 	r_list->push_back(PropertyInfo(Variant::BOOL, active));
 	r_list->push_back(PropertyInfo(Variant::BOOL, prev_active, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE));
 	r_list->push_back(PropertyInfo(Variant::FLOAT, time, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE));
@@ -208,6 +254,7 @@ void AnimationNodeOneShot::get_parameter_list(List<PropertyInfo> *r_list) const 
 }
 
 Variant AnimationNodeOneShot::get_parameter_default_value(const StringName &p_parameter) const {
+	ZoneScopedS(60);
 	if (p_parameter == active || p_parameter == prev_active) {
 		return false;
 	} else if (p_parameter == time_to_restart) {
@@ -218,62 +265,77 @@ Variant AnimationNodeOneShot::get_parameter_default_value(const StringName &p_pa
 }
 
 void AnimationNodeOneShot::set_fadein_time(double p_time) {
+	ZoneScopedS(60);
 	fade_in = p_time;
 }
 
 void AnimationNodeOneShot::set_fadeout_time(double p_time) {
+	ZoneScopedS(60);
 	fade_out = p_time;
 }
 
 double AnimationNodeOneShot::get_fadein_time() const {
+	ZoneScopedS(60);
 	return fade_in;
 }
 
 double AnimationNodeOneShot::get_fadeout_time() const {
+	ZoneScopedS(60);
 	return fade_out;
 }
 
 void AnimationNodeOneShot::set_autorestart(bool p_active) {
+	ZoneScopedS(60);
 	autorestart = p_active;
 }
 
 void AnimationNodeOneShot::set_autorestart_delay(double p_time) {
+	ZoneScopedS(60);
 	autorestart_delay = p_time;
 }
 
 void AnimationNodeOneShot::set_autorestart_random_delay(double p_time) {
+	ZoneScopedS(60);
 	autorestart_random_delay = p_time;
 }
 
 bool AnimationNodeOneShot::has_autorestart() const {
+	ZoneScopedS(60);
 	return autorestart;
 }
 
 double AnimationNodeOneShot::get_autorestart_delay() const {
+	ZoneScopedS(60);
 	return autorestart_delay;
 }
 
 double AnimationNodeOneShot::get_autorestart_random_delay() const {
+	ZoneScopedS(60);
 	return autorestart_random_delay;
 }
 
 void AnimationNodeOneShot::set_mix_mode(MixMode p_mix) {
+	ZoneScopedS(60);
 	mix = p_mix;
 }
 
 AnimationNodeOneShot::MixMode AnimationNodeOneShot::get_mix_mode() const {
+	ZoneScopedS(60);
 	return mix;
 }
 
 String AnimationNodeOneShot::get_caption() const {
+	ZoneScopedS(60);
 	return "OneShot";
 }
 
 bool AnimationNodeOneShot::has_filter() const {
+	ZoneScopedS(60);
 	return true;
 }
 
 double AnimationNodeOneShot::process(double p_time, bool p_seek, bool p_seek_root) {
+	ZoneScopedS(60);
 	bool cur_active = get_parameter(active);
 	bool cur_prev_active = get_parameter(prev_active);
 	double cur_time = get_parameter(time);
@@ -364,6 +426,7 @@ double AnimationNodeOneShot::process(double p_time, bool p_seek, bool p_seek_roo
 }
 
 void AnimationNodeOneShot::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_fadein_time", "time"), &AnimationNodeOneShot::set_fadein_time);
 	ClassDB::bind_method(D_METHOD("get_fadein_time"), &AnimationNodeOneShot::get_fadein_time);
 
@@ -398,6 +461,7 @@ void AnimationNodeOneShot::_bind_methods() {
 }
 
 AnimationNodeOneShot::AnimationNodeOneShot() {
+	ZoneScopedS(60);
 	add_input("in");
 	add_input("shot");
 }
@@ -405,22 +469,27 @@ AnimationNodeOneShot::AnimationNodeOneShot() {
 ////////////////////////////////////////////////
 
 void AnimationNodeAdd2::get_parameter_list(List<PropertyInfo> *r_list) const {
+	ZoneScopedS(60);
 	r_list->push_back(PropertyInfo(Variant::FLOAT, add_amount, PROPERTY_HINT_RANGE, "0,1,0.01"));
 }
 
 Variant AnimationNodeAdd2::get_parameter_default_value(const StringName &p_parameter) const {
+	ZoneScopedS(60);
 	return 0;
 }
 
 String AnimationNodeAdd2::get_caption() const {
+	ZoneScopedS(60);
 	return "Add2";
 }
 
 bool AnimationNodeAdd2::has_filter() const {
+	ZoneScopedS(60);
 	return true;
 }
 
 double AnimationNodeAdd2::process(double p_time, bool p_seek, bool p_seek_root) {
+	ZoneScopedS(60);
 	double amount = get_parameter(add_amount);
 	double rem0 = blend_input(0, p_time, p_seek, p_seek_root, 1.0, FILTER_IGNORE, sync);
 	blend_input(1, p_time, p_seek, p_seek_root, amount, FILTER_PASS, sync);
@@ -432,6 +501,7 @@ void AnimationNodeAdd2::_bind_methods() {
 }
 
 AnimationNodeAdd2::AnimationNodeAdd2() {
+	ZoneScopedS(60);
 	add_input("in");
 	add_input("add");
 }
@@ -439,22 +509,27 @@ AnimationNodeAdd2::AnimationNodeAdd2() {
 ////////////////////////////////////////////////
 
 void AnimationNodeAdd3::get_parameter_list(List<PropertyInfo> *r_list) const {
+	ZoneScopedS(60);
 	r_list->push_back(PropertyInfo(Variant::FLOAT, add_amount, PROPERTY_HINT_RANGE, "-1,1,0.01"));
 }
 
 Variant AnimationNodeAdd3::get_parameter_default_value(const StringName &p_parameter) const {
+	ZoneScopedS(60);
 	return 0;
 }
 
 String AnimationNodeAdd3::get_caption() const {
+	ZoneScopedS(60);
 	return "Add3";
 }
 
 bool AnimationNodeAdd3::has_filter() const {
+	ZoneScopedS(60);
 	return true;
 }
 
 double AnimationNodeAdd3::process(double p_time, bool p_seek, bool p_seek_root) {
+	ZoneScopedS(60);
 	double amount = get_parameter(add_amount);
 	blend_input(0, p_time, p_seek, p_seek_root, MAX(0, -amount), FILTER_PASS, sync);
 	double rem0 = blend_input(1, p_time, p_seek, p_seek_root, 1.0, FILTER_IGNORE, sync);
@@ -467,6 +542,7 @@ void AnimationNodeAdd3::_bind_methods() {
 }
 
 AnimationNodeAdd3::AnimationNodeAdd3() {
+	ZoneScopedS(60);
 	add_input("-add");
 	add_input("in");
 	add_input("+add");
@@ -475,18 +551,22 @@ AnimationNodeAdd3::AnimationNodeAdd3() {
 /////////////////////////////////////////////
 
 void AnimationNodeBlend2::get_parameter_list(List<PropertyInfo> *r_list) const {
+	ZoneScopedS(60);
 	r_list->push_back(PropertyInfo(Variant::FLOAT, blend_amount, PROPERTY_HINT_RANGE, "0,1,0.01"));
 }
 
 Variant AnimationNodeBlend2::get_parameter_default_value(const StringName &p_parameter) const {
+	ZoneScopedS(60);
 	return 0; //for blend amount
 }
 
 String AnimationNodeBlend2::get_caption() const {
+	ZoneScopedS(60);
 	return "Blend2";
 }
 
 double AnimationNodeBlend2::process(double p_time, bool p_seek, bool p_seek_root) {
+	ZoneScopedS(60);
 	double amount = get_parameter(blend_amount);
 
 	double rem0 = blend_input(0, p_time, p_seek, p_seek_root, 1.0 - amount, FILTER_BLEND, sync);
@@ -496,6 +576,7 @@ double AnimationNodeBlend2::process(double p_time, bool p_seek, bool p_seek_root
 }
 
 bool AnimationNodeBlend2::has_filter() const {
+	ZoneScopedS(60);
 	return true;
 }
 
@@ -503,6 +584,7 @@ void AnimationNodeBlend2::_bind_methods() {
 }
 
 AnimationNodeBlend2::AnimationNodeBlend2() {
+	ZoneScopedS(60);
 	add_input("in");
 	add_input("blend");
 }
@@ -510,18 +592,22 @@ AnimationNodeBlend2::AnimationNodeBlend2() {
 //////////////////////////////////////
 
 void AnimationNodeBlend3::get_parameter_list(List<PropertyInfo> *r_list) const {
+	ZoneScopedS(60);
 	r_list->push_back(PropertyInfo(Variant::FLOAT, blend_amount, PROPERTY_HINT_RANGE, "-1,1,0.01"));
 }
 
 Variant AnimationNodeBlend3::get_parameter_default_value(const StringName &p_parameter) const {
+	ZoneScopedS(60);
 	return 0; //for blend amount
 }
 
 String AnimationNodeBlend3::get_caption() const {
+	ZoneScopedS(60);
 	return "Blend3";
 }
 
 double AnimationNodeBlend3::process(double p_time, bool p_seek, bool p_seek_root) {
+	ZoneScopedS(60);
 	double amount = get_parameter(blend_amount);
 	double rem0 = blend_input(0, p_time, p_seek, p_seek_root, MAX(0, -amount), FILTER_IGNORE, sync);
 	double rem1 = blend_input(1, p_time, p_seek, p_seek_root, 1.0 - ABS(amount), FILTER_IGNORE, sync);
@@ -534,6 +620,7 @@ void AnimationNodeBlend3::_bind_methods() {
 }
 
 AnimationNodeBlend3::AnimationNodeBlend3() {
+	ZoneScopedS(60);
 	add_input("-blend");
 	add_input("in");
 	add_input("+blend");
@@ -542,18 +629,22 @@ AnimationNodeBlend3::AnimationNodeBlend3() {
 /////////////////////////////////
 
 void AnimationNodeTimeScale::get_parameter_list(List<PropertyInfo> *r_list) const {
+	ZoneScopedS(60);
 	r_list->push_back(PropertyInfo(Variant::FLOAT, scale, PROPERTY_HINT_RANGE, "-32,32,0.01,or_less,or_greater"));
 }
 
 Variant AnimationNodeTimeScale::get_parameter_default_value(const StringName &p_parameter) const {
+	ZoneScopedS(60);
 	return 1.0; //initial timescale
 }
 
 String AnimationNodeTimeScale::get_caption() const {
+	ZoneScopedS(60);
 	return "TimeScale";
 }
 
 double AnimationNodeTimeScale::process(double p_time, bool p_seek, bool p_seek_root) {
+	ZoneScopedS(60);
 	double cur_scale = get_parameter(scale);
 	if (p_seek) {
 		return blend_input(0, p_time, true, p_seek_root, 1.0, FILTER_IGNORE, true);
@@ -566,24 +657,29 @@ void AnimationNodeTimeScale::_bind_methods() {
 }
 
 AnimationNodeTimeScale::AnimationNodeTimeScale() {
+	ZoneScopedS(60);
 	add_input("in");
 }
 
 ////////////////////////////////////
 
 void AnimationNodeTimeSeek::get_parameter_list(List<PropertyInfo> *r_list) const {
+	ZoneScopedS(60);
 	r_list->push_back(PropertyInfo(Variant::FLOAT, seek_pos, PROPERTY_HINT_RANGE, "-1,3600,0.01,or_greater"));
 }
 
 Variant AnimationNodeTimeSeek::get_parameter_default_value(const StringName &p_parameter) const {
+	ZoneScopedS(60);
 	return 1.0; //initial timescale
 }
 
 String AnimationNodeTimeSeek::get_caption() const {
+	ZoneScopedS(60);
 	return "Seek";
 }
 
 double AnimationNodeTimeSeek::process(double p_time, bool p_seek, bool p_seek_root) {
+	ZoneScopedS(60);
 	double cur_seek_pos = get_parameter(seek_pos);
 	if (p_seek) {
 		return blend_input(0, p_time, true, p_seek_root, 1.0, FILTER_IGNORE, true);
@@ -600,12 +696,14 @@ void AnimationNodeTimeSeek::_bind_methods() {
 }
 
 AnimationNodeTimeSeek::AnimationNodeTimeSeek() {
+	ZoneScopedS(60);
 	add_input("in");
 }
 
 /////////////////////////////////////////////////
 
 void AnimationNodeTransition::get_parameter_list(List<PropertyInfo> *r_list) const {
+	ZoneScopedS(60);
 	String anims;
 	for (int i = 0; i < enabled_inputs; i++) {
 		if (i > 0) {
@@ -622,6 +720,7 @@ void AnimationNodeTransition::get_parameter_list(List<PropertyInfo> *r_list) con
 }
 
 Variant AnimationNodeTransition::get_parameter_default_value(const StringName &p_parameter) const {
+	ZoneScopedS(60);
 	if (p_parameter == time || p_parameter == prev_xfading) {
 		return 0.0;
 	} else if (p_parameter == prev || p_parameter == prev_current) {
@@ -632,10 +731,12 @@ Variant AnimationNodeTransition::get_parameter_default_value(const StringName &p
 }
 
 String AnimationNodeTransition::get_caption() const {
+	ZoneScopedS(60);
 	return "Transition";
 }
 
 void AnimationNodeTransition::_update_inputs() {
+	ZoneScopedS(60);
 	while (get_input_count() < enabled_inputs) {
 		add_input(inputs[get_input_count()].name);
 	}
@@ -646,61 +747,74 @@ void AnimationNodeTransition::_update_inputs() {
 }
 
 void AnimationNodeTransition::set_enabled_inputs(int p_inputs) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_inputs, MAX_INPUTS);
 	enabled_inputs = p_inputs;
 	_update_inputs();
 }
 
 int AnimationNodeTransition::get_enabled_inputs() {
+	ZoneScopedS(60);
 	return enabled_inputs;
 }
 
 void AnimationNodeTransition::set_input_as_auto_advance(int p_input, bool p_enable) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_input, MAX_INPUTS);
 	inputs[p_input].auto_advance = p_enable;
 }
 
 bool AnimationNodeTransition::is_input_set_as_auto_advance(int p_input) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_input, MAX_INPUTS, false);
 	return inputs[p_input].auto_advance;
 }
 
 void AnimationNodeTransition::set_input_caption(int p_input, const String &p_name) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_input, MAX_INPUTS);
 	inputs[p_input].name = p_name;
 	set_input_name(p_input, p_name);
 }
 
 String AnimationNodeTransition::get_input_caption(int p_input) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_input, MAX_INPUTS, String());
 	return inputs[p_input].name;
 }
 
 void AnimationNodeTransition::set_xfade_time(double p_fade) {
+	ZoneScopedS(60);
 	xfade_time = p_fade;
 }
 
 double AnimationNodeTransition::get_xfade_time() const {
+	ZoneScopedS(60);
 	return xfade_time;
 }
 
 void AnimationNodeTransition::set_xfade_curve(const Ref<Curve> &p_curve) {
+	ZoneScopedS(60);
 	xfade_curve = p_curve;
 }
 
 Ref<Curve> AnimationNodeTransition::get_xfade_curve() const {
+	ZoneScopedS(60);
 	return xfade_curve;
 }
 
 void AnimationNodeTransition::set_from_start(bool p_from_start) {
+	ZoneScopedS(60);
 	from_start = p_from_start;
 }
 
 bool AnimationNodeTransition::is_from_start() const {
+	ZoneScopedS(60);
 	return from_start;
 }
 
 double AnimationNodeTransition::process(double p_time, bool p_seek, bool p_seek_root) {
+	ZoneScopedS(60);
 	int cur_current = get_parameter(current);
 	int cur_prev = get_parameter(prev);
 	int cur_prev_current = get_parameter(prev_current);
@@ -780,6 +894,7 @@ double AnimationNodeTransition::process(double p_time, bool p_seek, bool p_seek_
 }
 
 void AnimationNodeTransition::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (p_property.name.begins_with("input_")) {
 		String n = p_property.name.get_slicec('/', 0).get_slicec('_', 1);
 		if (n != "count") {
@@ -792,6 +907,7 @@ void AnimationNodeTransition::_validate_property(PropertyInfo &p_property) const
 }
 
 void AnimationNodeTransition::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_enabled_inputs", "amount"), &AnimationNodeTransition::set_enabled_inputs);
 	ClassDB::bind_method(D_METHOD("get_enabled_inputs"), &AnimationNodeTransition::get_enabled_inputs);
 
@@ -822,6 +938,7 @@ void AnimationNodeTransition::_bind_methods() {
 }
 
 AnimationNodeTransition::AnimationNodeTransition() {
+	ZoneScopedS(60);
 	for (int i = 0; i < MAX_INPUTS; i++) {
 		inputs[i].name = "state " + itos(i);
 	}
@@ -830,19 +947,23 @@ AnimationNodeTransition::AnimationNodeTransition() {
 /////////////////////
 
 String AnimationNodeOutput::get_caption() const {
+	ZoneScopedS(60);
 	return "Output";
 }
 
 double AnimationNodeOutput::process(double p_time, bool p_seek, bool p_seek_root) {
+	ZoneScopedS(60);
 	return blend_input(0, p_time, p_seek, p_seek_root, 1.0, FILTER_IGNORE, true);
 }
 
 AnimationNodeOutput::AnimationNodeOutput() {
+	ZoneScopedS(60);
 	add_input("output");
 }
 
 ///////////////////////////////////////////////////////
 void AnimationNodeBlendTree::add_node(const StringName &p_name, Ref<AnimationNode> p_node, const Vector2 &p_position) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(nodes.has(p_name));
 	ERR_FAIL_COND(p_node.is_null());
 	ERR_FAIL_COND(p_name == SceneStringNames::get_singleton()->output);
@@ -862,12 +983,14 @@ void AnimationNodeBlendTree::add_node(const StringName &p_name, Ref<AnimationNod
 }
 
 Ref<AnimationNode> AnimationNodeBlendTree::get_node(const StringName &p_name) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!nodes.has(p_name), Ref<AnimationNode>());
 
 	return nodes[p_name].node;
 }
 
 StringName AnimationNodeBlendTree::get_node_name(const Ref<AnimationNode> &p_node) const {
+	ZoneScopedS(60);
 	for (const KeyValue<StringName, Node> &E : nodes) {
 		if (E.value.node == p_node) {
 			return E.key;
@@ -878,16 +1001,19 @@ StringName AnimationNodeBlendTree::get_node_name(const Ref<AnimationNode> &p_nod
 }
 
 void AnimationNodeBlendTree::set_node_position(const StringName &p_node, const Vector2 &p_position) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!nodes.has(p_node));
 	nodes[p_node].position = p_position;
 }
 
 Vector2 AnimationNodeBlendTree::get_node_position(const StringName &p_node) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!nodes.has(p_node), Vector2());
 	return nodes[p_node].position;
 }
 
 void AnimationNodeBlendTree::get_child_nodes(List<ChildNode> *r_child_nodes) {
+	ZoneScopedS(60);
 	Vector<StringName> ns;
 
 	for (const KeyValue<StringName, Node> &E : nodes) {
@@ -905,15 +1031,18 @@ void AnimationNodeBlendTree::get_child_nodes(List<ChildNode> *r_child_nodes) {
 }
 
 bool AnimationNodeBlendTree::has_node(const StringName &p_name) const {
+	ZoneScopedS(60);
 	return nodes.has(p_name);
 }
 
 Vector<StringName> AnimationNodeBlendTree::get_node_connection_array(const StringName &p_name) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!nodes.has(p_name), Vector<StringName>());
 	return nodes[p_name].connections;
 }
 
 void AnimationNodeBlendTree::remove_node(const StringName &p_name) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!nodes.has(p_name));
 	ERR_FAIL_COND(p_name == SceneStringNames::get_singleton()->output); //can't delete output
 
@@ -939,6 +1068,7 @@ void AnimationNodeBlendTree::remove_node(const StringName &p_name) {
 }
 
 void AnimationNodeBlendTree::rename_node(const StringName &p_name, const StringName &p_new_name) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!nodes.has(p_name));
 	ERR_FAIL_COND(nodes.has(p_new_name));
 	ERR_FAIL_COND(p_name == SceneStringNames::get_singleton()->output);
@@ -964,6 +1094,7 @@ void AnimationNodeBlendTree::rename_node(const StringName &p_name, const StringN
 }
 
 void AnimationNodeBlendTree::connect_node(const StringName &p_input_node, int p_input_index, const StringName &p_output_node) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!nodes.has(p_output_node));
 	ERR_FAIL_COND(!nodes.has(p_input_node));
 	ERR_FAIL_COND(p_output_node == SceneStringNames::get_singleton()->output);
@@ -985,6 +1116,7 @@ void AnimationNodeBlendTree::connect_node(const StringName &p_input_node, int p_
 }
 
 void AnimationNodeBlendTree::disconnect_node(const StringName &p_node, int p_input_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!nodes.has(p_node));
 
 	Ref<AnimationNode> input = nodes[p_node].node;
@@ -994,6 +1126,7 @@ void AnimationNodeBlendTree::disconnect_node(const StringName &p_node, int p_inp
 }
 
 AnimationNodeBlendTree::ConnectionError AnimationNodeBlendTree::can_connect_node(const StringName &p_input_node, int p_input_index, const StringName &p_output_node) const {
+	ZoneScopedS(60);
 	if (!nodes.has(p_output_node) || p_output_node == SceneStringNames::get_singleton()->output) {
 		return CONNECTION_ERROR_NO_OUTPUT;
 	}
@@ -1028,6 +1161,7 @@ AnimationNodeBlendTree::ConnectionError AnimationNodeBlendTree::can_connect_node
 }
 
 void AnimationNodeBlendTree::get_node_connections(List<NodeConnection> *r_connections) const {
+	ZoneScopedS(60);
 	for (const KeyValue<StringName, Node> &E : nodes) {
 		for (int i = 0; i < E.value.connections.size(); i++) {
 			const StringName output = E.value.connections[i];
@@ -1043,33 +1177,40 @@ void AnimationNodeBlendTree::get_node_connections(List<NodeConnection> *r_connec
 }
 
 String AnimationNodeBlendTree::get_caption() const {
+	ZoneScopedS(60);
 	return "BlendTree";
 }
 
 double AnimationNodeBlendTree::process(double p_time, bool p_seek, bool p_seek_root) {
+	ZoneScopedS(60);
 	Ref<AnimationNodeOutput> output = nodes[SceneStringNames::get_singleton()->output].node;
 	return _blend_node("output", nodes[SceneStringNames::get_singleton()->output].connections, this, output, p_time, p_seek, p_seek_root, 1.0, FILTER_IGNORE, true);
 }
 
 void AnimationNodeBlendTree::get_node_list(List<StringName> *r_list) {
+	ZoneScopedS(60);
 	for (const KeyValue<StringName, Node> &E : nodes) {
 		r_list->push_back(E.key);
 	}
 }
 
 void AnimationNodeBlendTree::set_graph_offset(const Vector2 &p_graph_offset) {
+	ZoneScopedS(60);
 	graph_offset = p_graph_offset;
 }
 
 Vector2 AnimationNodeBlendTree::get_graph_offset() const {
+	ZoneScopedS(60);
 	return graph_offset;
 }
 
 Ref<AnimationNode> AnimationNodeBlendTree::get_child_by_name(const StringName &p_name) {
+	ZoneScopedS(60);
 	return get_node(p_name);
 }
 
 bool AnimationNodeBlendTree::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	String prop_name = p_name;
 	if (prop_name.begins_with("nodes/")) {
 		String node_name = prop_name.get_slicec('/', 1);
@@ -1103,6 +1244,7 @@ bool AnimationNodeBlendTree::_set(const StringName &p_name, const Variant &p_val
 }
 
 bool AnimationNodeBlendTree::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	String prop_name = p_name;
 	if (prop_name.begins_with("nodes/")) {
 		String node_name = prop_name.get_slicec('/', 1);
@@ -1143,6 +1285,7 @@ bool AnimationNodeBlendTree::_get(const StringName &p_name, Variant &r_ret) cons
 }
 
 void AnimationNodeBlendTree::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	List<StringName> names;
 	for (const KeyValue<StringName, Node> &E : nodes) {
 		names.push_back(E.key);
@@ -1161,6 +1304,7 @@ void AnimationNodeBlendTree::_get_property_list(List<PropertyInfo> *p_list) cons
 }
 
 void AnimationNodeBlendTree::reset_state() {
+	ZoneScopedS(60);
 	graph_offset = Vector2();
 	nodes.clear();
 	_initialize_node_tree();
@@ -1169,16 +1313,19 @@ void AnimationNodeBlendTree::reset_state() {
 }
 
 void AnimationNodeBlendTree::_tree_changed() {
+	ZoneScopedS(60);
 	emit_signal(SNAME("tree_changed"));
 }
 
 void AnimationNodeBlendTree::_node_changed(const StringName &p_node) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!nodes.has(p_node));
 	nodes[p_node].connections.resize(nodes[p_node].node->get_input_count());
 	emit_signal(SNAME("node_changed"), p_node);
 }
 
 void AnimationNodeBlendTree::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("add_node", "name", "node", "position"), &AnimationNodeBlendTree::add_node, DEFVAL(Vector2()));
 	ClassDB::bind_method(D_METHOD("get_node", "name"), &AnimationNodeBlendTree::get_node);
 	ClassDB::bind_method(D_METHOD("remove_node", "name"), &AnimationNodeBlendTree::remove_node);
@@ -1206,6 +1353,7 @@ void AnimationNodeBlendTree::_bind_methods() {
 }
 
 void AnimationNodeBlendTree::_initialize_node_tree() {
+	ZoneScopedS(60);
 	Ref<AnimationNodeOutput> output;
 	output.instantiate();
 	Node n;
@@ -1216,6 +1364,7 @@ void AnimationNodeBlendTree::_initialize_node_tree() {
 }
 
 AnimationNodeBlendTree::AnimationNodeBlendTree() {
+	ZoneScopedS(60);
 	_initialize_node_tree();
 }
 

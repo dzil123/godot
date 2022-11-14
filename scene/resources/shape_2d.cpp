@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  shape_2d.cpp                                                         */
 /*************************************************************************/
@@ -35,31 +36,37 @@
 #include "servers/physics_server_2d.h"
 
 RID Shape2D::get_rid() const {
+	ZoneScopedS(60);
 	return shape;
 }
 
 void Shape2D::set_custom_solver_bias(real_t p_bias) {
+	ZoneScopedS(60);
 	custom_bias = p_bias;
 	PhysicsServer2D::get_singleton()->shape_set_custom_solver_bias(shape, custom_bias);
 }
 
 real_t Shape2D::get_custom_solver_bias() const {
+	ZoneScopedS(60);
 	return custom_bias;
 }
 
 bool Shape2D::collide_with_motion(const Transform2D &p_local_xform, const Vector2 &p_local_motion, const Ref<Shape2D> &p_shape, const Transform2D &p_shape_xform, const Vector2 &p_shape_motion) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_shape.is_null(), false);
 	int r;
 	return PhysicsServer2D::get_singleton()->shape_collide(get_rid(), p_local_xform, p_local_motion, p_shape->get_rid(), p_shape_xform, p_shape_motion, nullptr, 0, r);
 }
 
 bool Shape2D::collide(const Transform2D &p_local_xform, const Ref<Shape2D> &p_shape, const Transform2D &p_shape_xform) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_shape.is_null(), false);
 	int r;
 	return PhysicsServer2D::get_singleton()->shape_collide(get_rid(), p_local_xform, Vector2(), p_shape->get_rid(), p_shape_xform, Vector2(), nullptr, 0, r);
 }
 
 PackedVector2Array Shape2D::collide_with_motion_and_get_contacts(const Transform2D &p_local_xform, const Vector2 &p_local_motion, const Ref<Shape2D> &p_shape, const Transform2D &p_shape_xform, const Vector2 &p_shape_motion) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_shape.is_null(), PackedVector2Array());
 	const int max_contacts = 16;
 	Vector2 result[max_contacts * 2];
@@ -79,6 +86,7 @@ PackedVector2Array Shape2D::collide_with_motion_and_get_contacts(const Transform
 }
 
 PackedVector2Array Shape2D::collide_and_get_contacts(const Transform2D &p_local_xform, const Ref<Shape2D> &p_shape, const Transform2D &p_shape_xform) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_shape.is_null(), PackedVector2Array());
 	const int max_contacts = 16;
 	Vector2 result[max_contacts * 2];
@@ -98,6 +106,7 @@ PackedVector2Array Shape2D::collide_and_get_contacts(const Transform2D &p_local_
 }
 
 void Shape2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_custom_solver_bias", "bias"), &Shape2D::set_custom_solver_bias);
 	ClassDB::bind_method(D_METHOD("get_custom_solver_bias"), &Shape2D::get_custom_solver_bias);
 	ClassDB::bind_method(D_METHOD("collide", "local_xform", "with_shape", "shape_xform"), &Shape2D::collide);
@@ -120,9 +129,11 @@ bool Shape2D::is_collision_outline_enabled() {
 }
 
 Shape2D::Shape2D(const RID &p_rid) {
+	ZoneScopedS(60);
 	shape = p_rid;
 }
 
 Shape2D::~Shape2D() {
+	ZoneScopedS(60);
 	PhysicsServer2D::get_singleton()->free(shape);
 }

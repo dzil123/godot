@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  http_request.cpp                                                     */
 /*************************************************************************/
@@ -28,15 +29,17 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "http_request.h"
 #include "core/io/compression.h"
+#include "http_request.h"
 #include "scene/main/timer.h"
 
 Error HTTPRequest::_request() {
+	ZoneScopedS(60);
 	return client->connect_to_host(url, port, use_tls, validate_tls);
 }
 
 Error HTTPRequest::_parse_url(const String &p_url) {
+	ZoneScopedS(60);
 	use_tls = false;
 	request_string = "";
 	port = 80;
@@ -66,6 +69,7 @@ Error HTTPRequest::_parse_url(const String &p_url) {
 }
 
 bool HTTPRequest::has_header(const PackedStringArray &p_headers, const String &p_header_name) {
+	ZoneScopedS(60);
 	bool exists = false;
 
 	String lower_case_header_name = p_header_name.to_lower();
@@ -80,6 +84,7 @@ bool HTTPRequest::has_header(const PackedStringArray &p_headers, const String &p
 }
 
 String HTTPRequest::get_header_value(const PackedStringArray &p_headers, const String &p_header_name) {
+	ZoneScopedS(60);
 	String value = "";
 
 	String lowwer_case_header_name = p_header_name.to_lower();
@@ -97,6 +102,7 @@ String HTTPRequest::get_header_value(const PackedStringArray &p_headers, const S
 }
 
 Error HTTPRequest::request(const String &p_url, const Vector<String> &p_custom_headers, bool p_tls_validate_domain, HTTPClient::Method p_method, const String &p_request_data) {
+	ZoneScopedS(60);
 	// Copy the string into a raw buffer.
 	Vector<uint8_t> raw_data;
 
@@ -112,6 +118,7 @@ Error HTTPRequest::request(const String &p_url, const Vector<String> &p_custom_h
 }
 
 Error HTTPRequest::request_raw(const String &p_url, const Vector<String> &p_custom_headers, bool p_tls_validate_domain, HTTPClient::Method p_method, const Vector<uint8_t> &p_request_data_raw) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!is_inside_tree(), ERR_UNCONFIGURED);
 	ERR_FAIL_COND_V_MSG(requesting, ERR_BUSY, "HTTPRequest is processing a request. Wait for completion or cancel it before attempting a new one.");
 
@@ -162,6 +169,7 @@ Error HTTPRequest::request_raw(const String &p_url, const Vector<String> &p_cust
 }
 
 void HTTPRequest::_thread_func(void *p_userdata) {
+	ZoneScopedS(60);
 	HTTPRequest *hr = static_cast<HTTPRequest *>(p_userdata);
 
 	Error err = hr->_request();
@@ -182,6 +190,7 @@ void HTTPRequest::_thread_func(void *p_userdata) {
 }
 
 void HTTPRequest::cancel_request() {
+	ZoneScopedS(60);
 	timer->stop();
 
 	if (!requesting) {
@@ -206,6 +215,7 @@ void HTTPRequest::cancel_request() {
 }
 
 bool HTTPRequest::_handle_response(bool *ret_value) {
+	ZoneScopedS(60);
 	if (!client->has_response()) {
 		_defer_done(RESULT_NO_RESPONSE, 0, PackedStringArray(), PackedByteArray());
 		*ret_value = true;
@@ -286,6 +296,7 @@ bool HTTPRequest::_handle_response(bool *ret_value) {
 }
 
 bool HTTPRequest::_update_connection() {
+	ZoneScopedS(60);
 	switch (client->get_status()) {
 		case HTTPClient::STATUS_DISCONNECTED: {
 			_defer_done(RESULT_CANT_CONNECT, 0, PackedStringArray(), PackedByteArray());
@@ -453,16 +464,19 @@ bool HTTPRequest::_update_connection() {
 }
 
 void HTTPRequest::_defer_done(int p_status, int p_code, const PackedStringArray &p_headers, const PackedByteArray &p_data) {
+	ZoneScopedS(60);
 	call_deferred(SNAME("_request_done"), p_status, p_code, p_headers, p_data);
 }
 
 void HTTPRequest::_request_done(int p_status, int p_code, const PackedStringArray &p_headers, const PackedByteArray &p_data) {
+	ZoneScopedS(60);
 	cancel_request();
 
 	emit_signal(SNAME("request_completed"), p_status, p_code, p_headers, p_data);
 }
 
 void HTTPRequest::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_INTERNAL_PROCESS: {
 			if (use_threads.is_set()) {
@@ -483,95 +497,116 @@ void HTTPRequest::_notification(int p_what) {
 }
 
 void HTTPRequest::set_use_threads(bool p_use) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(get_http_client_status() != HTTPClient::STATUS_DISCONNECTED);
 	use_threads.set_to(p_use);
 }
 
 bool HTTPRequest::is_using_threads() const {
+	ZoneScopedS(60);
 	return use_threads.is_set();
 }
 
 void HTTPRequest::set_accept_gzip(bool p_gzip) {
+	ZoneScopedS(60);
 	accept_gzip = p_gzip;
 }
 
 bool HTTPRequest::is_accepting_gzip() const {
+	ZoneScopedS(60);
 	return accept_gzip;
 }
 
 void HTTPRequest::set_body_size_limit(int p_bytes) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(get_http_client_status() != HTTPClient::STATUS_DISCONNECTED);
 
 	body_size_limit = p_bytes;
 }
 
 int HTTPRequest::get_body_size_limit() const {
+	ZoneScopedS(60);
 	return body_size_limit;
 }
 
 void HTTPRequest::set_download_file(const String &p_file) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(get_http_client_status() != HTTPClient::STATUS_DISCONNECTED);
 
 	download_to_file = p_file;
 }
 
 String HTTPRequest::get_download_file() const {
+	ZoneScopedS(60);
 	return download_to_file;
 }
 
 void HTTPRequest::set_download_chunk_size(int p_chunk_size) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(get_http_client_status() != HTTPClient::STATUS_DISCONNECTED);
 
 	client->set_read_chunk_size(p_chunk_size);
 }
 
 int HTTPRequest::get_download_chunk_size() const {
+	ZoneScopedS(60);
 	return client->get_read_chunk_size();
 }
 
 HTTPClient::Status HTTPRequest::get_http_client_status() const {
+	ZoneScopedS(60);
 	return client->get_status();
 }
 
 void HTTPRequest::set_max_redirects(int p_max) {
+	ZoneScopedS(60);
 	max_redirects = p_max;
 }
 
 int HTTPRequest::get_max_redirects() const {
+	ZoneScopedS(60);
 	return max_redirects;
 }
 
 int HTTPRequest::get_downloaded_bytes() const {
+	ZoneScopedS(60);
 	return downloaded.get();
 }
 
 int HTTPRequest::get_body_size() const {
+	ZoneScopedS(60);
 	return body_len;
 }
 
 void HTTPRequest::set_http_proxy(const String &p_host, int p_port) {
+	ZoneScopedS(60);
 	client->set_http_proxy(p_host, p_port);
 }
 
 void HTTPRequest::set_https_proxy(const String &p_host, int p_port) {
+	ZoneScopedS(60);
 	client->set_https_proxy(p_host, p_port);
 }
 
 void HTTPRequest::set_timeout(double p_timeout) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_timeout < 0);
 	timeout = p_timeout;
 }
 
 double HTTPRequest::get_timeout() {
+	ZoneScopedS(60);
 	return timeout;
 }
 
 void HTTPRequest::_timeout() {
+	ZoneScopedS(60);
 	cancel_request();
 	_defer_done(RESULT_TIMEOUT, 0, PackedStringArray(), PackedByteArray());
 }
 
 void HTTPRequest::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("request", "url", "custom_headers", "tls_validate_domain", "method", "request_data"), &HTTPRequest::request, DEFVAL(PackedStringArray()), DEFVAL(true), DEFVAL(HTTPClient::METHOD_GET), DEFVAL(String()));
 	ClassDB::bind_method(D_METHOD("request_raw", "url", "custom_headers", "tls_validate_domain", "method", "request_data_raw"), &HTTPRequest::request_raw, DEFVAL(PackedStringArray()), DEFVAL(true), DEFVAL(HTTPClient::METHOD_GET), DEFVAL(PackedByteArray()));
 	ClassDB::bind_method(D_METHOD("cancel_request"), &HTTPRequest::cancel_request);
@@ -634,6 +669,7 @@ void HTTPRequest::_bind_methods() {
 }
 
 HTTPRequest::HTTPRequest() {
+	ZoneScopedS(60);
 	client = Ref<HTTPClient>(HTTPClient::create());
 	timer = memnew(Timer);
 	timer->set_one_shot(true);

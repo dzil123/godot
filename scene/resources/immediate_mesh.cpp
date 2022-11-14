@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  immediate_mesh.cpp                                                   */
 /*************************************************************************/
@@ -31,12 +32,14 @@
 #include "immediate_mesh.h"
 
 void ImmediateMesh::surface_begin(PrimitiveType p_primitive, const Ref<Material> &p_material) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(surface_active, "Already creating a new surface.");
 	active_surface_data.primitive = p_primitive;
 	active_surface_data.material = p_material;
 	surface_active = true;
 }
 void ImmediateMesh::surface_set_color(const Color &p_color) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!surface_active, "Not creating any surface. Use surface_begin() to do it.");
 
 	if (!uses_colors) {
@@ -50,6 +53,7 @@ void ImmediateMesh::surface_set_color(const Color &p_color) {
 	current_color = p_color;
 }
 void ImmediateMesh::surface_set_normal(const Vector3 &p_normal) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!surface_active, "Not creating any surface. Use surface_begin() to do it.");
 
 	if (!uses_normals) {
@@ -63,6 +67,7 @@ void ImmediateMesh::surface_set_normal(const Vector3 &p_normal) {
 	current_normal = p_normal;
 }
 void ImmediateMesh::surface_set_tangent(const Plane &p_tangent) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!surface_active, "Not creating any surface. Use surface_begin() to do it.");
 	if (!uses_tangents) {
 		tangents.resize(vertices.size());
@@ -75,6 +80,7 @@ void ImmediateMesh::surface_set_tangent(const Plane &p_tangent) {
 	current_tangent = p_tangent;
 }
 void ImmediateMesh::surface_set_uv(const Vector2 &p_uv) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!surface_active, "Not creating any surface. Use surface_begin() to do it.");
 	if (!uses_uvs) {
 		uvs.resize(vertices.size());
@@ -87,6 +93,7 @@ void ImmediateMesh::surface_set_uv(const Vector2 &p_uv) {
 	current_uv = p_uv;
 }
 void ImmediateMesh::surface_set_uv2(const Vector2 &p_uv2) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!surface_active, "Not creating any surface. Use surface_begin() to do it.");
 	if (!uses_uv2s) {
 		uv2s.resize(vertices.size());
@@ -99,6 +106,7 @@ void ImmediateMesh::surface_set_uv2(const Vector2 &p_uv2) {
 	current_uv2 = p_uv2;
 }
 void ImmediateMesh::surface_add_vertex(const Vector3 &p_vertex) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!surface_active, "Not creating any surface. Use surface_begin() to do it.");
 	ERR_FAIL_COND_MSG(vertices.size() && active_surface_data.vertex_2d, "Can't mix 2D and 3D vertices in a surface.");
 
@@ -121,6 +129,7 @@ void ImmediateMesh::surface_add_vertex(const Vector3 &p_vertex) {
 }
 
 void ImmediateMesh::surface_add_vertex_2d(const Vector2 &p_vertex) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!surface_active, "Not creating any surface. Use surface_begin() to do it.");
 	ERR_FAIL_COND_MSG(vertices.size() && !active_surface_data.vertex_2d, "Can't mix 2D and 3D vertices in a surface.");
 
@@ -146,6 +155,7 @@ void ImmediateMesh::surface_add_vertex_2d(const Vector2 &p_vertex) {
 }
 
 void ImmediateMesh::surface_end() {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!surface_active, "Not creating any surface. Use surface_begin() to do it.");
 	ERR_FAIL_COND_MSG(!vertices.size(), "No vertices were added, surface can't be created.");
 
@@ -308,6 +318,7 @@ void ImmediateMesh::surface_end() {
 }
 
 void ImmediateMesh::clear_surfaces() {
+	ZoneScopedS(60);
 	RS::get_singleton()->mesh_clear(mesh);
 	surfaces.clear();
 	surface_active = false;
@@ -327,34 +338,43 @@ void ImmediateMesh::clear_surfaces() {
 }
 
 int ImmediateMesh::get_surface_count() const {
+	ZoneScopedS(60);
 	return surfaces.size();
 }
 int ImmediateMesh::surface_get_array_len(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, int(surfaces.size()), -1);
 	return surfaces[p_idx].array_len;
 }
 int ImmediateMesh::surface_get_array_index_len(int p_idx) const {
+	ZoneScopedS(60);
 	return 0;
 }
 Array ImmediateMesh::surface_get_arrays(int p_surface) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_surface, int(surfaces.size()), Array());
 	return RS::get_singleton()->mesh_surface_get_arrays(mesh, p_surface);
 }
 TypedArray<Array> ImmediateMesh::surface_get_blend_shape_arrays(int p_surface) const {
+	ZoneScopedS(60);
 	return TypedArray<Array>();
 }
 Dictionary ImmediateMesh::surface_get_lods(int p_surface) const {
+	ZoneScopedS(60);
 	return Dictionary();
 }
 uint32_t ImmediateMesh::surface_get_format(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, int(surfaces.size()), 0);
 	return surfaces[p_idx].format;
 }
 Mesh::PrimitiveType ImmediateMesh::surface_get_primitive_type(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, int(surfaces.size()), PRIMITIVE_MAX);
 	return surfaces[p_idx].primitive;
 }
 void ImmediateMesh::surface_set_material(int p_idx, const Ref<Material> &p_material) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_idx, int(surfaces.size()));
 	surfaces[p_idx].material = p_material;
 	RID mat;
@@ -364,19 +384,23 @@ void ImmediateMesh::surface_set_material(int p_idx, const Ref<Material> &p_mater
 	RS::get_singleton()->mesh_surface_set_material(mesh, p_idx, mat);
 }
 Ref<Material> ImmediateMesh::surface_get_material(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, int(surfaces.size()), Ref<Material>());
 	return surfaces[p_idx].material;
 }
 int ImmediateMesh::get_blend_shape_count() const {
+	ZoneScopedS(60);
 	return 0;
 }
 StringName ImmediateMesh::get_blend_shape_name(int p_index) const {
+	ZoneScopedS(60);
 	return StringName();
 }
 void ImmediateMesh::set_blend_shape_name(int p_index, const StringName &p_name) {
 }
 
 AABB ImmediateMesh::get_aabb() const {
+	ZoneScopedS(60);
 	AABB aabb;
 	for (uint32_t i = 0; i < surfaces.size(); i++) {
 		if (i == 0) {
@@ -389,6 +413,7 @@ AABB ImmediateMesh::get_aabb() const {
 }
 
 void ImmediateMesh::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("surface_begin", "primitive", "material"), &ImmediateMesh::surface_begin, DEFVAL(Ref<Material>()));
 	ClassDB::bind_method(D_METHOD("surface_set_color", "color"), &ImmediateMesh::surface_set_color);
 	ClassDB::bind_method(D_METHOD("surface_set_normal", "normal"), &ImmediateMesh::surface_set_normal);
@@ -403,12 +428,15 @@ void ImmediateMesh::_bind_methods() {
 }
 
 RID ImmediateMesh::get_rid() const {
+	ZoneScopedS(60);
 	return mesh;
 }
 
 ImmediateMesh::ImmediateMesh() {
+	ZoneScopedS(60);
 	mesh = RS::get_singleton()->mesh_create();
 }
 ImmediateMesh::~ImmediateMesh() {
+	ZoneScopedS(60);
 	RS::get_singleton()->free(mesh);
 }

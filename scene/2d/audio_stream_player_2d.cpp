@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  audio_stream_player_2d.cpp                                           */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "audio_stream_player_2d.h"
 
 #include "core/config/project_settings.h"
@@ -37,6 +68,7 @@
 #include "scene/resources/world_2d.h"
 
 void AudioStreamPlayer2D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			AudioServer::get_singleton()->add_listener_changed_callback(_listener_changed_cb, this);
@@ -112,6 +144,7 @@ void AudioStreamPlayer2D::_notification(int p_what) {
 }
 
 StringName AudioStreamPlayer2D::_get_actual_bus() {
+	ZoneScopedS(60);
 	Vector2 global_pos = get_global_position();
 
 	//check if any area is diverting sound into a bus
@@ -145,6 +178,7 @@ StringName AudioStreamPlayer2D::_get_actual_bus() {
 }
 
 void AudioStreamPlayer2D::_update_panning() {
+	ZoneScopedS(60);
 	if (!active.is_set() || stream.is_null()) {
 		return;
 	}
@@ -219,23 +253,28 @@ void AudioStreamPlayer2D::_update_panning() {
 }
 
 void AudioStreamPlayer2D::set_stream(Ref<AudioStream> p_stream) {
+	ZoneScopedS(60);
 	stop();
 	stream = p_stream;
 }
 
 Ref<AudioStream> AudioStreamPlayer2D::get_stream() const {
+	ZoneScopedS(60);
 	return stream;
 }
 
 void AudioStreamPlayer2D::set_volume_db(float p_volume) {
+	ZoneScopedS(60);
 	volume_db = p_volume;
 }
 
 float AudioStreamPlayer2D::get_volume_db() const {
+	ZoneScopedS(60);
 	return volume_db;
 }
 
 void AudioStreamPlayer2D::set_pitch_scale(float p_pitch_scale) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_pitch_scale <= 0.0);
 	pitch_scale = p_pitch_scale;
 	for (Ref<AudioStreamPlayback> &playback : stream_playbacks) {
@@ -244,10 +283,12 @@ void AudioStreamPlayer2D::set_pitch_scale(float p_pitch_scale) {
 }
 
 float AudioStreamPlayer2D::get_pitch_scale() const {
+	ZoneScopedS(60);
 	return pitch_scale;
 }
 
 void AudioStreamPlayer2D::play(float p_from_pos) {
+	ZoneScopedS(60);
 	if (stream.is_null()) {
 		return;
 	}
@@ -262,6 +303,7 @@ void AudioStreamPlayer2D::play(float p_from_pos) {
 }
 
 void AudioStreamPlayer2D::seek(float p_seconds) {
+	ZoneScopedS(60);
 	if (is_playing()) {
 		stop();
 		play(p_seconds);
@@ -269,6 +311,7 @@ void AudioStreamPlayer2D::seek(float p_seconds) {
 }
 
 void AudioStreamPlayer2D::stop() {
+	ZoneScopedS(60);
 	setplay.set(-1);
 	for (Ref<AudioStreamPlayback> &playback : stream_playbacks) {
 		AudioServer::get_singleton()->stop_playback_stream(playback);
@@ -279,6 +322,7 @@ void AudioStreamPlayer2D::stop() {
 }
 
 bool AudioStreamPlayer2D::is_playing() const {
+	ZoneScopedS(60);
 	for (const Ref<AudioStreamPlayback> &playback : stream_playbacks) {
 		if (AudioServer::get_singleton()->is_playback_active(playback)) {
 			return true;
@@ -288,6 +332,7 @@ bool AudioStreamPlayer2D::is_playing() const {
 }
 
 float AudioStreamPlayer2D::get_playback_position() {
+	ZoneScopedS(60);
 	// Return the playback position of the most recently started playback stream.
 	if (!stream_playbacks.is_empty()) {
 		return AudioServer::get_singleton()->get_playback_position(stream_playbacks[stream_playbacks.size() - 1]);
@@ -296,10 +341,12 @@ float AudioStreamPlayer2D::get_playback_position() {
 }
 
 void AudioStreamPlayer2D::set_bus(const StringName &p_bus) {
+	ZoneScopedS(60);
 	default_bus = p_bus; // This will be pushed to the audio server during the next physics timestep, which is fast enough.
 }
 
 StringName AudioStreamPlayer2D::get_bus() const {
+	ZoneScopedS(60);
 	for (int i = 0; i < AudioServer::get_singleton()->get_bus_count(); i++) {
 		if (AudioServer::get_singleton()->get_bus_name(i) == default_bus) {
 			return default_bus;
@@ -309,14 +356,17 @@ StringName AudioStreamPlayer2D::get_bus() const {
 }
 
 void AudioStreamPlayer2D::set_autoplay(bool p_enable) {
+	ZoneScopedS(60);
 	autoplay = p_enable;
 }
 
 bool AudioStreamPlayer2D::is_autoplay_enabled() {
+	ZoneScopedS(60);
 	return autoplay;
 }
 
 void AudioStreamPlayer2D::_set_playing(bool p_enable) {
+	ZoneScopedS(60);
 	if (p_enable) {
 		play();
 	} else {
@@ -325,10 +375,12 @@ void AudioStreamPlayer2D::_set_playing(bool p_enable) {
 }
 
 bool AudioStreamPlayer2D::_is_active() const {
+	ZoneScopedS(60);
 	return active.is_set();
 }
 
 void AudioStreamPlayer2D::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (p_property.name == "bus") {
 		String options;
 		for (int i = 0; i < AudioServer::get_singleton()->get_bus_count(); i++) {
@@ -344,35 +396,43 @@ void AudioStreamPlayer2D::_validate_property(PropertyInfo &p_property) const {
 }
 
 void AudioStreamPlayer2D::_bus_layout_changed() {
+	ZoneScopedS(60);
 	notify_property_list_changed();
 }
 
 void AudioStreamPlayer2D::set_max_distance(float p_pixels) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_pixels <= 0.0);
 	max_distance = p_pixels;
 }
 
 float AudioStreamPlayer2D::get_max_distance() const {
+	ZoneScopedS(60);
 	return max_distance;
 }
 
 void AudioStreamPlayer2D::set_attenuation(float p_curve) {
+	ZoneScopedS(60);
 	attenuation = p_curve;
 }
 
 float AudioStreamPlayer2D::get_attenuation() const {
+	ZoneScopedS(60);
 	return attenuation;
 }
 
 void AudioStreamPlayer2D::set_area_mask(uint32_t p_mask) {
+	ZoneScopedS(60);
 	area_mask = p_mask;
 }
 
 uint32_t AudioStreamPlayer2D::get_area_mask() const {
+	ZoneScopedS(60);
 	return area_mask;
 }
 
 void AudioStreamPlayer2D::set_stream_paused(bool p_pause) {
+	ZoneScopedS(60);
 	// TODO this does not have perfect recall, fix that maybe? If there are zero playbacks registered with the AudioServer, this bool isn't persisted.
 	for (Ref<AudioStreamPlayback> &playback : stream_playbacks) {
 		AudioServer::get_singleton()->set_playback_paused(playback, p_pause);
@@ -380,6 +440,7 @@ void AudioStreamPlayer2D::set_stream_paused(bool p_pause) {
 }
 
 bool AudioStreamPlayer2D::get_stream_paused() const {
+	ZoneScopedS(60);
 	// There's currently no way to pause some playback streams but not others. Check the first and don't bother looking at the rest.
 	if (!stream_playbacks.is_empty()) {
 		return AudioServer::get_singleton()->is_playback_paused(stream_playbacks[0]);
@@ -388,6 +449,7 @@ bool AudioStreamPlayer2D::get_stream_paused() const {
 }
 
 Ref<AudioStreamPlayback> AudioStreamPlayer2D::get_stream_playback() {
+	ZoneScopedS(60);
 	if (!stream_playbacks.is_empty()) {
 		return stream_playbacks[stream_playbacks.size() - 1];
 	}
@@ -395,25 +457,30 @@ Ref<AudioStreamPlayback> AudioStreamPlayer2D::get_stream_playback() {
 }
 
 void AudioStreamPlayer2D::set_max_polyphony(int p_max_polyphony) {
+	ZoneScopedS(60);
 	if (p_max_polyphony > 0) {
 		max_polyphony = p_max_polyphony;
 	}
 }
 
 int AudioStreamPlayer2D::get_max_polyphony() const {
+	ZoneScopedS(60);
 	return max_polyphony;
 }
 
 void AudioStreamPlayer2D::set_panning_strength(float p_panning_strength) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_panning_strength < 0, "Panning strength must be a positive number.");
 	panning_strength = p_panning_strength;
 }
 
 float AudioStreamPlayer2D::get_panning_strength() const {
+	ZoneScopedS(60);
 	return panning_strength;
 }
 
 void AudioStreamPlayer2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_stream", "stream"), &AudioStreamPlayer2D::set_stream);
 	ClassDB::bind_method(D_METHOD("get_stream"), &AudioStreamPlayer2D::get_stream);
 
@@ -476,6 +543,7 @@ void AudioStreamPlayer2D::_bind_methods() {
 }
 
 AudioStreamPlayer2D::AudioStreamPlayer2D() {
+	ZoneScopedS(60);
 	AudioServer::get_singleton()->connect("bus_layout_changed", callable_mp(this, &AudioStreamPlayer2D::_bus_layout_changed));
 	cached_global_panning_strength = GLOBAL_GET("audio/general/2d_panning_strength");
 }

@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  visual_shader_sdf_nodes.cpp                                          */
 /*************************************************************************/
@@ -33,34 +34,42 @@
 // VisualShaderNodeSDFToScreenUV
 
 String VisualShaderNodeSDFToScreenUV::get_caption() const {
+	ZoneScopedS(60);
 	return "SDFToScreenUV";
 }
 
 int VisualShaderNodeSDFToScreenUV::get_input_port_count() const {
+	ZoneScopedS(60);
 	return 1;
 }
 
 VisualShaderNodeSDFToScreenUV::PortType VisualShaderNodeSDFToScreenUV::get_input_port_type(int p_port) const {
+	ZoneScopedS(60);
 	return PORT_TYPE_VECTOR_2D;
 }
 
 String VisualShaderNodeSDFToScreenUV::get_input_port_name(int p_port) const {
+	ZoneScopedS(60);
 	return "sdf_pos";
 }
 
 int VisualShaderNodeSDFToScreenUV::get_output_port_count() const {
+	ZoneScopedS(60);
 	return 1;
 }
 
 VisualShaderNodeSDFToScreenUV::PortType VisualShaderNodeSDFToScreenUV::get_output_port_type(int p_port) const {
+	ZoneScopedS(60);
 	return PORT_TYPE_VECTOR_2D;
 }
 
 String VisualShaderNodeSDFToScreenUV::get_output_port_name(int p_port) const {
+	ZoneScopedS(60);
 	return "";
 }
 
 String VisualShaderNodeSDFToScreenUV::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
+	ZoneScopedS(60);
 	return "		" + p_output_vars[0] + " = sdf_to_screen_uv(" + (p_input_vars[0].is_empty() ? "vec2(0.0)" : p_input_vars[0]) + ");\n";
 }
 
@@ -70,34 +79,42 @@ VisualShaderNodeSDFToScreenUV::VisualShaderNodeSDFToScreenUV() {
 // VisualShaderNodeScreenUVToSDF
 
 String VisualShaderNodeScreenUVToSDF::get_caption() const {
+	ZoneScopedS(60);
 	return "ScreenUVToSDF";
 }
 
 int VisualShaderNodeScreenUVToSDF::get_input_port_count() const {
+	ZoneScopedS(60);
 	return 1;
 }
 
 VisualShaderNodeScreenUVToSDF::PortType VisualShaderNodeScreenUVToSDF::get_input_port_type(int p_port) const {
+	ZoneScopedS(60);
 	return PORT_TYPE_VECTOR_2D;
 }
 
 String VisualShaderNodeScreenUVToSDF::get_input_port_name(int p_port) const {
+	ZoneScopedS(60);
 	return "uv";
 }
 
 int VisualShaderNodeScreenUVToSDF::get_output_port_count() const {
+	ZoneScopedS(60);
 	return 1;
 }
 
 VisualShaderNodeScreenUVToSDF::PortType VisualShaderNodeScreenUVToSDF::get_output_port_type(int p_port) const {
+	ZoneScopedS(60);
 	return PORT_TYPE_VECTOR_2D;
 }
 
 String VisualShaderNodeScreenUVToSDF::get_output_port_name(int p_port) const {
+	ZoneScopedS(60);
 	return "";
 }
 
 bool VisualShaderNodeScreenUVToSDF::is_input_port_default(int p_port, Shader::Mode p_mode) const {
+	ZoneScopedS(60);
 	if (p_port == 0) {
 		return true;
 	}
@@ -105,6 +122,7 @@ bool VisualShaderNodeScreenUVToSDF::is_input_port_default(int p_port, Shader::Mo
 }
 
 String VisualShaderNodeScreenUVToSDF::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
+	ZoneScopedS(60);
 	return "		" + p_output_vars[0] + " = screen_uv_to_sdf(" + (p_input_vars[0].is_empty() ? "SCREEN_UV" : p_input_vars[0]) + ");\n";
 }
 
@@ -114,34 +132,42 @@ VisualShaderNodeScreenUVToSDF::VisualShaderNodeScreenUVToSDF() {
 // VisualShaderNodeTextureSDF
 
 String VisualShaderNodeTextureSDF::get_caption() const {
+	ZoneScopedS(60);
 	return "TextureSDF";
 }
 
 int VisualShaderNodeTextureSDF::get_input_port_count() const {
+	ZoneScopedS(60);
 	return 1;
 }
 
 VisualShaderNodeTextureSDF::PortType VisualShaderNodeTextureSDF::get_input_port_type(int p_port) const {
+	ZoneScopedS(60);
 	return PORT_TYPE_VECTOR_2D;
 }
 
 String VisualShaderNodeTextureSDF::get_input_port_name(int p_port) const {
+	ZoneScopedS(60);
 	return "sdf_pos";
 }
 
 int VisualShaderNodeTextureSDF::get_output_port_count() const {
+	ZoneScopedS(60);
 	return 1;
 }
 
 VisualShaderNodeTextureSDF::PortType VisualShaderNodeTextureSDF::get_output_port_type(int p_port) const {
+	ZoneScopedS(60);
 	return PORT_TYPE_SCALAR;
 }
 
 String VisualShaderNodeTextureSDF::get_output_port_name(int p_port) const {
+	ZoneScopedS(60);
 	return "";
 }
 
 String VisualShaderNodeTextureSDF::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
+	ZoneScopedS(60);
 	return "		" + p_output_vars[0] + " = texture_sdf(" + (p_input_vars[0].is_empty() ? "vec2(0.0)" : p_input_vars[0]) + ");\n";
 }
 
@@ -151,34 +177,42 @@ VisualShaderNodeTextureSDF::VisualShaderNodeTextureSDF() {
 // VisualShaderNodeTextureSDFNormal
 
 String VisualShaderNodeTextureSDFNormal::get_caption() const {
+	ZoneScopedS(60);
 	return "TextureSDFNormal";
 }
 
 int VisualShaderNodeTextureSDFNormal::get_input_port_count() const {
+	ZoneScopedS(60);
 	return 1;
 }
 
 VisualShaderNodeTextureSDFNormal::PortType VisualShaderNodeTextureSDFNormal::get_input_port_type(int p_port) const {
+	ZoneScopedS(60);
 	return PORT_TYPE_VECTOR_2D;
 }
 
 String VisualShaderNodeTextureSDFNormal::get_input_port_name(int p_port) const {
+	ZoneScopedS(60);
 	return "sdf_pos";
 }
 
 int VisualShaderNodeTextureSDFNormal::get_output_port_count() const {
+	ZoneScopedS(60);
 	return 1;
 }
 
 VisualShaderNodeTextureSDFNormal::PortType VisualShaderNodeTextureSDFNormal::get_output_port_type(int p_port) const {
+	ZoneScopedS(60);
 	return PORT_TYPE_VECTOR_2D;
 }
 
 String VisualShaderNodeTextureSDFNormal::get_output_port_name(int p_port) const {
+	ZoneScopedS(60);
 	return "";
 }
 
 String VisualShaderNodeTextureSDFNormal::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
+	ZoneScopedS(60);
 	return "		" + p_output_vars[0] + " = texture_sdf_normal(" + (p_input_vars[0].is_empty() ? "vec2(0.0)" : p_input_vars[0]) + ");\n";
 }
 
@@ -188,14 +222,17 @@ VisualShaderNodeTextureSDFNormal::VisualShaderNodeTextureSDFNormal() {
 // VisualShaderNodeSDFRaymarch
 
 String VisualShaderNodeSDFRaymarch::get_caption() const {
+	ZoneScopedS(60);
 	return "SDFRaymarch";
 }
 
 int VisualShaderNodeSDFRaymarch::get_input_port_count() const {
+	ZoneScopedS(60);
 	return 2;
 }
 
 VisualShaderNodeSDFRaymarch::PortType VisualShaderNodeSDFRaymarch::get_input_port_type(int p_port) const {
+	ZoneScopedS(60);
 	if (p_port == 0 || p_port == 1) {
 		return PORT_TYPE_VECTOR_2D;
 	}
@@ -203,6 +240,7 @@ VisualShaderNodeSDFRaymarch::PortType VisualShaderNodeSDFRaymarch::get_input_por
 }
 
 String VisualShaderNodeSDFRaymarch::get_input_port_name(int p_port) const {
+	ZoneScopedS(60);
 	if (p_port == 0) {
 		return "from_pos";
 	} else if (p_port == 1) {
@@ -212,10 +250,12 @@ String VisualShaderNodeSDFRaymarch::get_input_port_name(int p_port) const {
 }
 
 int VisualShaderNodeSDFRaymarch::get_output_port_count() const {
+	ZoneScopedS(60);
 	return 3;
 }
 
 VisualShaderNodeSDFRaymarch::PortType VisualShaderNodeSDFRaymarch::get_output_port_type(int p_port) const {
+	ZoneScopedS(60);
 	if (p_port == 0) {
 		return PORT_TYPE_SCALAR;
 	} else if (p_port == 1) {
@@ -227,6 +267,7 @@ VisualShaderNodeSDFRaymarch::PortType VisualShaderNodeSDFRaymarch::get_output_po
 }
 
 String VisualShaderNodeSDFRaymarch::get_output_port_name(int p_port) const {
+	ZoneScopedS(60);
 	if (p_port == 0) {
 		return "distance";
 	} else if (p_port == 1) {
@@ -238,6 +279,7 @@ String VisualShaderNodeSDFRaymarch::get_output_port_name(int p_port) const {
 }
 
 String VisualShaderNodeSDFRaymarch::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
+	ZoneScopedS(60);
 	String code;
 
 	code += "		{\n";
@@ -279,5 +321,6 @@ String VisualShaderNodeSDFRaymarch::generate_code(Shader::Mode p_mode, VisualSha
 }
 
 VisualShaderNodeSDFRaymarch::VisualShaderNodeSDFRaymarch() {
+	ZoneScopedS(60);
 	simple_decl = false;
 }

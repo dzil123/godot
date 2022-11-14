@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  theme_owner.cpp                                                      */
 /*************************************************************************/
@@ -37,6 +38,7 @@
 // Theme owner node.
 
 void ThemeOwner::set_owner_node(Node *p_node) {
+	ZoneScopedS(60);
 	owner_control = nullptr;
 	owner_window = nullptr;
 
@@ -54,6 +56,7 @@ void ThemeOwner::set_owner_node(Node *p_node) {
 }
 
 Node *ThemeOwner::get_owner_node() const {
+	ZoneScopedS(60);
 	if (owner_control) {
 		return owner_control;
 	} else if (owner_window) {
@@ -63,12 +66,14 @@ Node *ThemeOwner::get_owner_node() const {
 }
 
 bool ThemeOwner::has_owner_node() const {
+	ZoneScopedS(60);
 	return bool(owner_control || owner_window);
 }
 
 // Theme propagation.
 
 void ThemeOwner::assign_theme_on_parented(Node *p_for_node) {
+	ZoneScopedS(60);
 	// We check if there are any themes affecting the parent. If that's the case
 	// its children also need to be affected.
 	// We don't notify here because `NOTIFICATION_THEME_CHANGED` will be handled
@@ -88,6 +93,7 @@ void ThemeOwner::assign_theme_on_parented(Node *p_for_node) {
 }
 
 void ThemeOwner::clear_theme_on_unparented(Node *p_for_node) {
+	ZoneScopedS(60);
 	// We check if there were any themes affecting the parent. If that's the case
 	// its children need were also affected and need to be updated.
 	// We don't notify because we're exiting the tree, and it's not important.
@@ -106,6 +112,7 @@ void ThemeOwner::clear_theme_on_unparented(Node *p_for_node) {
 }
 
 void ThemeOwner::propagate_theme_changed(Node *p_to_node, Node *p_owner_node, bool p_notify, bool p_assign) {
+	ZoneScopedS(60);
 	Control *c = Object::cast_to<Control>(p_to_node);
 	Window *w = c == nullptr ? Object::cast_to<Window>(p_to_node) : nullptr;
 
@@ -154,6 +161,7 @@ void ThemeOwner::propagate_theme_changed(Node *p_to_node, Node *p_owner_node, bo
 // Theme lookup.
 
 void ThemeOwner::get_theme_type_dependencies(const Node *p_for_node, const StringName &p_theme_type, List<StringName> *r_list) const {
+	ZoneScopedS(60);
 	const Control *for_c = Object::cast_to<Control>(p_for_node);
 	const Window *for_w = Object::cast_to<Window>(p_for_node);
 	ERR_FAIL_COND_MSG(!for_c && !for_w, "Only Control and Window nodes and derivatives can be polled for theming.");
@@ -180,6 +188,7 @@ void ThemeOwner::get_theme_type_dependencies(const Node *p_for_node, const Strin
 }
 
 Node *ThemeOwner::_get_next_owner_node(Node *p_from_node) const {
+	ZoneScopedS(60);
 	Node *parent = p_from_node->get_parent();
 
 	Control *parent_c = Object::cast_to<Control>(parent);
@@ -196,6 +205,7 @@ Node *ThemeOwner::_get_next_owner_node(Node *p_from_node) const {
 }
 
 Variant ThemeOwner::get_theme_item_in_types(Theme::DataType p_data_type, const StringName &p_name, List<StringName> p_theme_types) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(p_theme_types.size() == 0, Variant(), "At least one theme type must be specified.");
 
 	// First, look through each control or window node in the branch, until no valid parent can be found.
@@ -245,6 +255,7 @@ Variant ThemeOwner::get_theme_item_in_types(Theme::DataType p_data_type, const S
 }
 
 bool ThemeOwner::has_theme_item_in_types(Theme::DataType p_data_type, const StringName &p_name, List<StringName> p_theme_types) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(p_theme_types.size() == 0, false, "At least one theme type must be specified.");
 
 	// First, look through each control or window node in the branch, until no valid parent can be found.
@@ -293,6 +304,7 @@ bool ThemeOwner::has_theme_item_in_types(Theme::DataType p_data_type, const Stri
 }
 
 float ThemeOwner::get_theme_default_base_scale() {
+	ZoneScopedS(60);
 	// First, look through each control or window node in the branch, until no valid parent can be found.
 	// Only nodes with a theme resource attached are considered.
 	// For each theme resource see if their assigned theme has the default value defined and valid.
@@ -332,6 +344,7 @@ float ThemeOwner::get_theme_default_base_scale() {
 }
 
 Ref<Font> ThemeOwner::get_theme_default_font() {
+	ZoneScopedS(60);
 	// First, look through each control or window node in the branch, until no valid parent can be found.
 	// Only nodes with a theme resource attached are considered.
 	// For each theme resource see if their assigned theme has the default value defined and valid.
@@ -371,6 +384,7 @@ Ref<Font> ThemeOwner::get_theme_default_font() {
 }
 
 int ThemeOwner::get_theme_default_font_size() {
+	ZoneScopedS(60);
 	// First, look through each control or window node in the branch, until no valid parent can be found.
 	// Only nodes with a theme resource attached are considered.
 	// For each theme resource see if their assigned theme has the default value defined and valid.

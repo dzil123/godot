@@ -28,12 +28,44 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  joint_2d.cpp                                                         */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "joint_2d.h"
 
 #include "physics_body_2d.h"
 #include "scene/scene_string_names.h"
 
 void Joint2D::_disconnect_signals() {
+	ZoneScopedS(60);
 	Node *node_a = get_node_or_null(a);
 	PhysicsBody2D *body_a = Object::cast_to<PhysicsBody2D>(node_a);
 	if (body_a) {
@@ -48,12 +80,14 @@ void Joint2D::_disconnect_signals() {
 }
 
 void Joint2D::_body_exit_tree() {
+	ZoneScopedS(60);
 	_disconnect_signals();
 	_update_joint(true);
 	update_configuration_warnings();
 }
 
 void Joint2D::_update_joint(bool p_only_free) {
+	ZoneScopedS(60);
 	if (ba.is_valid() && bb.is_valid() && exclude_from_collision) {
 		PhysicsServer2D::get_singleton()->joint_disable_collisions_between_bodies(joint, false);
 	}
@@ -124,6 +158,7 @@ void Joint2D::_update_joint(bool p_only_free) {
 }
 
 void Joint2D::set_node_a(const NodePath &p_node_a) {
+	ZoneScopedS(60);
 	if (a == p_node_a) {
 		return;
 	}
@@ -137,10 +172,12 @@ void Joint2D::set_node_a(const NodePath &p_node_a) {
 }
 
 NodePath Joint2D::get_node_a() const {
+	ZoneScopedS(60);
 	return a;
 }
 
 void Joint2D::set_node_b(const NodePath &p_node_b) {
+	ZoneScopedS(60);
 	if (b == p_node_b) {
 		return;
 	}
@@ -154,10 +191,12 @@ void Joint2D::set_node_b(const NodePath &p_node_b) {
 }
 
 NodePath Joint2D::get_node_b() const {
+	ZoneScopedS(60);
 	return b;
 }
 
 void Joint2D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_POST_ENTER_TREE: {
 			if (is_configured()) {
@@ -176,6 +215,7 @@ void Joint2D::_notification(int p_what) {
 }
 
 void Joint2D::set_bias(real_t p_bias) {
+	ZoneScopedS(60);
 	bias = p_bias;
 	if (joint.is_valid()) {
 		PhysicsServer2D::get_singleton()->get_singleton()->joint_set_param(joint, PhysicsServer2D::JOINT_PARAM_BIAS, bias);
@@ -183,10 +223,12 @@ void Joint2D::set_bias(real_t p_bias) {
 }
 
 real_t Joint2D::get_bias() const {
+	ZoneScopedS(60);
 	return bias;
 }
 
 void Joint2D::set_exclude_nodes_from_collision(bool p_enable) {
+	ZoneScopedS(60);
 	if (exclude_from_collision == p_enable) {
 		return;
 	}
@@ -199,10 +241,12 @@ void Joint2D::set_exclude_nodes_from_collision(bool p_enable) {
 }
 
 bool Joint2D::get_exclude_nodes_from_collision() const {
+	ZoneScopedS(60);
 	return exclude_from_collision;
 }
 
 PackedStringArray Joint2D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node2D::get_configuration_warnings();
 
 	if (!warning.is_empty()) {
@@ -213,6 +257,7 @@ PackedStringArray Joint2D::get_configuration_warnings() const {
 }
 
 void Joint2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_node_a", "node"), &Joint2D::set_node_a);
 	ClassDB::bind_method(D_METHOD("get_node_a"), &Joint2D::get_node_a);
 
@@ -232,10 +277,12 @@ void Joint2D::_bind_methods() {
 }
 
 Joint2D::Joint2D() {
+	ZoneScopedS(60);
 	joint = PhysicsServer2D::get_singleton()->joint_create();
 }
 
 Joint2D::~Joint2D() {
+	ZoneScopedS(60);
 	PhysicsServer2D::get_singleton()->free(joint);
 }
 
@@ -244,6 +291,7 @@ Joint2D::~Joint2D() {
 ///////////////////////////////////////////////////////////////////////////////
 
 void PinJoint2D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
 			if (!is_inside_tree()) {
@@ -261,11 +309,13 @@ void PinJoint2D::_notification(int p_what) {
 }
 
 void PinJoint2D::_configure_joint(RID p_joint, PhysicsBody2D *body_a, PhysicsBody2D *body_b) {
+	ZoneScopedS(60);
 	PhysicsServer2D::get_singleton()->joint_make_pin(p_joint, get_global_position(), body_a->get_rid(), body_b ? body_b->get_rid() : RID());
 	PhysicsServer2D::get_singleton()->pin_joint_set_param(p_joint, PhysicsServer2D::PIN_JOINT_SOFTNESS, softness);
 }
 
 void PinJoint2D::set_softness(real_t p_softness) {
+	ZoneScopedS(60);
 	softness = p_softness;
 	queue_redraw();
 	if (is_configured()) {
@@ -274,10 +324,12 @@ void PinJoint2D::set_softness(real_t p_softness) {
 }
 
 real_t PinJoint2D::get_softness() const {
+	ZoneScopedS(60);
 	return softness;
 }
 
 void PinJoint2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_softness", "softness"), &PinJoint2D::set_softness);
 	ClassDB::bind_method(D_METHOD("get_softness"), &PinJoint2D::get_softness);
 
@@ -292,6 +344,7 @@ PinJoint2D::PinJoint2D() {
 ///////////////////////////////////////////////////////////////////////////////
 
 void GrooveJoint2D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
 			if (!is_inside_tree()) {
@@ -311,6 +364,7 @@ void GrooveJoint2D::_notification(int p_what) {
 }
 
 void GrooveJoint2D::_configure_joint(RID p_joint, PhysicsBody2D *body_a, PhysicsBody2D *body_b) {
+	ZoneScopedS(60);
 	Transform2D gt = get_global_transform();
 	Vector2 groove_A1 = gt.get_origin();
 	Vector2 groove_A2 = gt.xform(Vector2(0, length));
@@ -320,24 +374,29 @@ void GrooveJoint2D::_configure_joint(RID p_joint, PhysicsBody2D *body_a, Physics
 }
 
 void GrooveJoint2D::set_length(real_t p_length) {
+	ZoneScopedS(60);
 	length = p_length;
 	queue_redraw();
 }
 
 real_t GrooveJoint2D::get_length() const {
+	ZoneScopedS(60);
 	return length;
 }
 
 void GrooveJoint2D::set_initial_offset(real_t p_initial_offset) {
+	ZoneScopedS(60);
 	initial_offset = p_initial_offset;
 	queue_redraw();
 }
 
 real_t GrooveJoint2D::get_initial_offset() const {
+	ZoneScopedS(60);
 	return initial_offset;
 }
 
 void GrooveJoint2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_length", "length"), &GrooveJoint2D::set_length);
 	ClassDB::bind_method(D_METHOD("get_length"), &GrooveJoint2D::get_length);
 	ClassDB::bind_method(D_METHOD("set_initial_offset", "offset"), &GrooveJoint2D::set_initial_offset);
@@ -355,6 +414,7 @@ GrooveJoint2D::GrooveJoint2D() {
 ///////////////////////////////////////////////////////////////////////////////
 
 void DampedSpringJoint2D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
 			if (!is_inside_tree()) {
@@ -373,6 +433,7 @@ void DampedSpringJoint2D::_notification(int p_what) {
 }
 
 void DampedSpringJoint2D::_configure_joint(RID p_joint, PhysicsBody2D *body_a, PhysicsBody2D *body_b) {
+	ZoneScopedS(60);
 	Transform2D gt = get_global_transform();
 	Vector2 anchor_A = gt.get_origin();
 	Vector2 anchor_B = gt.xform(Vector2(0, length));
@@ -386,15 +447,18 @@ void DampedSpringJoint2D::_configure_joint(RID p_joint, PhysicsBody2D *body_a, P
 }
 
 void DampedSpringJoint2D::set_length(real_t p_length) {
+	ZoneScopedS(60);
 	length = p_length;
 	queue_redraw();
 }
 
 real_t DampedSpringJoint2D::get_length() const {
+	ZoneScopedS(60);
 	return length;
 }
 
 void DampedSpringJoint2D::set_rest_length(real_t p_rest_length) {
+	ZoneScopedS(60);
 	rest_length = p_rest_length;
 	queue_redraw();
 	if (is_configured()) {
@@ -403,10 +467,12 @@ void DampedSpringJoint2D::set_rest_length(real_t p_rest_length) {
 }
 
 real_t DampedSpringJoint2D::get_rest_length() const {
+	ZoneScopedS(60);
 	return rest_length;
 }
 
 void DampedSpringJoint2D::set_stiffness(real_t p_stiffness) {
+	ZoneScopedS(60);
 	stiffness = p_stiffness;
 	queue_redraw();
 	if (is_configured()) {
@@ -415,10 +481,12 @@ void DampedSpringJoint2D::set_stiffness(real_t p_stiffness) {
 }
 
 real_t DampedSpringJoint2D::get_stiffness() const {
+	ZoneScopedS(60);
 	return stiffness;
 }
 
 void DampedSpringJoint2D::set_damping(real_t p_damping) {
+	ZoneScopedS(60);
 	damping = p_damping;
 	queue_redraw();
 	if (is_configured()) {
@@ -427,10 +495,12 @@ void DampedSpringJoint2D::set_damping(real_t p_damping) {
 }
 
 real_t DampedSpringJoint2D::get_damping() const {
+	ZoneScopedS(60);
 	return damping;
 }
 
 void DampedSpringJoint2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_length", "length"), &DampedSpringJoint2D::set_length);
 	ClassDB::bind_method(D_METHOD("get_length"), &DampedSpringJoint2D::get_length);
 	ClassDB::bind_method(D_METHOD("set_rest_length", "rest_length"), &DampedSpringJoint2D::set_rest_length);

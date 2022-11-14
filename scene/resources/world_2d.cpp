@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  world_2d.cpp                                                         */
 /*************************************************************************/
@@ -39,18 +40,22 @@
 #include "servers/rendering_server.h"
 
 RID World2D::get_canvas() const {
+	ZoneScopedS(60);
 	return canvas;
 }
 
 RID World2D::get_space() const {
+	ZoneScopedS(60);
 	return space;
 }
 
 RID World2D::get_navigation_map() const {
+	ZoneScopedS(60);
 	return navigation_map;
 }
 
 void World2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_canvas"), &World2D::get_canvas);
 	ClassDB::bind_method(D_METHOD("get_space"), &World2D::get_space);
 	ClassDB::bind_method(D_METHOD("get_navigation_map"), &World2D::get_navigation_map);
@@ -64,10 +69,12 @@ void World2D::_bind_methods() {
 }
 
 PhysicsDirectSpaceState2D *World2D::get_direct_space_state() {
+	ZoneScopedS(60);
 	return PhysicsServer2D::get_singleton()->space_get_direct_state(space);
 }
 
 World2D::World2D() {
+	ZoneScopedS(60);
 	canvas = RenderingServer::get_singleton()->canvas_create();
 
 	// Create and configure space2D to be more friendly with pixels than meters
@@ -89,6 +96,7 @@ World2D::World2D() {
 }
 
 World2D::~World2D() {
+	ZoneScopedS(60);
 	RenderingServer::get_singleton()->free(canvas);
 	PhysicsServer2D::get_singleton()->free(space);
 	NavigationServer2D::get_singleton()->free(navigation_map);

@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  theme.cpp                                                            */
 /*************************************************************************/
@@ -35,6 +36,7 @@
 
 // Dynamic properties.
 bool Theme::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	String sname = p_name;
 
 	if (sname.contains("/")) {
@@ -67,6 +69,7 @@ bool Theme::_set(const StringName &p_name, const Variant &p_value) {
 }
 
 bool Theme::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	String sname = p_name;
 
 	if (sname.contains("/")) {
@@ -111,6 +114,7 @@ bool Theme::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void Theme::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	List<PropertyInfo> list;
 
 	// Type variations.
@@ -177,6 +181,7 @@ void Theme::_get_property_list(List<PropertyInfo> *p_list) const {
 
 // Static helpers.
 bool Theme::is_valid_type_name(const String &p_name) {
+	ZoneScopedS(60);
 	for (int i = 0; i < p_name.length(); i++) {
 		if (!is_ascii_identifier_char(p_name[i])) {
 			return false;
@@ -186,6 +191,7 @@ bool Theme::is_valid_type_name(const String &p_name) {
 }
 
 bool Theme::is_valid_item_name(const String &p_name) {
+	ZoneScopedS(60);
 	if (p_name.is_empty()) {
 		return false;
 	}
@@ -199,6 +205,7 @@ bool Theme::is_valid_item_name(const String &p_name) {
 
 // Fallback values for theme item types, configurable per theme.
 void Theme::set_default_base_scale(float p_base_scale) {
+	ZoneScopedS(60);
 	if (default_base_scale == p_base_scale) {
 		return;
 	}
@@ -209,14 +216,17 @@ void Theme::set_default_base_scale(float p_base_scale) {
 }
 
 float Theme::get_default_base_scale() const {
+	ZoneScopedS(60);
 	return default_base_scale;
 }
 
 bool Theme::has_default_base_scale() const {
+	ZoneScopedS(60);
 	return default_base_scale > 0.0;
 }
 
 void Theme::set_default_font(const Ref<Font> &p_default_font) {
+	ZoneScopedS(60);
 	if (default_font == p_default_font) {
 		return;
 	}
@@ -235,14 +245,17 @@ void Theme::set_default_font(const Ref<Font> &p_default_font) {
 }
 
 Ref<Font> Theme::get_default_font() const {
+	ZoneScopedS(60);
 	return default_font;
 }
 
 bool Theme::has_default_font() const {
+	ZoneScopedS(60);
 	return default_font.is_valid();
 }
 
 void Theme::set_default_font_size(int p_font_size) {
+	ZoneScopedS(60);
 	if (default_font_size == p_font_size) {
 		return;
 	}
@@ -253,15 +266,18 @@ void Theme::set_default_font_size(int p_font_size) {
 }
 
 int Theme::get_default_font_size() const {
+	ZoneScopedS(60);
 	return default_font_size;
 }
 
 bool Theme::has_default_font_size() const {
+	ZoneScopedS(60);
 	return default_font_size > 0;
 }
 
 // Icons.
 void Theme::set_icon(const StringName &p_name, const StringName &p_theme_type, const Ref<Texture2D> &p_icon) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!is_valid_item_name(p_name), vformat("Invalid item name: '%s'", p_name));
 	ERR_FAIL_COND_MSG(!is_valid_type_name(p_theme_type), vformat("Invalid type name: '%s'", p_theme_type));
 
@@ -281,6 +297,7 @@ void Theme::set_icon(const StringName &p_name, const StringName &p_theme_type, c
 }
 
 Ref<Texture2D> Theme::get_icon(const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	if (icon_map.has(p_theme_type) && icon_map[p_theme_type].has(p_name) && icon_map[p_theme_type][p_name].is_valid()) {
 		return icon_map[p_theme_type][p_name];
 	} else {
@@ -289,14 +306,17 @@ Ref<Texture2D> Theme::get_icon(const StringName &p_name, const StringName &p_the
 }
 
 bool Theme::has_icon(const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	return (icon_map.has(p_theme_type) && icon_map[p_theme_type].has(p_name) && icon_map[p_theme_type][p_name].is_valid());
 }
 
 bool Theme::has_icon_nocheck(const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	return (icon_map.has(p_theme_type) && icon_map[p_theme_type].has(p_name));
 }
 
 void Theme::rename_icon(const StringName &p_old_name, const StringName &p_name, const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!is_valid_item_name(p_name), vformat("Invalid item name: '%s'", p_name));
 	ERR_FAIL_COND_MSG(!is_valid_type_name(p_theme_type), vformat("Invalid type name: '%s'", p_theme_type));
 	ERR_FAIL_COND_MSG(!icon_map.has(p_theme_type), "Cannot rename the icon '" + String(p_old_name) + "' because the node type '" + String(p_theme_type) + "' does not exist.");
@@ -310,6 +330,7 @@ void Theme::rename_icon(const StringName &p_old_name, const StringName &p_name, 
 }
 
 void Theme::clear_icon(const StringName &p_name, const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!icon_map.has(p_theme_type), "Cannot clear the icon '" + String(p_name) + "' because the node type '" + String(p_theme_type) + "' does not exist.");
 	ERR_FAIL_COND_MSG(!icon_map[p_theme_type].has(p_name), "Cannot clear the icon '" + String(p_name) + "' because it does not exist.");
 
@@ -323,6 +344,7 @@ void Theme::clear_icon(const StringName &p_name, const StringName &p_theme_type)
 }
 
 void Theme::get_icon_list(StringName p_theme_type, List<StringName> *p_list) const {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_list);
 
 	if (!icon_map.has(p_theme_type)) {
@@ -335,6 +357,7 @@ void Theme::get_icon_list(StringName p_theme_type, List<StringName> *p_list) con
 }
 
 void Theme::add_icon_type(const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!is_valid_type_name(p_theme_type), vformat("Invalid type name: '%s'", p_theme_type));
 
 	if (icon_map.has(p_theme_type)) {
@@ -344,6 +367,7 @@ void Theme::add_icon_type(const StringName &p_theme_type) {
 }
 
 void Theme::remove_icon_type(const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	if (!icon_map.has(p_theme_type)) {
 		return;
 	}
@@ -363,6 +387,7 @@ void Theme::remove_icon_type(const StringName &p_theme_type) {
 }
 
 void Theme::get_icon_type_list(List<StringName> *p_list) const {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_list);
 
 	for (const KeyValue<StringName, ThemeIconMap> &E : icon_map) {
@@ -372,6 +397,7 @@ void Theme::get_icon_type_list(List<StringName> *p_list) const {
 
 // Styleboxes.
 void Theme::set_stylebox(const StringName &p_name, const StringName &p_theme_type, const Ref<StyleBox> &p_style) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!is_valid_item_name(p_name), vformat("Invalid item name: '%s'", p_name));
 	ERR_FAIL_COND_MSG(!is_valid_type_name(p_theme_type), vformat("Invalid type name: '%s'", p_theme_type));
 
@@ -391,6 +417,7 @@ void Theme::set_stylebox(const StringName &p_name, const StringName &p_theme_typ
 }
 
 Ref<StyleBox> Theme::get_stylebox(const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	if (style_map.has(p_theme_type) && style_map[p_theme_type].has(p_name) && style_map[p_theme_type][p_name].is_valid()) {
 		return style_map[p_theme_type][p_name];
 	} else {
@@ -399,14 +426,17 @@ Ref<StyleBox> Theme::get_stylebox(const StringName &p_name, const StringName &p_
 }
 
 bool Theme::has_stylebox(const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	return (style_map.has(p_theme_type) && style_map[p_theme_type].has(p_name) && style_map[p_theme_type][p_name].is_valid());
 }
 
 bool Theme::has_stylebox_nocheck(const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	return (style_map.has(p_theme_type) && style_map[p_theme_type].has(p_name));
 }
 
 void Theme::rename_stylebox(const StringName &p_old_name, const StringName &p_name, const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!is_valid_item_name(p_name), vformat("Invalid item name: '%s'", p_name));
 	ERR_FAIL_COND_MSG(!is_valid_type_name(p_theme_type), vformat("Invalid type name: '%s'", p_theme_type));
 	ERR_FAIL_COND_MSG(!style_map.has(p_theme_type), "Cannot rename the stylebox '" + String(p_old_name) + "' because the node type '" + String(p_theme_type) + "' does not exist.");
@@ -420,6 +450,7 @@ void Theme::rename_stylebox(const StringName &p_old_name, const StringName &p_na
 }
 
 void Theme::clear_stylebox(const StringName &p_name, const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!style_map.has(p_theme_type), "Cannot clear the stylebox '" + String(p_name) + "' because the node type '" + String(p_theme_type) + "' does not exist.");
 	ERR_FAIL_COND_MSG(!style_map[p_theme_type].has(p_name), "Cannot clear the stylebox '" + String(p_name) + "' because it does not exist.");
 
@@ -433,6 +464,7 @@ void Theme::clear_stylebox(const StringName &p_name, const StringName &p_theme_t
 }
 
 void Theme::get_stylebox_list(StringName p_theme_type, List<StringName> *p_list) const {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_list);
 
 	if (!style_map.has(p_theme_type)) {
@@ -445,6 +477,7 @@ void Theme::get_stylebox_list(StringName p_theme_type, List<StringName> *p_list)
 }
 
 void Theme::add_stylebox_type(const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!is_valid_type_name(p_theme_type), vformat("Invalid type name: '%s'", p_theme_type));
 
 	if (style_map.has(p_theme_type)) {
@@ -454,6 +487,7 @@ void Theme::add_stylebox_type(const StringName &p_theme_type) {
 }
 
 void Theme::remove_stylebox_type(const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	if (!style_map.has(p_theme_type)) {
 		return;
 	}
@@ -473,6 +507,7 @@ void Theme::remove_stylebox_type(const StringName &p_theme_type) {
 }
 
 void Theme::get_stylebox_type_list(List<StringName> *p_list) const {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_list);
 
 	for (const KeyValue<StringName, ThemeStyleMap> &E : style_map) {
@@ -482,6 +517,7 @@ void Theme::get_stylebox_type_list(List<StringName> *p_list) const {
 
 // Fonts.
 void Theme::set_font(const StringName &p_name, const StringName &p_theme_type, const Ref<Font> &p_font) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!is_valid_item_name(p_name), vformat("Invalid item name: '%s'", p_name));
 	ERR_FAIL_COND_MSG(!is_valid_type_name(p_theme_type), vformat("Invalid type name: '%s'", p_theme_type));
 
@@ -501,6 +537,7 @@ void Theme::set_font(const StringName &p_name, const StringName &p_theme_type, c
 }
 
 Ref<Font> Theme::get_font(const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	if (font_map.has(p_theme_type) && font_map[p_theme_type].has(p_name) && font_map[p_theme_type][p_name].is_valid()) {
 		return font_map[p_theme_type][p_name];
 	} else if (has_default_font()) {
@@ -511,14 +548,17 @@ Ref<Font> Theme::get_font(const StringName &p_name, const StringName &p_theme_ty
 }
 
 bool Theme::has_font(const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	return ((font_map.has(p_theme_type) && font_map[p_theme_type].has(p_name) && font_map[p_theme_type][p_name].is_valid()) || has_default_font());
 }
 
 bool Theme::has_font_nocheck(const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	return (font_map.has(p_theme_type) && font_map[p_theme_type].has(p_name));
 }
 
 void Theme::rename_font(const StringName &p_old_name, const StringName &p_name, const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!is_valid_item_name(p_name), vformat("Invalid item name: '%s'", p_name));
 	ERR_FAIL_COND_MSG(!is_valid_type_name(p_theme_type), vformat("Invalid type name: '%s'", p_theme_type));
 	ERR_FAIL_COND_MSG(!font_map.has(p_theme_type), "Cannot rename the font '" + String(p_old_name) + "' because the node type '" + String(p_theme_type) + "' does not exist.");
@@ -532,6 +572,7 @@ void Theme::rename_font(const StringName &p_old_name, const StringName &p_name, 
 }
 
 void Theme::clear_font(const StringName &p_name, const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!font_map.has(p_theme_type), "Cannot clear the font '" + String(p_name) + "' because the node type '" + String(p_theme_type) + "' does not exist.");
 	ERR_FAIL_COND_MSG(!font_map[p_theme_type].has(p_name), "Cannot clear the font '" + String(p_name) + "' because it does not exist.");
 
@@ -545,6 +586,7 @@ void Theme::clear_font(const StringName &p_name, const StringName &p_theme_type)
 }
 
 void Theme::get_font_list(StringName p_theme_type, List<StringName> *p_list) const {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_list);
 
 	if (!font_map.has(p_theme_type)) {
@@ -557,6 +599,7 @@ void Theme::get_font_list(StringName p_theme_type, List<StringName> *p_list) con
 }
 
 void Theme::add_font_type(const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!is_valid_type_name(p_theme_type), vformat("Invalid type name: '%s'", p_theme_type));
 
 	if (font_map.has(p_theme_type)) {
@@ -566,6 +609,7 @@ void Theme::add_font_type(const StringName &p_theme_type) {
 }
 
 void Theme::remove_font_type(const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	if (!font_map.has(p_theme_type)) {
 		return;
 	}
@@ -585,6 +629,7 @@ void Theme::remove_font_type(const StringName &p_theme_type) {
 }
 
 void Theme::get_font_type_list(List<StringName> *p_list) const {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_list);
 
 	for (const KeyValue<StringName, ThemeFontMap> &E : font_map) {
@@ -594,6 +639,7 @@ void Theme::get_font_type_list(List<StringName> *p_list) const {
 
 // Font sizes.
 void Theme::set_font_size(const StringName &p_name, const StringName &p_theme_type, int p_font_size) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!is_valid_item_name(p_name), vformat("Invalid item name: '%s'", p_name));
 	ERR_FAIL_COND_MSG(!is_valid_type_name(p_theme_type), vformat("Invalid type name: '%s'", p_theme_type));
 
@@ -604,6 +650,7 @@ void Theme::set_font_size(const StringName &p_name, const StringName &p_theme_ty
 }
 
 int Theme::get_font_size(const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	if (font_size_map.has(p_theme_type) && font_size_map[p_theme_type].has(p_name) && (font_size_map[p_theme_type][p_name] > 0)) {
 		return font_size_map[p_theme_type][p_name];
 	} else if (has_default_font_size()) {
@@ -614,14 +661,17 @@ int Theme::get_font_size(const StringName &p_name, const StringName &p_theme_typ
 }
 
 bool Theme::has_font_size(const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	return ((font_size_map.has(p_theme_type) && font_size_map[p_theme_type].has(p_name) && (font_size_map[p_theme_type][p_name] > 0)) || has_default_font_size());
 }
 
 bool Theme::has_font_size_nocheck(const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	return (font_size_map.has(p_theme_type) && font_size_map[p_theme_type].has(p_name));
 }
 
 void Theme::rename_font_size(const StringName &p_old_name, const StringName &p_name, const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!is_valid_item_name(p_name), vformat("Invalid item name: '%s'", p_name));
 	ERR_FAIL_COND_MSG(!is_valid_type_name(p_theme_type), vformat("Invalid type name: '%s'", p_theme_type));
 	ERR_FAIL_COND_MSG(!font_size_map.has(p_theme_type), "Cannot rename the font size '" + String(p_old_name) + "' because the node type '" + String(p_theme_type) + "' does not exist.");
@@ -635,6 +685,7 @@ void Theme::rename_font_size(const StringName &p_old_name, const StringName &p_n
 }
 
 void Theme::clear_font_size(const StringName &p_name, const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!font_size_map.has(p_theme_type), "Cannot clear the font size '" + String(p_name) + "' because the node type '" + String(p_theme_type) + "' does not exist.");
 	ERR_FAIL_COND_MSG(!font_size_map[p_theme_type].has(p_name), "Cannot clear the font size '" + String(p_name) + "' because it does not exist.");
 
@@ -644,6 +695,7 @@ void Theme::clear_font_size(const StringName &p_name, const StringName &p_theme_
 }
 
 void Theme::get_font_size_list(StringName p_theme_type, List<StringName> *p_list) const {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_list);
 
 	if (!font_size_map.has(p_theme_type)) {
@@ -656,6 +708,7 @@ void Theme::get_font_size_list(StringName p_theme_type, List<StringName> *p_list
 }
 
 void Theme::add_font_size_type(const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!is_valid_type_name(p_theme_type), vformat("Invalid type name: '%s'", p_theme_type));
 
 	if (font_size_map.has(p_theme_type)) {
@@ -665,6 +718,7 @@ void Theme::add_font_size_type(const StringName &p_theme_type) {
 }
 
 void Theme::remove_font_size_type(const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	if (!font_size_map.has(p_theme_type)) {
 		return;
 	}
@@ -673,6 +727,7 @@ void Theme::remove_font_size_type(const StringName &p_theme_type) {
 }
 
 void Theme::get_font_size_type_list(List<StringName> *p_list) const {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_list);
 
 	for (const KeyValue<StringName, ThemeFontSizeMap> &E : font_size_map) {
@@ -682,6 +737,7 @@ void Theme::get_font_size_type_list(List<StringName> *p_list) const {
 
 // Colors.
 void Theme::set_color(const StringName &p_name, const StringName &p_theme_type, const Color &p_color) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!is_valid_item_name(p_name), vformat("Invalid item name: '%s'", p_name));
 	ERR_FAIL_COND_MSG(!is_valid_type_name(p_theme_type), vformat("Invalid type name: '%s'", p_theme_type));
 
@@ -692,6 +748,7 @@ void Theme::set_color(const StringName &p_name, const StringName &p_theme_type, 
 }
 
 Color Theme::get_color(const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	if (color_map.has(p_theme_type) && color_map[p_theme_type].has(p_name)) {
 		return color_map[p_theme_type][p_name];
 	} else {
@@ -700,14 +757,17 @@ Color Theme::get_color(const StringName &p_name, const StringName &p_theme_type)
 }
 
 bool Theme::has_color(const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	return (color_map.has(p_theme_type) && color_map[p_theme_type].has(p_name));
 }
 
 bool Theme::has_color_nocheck(const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	return (color_map.has(p_theme_type) && color_map[p_theme_type].has(p_name));
 }
 
 void Theme::rename_color(const StringName &p_old_name, const StringName &p_name, const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!is_valid_item_name(p_name), vformat("Invalid item name: '%s'", p_name));
 	ERR_FAIL_COND_MSG(!is_valid_type_name(p_theme_type), vformat("Invalid type name: '%s'", p_theme_type));
 	ERR_FAIL_COND_MSG(!color_map.has(p_theme_type), "Cannot rename the color '" + String(p_old_name) + "' because the node type '" + String(p_theme_type) + "' does not exist.");
@@ -721,6 +781,7 @@ void Theme::rename_color(const StringName &p_old_name, const StringName &p_name,
 }
 
 void Theme::clear_color(const StringName &p_name, const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!color_map.has(p_theme_type), "Cannot clear the color '" + String(p_name) + "' because the node type '" + String(p_theme_type) + "' does not exist.");
 	ERR_FAIL_COND_MSG(!color_map[p_theme_type].has(p_name), "Cannot clear the color '" + String(p_name) + "' because it does not exist.");
 
@@ -730,6 +791,7 @@ void Theme::clear_color(const StringName &p_name, const StringName &p_theme_type
 }
 
 void Theme::get_color_list(StringName p_theme_type, List<StringName> *p_list) const {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_list);
 
 	if (!color_map.has(p_theme_type)) {
@@ -742,6 +804,7 @@ void Theme::get_color_list(StringName p_theme_type, List<StringName> *p_list) co
 }
 
 void Theme::add_color_type(const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!is_valid_type_name(p_theme_type), vformat("Invalid type name: '%s'", p_theme_type));
 
 	if (color_map.has(p_theme_type)) {
@@ -751,6 +814,7 @@ void Theme::add_color_type(const StringName &p_theme_type) {
 }
 
 void Theme::remove_color_type(const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	if (!color_map.has(p_theme_type)) {
 		return;
 	}
@@ -759,6 +823,7 @@ void Theme::remove_color_type(const StringName &p_theme_type) {
 }
 
 void Theme::get_color_type_list(List<StringName> *p_list) const {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_list);
 
 	for (const KeyValue<StringName, ThemeColorMap> &E : color_map) {
@@ -768,6 +833,7 @@ void Theme::get_color_type_list(List<StringName> *p_list) const {
 
 // Theme constants.
 void Theme::set_constant(const StringName &p_name, const StringName &p_theme_type, int p_constant) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!is_valid_item_name(p_name), vformat("Invalid item name: '%s'", p_name));
 	ERR_FAIL_COND_MSG(!is_valid_type_name(p_theme_type), vformat("Invalid type name: '%s'", p_theme_type));
 
@@ -778,6 +844,7 @@ void Theme::set_constant(const StringName &p_name, const StringName &p_theme_typ
 }
 
 int Theme::get_constant(const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	if (constant_map.has(p_theme_type) && constant_map[p_theme_type].has(p_name)) {
 		return constant_map[p_theme_type][p_name];
 	} else {
@@ -786,14 +853,17 @@ int Theme::get_constant(const StringName &p_name, const StringName &p_theme_type
 }
 
 bool Theme::has_constant(const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	return (constant_map.has(p_theme_type) && constant_map[p_theme_type].has(p_name));
 }
 
 bool Theme::has_constant_nocheck(const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	return (constant_map.has(p_theme_type) && constant_map[p_theme_type].has(p_name));
 }
 
 void Theme::rename_constant(const StringName &p_old_name, const StringName &p_name, const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!is_valid_item_name(p_name), vformat("Invalid item name: '%s'", p_name));
 	ERR_FAIL_COND_MSG(!is_valid_type_name(p_theme_type), vformat("Invalid type name: '%s'", p_theme_type));
 	ERR_FAIL_COND_MSG(!constant_map.has(p_theme_type), "Cannot rename the constant '" + String(p_old_name) + "' because the node type '" + String(p_theme_type) + "' does not exist.");
@@ -807,6 +877,7 @@ void Theme::rename_constant(const StringName &p_old_name, const StringName &p_na
 }
 
 void Theme::clear_constant(const StringName &p_name, const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!constant_map.has(p_theme_type), "Cannot clear the constant '" + String(p_name) + "' because the node type '" + String(p_theme_type) + "' does not exist.");
 	ERR_FAIL_COND_MSG(!constant_map[p_theme_type].has(p_name), "Cannot clear the constant '" + String(p_name) + "' because it does not exist.");
 
@@ -816,6 +887,7 @@ void Theme::clear_constant(const StringName &p_name, const StringName &p_theme_t
 }
 
 void Theme::get_constant_list(StringName p_theme_type, List<StringName> *p_list) const {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_list);
 
 	if (!constant_map.has(p_theme_type)) {
@@ -828,6 +900,7 @@ void Theme::get_constant_list(StringName p_theme_type, List<StringName> *p_list)
 }
 
 void Theme::add_constant_type(const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!is_valid_type_name(p_theme_type), vformat("Invalid type name: '%s'", p_theme_type));
 
 	if (constant_map.has(p_theme_type)) {
@@ -837,6 +910,7 @@ void Theme::add_constant_type(const StringName &p_theme_type) {
 }
 
 void Theme::remove_constant_type(const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	if (!constant_map.has(p_theme_type)) {
 		return;
 	}
@@ -845,6 +919,7 @@ void Theme::remove_constant_type(const StringName &p_theme_type) {
 }
 
 void Theme::get_constant_type_list(List<StringName> *p_list) const {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_list);
 
 	for (const KeyValue<StringName, ThemeConstantMap> &E : constant_map) {
@@ -854,6 +929,7 @@ void Theme::get_constant_type_list(List<StringName> *p_list) const {
 
 // Generic methods for managing theme items.
 void Theme::set_theme_item(DataType p_data_type, const StringName &p_name, const StringName &p_theme_type, const Variant &p_value) {
+	ZoneScopedS(60);
 	switch (p_data_type) {
 		case DATA_TYPE_COLOR: {
 			ERR_FAIL_COND_MSG(p_value.get_type() != Variant::COLOR, "Theme item's data type (Color) does not match Variant's type (" + Variant::get_type_name(p_value.get_type()) + ").");
@@ -897,6 +973,7 @@ void Theme::set_theme_item(DataType p_data_type, const StringName &p_name, const
 }
 
 Variant Theme::get_theme_item(DataType p_data_type, const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	switch (p_data_type) {
 		case DATA_TYPE_COLOR:
 			return get_color(p_name, p_theme_type);
@@ -918,6 +995,7 @@ Variant Theme::get_theme_item(DataType p_data_type, const StringName &p_name, co
 }
 
 bool Theme::has_theme_item(DataType p_data_type, const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	switch (p_data_type) {
 		case DATA_TYPE_COLOR:
 			return has_color(p_name, p_theme_type);
@@ -939,6 +1017,7 @@ bool Theme::has_theme_item(DataType p_data_type, const StringName &p_name, const
 }
 
 bool Theme::has_theme_item_nocheck(DataType p_data_type, const StringName &p_name, const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	switch (p_data_type) {
 		case DATA_TYPE_COLOR:
 			return has_color_nocheck(p_name, p_theme_type);
@@ -960,6 +1039,7 @@ bool Theme::has_theme_item_nocheck(DataType p_data_type, const StringName &p_nam
 }
 
 void Theme::rename_theme_item(DataType p_data_type, const StringName &p_old_name, const StringName &p_name, const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	switch (p_data_type) {
 		case DATA_TYPE_COLOR:
 			rename_color(p_old_name, p_name, p_theme_type);
@@ -985,6 +1065,7 @@ void Theme::rename_theme_item(DataType p_data_type, const StringName &p_old_name
 }
 
 void Theme::clear_theme_item(DataType p_data_type, const StringName &p_name, const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	switch (p_data_type) {
 		case DATA_TYPE_COLOR:
 			clear_color(p_name, p_theme_type);
@@ -1010,6 +1091,7 @@ void Theme::clear_theme_item(DataType p_data_type, const StringName &p_name, con
 }
 
 void Theme::get_theme_item_list(DataType p_data_type, StringName p_theme_type, List<StringName> *p_list) const {
+	ZoneScopedS(60);
 	switch (p_data_type) {
 		case DATA_TYPE_COLOR:
 			get_color_list(p_theme_type, p_list);
@@ -1035,6 +1117,7 @@ void Theme::get_theme_item_list(DataType p_data_type, StringName p_theme_type, L
 }
 
 void Theme::add_theme_item_type(DataType p_data_type, const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	switch (p_data_type) {
 		case DATA_TYPE_COLOR:
 			add_color_type(p_theme_type);
@@ -1060,6 +1143,7 @@ void Theme::add_theme_item_type(DataType p_data_type, const StringName &p_theme_
 }
 
 void Theme::remove_theme_item_type(DataType p_data_type, const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	switch (p_data_type) {
 		case DATA_TYPE_COLOR:
 			remove_color_type(p_theme_type);
@@ -1085,6 +1169,7 @@ void Theme::remove_theme_item_type(DataType p_data_type, const StringName &p_the
 }
 
 void Theme::get_theme_item_type_list(DataType p_data_type, List<StringName> *p_list) const {
+	ZoneScopedS(60);
 	switch (p_data_type) {
 		case DATA_TYPE_COLOR:
 			get_color_type_list(p_list);
@@ -1111,6 +1196,7 @@ void Theme::get_theme_item_type_list(DataType p_data_type, List<StringName> *p_l
 
 // Theme type variations.
 void Theme::set_type_variation(const StringName &p_theme_type, const StringName &p_base_type) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!is_valid_type_name(p_theme_type), vformat("Invalid type name: '%s'", p_theme_type));
 	ERR_FAIL_COND_MSG(!is_valid_type_name(p_base_type), vformat("Invalid type name: '%s'", p_base_type));
 	ERR_FAIL_COND_MSG(p_theme_type == StringName(), "An empty theme type cannot be marked as a variation of another type.");
@@ -1129,10 +1215,12 @@ void Theme::set_type_variation(const StringName &p_theme_type, const StringName 
 }
 
 bool Theme::is_type_variation(const StringName &p_theme_type, const StringName &p_base_type) const {
+	ZoneScopedS(60);
 	return (variation_map.has(p_theme_type) && variation_map[p_theme_type] == p_base_type);
 }
 
 void Theme::clear_type_variation(const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!variation_map.has(p_theme_type), "Cannot clear the type variation '" + String(p_theme_type) + "' because it does not exist.");
 
 	StringName base_type = variation_map[p_theme_type];
@@ -1143,6 +1231,7 @@ void Theme::clear_type_variation(const StringName &p_theme_type) {
 }
 
 StringName Theme::get_type_variation_base(const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	if (!variation_map.has(p_theme_type)) {
 		return StringName();
 	}
@@ -1151,6 +1240,7 @@ StringName Theme::get_type_variation_base(const StringName &p_theme_type) const 
 }
 
 void Theme::get_type_variation_list(const StringName &p_base_type, List<StringName> *p_list) const {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_list);
 
 	if (!variation_base_map.has(p_base_type)) {
@@ -1171,6 +1261,7 @@ void Theme::get_type_variation_list(const StringName &p_base_type, List<StringNa
 
 // Theme types.
 void Theme::add_type(const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	// Add a record to every data type map.
 	for (int i = 0; i < Theme::DATA_TYPE_MAX; i++) {
 		Theme::DataType dt = (Theme::DataType)i;
@@ -1181,6 +1272,7 @@ void Theme::add_type(const StringName &p_theme_type) {
 }
 
 void Theme::remove_type(const StringName &p_theme_type) {
+	ZoneScopedS(60);
 	// Gracefully remove the record from every data type map.
 	for (int i = 0; i < Theme::DATA_TYPE_MAX; i++) {
 		Theme::DataType dt = (Theme::DataType)i;
@@ -1203,6 +1295,7 @@ void Theme::remove_type(const StringName &p_theme_type) {
 }
 
 void Theme::get_type_list(List<StringName> *p_list) const {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_list);
 
 	// This Set guarantees uniqueness.
@@ -1246,6 +1339,7 @@ void Theme::get_type_list(List<StringName> *p_list) const {
 }
 
 void Theme::get_type_dependencies(const StringName &p_base_type, const StringName &p_type_variation, List<StringName> *p_list) {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_list);
 
 	// Build the dependency chain for type variations.
@@ -1272,6 +1366,7 @@ void Theme::get_type_dependencies(const StringName &p_base_type, const StringNam
 
 // Internal methods for getting lists as a Vector of String (compatible with public API).
 Vector<String> Theme::_get_icon_list(const String &p_theme_type) const {
+	ZoneScopedS(60);
 	Vector<String> ilret;
 	List<StringName> il;
 
@@ -1287,6 +1382,7 @@ Vector<String> Theme::_get_icon_list(const String &p_theme_type) const {
 }
 
 Vector<String> Theme::_get_icon_type_list() const {
+	ZoneScopedS(60);
 	Vector<String> ilret;
 	List<StringName> il;
 
@@ -1302,6 +1398,7 @@ Vector<String> Theme::_get_icon_type_list() const {
 }
 
 Vector<String> Theme::_get_stylebox_list(const String &p_theme_type) const {
+	ZoneScopedS(60);
 	Vector<String> ilret;
 	List<StringName> il;
 
@@ -1317,6 +1414,7 @@ Vector<String> Theme::_get_stylebox_list(const String &p_theme_type) const {
 }
 
 Vector<String> Theme::_get_stylebox_type_list() const {
+	ZoneScopedS(60);
 	Vector<String> ilret;
 	List<StringName> il;
 
@@ -1332,6 +1430,7 @@ Vector<String> Theme::_get_stylebox_type_list() const {
 }
 
 Vector<String> Theme::_get_font_list(const String &p_theme_type) const {
+	ZoneScopedS(60);
 	Vector<String> ilret;
 	List<StringName> il;
 
@@ -1347,6 +1446,7 @@ Vector<String> Theme::_get_font_list(const String &p_theme_type) const {
 }
 
 Vector<String> Theme::_get_font_type_list() const {
+	ZoneScopedS(60);
 	Vector<String> ilret;
 	List<StringName> il;
 
@@ -1362,6 +1462,7 @@ Vector<String> Theme::_get_font_type_list() const {
 }
 
 Vector<String> Theme::_get_font_size_list(const String &p_theme_type) const {
+	ZoneScopedS(60);
 	Vector<String> ilret;
 	List<StringName> il;
 
@@ -1377,6 +1478,7 @@ Vector<String> Theme::_get_font_size_list(const String &p_theme_type) const {
 }
 
 Vector<String> Theme::_get_font_size_type_list() const {
+	ZoneScopedS(60);
 	Vector<String> ilret;
 	List<StringName> il;
 
@@ -1392,6 +1494,7 @@ Vector<String> Theme::_get_font_size_type_list() const {
 }
 
 Vector<String> Theme::_get_color_list(const String &p_theme_type) const {
+	ZoneScopedS(60);
 	Vector<String> ilret;
 	List<StringName> il;
 
@@ -1407,6 +1510,7 @@ Vector<String> Theme::_get_color_list(const String &p_theme_type) const {
 }
 
 Vector<String> Theme::_get_color_type_list() const {
+	ZoneScopedS(60);
 	Vector<String> ilret;
 	List<StringName> il;
 
@@ -1422,6 +1526,7 @@ Vector<String> Theme::_get_color_type_list() const {
 }
 
 Vector<String> Theme::_get_constant_list(const String &p_theme_type) const {
+	ZoneScopedS(60);
 	Vector<String> ilret;
 	List<StringName> il;
 
@@ -1437,6 +1542,7 @@ Vector<String> Theme::_get_constant_list(const String &p_theme_type) const {
 }
 
 Vector<String> Theme::_get_constant_type_list() const {
+	ZoneScopedS(60);
 	Vector<String> ilret;
 	List<StringName> il;
 
@@ -1452,6 +1558,7 @@ Vector<String> Theme::_get_constant_type_list() const {
 }
 
 Vector<String> Theme::_get_theme_item_list(DataType p_data_type, const String &p_theme_type) const {
+	ZoneScopedS(60);
 	switch (p_data_type) {
 		case DATA_TYPE_COLOR:
 			return _get_color_list(p_theme_type);
@@ -1473,6 +1580,7 @@ Vector<String> Theme::_get_theme_item_list(DataType p_data_type, const String &p
 }
 
 Vector<String> Theme::_get_theme_item_type_list(DataType p_data_type) const {
+	ZoneScopedS(60);
 	switch (p_data_type) {
 		case DATA_TYPE_COLOR:
 			return _get_color_type_list();
@@ -1494,6 +1602,7 @@ Vector<String> Theme::_get_theme_item_type_list(DataType p_data_type) const {
 }
 
 Vector<String> Theme::_get_type_variation_list(const StringName &p_theme_type) const {
+	ZoneScopedS(60);
 	Vector<String> ilret;
 	List<StringName> il;
 
@@ -1509,6 +1618,7 @@ Vector<String> Theme::_get_type_variation_list(const StringName &p_theme_type) c
 }
 
 Vector<String> Theme::_get_type_list() const {
+	ZoneScopedS(60);
 	Vector<String> ilret;
 	List<StringName> il;
 
@@ -1525,6 +1635,7 @@ Vector<String> Theme::_get_type_list() const {
 
 // Theme bulk manipulations.
 void Theme::_emit_theme_changed(bool p_notify_list_changed) {
+	ZoneScopedS(60);
 	if (no_change_propagation) {
 		return;
 	}
@@ -1536,15 +1647,18 @@ void Theme::_emit_theme_changed(bool p_notify_list_changed) {
 }
 
 void Theme::_freeze_change_propagation() {
+	ZoneScopedS(60);
 	no_change_propagation = true;
 }
 
 void Theme::_unfreeze_and_propagate_changes() {
+	ZoneScopedS(60);
 	no_change_propagation = false;
 	_emit_theme_changed(true);
 }
 
 void Theme::merge_with(const Ref<Theme> &p_other) {
+	ZoneScopedS(60);
 	if (p_other.is_null()) {
 		return;
 	}
@@ -1616,6 +1730,7 @@ void Theme::merge_with(const Ref<Theme> &p_other) {
 }
 
 void Theme::clear() {
+	ZoneScopedS(60);
 	// These items need disconnecting.
 	{
 		for (const KeyValue<StringName, ThemeIconMap> &E : icon_map) {
@@ -1664,10 +1779,12 @@ void Theme::clear() {
 }
 
 void Theme::reset_state() {
+	ZoneScopedS(60);
 	clear();
 }
 
 void Theme::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_icon", "name", "theme_type", "texture"), &Theme::set_icon);
 	ClassDB::bind_method(D_METHOD("get_icon", "name", "theme_type"), &Theme::get_icon);
 	ClassDB::bind_method(D_METHOD("has_icon", "name", "theme_type"), &Theme::has_icon);

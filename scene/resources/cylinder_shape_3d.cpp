@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  cylinder_shape_3d.cpp                                                */
 /*************************************************************************/
@@ -33,6 +34,7 @@
 #include "servers/physics_server_3d.h"
 
 Vector<Vector3> CylinderShape3D::get_debug_mesh_lines() const {
+	ZoneScopedS(60);
 	float c_radius = get_radius();
 	float c_height = get_height();
 
@@ -61,10 +63,12 @@ Vector<Vector3> CylinderShape3D::get_debug_mesh_lines() const {
 }
 
 real_t CylinderShape3D::get_enclosing_radius() const {
+	ZoneScopedS(60);
 	return Vector2(radius, height * 0.5).length();
 }
 
 void CylinderShape3D::_update_shape() {
+	ZoneScopedS(60);
 	Dictionary d;
 	d["radius"] = radius;
 	d["height"] = height;
@@ -73,6 +77,7 @@ void CylinderShape3D::_update_shape() {
 }
 
 void CylinderShape3D::set_radius(float p_radius) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_radius < 0, "CylinderShape3D radius cannot be negative.");
 	radius = p_radius;
 	_update_shape();
@@ -80,10 +85,12 @@ void CylinderShape3D::set_radius(float p_radius) {
 }
 
 float CylinderShape3D::get_radius() const {
+	ZoneScopedS(60);
 	return radius;
 }
 
 void CylinderShape3D::set_height(float p_height) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_height < 0, "CylinderShape3D height cannot be negative.");
 	height = p_height;
 	_update_shape();
@@ -91,10 +98,12 @@ void CylinderShape3D::set_height(float p_height) {
 }
 
 float CylinderShape3D::get_height() const {
+	ZoneScopedS(60);
 	return height;
 }
 
 void CylinderShape3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_radius", "radius"), &CylinderShape3D::set_radius);
 	ClassDB::bind_method(D_METHOD("get_radius"), &CylinderShape3D::get_radius);
 	ClassDB::bind_method(D_METHOD("set_height", "height"), &CylinderShape3D::set_height);

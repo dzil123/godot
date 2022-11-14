@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  animation_player.cpp                                                 */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "animation_player.h"
 
 #include "core/config/engine.h"
@@ -41,6 +72,7 @@
 #include "scene/2d/skeleton_2d.h"
 
 void AnimatedValuesBackup::update_skeletons() {
+	ZoneScopedS(60);
 	for (int i = 0; i < entries.size(); i++) {
 		if (entries[i].bone_idx != -1) {
 			// 3D bone
@@ -56,6 +88,7 @@ void AnimatedValuesBackup::update_skeletons() {
 }
 
 void AnimatedValuesBackup::restore() const {
+	ZoneScopedS(60);
 	for (int i = 0; i < entries.size(); i++) {
 		const AnimatedValuesBackup::Entry *entry = &entries[i];
 		if (entry->bone_idx == -1) {
@@ -72,11 +105,13 @@ void AnimatedValuesBackup::restore() const {
 }
 
 void AnimatedValuesBackup::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("restore"), &AnimatedValuesBackup::restore);
 }
 #endif
 
 bool AnimationPlayer::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	String name = p_name;
 
 	if (name.begins_with("playback/play")) { // bw compatibility
@@ -135,6 +170,7 @@ bool AnimationPlayer::_set(const StringName &p_name, const Variant &p_value) {
 }
 
 bool AnimationPlayer::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	String name = p_name;
 
 	if (name == "playback/play") { // bw compatibility
@@ -176,6 +212,7 @@ bool AnimationPlayer::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void AnimationPlayer::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (p_property.name == "current_animation") {
 		List<String> names;
 
@@ -197,6 +234,7 @@ void AnimationPlayer::_validate_property(PropertyInfo &p_property) const {
 }
 
 void AnimationPlayer::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	List<PropertyInfo> anim_names;
 
 	anim_names.push_back(PropertyInfo(Variant::DICTIONARY, "libraries"));
@@ -217,10 +255,12 @@ void AnimationPlayer::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 void AnimationPlayer::advance(double p_time) {
+	ZoneScopedS(60);
 	_animation_process(p_time);
 }
 
 void AnimationPlayer::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			if (!processing) {
@@ -266,6 +306,7 @@ void AnimationPlayer::_notification(int p_what) {
 }
 
 void AnimationPlayer::_ensure_node_caches(AnimationData *p_anim, Node *p_root_override) {
+	ZoneScopedS(60);
 	// Already cached?
 	if (p_anim->node_cache.size() == p_anim->animation->get_track_count()) {
 		return;
@@ -436,6 +477,7 @@ void AnimationPlayer::_ensure_node_caches(AnimationData *p_anim, Node *p_root_ov
 }
 
 static void _call_object(Object *p_object, const StringName &p_method, const Vector<Variant> &p_params, bool p_deferred) {
+	ZoneScopedS(60);
 	// Separate function to use alloca() more efficiently
 	const Variant **argptrs = (const Variant **)alloca(sizeof(const Variant **) * p_params.size());
 	const Variant *args = p_params.ptr();
@@ -452,6 +494,7 @@ static void _call_object(Object *p_object, const StringName &p_method, const Vec
 }
 
 Variant AnimationPlayer::_post_process_key_value(const Ref<Animation> &p_anim, int p_track, Variant p_value, const Object *p_object, int p_object_idx) {
+	ZoneScopedS(60);
 	switch (p_anim->track_get_type(p_track)) {
 #ifndef _3D_DISABLED
 		case Animation::TYPE_POSITION_3D: {
@@ -469,6 +512,7 @@ Variant AnimationPlayer::_post_process_key_value(const Ref<Animation> &p_anim, i
 }
 
 void AnimationPlayer::_animation_process_animation(AnimationData *p_anim, double p_time, double p_delta, float p_interp, bool p_is_current, bool p_seeked, bool p_started, int p_pingponged) {
+	ZoneScopedS(60);
 	_ensure_node_caches(p_anim);
 	ERR_FAIL_COND(p_anim->node_cache.size() != p_anim->animation->get_track_count());
 
@@ -966,6 +1010,7 @@ void AnimationPlayer::_animation_process_animation(AnimationData *p_anim, double
 }
 
 void AnimationPlayer::_animation_process_data(PlaybackData &cd, double p_delta, float p_blend, bool p_seeked, bool p_started) {
+	ZoneScopedS(60);
 	double delta = p_delta * speed_scale * cd.speed_scale;
 	double next_pos = cd.pos + delta;
 
@@ -1040,6 +1085,7 @@ void AnimationPlayer::_animation_process_data(PlaybackData &cd, double p_delta, 
 }
 
 void AnimationPlayer::_animation_process2(double p_delta, bool p_started) {
+	ZoneScopedS(60);
 	Playback &c = playback;
 
 	accum_pass++;
@@ -1065,6 +1111,7 @@ void AnimationPlayer::_animation_process2(double p_delta, bool p_started) {
 }
 
 void AnimationPlayer::_animation_update_transforms() {
+	ZoneScopedS(60);
 	{
 		Transform3D t;
 		for (int i = 0; i < cache_update_size; i++) {
@@ -1177,6 +1224,7 @@ void AnimationPlayer::_animation_update_transforms() {
 }
 
 void AnimationPlayer::_animation_process(double p_delta) {
+	ZoneScopedS(60);
 	if (playback.current.from) {
 		end_reached = false;
 		end_notify = false;
@@ -1217,6 +1265,7 @@ void AnimationPlayer::_animation_process(double p_delta) {
 }
 
 void AnimationPlayer::_animation_set_cache_update() {
+	ZoneScopedS(60);
 	// Relatively fast function to update all animations.
 
 	animation_set_update_pass++;
@@ -1274,6 +1323,7 @@ void AnimationPlayer::_animation_set_cache_update() {
 }
 
 void AnimationPlayer::_animation_added(const StringName &p_name, const StringName &p_library) {
+	ZoneScopedS(60);
 	{
 		int at_pos = -1;
 
@@ -1295,6 +1345,7 @@ void AnimationPlayer::_animation_added(const StringName &p_name, const StringNam
 }
 
 void AnimationPlayer::_animation_removed(const StringName &p_name, const StringName &p_library) {
+	ZoneScopedS(60);
 	StringName name = p_library == StringName() ? p_name : StringName(String(p_library) + "/" + String(p_name));
 
 	if (!animation_set.has(name)) {
@@ -1324,6 +1375,7 @@ void AnimationPlayer::_animation_removed(const StringName &p_name, const StringN
 }
 
 void AnimationPlayer::_rename_animation(const StringName &p_from_name, const StringName &p_to_name) {
+	ZoneScopedS(60);
 	// Rename autoplay or blends if needed.
 	List<BlendKey> to_erase;
 	HashMap<BlendKey, double, BlendKey> to_insert;
@@ -1362,6 +1414,7 @@ void AnimationPlayer::_rename_animation(const StringName &p_from_name, const Str
 }
 
 void AnimationPlayer::_animation_renamed(const StringName &p_name, const StringName &p_to_name, const StringName &p_library) {
+	ZoneScopedS(60);
 	StringName from_name = p_library == StringName() ? p_name : StringName(String(p_library) + "/" + String(p_name));
 	StringName to_name = p_library == StringName() ? p_to_name : StringName(String(p_library) + "/" + String(p_to_name));
 
@@ -1374,6 +1427,7 @@ void AnimationPlayer::_animation_renamed(const StringName &p_name, const StringN
 }
 
 Error AnimationPlayer::add_animation_library(const StringName &p_name, const Ref<AnimationLibrary> &p_animation_library) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_animation_library.is_null(), ERR_INVALID_PARAMETER);
 #ifdef DEBUG_ENABLED
 	ERR_FAIL_COND_V_MSG(String(p_name).contains("/") || String(p_name).contains(":") || String(p_name).contains(",") || String(p_name).contains("["), ERR_INVALID_PARAMETER, "Invalid animation name: " + String(p_name) + ".");
@@ -1414,6 +1468,7 @@ Error AnimationPlayer::add_animation_library(const StringName &p_name, const Ref
 }
 
 void AnimationPlayer::remove_animation_library(const StringName &p_name) {
+	ZoneScopedS(60);
 	int at_pos = -1;
 
 	for (uint32_t i = 0; i < animation_libraries.size(); i++) {
@@ -1442,14 +1497,17 @@ void AnimationPlayer::remove_animation_library(const StringName &p_name) {
 }
 
 void AnimationPlayer::_ref_anim(const Ref<Animation> &p_anim) {
+	ZoneScopedS(60);
 	Ref<Animation>(p_anim)->connect(SceneStringNames::get_singleton()->tracks_changed, callable_mp(this, &AnimationPlayer::_animation_changed), CONNECT_REFERENCE_COUNTED);
 }
 
 void AnimationPlayer::_unref_anim(const Ref<Animation> &p_anim) {
+	ZoneScopedS(60);
 	Ref<Animation>(p_anim)->disconnect(SceneStringNames::get_singleton()->tracks_changed, callable_mp(this, &AnimationPlayer::_animation_changed));
 }
 
 void AnimationPlayer::rename_animation_library(const StringName &p_name, const StringName &p_new_name) {
+	ZoneScopedS(60);
 	if (p_name == p_new_name) {
 		return;
 	}
@@ -1492,6 +1550,7 @@ void AnimationPlayer::rename_animation_library(const StringName &p_name, const S
 }
 
 bool AnimationPlayer::has_animation_library(const StringName &p_name) const {
+	ZoneScopedS(60);
 	for (uint32_t i = 0; i < animation_libraries.size(); i++) {
 		if (animation_libraries[i].name == p_name) {
 			return true;
@@ -1502,6 +1561,7 @@ bool AnimationPlayer::has_animation_library(const StringName &p_name) const {
 }
 
 Ref<AnimationLibrary> AnimationPlayer::get_animation_library(const StringName &p_name) const {
+	ZoneScopedS(60);
 	for (uint32_t i = 0; i < animation_libraries.size(); i++) {
 		if (animation_libraries[i].name == p_name) {
 			return animation_libraries[i].library;
@@ -1511,6 +1571,7 @@ Ref<AnimationLibrary> AnimationPlayer::get_animation_library(const StringName &p
 }
 
 TypedArray<StringName> AnimationPlayer::_get_animation_library_list() const {
+	ZoneScopedS(60);
 	TypedArray<StringName> ret;
 	for (uint32_t i = 0; i < animation_libraries.size(); i++) {
 		ret.push_back(animation_libraries[i].name);
@@ -1519,16 +1580,19 @@ TypedArray<StringName> AnimationPlayer::_get_animation_library_list() const {
 }
 
 void AnimationPlayer::get_animation_library_list(List<StringName> *p_libraries) const {
+	ZoneScopedS(60);
 	for (uint32_t i = 0; i < animation_libraries.size(); i++) {
 		p_libraries->push_back(animation_libraries[i].name);
 	}
 }
 
 bool AnimationPlayer::has_animation(const StringName &p_name) const {
+	ZoneScopedS(60);
 	return animation_set.has(p_name);
 }
 
 Ref<Animation> AnimationPlayer::get_animation(const StringName &p_name) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!animation_set.has(p_name), Ref<Animation>(), vformat("Animation not found: \"%s\".", p_name));
 
 	const AnimationData &anim_data = animation_set[p_name];
@@ -1537,6 +1601,7 @@ Ref<Animation> AnimationPlayer::get_animation(const StringName &p_name) const {
 }
 
 void AnimationPlayer::get_animation_list(List<StringName> *p_animations) const {
+	ZoneScopedS(60);
 	List<String> anims;
 
 	for (const KeyValue<StringName, AnimationData> &E : animation_set) {
@@ -1551,6 +1616,7 @@ void AnimationPlayer::get_animation_list(List<StringName> *p_animations) const {
 }
 
 void AnimationPlayer::set_blend_time(const StringName &p_animation1, const StringName &p_animation2, double p_time) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!animation_set.has(p_animation1), vformat("Animation not found: %s.", p_animation1));
 	ERR_FAIL_COND_MSG(!animation_set.has(p_animation2), vformat("Animation not found: %s.", p_animation2));
 	ERR_FAIL_COND_MSG(p_time < 0, "Blend time cannot be smaller than 0.");
@@ -1566,6 +1632,7 @@ void AnimationPlayer::set_blend_time(const StringName &p_animation1, const Strin
 }
 
 double AnimationPlayer::get_blend_time(const StringName &p_animation1, const StringName &p_animation2) const {
+	ZoneScopedS(60);
 	BlendKey bk;
 	bk.from = p_animation1;
 	bk.to = p_animation2;
@@ -1578,6 +1645,7 @@ double AnimationPlayer::get_blend_time(const StringName &p_animation1, const Str
 }
 
 void AnimationPlayer::queue(const StringName &p_name) {
+	ZoneScopedS(60);
 	if (!is_playing()) {
 		play(p_name);
 	} else {
@@ -1586,6 +1654,7 @@ void AnimationPlayer::queue(const StringName &p_name) {
 }
 
 Vector<String> AnimationPlayer::get_queue() {
+	ZoneScopedS(60);
 	Vector<String> ret;
 	for (const StringName &E : queued) {
 		ret.push_back(E);
@@ -1595,14 +1664,17 @@ Vector<String> AnimationPlayer::get_queue() {
 }
 
 void AnimationPlayer::clear_queue() {
+	ZoneScopedS(60);
 	queued.clear();
 }
 
 void AnimationPlayer::play_backwards(const StringName &p_name, double p_custom_blend) {
+	ZoneScopedS(60);
 	play(p_name, p_custom_blend, -1, true);
 }
 
 void AnimationPlayer::play(const StringName &p_name, double p_custom_blend, float p_custom_scale, bool p_from_end) {
+	ZoneScopedS(60);
 	StringName name = p_name;
 
 	if (String(name) == "") {
@@ -1691,10 +1763,12 @@ void AnimationPlayer::play(const StringName &p_name, double p_custom_blend, floa
 }
 
 bool AnimationPlayer::is_playing() const {
+	ZoneScopedS(60);
 	return playing;
 }
 
 void AnimationPlayer::set_current_animation(const String &p_anim) {
+	ZoneScopedS(60);
 	if (p_anim == "[stop]" || p_anim.is_empty()) {
 		stop();
 	} else if (!is_playing() || playback.assigned != p_anim) {
@@ -1705,10 +1779,12 @@ void AnimationPlayer::set_current_animation(const String &p_anim) {
 }
 
 String AnimationPlayer::get_current_animation() const {
+	ZoneScopedS(60);
 	return (is_playing() ? playback.assigned : "");
 }
 
 void AnimationPlayer::set_assigned_animation(const String &p_anim) {
+	ZoneScopedS(60);
 	if (is_playing()) {
 		play(p_anim);
 	} else {
@@ -1720,10 +1796,12 @@ void AnimationPlayer::set_assigned_animation(const String &p_anim) {
 }
 
 String AnimationPlayer::get_assigned_animation() const {
+	ZoneScopedS(60);
 	return playback.assigned;
 }
 
 void AnimationPlayer::stop(bool p_reset) {
+	ZoneScopedS(60);
 	_stop_playing_caches();
 	Playback &c = playback;
 	c.blend.clear();
@@ -1738,14 +1816,17 @@ void AnimationPlayer::stop(bool p_reset) {
 }
 
 void AnimationPlayer::set_speed_scale(float p_speed) {
+	ZoneScopedS(60);
 	speed_scale = p_speed;
 }
 
 float AnimationPlayer::get_speed_scale() const {
+	ZoneScopedS(60);
 	return speed_scale;
 }
 
 float AnimationPlayer::get_playing_speed() const {
+	ZoneScopedS(60);
 	if (!playing) {
 		return 0;
 	}
@@ -1753,6 +1834,7 @@ float AnimationPlayer::get_playing_speed() const {
 }
 
 void AnimationPlayer::seek(double p_time, bool p_update) {
+	ZoneScopedS(60);
 	if (!playback.current.from) {
 		if (playback.assigned) {
 			ERR_FAIL_COND_MSG(!animation_set.has(playback.assigned), vformat("Animation not found: %s.", playback.assigned));
@@ -1769,6 +1851,7 @@ void AnimationPlayer::seek(double p_time, bool p_update) {
 }
 
 void AnimationPlayer::seek_delta(double p_time, double p_delta) {
+	ZoneScopedS(60);
 	if (!playback.current.from) {
 		if (playback.assigned) {
 			ERR_FAIL_COND_MSG(!animation_set.has(playback.assigned), vformat("Animation not found: %s.", playback.assigned));
@@ -1786,20 +1869,24 @@ void AnimationPlayer::seek_delta(double p_time, double p_delta) {
 }
 
 bool AnimationPlayer::is_valid() const {
+	ZoneScopedS(60);
 	return (playback.current.from);
 }
 
 double AnimationPlayer::get_current_animation_position() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!playback.current.from, 0, "AnimationPlayer has no current animation");
 	return playback.current.pos;
 }
 
 double AnimationPlayer::get_current_animation_length() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(!playback.current.from, 0, "AnimationPlayer has no current animation");
 	return playback.current.from->animation->get_length();
 }
 
 void AnimationPlayer::_animation_changed() {
+	ZoneScopedS(60);
 	clear_caches();
 	emit_signal(SNAME("caches_cleared"));
 	if (is_playing()) {
@@ -1808,6 +1895,7 @@ void AnimationPlayer::_animation_changed() {
 }
 
 void AnimationPlayer::_stop_playing_caches() {
+	ZoneScopedS(60);
 	for (TrackNodeCache *E : playing_caches) {
 		if (E->node && E->audio_playing) {
 			E->node->call(SNAME("stop"));
@@ -1825,10 +1913,12 @@ void AnimationPlayer::_stop_playing_caches() {
 }
 
 void AnimationPlayer::_node_removed(Node *p_node) {
+	ZoneScopedS(60);
 	clear_caches(); // nodes contained here are being removed, clear the caches
 }
 
 void AnimationPlayer::clear_caches() {
+	ZoneScopedS(60);
 	_stop_playing_caches();
 
 	node_cache_map.clear();
@@ -1843,6 +1933,7 @@ void AnimationPlayer::clear_caches() {
 }
 
 void AnimationPlayer::set_active(bool p_active) {
+	ZoneScopedS(60);
 	if (active == p_active) {
 		return;
 	}
@@ -1852,10 +1943,12 @@ void AnimationPlayer::set_active(bool p_active) {
 }
 
 bool AnimationPlayer::is_active() const {
+	ZoneScopedS(60);
 	return active;
 }
 
 StringName AnimationPlayer::find_animation(const Ref<Animation> &p_animation) const {
+	ZoneScopedS(60);
 	for (const KeyValue<StringName, AnimationData> &E : animation_set) {
 		if (E.value.animation == p_animation) {
 			return E.key;
@@ -1866,6 +1959,7 @@ StringName AnimationPlayer::find_animation(const Ref<Animation> &p_animation) co
 }
 
 StringName AnimationPlayer::find_animation_library(const Ref<Animation> &p_animation) const {
+	ZoneScopedS(60);
 	for (const KeyValue<StringName, AnimationData> &E : animation_set) {
 		if (E.value.animation == p_animation) {
 			return E.value.animation_library;
@@ -1875,6 +1969,7 @@ StringName AnimationPlayer::find_animation_library(const Ref<Animation> &p_anima
 }
 
 void AnimationPlayer::set_autoplay(const String &p_name) {
+	ZoneScopedS(60);
 	if (is_inside_tree() && !Engine::get_singleton()->is_editor_hint()) {
 		WARN_PRINT("Setting autoplay after the node has been added to the scene has no effect.");
 	}
@@ -1883,18 +1978,22 @@ void AnimationPlayer::set_autoplay(const String &p_name) {
 }
 
 String AnimationPlayer::get_autoplay() const {
+	ZoneScopedS(60);
 	return autoplay;
 }
 
 void AnimationPlayer::set_reset_on_save_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	reset_on_save = p_enabled;
 }
 
 bool AnimationPlayer::is_reset_on_save_enabled() const {
+	ZoneScopedS(60);
 	return reset_on_save;
 }
 
 void AnimationPlayer::set_process_callback(AnimationProcessCallback p_mode) {
+	ZoneScopedS(60);
 	if (process_callback == p_mode) {
 		return;
 	}
@@ -1910,26 +2009,32 @@ void AnimationPlayer::set_process_callback(AnimationProcessCallback p_mode) {
 }
 
 AnimationPlayer::AnimationProcessCallback AnimationPlayer::get_process_callback() const {
+	ZoneScopedS(60);
 	return process_callback;
 }
 
 void AnimationPlayer::set_method_call_mode(AnimationMethodCallMode p_mode) {
+	ZoneScopedS(60);
 	method_call_mode = p_mode;
 }
 
 AnimationPlayer::AnimationMethodCallMode AnimationPlayer::get_method_call_mode() const {
+	ZoneScopedS(60);
 	return method_call_mode;
 }
 
 void AnimationPlayer::set_movie_quit_on_finish_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	movie_quit_on_finish = p_enabled;
 }
 
 bool AnimationPlayer::is_movie_quit_on_finish_enabled() const {
+	ZoneScopedS(60);
 	return movie_quit_on_finish;
 }
 
 void AnimationPlayer::_set_process(bool p_process, bool p_force) {
+	ZoneScopedS(60);
 	if (processing == p_process && !p_force) {
 		return;
 	}
@@ -1949,11 +2054,13 @@ void AnimationPlayer::_set_process(bool p_process, bool p_force) {
 }
 
 void AnimationPlayer::animation_set_next(const StringName &p_animation, const StringName &p_next) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!animation_set.has(p_animation), vformat("Animation not found: %s.", p_animation));
 	animation_set[p_animation].next = p_next;
 }
 
 StringName AnimationPlayer::animation_get_next(const StringName &p_animation) const {
+	ZoneScopedS(60);
 	if (!animation_set.has(p_animation)) {
 		return StringName();
 	}
@@ -1961,23 +2068,28 @@ StringName AnimationPlayer::animation_get_next(const StringName &p_animation) co
 }
 
 void AnimationPlayer::set_default_blend_time(double p_default) {
+	ZoneScopedS(60);
 	default_blend_time = p_default;
 }
 
 double AnimationPlayer::get_default_blend_time() const {
+	ZoneScopedS(60);
 	return default_blend_time;
 }
 
 void AnimationPlayer::set_root(const NodePath &p_root) {
+	ZoneScopedS(60);
 	root = p_root;
 	clear_caches();
 }
 
 NodePath AnimationPlayer::get_root() const {
+	ZoneScopedS(60);
 	return root;
 }
 
 void AnimationPlayer::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+	ZoneScopedS(60);
 	String pf = p_function;
 	if (p_idx == 0 && (p_function == "play" || p_function == "play_backwards" || p_function == "has_animation" || p_function == "queue")) {
 		List<StringName> al;
@@ -1991,6 +2103,7 @@ void AnimationPlayer::get_argument_options(const StringName &p_function, int p_i
 
 #ifdef TOOLS_ENABLED
 Ref<AnimatedValuesBackup> AnimationPlayer::backup_animated_values(Node *p_root_override) {
+	ZoneScopedS(60);
 	Ref<AnimatedValuesBackup> backup;
 	if (!playback.current.from) {
 		return backup;
@@ -2048,6 +2161,7 @@ Ref<AnimatedValuesBackup> AnimationPlayer::backup_animated_values(Node *p_root_o
 }
 
 Ref<AnimatedValuesBackup> AnimationPlayer::apply_reset(bool p_user_initiated) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!can_apply_reset(), Ref<AnimatedValuesBackup>());
 
 	Ref<Animation> reset_anim = animation_set[SceneStringNames::get_singleton()->RESET].animation;
@@ -2083,11 +2197,13 @@ Ref<AnimatedValuesBackup> AnimationPlayer::apply_reset(bool p_user_initiated) {
 }
 
 bool AnimationPlayer::can_apply_reset() const {
+	ZoneScopedS(60);
 	return has_animation(SceneStringNames::get_singleton()->RESET) && playback.assigned != SceneStringNames::get_singleton()->RESET;
 }
 #endif // TOOLS_ENABLED
 
 void AnimationPlayer::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("add_animation_library", "name", "library"), &AnimationPlayer::add_animation_library);
 	ClassDB::bind_method(D_METHOD("remove_animation_library", "name"), &AnimationPlayer::remove_animation_library);
 	ClassDB::bind_method(D_METHOD("rename_animation_library", "name", "newname"), &AnimationPlayer::rename_animation_library);
@@ -2190,6 +2306,7 @@ void AnimationPlayer::_bind_methods() {
 }
 
 AnimationPlayer::AnimationPlayer() {
+	ZoneScopedS(60);
 	root = SceneStringNames::get_singleton()->path_pp;
 }
 

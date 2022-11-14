@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  shader.cpp                                                           */
 /*************************************************************************/
@@ -38,10 +39,12 @@
 #include "texture.h"
 
 Shader::Mode Shader::get_mode() const {
+	ZoneScopedS(60);
 	return mode;
 }
 
 void Shader::_dependency_changed() {
+	ZoneScopedS(60);
 	RenderingServer::get_singleton()->shader_set_code(shader, RenderingServer::get_singleton()->shader_get_code(shader));
 	params_cache_dirty = true;
 
@@ -49,11 +52,13 @@ void Shader::_dependency_changed() {
 }
 
 void Shader::set_path(const String &p_path, bool p_take_over) {
+	ZoneScopedS(60);
 	Resource::set_path(p_path, p_take_over);
 	RS::get_singleton()->shader_set_path_hint(shader, p_path);
 }
 
 void Shader::set_code(const String &p_code) {
+	ZoneScopedS(60);
 	for (Ref<ShaderInclude> E : include_dependencies) {
 		E->disconnect(SNAME("changed"), callable_mp(this, &Shader::_dependency_changed));
 	}
@@ -99,11 +104,13 @@ void Shader::set_code(const String &p_code) {
 }
 
 String Shader::get_code() const {
+	ZoneScopedS(60);
 	_update_shader();
 	return code;
 }
 
 void Shader::get_shader_uniform_list(List<PropertyInfo> *p_params, bool p_get_groups) const {
+	ZoneScopedS(60);
 	_update_shader();
 
 	List<PropertyInfo> local;
@@ -133,12 +140,14 @@ void Shader::get_shader_uniform_list(List<PropertyInfo> *p_params, bool p_get_gr
 }
 
 RID Shader::get_rid() const {
+	ZoneScopedS(60);
 	_update_shader();
 
 	return shader;
 }
 
 void Shader::set_default_texture_parameter(const StringName &p_name, const Ref<Texture2D> &p_texture, int p_index) {
+	ZoneScopedS(60);
 	if (p_texture.is_valid()) {
 		if (!default_textures.has(p_name)) {
 			default_textures[p_name] = HashMap<int, Ref<Texture2D>>();
@@ -160,6 +169,7 @@ void Shader::set_default_texture_parameter(const StringName &p_name, const Ref<T
 }
 
 Ref<Texture2D> Shader::get_default_texture_parameter(const StringName &p_name, int p_index) const {
+	ZoneScopedS(60);
 	if (default_textures.has(p_name) && default_textures[p_name].has(p_index)) {
 		return default_textures[p_name][p_index];
 	}
@@ -167,16 +177,19 @@ Ref<Texture2D> Shader::get_default_texture_parameter(const StringName &p_name, i
 }
 
 void Shader::get_default_texture_parameter_list(List<StringName> *r_textures) const {
+	ZoneScopedS(60);
 	for (const KeyValue<StringName, HashMap<int, Ref<Texture2D>>> &E : default_textures) {
 		r_textures->push_back(E.key);
 	}
 }
 
 bool Shader::is_text_shader() const {
+	ZoneScopedS(60);
 	return true;
 }
 
 bool Shader::has_parameter(const StringName &p_name) const {
+	ZoneScopedS(60);
 	return params_cache.has(p_name);
 }
 
@@ -184,6 +197,7 @@ void Shader::_update_shader() const {
 }
 
 void Shader::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_mode"), &Shader::get_mode);
 
 	ClassDB::bind_method(D_METHOD("set_code", "code"), &Shader::set_code);
@@ -204,16 +218,19 @@ void Shader::_bind_methods() {
 }
 
 Shader::Shader() {
+	ZoneScopedS(60);
 	shader = RenderingServer::get_singleton()->shader_create();
 }
 
 Shader::~Shader() {
+	ZoneScopedS(60);
 	RenderingServer::get_singleton()->free(shader);
 }
 
 ////////////
 
 Ref<Resource> ResourceFormatLoaderShader::load(const String &p_path, const String &p_original_path, Error *r_error, bool p_use_sub_threads, float *r_progress, CacheMode p_cache_mode) {
+	ZoneScopedS(60);
 	if (r_error) {
 		*r_error = ERR_FILE_CANT_OPEN;
 	}
@@ -236,14 +253,17 @@ Ref<Resource> ResourceFormatLoaderShader::load(const String &p_path, const Strin
 }
 
 void ResourceFormatLoaderShader::get_recognized_extensions(List<String> *p_extensions) const {
+	ZoneScopedS(60);
 	p_extensions->push_back("gdshader");
 }
 
 bool ResourceFormatLoaderShader::handles_type(const String &p_type) const {
+	ZoneScopedS(60);
 	return (p_type == "Shader");
 }
 
 String ResourceFormatLoaderShader::get_resource_type(const String &p_path) const {
+	ZoneScopedS(60);
 	String el = p_path.get_extension().to_lower();
 	if (el == "gdshader") {
 		return "Shader";
@@ -252,6 +272,7 @@ String ResourceFormatLoaderShader::get_resource_type(const String &p_path) const
 }
 
 Error ResourceFormatSaverShader::save(const Ref<Resource> &p_resource, const String &p_path, uint32_t p_flags) {
+	ZoneScopedS(60);
 	Ref<Shader> shader = p_resource;
 	ERR_FAIL_COND_V(shader.is_null(), ERR_INVALID_PARAMETER);
 
@@ -271,6 +292,7 @@ Error ResourceFormatSaverShader::save(const Ref<Resource> &p_resource, const Str
 }
 
 void ResourceFormatSaverShader::get_recognized_extensions(const Ref<Resource> &p_resource, List<String> *p_extensions) const {
+	ZoneScopedS(60);
 	if (const Shader *shader = Object::cast_to<Shader>(*p_resource)) {
 		if (shader->is_text_shader()) {
 			p_extensions->push_back("gdshader");
@@ -279,5 +301,6 @@ void ResourceFormatSaverShader::get_recognized_extensions(const Ref<Resource> &p
 }
 
 bool ResourceFormatSaverShader::recognize(const Ref<Resource> &p_resource) const {
+	ZoneScopedS(60);
 	return p_resource->get_class_name() == "Shader"; //only shader, not inherited
 }

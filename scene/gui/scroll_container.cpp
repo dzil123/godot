@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  scroll_container.cpp                                                 */
 /*************************************************************************/
@@ -35,6 +36,7 @@
 #include "scene/main/window.h"
 
 Size2 ScrollContainer::get_minimum_size() const {
+	ZoneScopedS(60);
 	Size2 min_size;
 
 	// Calculated in this function, as it needs to traverse all child controls once to calculate;
@@ -81,12 +83,14 @@ Size2 ScrollContainer::get_minimum_size() const {
 }
 
 void ScrollContainer::_update_theme_item_cache() {
+	ZoneScopedS(60);
 	Container::_update_theme_item_cache();
 
 	theme_cache.panel_style = get_theme_stylebox(SNAME("panel"));
 }
 
 void ScrollContainer::_cancel_drag() {
+	ZoneScopedS(60);
 	set_physics_process_internal(false);
 	drag_touching_deaccel = false;
 	drag_touching = false;
@@ -103,6 +107,7 @@ void ScrollContainer::_cancel_drag() {
 }
 
 void ScrollContainer::gui_input(const Ref<InputEvent> &p_gui_input) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_gui_input.is_null());
 
 	double prev_v_scroll = v_scroll->get_value();
@@ -255,6 +260,7 @@ void ScrollContainer::gui_input(const Ref<InputEvent> &p_gui_input) {
 }
 
 void ScrollContainer::_update_scrollbar_position() {
+	ZoneScopedS(60);
 	if (!_updating_scrollbars) {
 		return;
 	}
@@ -276,12 +282,14 @@ void ScrollContainer::_update_scrollbar_position() {
 }
 
 void ScrollContainer::_gui_focus_changed(Control *p_control) {
+	ZoneScopedS(60);
 	if (follow_focus && is_ancestor_of(p_control)) {
 		ensure_control_visible(p_control);
 	}
 }
 
 void ScrollContainer::ensure_control_visible(Control *p_control) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!is_ancestor_of(p_control), "Must be an ancestor of the control.");
 
 	Rect2 global_rect = get_global_rect();
@@ -297,6 +305,7 @@ void ScrollContainer::ensure_control_visible(Control *p_control) {
 }
 
 void ScrollContainer::_reposition_children() {
+	ZoneScopedS(60);
 	update_scrollbars();
 	Size2 size = get_size();
 	Point2 ofs;
@@ -345,6 +354,7 @@ void ScrollContainer::_reposition_children() {
 }
 
 void ScrollContainer::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED:
@@ -440,6 +450,7 @@ void ScrollContainer::_notification(int p_what) {
 }
 
 void ScrollContainer::update_scrollbars() {
+	ZoneScopedS(60);
 	Size2 size = get_size();
 	size -= theme_cache.panel_style->get_minimum_size();
 
@@ -461,28 +472,34 @@ void ScrollContainer::update_scrollbars() {
 }
 
 void ScrollContainer::_scroll_moved(float) {
+	ZoneScopedS(60);
 	queue_sort();
 };
 
 void ScrollContainer::set_h_scroll(int p_pos) {
+	ZoneScopedS(60);
 	h_scroll->set_value(p_pos);
 	_cancel_drag();
 }
 
 int ScrollContainer::get_h_scroll() const {
+	ZoneScopedS(60);
 	return h_scroll->get_value();
 }
 
 void ScrollContainer::set_v_scroll(int p_pos) {
+	ZoneScopedS(60);
 	v_scroll->set_value(p_pos);
 	_cancel_drag();
 }
 
 int ScrollContainer::get_v_scroll() const {
+	ZoneScopedS(60);
 	return v_scroll->get_value();
 }
 
 void ScrollContainer::set_horizontal_scroll_mode(ScrollMode p_mode) {
+	ZoneScopedS(60);
 	if (horizontal_scroll_mode == p_mode) {
 		return;
 	}
@@ -493,10 +510,12 @@ void ScrollContainer::set_horizontal_scroll_mode(ScrollMode p_mode) {
 }
 
 ScrollContainer::ScrollMode ScrollContainer::get_horizontal_scroll_mode() const {
+	ZoneScopedS(60);
 	return horizontal_scroll_mode;
 }
 
 void ScrollContainer::set_vertical_scroll_mode(ScrollMode p_mode) {
+	ZoneScopedS(60);
 	if (vertical_scroll_mode == p_mode) {
 		return;
 	}
@@ -507,26 +526,32 @@ void ScrollContainer::set_vertical_scroll_mode(ScrollMode p_mode) {
 }
 
 ScrollContainer::ScrollMode ScrollContainer::get_vertical_scroll_mode() const {
+	ZoneScopedS(60);
 	return vertical_scroll_mode;
 }
 
 int ScrollContainer::get_deadzone() const {
+	ZoneScopedS(60);
 	return deadzone;
 }
 
 void ScrollContainer::set_deadzone(int p_deadzone) {
+	ZoneScopedS(60);
 	deadzone = p_deadzone;
 }
 
 bool ScrollContainer::is_following_focus() const {
+	ZoneScopedS(60);
 	return follow_focus;
 }
 
 void ScrollContainer::set_follow_focus(bool p_follow) {
+	ZoneScopedS(60);
 	follow_focus = p_follow;
 }
 
 PackedStringArray ScrollContainer::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Container::get_configuration_warnings();
 
 	int found = 0;
@@ -554,14 +579,17 @@ PackedStringArray ScrollContainer::get_configuration_warnings() const {
 }
 
 HScrollBar *ScrollContainer::get_h_scroll_bar() {
+	ZoneScopedS(60);
 	return h_scroll;
 }
 
 VScrollBar *ScrollContainer::get_v_scroll_bar() {
+	ZoneScopedS(60);
 	return v_scroll;
 }
 
 void ScrollContainer::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("_update_scrollbar_position"), &ScrollContainer::_update_scrollbar_position);
 
 	ClassDB::bind_method(D_METHOD("set_h_scroll", "value"), &ScrollContainer::set_h_scroll);
@@ -607,6 +635,7 @@ void ScrollContainer::_bind_methods() {
 };
 
 ScrollContainer::ScrollContainer() {
+	ZoneScopedS(60);
 	h_scroll = memnew(HScrollBar);
 	h_scroll->set_name("_h_scroll");
 	add_child(h_scroll, false, INTERNAL_MODE_BACK);

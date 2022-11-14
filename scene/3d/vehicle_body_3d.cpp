@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  vehicle_body_3d.cpp                                                  */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "vehicle_body_3d.h"
 
 #define ROLLING_INFLUENCE_FIX
@@ -79,6 +110,7 @@ public:
 };
 
 void VehicleWheel3D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			VehicleBody3D *cb = Object::cast_to<VehicleBody3D>(get_parent());
@@ -106,6 +138,7 @@ void VehicleWheel3D::_notification(int p_what) {
 }
 
 PackedStringArray VehicleWheel3D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (!Object::cast_to<VehicleBody3D>(get_parent())) {
@@ -116,6 +149,7 @@ PackedStringArray VehicleWheel3D::get_configuration_warnings() const {
 }
 
 void VehicleWheel3D::_update(PhysicsDirectBodyState3D *s) {
+	ZoneScopedS(60);
 	if (m_raycastInfo.m_isInContact) {
 		real_t project = m_raycastInfo.m_contactNormalWS.dot(m_raycastInfo.m_wheelDirectionWS);
 		Vector3 chassis_velocity_at_contactPoint;
@@ -142,88 +176,109 @@ void VehicleWheel3D::_update(PhysicsDirectBodyState3D *s) {
 }
 
 void VehicleWheel3D::set_radius(real_t p_radius) {
+	ZoneScopedS(60);
 	m_wheelRadius = p_radius;
 	update_gizmos();
 }
 
 real_t VehicleWheel3D::get_radius() const {
+	ZoneScopedS(60);
 	return m_wheelRadius;
 }
 
 void VehicleWheel3D::set_suspension_rest_length(real_t p_length) {
+	ZoneScopedS(60);
 	m_suspensionRestLength = p_length;
 	update_gizmos();
 }
 
 real_t VehicleWheel3D::get_suspension_rest_length() const {
+	ZoneScopedS(60);
 	return m_suspensionRestLength;
 }
 
 void VehicleWheel3D::set_suspension_travel(real_t p_length) {
+	ZoneScopedS(60);
 	m_maxSuspensionTravelCm = p_length / 0.01;
 }
 
 real_t VehicleWheel3D::get_suspension_travel() const {
+	ZoneScopedS(60);
 	return m_maxSuspensionTravelCm * 0.01;
 }
 
 void VehicleWheel3D::set_suspension_stiffness(real_t p_value) {
+	ZoneScopedS(60);
 	m_suspensionStiffness = p_value;
 }
 
 real_t VehicleWheel3D::get_suspension_stiffness() const {
+	ZoneScopedS(60);
 	return m_suspensionStiffness;
 }
 
 void VehicleWheel3D::set_suspension_max_force(real_t p_value) {
+	ZoneScopedS(60);
 	m_maxSuspensionForce = p_value;
 }
 
 real_t VehicleWheel3D::get_suspension_max_force() const {
+	ZoneScopedS(60);
 	return m_maxSuspensionForce;
 }
 
 void VehicleWheel3D::set_damping_compression(real_t p_value) {
+	ZoneScopedS(60);
 	m_wheelsDampingCompression = p_value;
 }
 
 real_t VehicleWheel3D::get_damping_compression() const {
+	ZoneScopedS(60);
 	return m_wheelsDampingCompression;
 }
 
 void VehicleWheel3D::set_damping_relaxation(real_t p_value) {
+	ZoneScopedS(60);
 	m_wheelsDampingRelaxation = p_value;
 }
 
 real_t VehicleWheel3D::get_damping_relaxation() const {
+	ZoneScopedS(60);
 	return m_wheelsDampingRelaxation;
 }
 
 void VehicleWheel3D::set_friction_slip(real_t p_value) {
+	ZoneScopedS(60);
 	m_frictionSlip = p_value;
 }
 
 real_t VehicleWheel3D::get_friction_slip() const {
+	ZoneScopedS(60);
 	return m_frictionSlip;
 }
 
 void VehicleWheel3D::set_roll_influence(real_t p_value) {
+	ZoneScopedS(60);
 	m_rollInfluence = p_value;
 }
 
 real_t VehicleWheel3D::get_roll_influence() const {
+	ZoneScopedS(60);
 	return m_rollInfluence;
 }
 
 bool VehicleWheel3D::is_in_contact() const {
+	ZoneScopedS(60);
 	return m_raycastInfo.m_isInContact;
 }
 
 Node3D *VehicleWheel3D::get_contact_body() const {
+	ZoneScopedS(60);
 	return m_raycastInfo.m_groundObject;
 }
 
 void VehicleWheel3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_radius", "length"), &VehicleWheel3D::set_radius);
 	ClassDB::bind_method(D_METHOD("get_radius"), &VehicleWheel3D::get_radius);
 
@@ -295,50 +350,62 @@ void VehicleWheel3D::_bind_methods() {
 }
 
 void VehicleWheel3D::set_engine_force(real_t p_engine_force) {
+	ZoneScopedS(60);
 	m_engineForce = p_engine_force;
 }
 
 real_t VehicleWheel3D::get_engine_force() const {
+	ZoneScopedS(60);
 	return m_engineForce;
 }
 
 void VehicleWheel3D::set_brake(real_t p_brake) {
+	ZoneScopedS(60);
 	m_brake = p_brake;
 }
 
 real_t VehicleWheel3D::get_brake() const {
+	ZoneScopedS(60);
 	return m_brake;
 }
 
 void VehicleWheel3D::set_steering(real_t p_steering) {
+	ZoneScopedS(60);
 	m_steering = p_steering;
 }
 
 real_t VehicleWheel3D::get_steering() const {
+	ZoneScopedS(60);
 	return m_steering;
 }
 
 void VehicleWheel3D::set_use_as_traction(bool p_enable) {
+	ZoneScopedS(60);
 	engine_traction = p_enable;
 }
 
 bool VehicleWheel3D::is_used_as_traction() const {
+	ZoneScopedS(60);
 	return engine_traction;
 }
 
 void VehicleWheel3D::set_use_as_steering(bool p_enabled) {
+	ZoneScopedS(60);
 	steers = p_enabled;
 }
 
 bool VehicleWheel3D::is_used_as_steering() const {
+	ZoneScopedS(60);
 	return steers;
 }
 
 real_t VehicleWheel3D::get_skidinfo() const {
+	ZoneScopedS(60);
 	return m_skidInfo;
 }
 
 real_t VehicleWheel3D::get_rpm() const {
+	ZoneScopedS(60);
 	return m_rpm;
 }
 
@@ -346,6 +413,7 @@ VehicleWheel3D::VehicleWheel3D() {
 }
 
 void VehicleBody3D::_update_wheel_transform(VehicleWheel3D &wheel, PhysicsDirectBodyState3D *s) {
+	ZoneScopedS(60);
 	wheel.m_raycastInfo.m_isInContact = false;
 
 	Transform3D chassisTrans = s->get_transform();
@@ -362,6 +430,7 @@ void VehicleBody3D::_update_wheel_transform(VehicleWheel3D &wheel, PhysicsDirect
 }
 
 void VehicleBody3D::_update_wheel(int p_idx, PhysicsDirectBodyState3D *s) {
+	ZoneScopedS(60);
 	VehicleWheel3D &wheel = *wheels[p_idx];
 	_update_wheel_transform(wheel, s);
 
@@ -386,6 +455,7 @@ void VehicleBody3D::_update_wheel(int p_idx, PhysicsDirectBodyState3D *s) {
 }
 
 real_t VehicleBody3D::_ray_cast(int p_idx, PhysicsDirectBodyState3D *s) {
+	ZoneScopedS(60);
 	VehicleWheel3D &wheel = *wheels[p_idx];
 
 	_update_wheel_transform(wheel, s);
@@ -474,6 +544,7 @@ real_t VehicleBody3D::_ray_cast(int p_idx, PhysicsDirectBodyState3D *s) {
 }
 
 void VehicleBody3D::_update_suspension(PhysicsDirectBodyState3D *s) {
+	ZoneScopedS(60);
 	real_t chassisMass = get_mass();
 
 	for (int w_it = 0; w_it < wheels.size(); w_it++) {
@@ -627,6 +698,7 @@ VehicleBody3D::btVehicleWheelContactPoint::btVehicleWheelContactPoint(PhysicsDir
 }
 
 real_t VehicleBody3D::_calc_rolling_friction(btVehicleWheelContactPoint &contactPoint) {
+	ZoneScopedS(60);
 	real_t j1 = 0.f;
 
 	const Vector3 &contactPosWorld = contactPoint.m_frictionPositionWorld;
@@ -658,6 +730,7 @@ real_t VehicleBody3D::_calc_rolling_friction(btVehicleWheelContactPoint &contact
 
 static const real_t sideFrictionStiffness2 = real_t(1.0);
 void VehicleBody3D::_update_friction(PhysicsDirectBodyState3D *s) {
+	ZoneScopedS(60);
 	//calculate the impulse, so that the wheels don't move sidewards
 	int numWheel = wheels.size();
 	if (!numWheel) {
@@ -807,6 +880,7 @@ void VehicleBody3D::_update_friction(PhysicsDirectBodyState3D *s) {
 }
 
 void VehicleBody3D::_body_state_changed(PhysicsDirectBodyState3D *p_state) {
+	ZoneScopedS(60);
 	RigidBody3D::_body_state_changed(p_state);
 
 	real_t step = p_state->get_step();
@@ -868,6 +942,7 @@ void VehicleBody3D::_body_state_changed(PhysicsDirectBodyState3D *p_state) {
 }
 
 void VehicleBody3D::set_engine_force(real_t p_engine_force) {
+	ZoneScopedS(60);
 	engine_force = p_engine_force;
 	for (int i = 0; i < wheels.size(); i++) {
 		VehicleWheel3D &wheelInfo = *wheels[i];
@@ -878,10 +953,12 @@ void VehicleBody3D::set_engine_force(real_t p_engine_force) {
 }
 
 real_t VehicleBody3D::get_engine_force() const {
+	ZoneScopedS(60);
 	return engine_force;
 }
 
 void VehicleBody3D::set_brake(real_t p_brake) {
+	ZoneScopedS(60);
 	brake = p_brake;
 	for (int i = 0; i < wheels.size(); i++) {
 		VehicleWheel3D &wheelInfo = *wheels[i];
@@ -890,10 +967,12 @@ void VehicleBody3D::set_brake(real_t p_brake) {
 }
 
 real_t VehicleBody3D::get_brake() const {
+	ZoneScopedS(60);
 	return brake;
 }
 
 void VehicleBody3D::set_steering(real_t p_steering) {
+	ZoneScopedS(60);
 	m_steeringValue = p_steering;
 	for (int i = 0; i < wheels.size(); i++) {
 		VehicleWheel3D &wheelInfo = *wheels[i];
@@ -904,10 +983,12 @@ void VehicleBody3D::set_steering(real_t p_steering) {
 }
 
 real_t VehicleBody3D::get_steering() const {
+	ZoneScopedS(60);
 	return m_steeringValue;
 }
 
 void VehicleBody3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_engine_force", "engine_force"), &VehicleBody3D::set_engine_force);
 	ClassDB::bind_method(D_METHOD("get_engine_force"), &VehicleBody3D::get_engine_force);
 
@@ -924,6 +1005,7 @@ void VehicleBody3D::_bind_methods() {
 }
 
 VehicleBody3D::VehicleBody3D() {
+	ZoneScopedS(60);
 	exclude.insert(get_rid());
 	set_mass(40);
 }

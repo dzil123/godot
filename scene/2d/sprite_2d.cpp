@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  sprite_2d.cpp                                                        */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "sprite_2d.h"
 
 #include "core/core_string_names.h"
@@ -36,47 +67,57 @@
 
 #ifdef TOOLS_ENABLED
 Dictionary Sprite2D::_edit_get_state() const {
+	ZoneScopedS(60);
 	Dictionary state = Node2D::_edit_get_state();
 	state["offset"] = offset;
 	return state;
 }
 
 void Sprite2D::_edit_set_state(const Dictionary &p_state) {
+	ZoneScopedS(60);
 	Node2D::_edit_set_state(p_state);
 	set_offset(p_state["offset"]);
 }
 
 void Sprite2D::_edit_set_pivot(const Point2 &p_pivot) {
+	ZoneScopedS(60);
 	set_offset(get_offset() - p_pivot);
 	set_position(get_transform().xform(p_pivot));
 }
 
 Point2 Sprite2D::_edit_get_pivot() const {
+	ZoneScopedS(60);
 	return Vector2();
 }
 
 bool Sprite2D::_edit_use_pivot() const {
+	ZoneScopedS(60);
 	return true;
 }
 
 bool Sprite2D::_edit_is_selected_on_click(const Point2 &p_point, double p_tolerance) const {
+	ZoneScopedS(60);
 	return is_pixel_opaque(p_point);
 }
 
 Rect2 Sprite2D::_edit_get_rect() const {
+	ZoneScopedS(60);
 	return get_rect();
 }
 
 bool Sprite2D::_edit_use_rect() const {
+	ZoneScopedS(60);
 	return texture.is_valid();
 }
 #endif
 
 Rect2 Sprite2D::get_anchorable_rect() const {
+	ZoneScopedS(60);
 	return get_rect();
 }
 
 void Sprite2D::_get_rects(Rect2 &r_src_rect, Rect2 &r_dst_rect, bool &r_filter_clip_enabled) const {
+	ZoneScopedS(60);
 	Rect2 base_rect;
 
 	if (region_enabled) {
@@ -114,6 +155,7 @@ void Sprite2D::_get_rects(Rect2 &r_src_rect, Rect2 &r_dst_rect, bool &r_filter_c
 }
 
 void Sprite2D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
 			if (texture.is_null()) {
@@ -132,6 +174,7 @@ void Sprite2D::_notification(int p_what) {
 }
 
 void Sprite2D::set_texture(const Ref<Texture2D> &p_texture) {
+	ZoneScopedS(60);
 	if (p_texture == texture) {
 		return;
 	}
@@ -152,48 +195,58 @@ void Sprite2D::set_texture(const Ref<Texture2D> &p_texture) {
 }
 
 Ref<Texture2D> Sprite2D::get_texture() const {
+	ZoneScopedS(60);
 	return texture;
 }
 
 void Sprite2D::set_centered(bool p_center) {
+	ZoneScopedS(60);
 	centered = p_center;
 	queue_redraw();
 	item_rect_changed();
 }
 
 bool Sprite2D::is_centered() const {
+	ZoneScopedS(60);
 	return centered;
 }
 
 void Sprite2D::set_offset(const Point2 &p_offset) {
+	ZoneScopedS(60);
 	offset = p_offset;
 	queue_redraw();
 	item_rect_changed();
 }
 
 Point2 Sprite2D::get_offset() const {
+	ZoneScopedS(60);
 	return offset;
 }
 
 void Sprite2D::set_flip_h(bool p_flip) {
+	ZoneScopedS(60);
 	hflip = p_flip;
 	queue_redraw();
 }
 
 bool Sprite2D::is_flipped_h() const {
+	ZoneScopedS(60);
 	return hflip;
 }
 
 void Sprite2D::set_flip_v(bool p_flip) {
+	ZoneScopedS(60);
 	vflip = p_flip;
 	queue_redraw();
 }
 
 bool Sprite2D::is_flipped_v() const {
+	ZoneScopedS(60);
 	return vflip;
 }
 
 void Sprite2D::set_region_enabled(bool p_region_enabled) {
+	ZoneScopedS(60);
 	if (p_region_enabled == region_enabled) {
 		return;
 	}
@@ -204,10 +257,12 @@ void Sprite2D::set_region_enabled(bool p_region_enabled) {
 }
 
 bool Sprite2D::is_region_enabled() const {
+	ZoneScopedS(60);
 	return region_enabled;
 }
 
 void Sprite2D::set_region_rect(const Rect2 &p_region_rect) {
+	ZoneScopedS(60);
 	if (region_rect == p_region_rect) {
 		return;
 	}
@@ -220,19 +275,23 @@ void Sprite2D::set_region_rect(const Rect2 &p_region_rect) {
 }
 
 Rect2 Sprite2D::get_region_rect() const {
+	ZoneScopedS(60);
 	return region_rect;
 }
 
 void Sprite2D::set_region_filter_clip_enabled(bool p_region_filter_clip_enabled) {
+	ZoneScopedS(60);
 	region_filter_clip_enabled = p_region_filter_clip_enabled;
 	queue_redraw();
 }
 
 bool Sprite2D::is_region_filter_clip_enabled() const {
+	ZoneScopedS(60);
 	return region_filter_clip_enabled;
 }
 
 void Sprite2D::set_frame(int p_frame) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_frame, vframes * hframes);
 
 	if (frame != p_frame) {
@@ -245,10 +304,12 @@ void Sprite2D::set_frame(int p_frame) {
 }
 
 int Sprite2D::get_frame() const {
+	ZoneScopedS(60);
 	return frame;
 }
 
 void Sprite2D::set_frame_coords(const Vector2i &p_coord) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_coord.x, hframes);
 	ERR_FAIL_INDEX(p_coord.y, vframes);
 
@@ -256,10 +317,12 @@ void Sprite2D::set_frame_coords(const Vector2i &p_coord) {
 }
 
 Vector2i Sprite2D::get_frame_coords() const {
+	ZoneScopedS(60);
 	return Vector2i(frame % hframes, frame / hframes);
 }
 
 void Sprite2D::set_vframes(int p_amount) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_amount < 1, "Amount of vframes cannot be smaller than 1.");
 	vframes = p_amount;
 	queue_redraw();
@@ -268,10 +331,12 @@ void Sprite2D::set_vframes(int p_amount) {
 }
 
 int Sprite2D::get_vframes() const {
+	ZoneScopedS(60);
 	return vframes;
 }
 
 void Sprite2D::set_hframes(int p_amount) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_amount < 1, "Amount of hframes cannot be smaller than 1.");
 	hframes = p_amount;
 	queue_redraw();
@@ -280,10 +345,12 @@ void Sprite2D::set_hframes(int p_amount) {
 }
 
 int Sprite2D::get_hframes() const {
+	ZoneScopedS(60);
 	return hframes;
 }
 
 bool Sprite2D::is_pixel_opaque(const Point2 &p_point) const {
+	ZoneScopedS(60);
 	if (texture.is_null()) {
 		return false;
 	}
@@ -336,6 +403,7 @@ bool Sprite2D::is_pixel_opaque(const Point2 &p_point) const {
 }
 
 Rect2 Sprite2D::get_rect() const {
+	ZoneScopedS(60);
 	if (texture.is_null()) {
 		return Rect2(0, 0, 1, 1);
 	}
@@ -367,6 +435,7 @@ Rect2 Sprite2D::get_rect() const {
 }
 
 void Sprite2D::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (p_property.name == "frame") {
 		p_property.hint = PROPERTY_HINT_RANGE;
 		p_property.hint_string = "0," + itos(vframes * hframes - 1) + ",1";
@@ -383,6 +452,7 @@ void Sprite2D::_validate_property(PropertyInfo &p_property) const {
 }
 
 void Sprite2D::_texture_changed() {
+	ZoneScopedS(60);
 	// Changes to the texture need to trigger an update to make
 	// the editor redraw the sprite with the updated texture.
 	if (texture.is_valid()) {
@@ -391,6 +461,7 @@ void Sprite2D::_texture_changed() {
 }
 
 void Sprite2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_texture", "texture"), &Sprite2D::set_texture);
 	ClassDB::bind_method(D_METHOD("get_texture"), &Sprite2D::get_texture);
 

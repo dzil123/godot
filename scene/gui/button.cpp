@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  button.cpp                                                           */
 /*************************************************************************/
@@ -34,6 +35,7 @@
 #include "servers/rendering_server.h"
 
 Size2 Button::get_minimum_size() const {
+	ZoneScopedS(60);
 	Ref<Texture2D> _icon = icon;
 	if (_icon.is_null() && has_theme_icon(SNAME("icon"))) {
 		_icon = theme_cache.icon;
@@ -43,10 +45,12 @@ Size2 Button::get_minimum_size() const {
 }
 
 void Button::_set_internal_margin(Side p_side, float p_value) {
+	ZoneScopedS(60);
 	_internal_margin[p_side] = p_value;
 }
 
 void Button::_update_theme_item_cache() {
+	ZoneScopedS(60);
 	BaseButton::_update_theme_item_cache();
 
 	theme_cache.normal = get_theme_stylebox(SNAME("normal"));
@@ -86,6 +90,7 @@ void Button::_update_theme_item_cache() {
 }
 
 void Button::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_LAYOUT_DIRECTION_CHANGED: {
 			queue_redraw();
@@ -366,6 +371,7 @@ void Button::_notification(int p_what) {
 }
 
 Size2 Button::get_minimum_size_for_text_and_icon(const String &p_text, Ref<Texture2D> p_icon) const {
+	ZoneScopedS(60);
 	Ref<TextParagraph> paragraph;
 	if (p_text.is_empty()) {
 		paragraph = text_buf;
@@ -402,6 +408,7 @@ Size2 Button::get_minimum_size_for_text_and_icon(const String &p_text, Ref<Textu
 }
 
 void Button::_shape(Ref<TextParagraph> p_paragraph, String p_text) {
+	ZoneScopedS(60);
 	if (p_paragraph.is_null()) {
 		p_paragraph = text_buf;
 	}
@@ -429,6 +436,7 @@ void Button::_shape(Ref<TextParagraph> p_paragraph, String p_text) {
 }
 
 void Button::set_text_overrun_behavior(TextServer::OverrunBehavior p_behavior) {
+	ZoneScopedS(60);
 	if (overrun_behavior != p_behavior) {
 		overrun_behavior = p_behavior;
 		_shape();
@@ -439,10 +447,12 @@ void Button::set_text_overrun_behavior(TextServer::OverrunBehavior p_behavior) {
 }
 
 TextServer::OverrunBehavior Button::get_text_overrun_behavior() const {
+	ZoneScopedS(60);
 	return overrun_behavior;
 }
 
 void Button::set_text(const String &p_text) {
+	ZoneScopedS(60);
 	if (text != p_text) {
 		text = p_text;
 		xl_text = atr(text);
@@ -454,10 +464,12 @@ void Button::set_text(const String &p_text) {
 }
 
 String Button::get_text() const {
+	ZoneScopedS(60);
 	return text;
 }
 
 void Button::set_text_direction(Control::TextDirection p_text_direction) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND((int)p_text_direction < -1 || (int)p_text_direction > 3);
 	if (text_direction != p_text_direction) {
 		text_direction = p_text_direction;
@@ -467,10 +479,12 @@ void Button::set_text_direction(Control::TextDirection p_text_direction) {
 }
 
 Control::TextDirection Button::get_text_direction() const {
+	ZoneScopedS(60);
 	return text_direction;
 }
 
 void Button::set_language(const String &p_language) {
+	ZoneScopedS(60);
 	if (language != p_language) {
 		language = p_language;
 		_shape();
@@ -479,10 +493,12 @@ void Button::set_language(const String &p_language) {
 }
 
 String Button::get_language() const {
+	ZoneScopedS(60);
 	return language;
 }
 
 void Button::set_icon(const Ref<Texture2D> &p_icon) {
+	ZoneScopedS(60);
 	if (icon != p_icon) {
 		icon = p_icon;
 		queue_redraw();
@@ -491,10 +507,12 @@ void Button::set_icon(const Ref<Texture2D> &p_icon) {
 }
 
 Ref<Texture2D> Button::get_icon() const {
+	ZoneScopedS(60);
 	return icon;
 }
 
 void Button::set_expand_icon(bool p_enabled) {
+	ZoneScopedS(60);
 	if (expand_icon != p_enabled) {
 		expand_icon = p_enabled;
 		queue_redraw();
@@ -503,10 +521,12 @@ void Button::set_expand_icon(bool p_enabled) {
 }
 
 bool Button::is_expand_icon() const {
+	ZoneScopedS(60);
 	return expand_icon;
 }
 
 void Button::set_flat(bool p_enabled) {
+	ZoneScopedS(60);
 	if (flat != p_enabled) {
 		flat = p_enabled;
 		queue_redraw();
@@ -514,10 +534,12 @@ void Button::set_flat(bool p_enabled) {
 }
 
 bool Button::is_flat() const {
+	ZoneScopedS(60);
 	return flat;
 }
 
 void Button::set_clip_text(bool p_enabled) {
+	ZoneScopedS(60);
 	if (clip_text != p_enabled) {
 		clip_text = p_enabled;
 		queue_redraw();
@@ -526,10 +548,12 @@ void Button::set_clip_text(bool p_enabled) {
 }
 
 bool Button::get_clip_text() const {
+	ZoneScopedS(60);
 	return clip_text;
 }
 
 void Button::set_text_alignment(HorizontalAlignment p_alignment) {
+	ZoneScopedS(60);
 	if (alignment != p_alignment) {
 		alignment = p_alignment;
 		queue_redraw();
@@ -537,20 +561,24 @@ void Button::set_text_alignment(HorizontalAlignment p_alignment) {
 }
 
 HorizontalAlignment Button::get_text_alignment() const {
+	ZoneScopedS(60);
 	return alignment;
 }
 
 void Button::set_icon_alignment(HorizontalAlignment p_alignment) {
+	ZoneScopedS(60);
 	icon_alignment = p_alignment;
 	update_minimum_size();
 	queue_redraw();
 }
 
 HorizontalAlignment Button::get_icon_alignment() const {
+	ZoneScopedS(60);
 	return icon_alignment;
 }
 
 void Button::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_text", "text"), &Button::set_text);
 	ClassDB::bind_method(D_METHOD("get_text"), &Button::get_text);
 	ClassDB::bind_method(D_METHOD("set_text_overrun_behavior", "overrun_behavior"), &Button::set_text_overrun_behavior);
@@ -587,6 +615,7 @@ void Button::_bind_methods() {
 }
 
 Button::Button(const String &p_text) {
+	ZoneScopedS(60);
 	text_buf.instantiate();
 	text_buf->set_break_flags(TextServer::BREAK_MANDATORY | TextServer::BREAK_TRIM_EDGE_SPACES);
 	set_mouse_filter(MOUSE_FILTER_STOP);

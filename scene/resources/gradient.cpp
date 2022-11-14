@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  gradient.cpp                                                         */
 /*************************************************************************/
@@ -33,6 +34,7 @@
 #include "core/core_string_names.h"
 
 Gradient::Gradient() {
+	ZoneScopedS(60);
 	//Set initial gradient transition from black to white
 	points.resize(2);
 	points.write[0].color = Color(0, 0, 0, 1);
@@ -45,6 +47,7 @@ Gradient::~Gradient() {
 }
 
 void Gradient::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("add_point", "offset", "color"), &Gradient::add_point);
 	ClassDB::bind_method(D_METHOD("remove_point", "point"), &Gradient::remove_point);
 
@@ -81,6 +84,7 @@ void Gradient::_bind_methods() {
 }
 
 Vector<float> Gradient::get_offsets() const {
+	ZoneScopedS(60);
 	Vector<float> offsets;
 	offsets.resize(points.size());
 	for (int i = 0; i < points.size(); i++) {
@@ -90,6 +94,7 @@ Vector<float> Gradient::get_offsets() const {
 }
 
 Vector<Color> Gradient::get_colors() const {
+	ZoneScopedS(60);
 	Vector<Color> colors;
 	colors.resize(points.size());
 	for (int i = 0; i < points.size(); i++) {
@@ -99,15 +104,18 @@ Vector<Color> Gradient::get_colors() const {
 }
 
 void Gradient::set_interpolation_mode(Gradient::InterpolationMode p_interp_mode) {
+	ZoneScopedS(60);
 	interpolation_mode = p_interp_mode;
 	emit_signal(CoreStringNames::get_singleton()->changed);
 }
 
 Gradient::InterpolationMode Gradient::get_interpolation_mode() {
+	ZoneScopedS(60);
 	return interpolation_mode;
 }
 
 void Gradient::set_offsets(const Vector<float> &p_offsets) {
+	ZoneScopedS(60);
 	points.resize(p_offsets.size());
 	for (int i = 0; i < points.size(); i++) {
 		points.write[i].offset = p_offsets[i];
@@ -117,6 +125,7 @@ void Gradient::set_offsets(const Vector<float> &p_offsets) {
 }
 
 void Gradient::set_colors(const Vector<Color> &p_colors) {
+	ZoneScopedS(60);
 	if (points.size() < p_colors.size()) {
 		is_sorted = false;
 	}
@@ -128,10 +137,12 @@ void Gradient::set_colors(const Vector<Color> &p_colors) {
 }
 
 Vector<Gradient::Point> &Gradient::get_points() {
+	ZoneScopedS(60);
 	return points;
 }
 
 void Gradient::add_point(float p_offset, const Color &p_color) {
+	ZoneScopedS(60);
 	Point p;
 	p.offset = p_offset;
 	p.color = p_color;
@@ -142,6 +153,7 @@ void Gradient::add_point(float p_offset, const Color &p_color) {
 }
 
 void Gradient::remove_point(int p_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, points.size());
 	ERR_FAIL_COND(points.size() <= 1);
 	points.remove_at(p_index);
@@ -149,6 +161,7 @@ void Gradient::remove_point(int p_index) {
 }
 
 void Gradient::reverse() {
+	ZoneScopedS(60);
 	for (int i = 0; i < points.size(); i++) {
 		points.write[i].offset = 1.0 - points[i].offset;
 	}
@@ -158,12 +171,14 @@ void Gradient::reverse() {
 }
 
 void Gradient::set_points(const Vector<Gradient::Point> &p_points) {
+	ZoneScopedS(60);
 	points = p_points;
 	is_sorted = false;
 	emit_signal(CoreStringNames::get_singleton()->changed);
 }
 
 void Gradient::set_offset(int pos, const float offset) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(pos, points.size());
 	_update_sorting();
 	points.write[pos].offset = offset;
@@ -172,12 +187,14 @@ void Gradient::set_offset(int pos, const float offset) {
 }
 
 float Gradient::get_offset(int pos) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(pos, points.size(), 0.0);
 	_update_sorting();
 	return points[pos].offset;
 }
 
 void Gradient::set_color(int pos, const Color &color) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(pos, points.size());
 	_update_sorting();
 	points.write[pos].color = color;
@@ -185,11 +202,13 @@ void Gradient::set_color(int pos, const Color &color) {
 }
 
 Color Gradient::get_color(int pos) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(pos, points.size(), Color());
 	_update_sorting();
 	return points[pos].color;
 }
 
 int Gradient::get_points_count() const {
+	ZoneScopedS(60);
 	return points.size();
 }

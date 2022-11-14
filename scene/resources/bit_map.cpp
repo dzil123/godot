@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  bit_map.cpp                                                          */
 /*************************************************************************/
@@ -34,6 +35,7 @@
 #include "core/variant/typed_array.h"
 
 void BitMap::create(const Size2i &p_size) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_size.width < 1);
 	ERR_FAIL_COND(p_size.height < 1);
 
@@ -49,6 +51,7 @@ void BitMap::create(const Size2i &p_size) {
 }
 
 void BitMap::create_from_image_alpha(const Ref<Image> &p_image, float p_threshold) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_image.is_null() || p_image->is_empty());
 	Ref<Image> img = p_image->duplicate();
 	img->convert(Image::FORMAT_LA8);
@@ -69,6 +72,7 @@ void BitMap::create_from_image_alpha(const Ref<Image> &p_image, float p_threshol
 }
 
 void BitMap::set_bit_rect(const Rect2i &p_rect, bool p_value) {
+	ZoneScopedS(60);
 	Rect2i current = Rect2i(0, 0, width, height).intersection(p_rect);
 	uint8_t *data = bitmask.ptrw();
 
@@ -92,6 +96,7 @@ void BitMap::set_bit_rect(const Rect2i &p_rect, bool p_value) {
 }
 
 int BitMap::get_true_bit_count() const {
+	ZoneScopedS(60);
 	int ds = bitmask.size();
 	const uint8_t *d = bitmask.ptr();
 	int c = 0;
@@ -113,10 +118,12 @@ int BitMap::get_true_bit_count() const {
 }
 
 void BitMap::set_bitv(const Point2i &p_pos, bool p_value) {
+	ZoneScopedS(60);
 	set_bit(p_pos.x, p_pos.y, p_value);
 }
 
 void BitMap::set_bit(int p_x, int p_y, bool p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_x, width);
 	ERR_FAIL_INDEX(p_y, height);
 
@@ -136,10 +143,12 @@ void BitMap::set_bit(int p_x, int p_y, bool p_value) {
 }
 
 bool BitMap::get_bitv(const Point2i &p_pos) const {
+	ZoneScopedS(60);
 	return get_bit(p_pos.x, p_pos.y);
 }
 
 bool BitMap::get_bit(int p_x, int p_y) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_x, width, false);
 	ERR_FAIL_INDEX_V(p_y, height, false);
 
@@ -151,10 +160,12 @@ bool BitMap::get_bit(int p_x, int p_y) const {
 }
 
 Size2i BitMap::get_size() const {
+	ZoneScopedS(60);
 	return Size2i(width, height);
 }
 
 void BitMap::_set_data(const Dictionary &p_d) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!p_d.has("size"));
 	ERR_FAIL_COND(!p_d.has("data"));
 
@@ -163,6 +174,7 @@ void BitMap::_set_data(const Dictionary &p_d) {
 }
 
 Dictionary BitMap::_get_data() const {
+	ZoneScopedS(60);
 	Dictionary d;
 	d["size"] = get_size();
 	d["data"] = bitmask;
@@ -170,6 +182,7 @@ Dictionary BitMap::_get_data() const {
 }
 
 Vector<Vector2> BitMap::_march_square(const Rect2i &p_rect, const Point2i &p_start) const {
+	ZoneScopedS(60);
 	int stepx = 0;
 	int stepy = 0;
 	int prevx = 0;
@@ -333,6 +346,7 @@ Vector<Vector2> BitMap::_march_square(const Rect2i &p_rect, const Point2i &p_sta
 }
 
 static float perpendicular_distance(const Vector2 &i, const Vector2 &start, const Vector2 &end) {
+	ZoneScopedS(60);
 	float res;
 	float slope;
 	float intercept;
@@ -350,6 +364,7 @@ static float perpendicular_distance(const Vector2 &i, const Vector2 &start, cons
 }
 
 static Vector<Vector2> rdp(const Vector<Vector2> &v, float optimization) {
+	ZoneScopedS(60);
 	if (v.size() < 3) {
 		return v;
 	}
@@ -392,6 +407,7 @@ static Vector<Vector2> rdp(const Vector<Vector2> &v, float optimization) {
 }
 
 static Vector<Vector2> reduce(const Vector<Vector2> &points, const Rect2i &rect, float epsilon) {
+	ZoneScopedS(60);
 	int size = points.size();
 	// If there are less than 3 points, then we have nothing.
 	ERR_FAIL_COND_V(size < 3, Vector<Vector2>());
@@ -420,6 +436,7 @@ struct FillBitsStackEntry {
 };
 
 static void fill_bits(const BitMap *p_src, Ref<BitMap> &p_map, const Point2i &p_pos, const Rect2i &rect) {
+	ZoneScopedS(60);
 	// Using a custom stack to work iteratively to avoid stack overflow on big bitmaps.
 	Vector<FillBitsStackEntry> stack;
 	// Tracking size since we won't be shrinking the stack vector.
@@ -491,6 +508,7 @@ static void fill_bits(const BitMap *p_src, Ref<BitMap> &p_map, const Point2i &p_
 }
 
 Vector<Vector<Vector2>> BitMap::clip_opaque_to_polygons(const Rect2i &p_rect, float p_epsilon) const {
+	ZoneScopedS(60);
 	Rect2i r = Rect2i(0, 0, width, height).intersection(p_rect);
 	print_verbose("BitMap: Rect: " + r);
 
@@ -524,6 +542,7 @@ Vector<Vector<Vector2>> BitMap::clip_opaque_to_polygons(const Rect2i &p_rect, fl
 }
 
 void BitMap::grow_mask(int p_pixels, const Rect2i &p_rect) {
+	ZoneScopedS(60);
 	if (p_pixels == 0) {
 		return;
 	}
@@ -582,10 +601,12 @@ void BitMap::grow_mask(int p_pixels, const Rect2i &p_rect) {
 }
 
 void BitMap::shrink_mask(int p_pixels, const Rect2i &p_rect) {
+	ZoneScopedS(60);
 	grow_mask(-p_pixels, p_rect);
 }
 
 TypedArray<PackedVector2Array> BitMap::_opaque_to_polygons_bind(const Rect2i &p_rect, float p_epsilon) const {
+	ZoneScopedS(60);
 	Vector<Vector<Vector2>> result = clip_opaque_to_polygons(p_rect, p_epsilon);
 
 	// Convert result to bindable types.
@@ -612,6 +633,7 @@ TypedArray<PackedVector2Array> BitMap::_opaque_to_polygons_bind(const Rect2i &p_
 }
 
 void BitMap::resize(const Size2i &p_new_size) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_new_size.width < 0 || p_new_size.height < 0);
 	if (p_new_size == get_size()) {
 		return;
@@ -639,6 +661,7 @@ void BitMap::resize(const Size2i &p_new_size) {
 }
 
 Ref<Image> BitMap::convert_to_image() const {
+	ZoneScopedS(60);
 	Ref<Image> image = Image::create_empty(width, height, false, Image::FORMAT_L8);
 
 	for (int i = 0; i < width; i++) {
@@ -651,6 +674,7 @@ Ref<Image> BitMap::convert_to_image() const {
 }
 
 void BitMap::blit(const Vector2i &p_pos, const Ref<BitMap> &p_bitmap) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_bitmap.is_null(), "It's not a reference to a valid BitMap object.");
 
 	int x = p_pos.x;
@@ -676,6 +700,7 @@ void BitMap::blit(const Vector2i &p_pos, const Ref<BitMap> &p_bitmap) {
 }
 
 void BitMap::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("create", "size"), &BitMap::create);
 	ClassDB::bind_method(D_METHOD("create_from_image_alpha", "image", "threshold"), &BitMap::create_from_image_alpha, DEFVAL(0.1));
 

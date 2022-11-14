@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  navigation_region_2d.cpp                                             */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "navigation_region_2d.h"
 
 #include "core/core_string_names.h"
@@ -41,6 +72,7 @@
 
 #ifdef TOOLS_ENABLED
 Rect2 NavigationPolygon::_edit_get_rect() const {
+	ZoneScopedS(60);
 	if (rect_cache_dirty) {
 		item_rect = Rect2();
 		bool first = true;
@@ -68,6 +100,7 @@ Rect2 NavigationPolygon::_edit_get_rect() const {
 }
 
 bool NavigationPolygon::_edit_is_selected_on_click(const Point2 &p_point, double p_tolerance) const {
+	ZoneScopedS(60);
 	for (int i = 0; i < outlines.size(); i++) {
 		const Vector<Vector2> &outline = outlines[i];
 		const int outline_size = outline.size();
@@ -83,6 +116,7 @@ bool NavigationPolygon::_edit_is_selected_on_click(const Point2 &p_point, double
 #endif
 
 void NavigationPolygon::set_vertices(const Vector<Vector2> &p_vertices) {
+	ZoneScopedS(60);
 	{
 		MutexLock lock(navmesh_generation);
 		navmesh.unref();
@@ -92,10 +126,12 @@ void NavigationPolygon::set_vertices(const Vector<Vector2> &p_vertices) {
 }
 
 Vector<Vector2> NavigationPolygon::get_vertices() const {
+	ZoneScopedS(60);
 	return vertices;
 }
 
 void NavigationPolygon::_set_polygons(const TypedArray<Vector<int32_t>> &p_array) {
+	ZoneScopedS(60);
 	{
 		MutexLock lock(navmesh_generation);
 		navmesh.unref();
@@ -107,6 +143,7 @@ void NavigationPolygon::_set_polygons(const TypedArray<Vector<int32_t>> &p_array
 }
 
 TypedArray<Vector<int32_t>> NavigationPolygon::_get_polygons() const {
+	ZoneScopedS(60);
 	TypedArray<Vector<int32_t>> ret;
 	ret.resize(polygons.size());
 	for (int i = 0; i < ret.size(); i++) {
@@ -117,6 +154,7 @@ TypedArray<Vector<int32_t>> NavigationPolygon::_get_polygons() const {
 }
 
 void NavigationPolygon::_set_outlines(const TypedArray<Vector<Vector2>> &p_array) {
+	ZoneScopedS(60);
 	outlines.resize(p_array.size());
 	for (int i = 0; i < p_array.size(); i++) {
 		outlines.write[i] = p_array[i];
@@ -125,6 +163,7 @@ void NavigationPolygon::_set_outlines(const TypedArray<Vector<Vector2>> &p_array
 }
 
 TypedArray<Vector<Vector2>> NavigationPolygon::_get_outlines() const {
+	ZoneScopedS(60);
 	TypedArray<Vector<Vector2>> ret;
 	ret.resize(outlines.size());
 	for (int i = 0; i < ret.size(); i++) {
@@ -135,6 +174,7 @@ TypedArray<Vector<Vector2>> NavigationPolygon::_get_outlines() const {
 }
 
 void NavigationPolygon::add_polygon(const Vector<int> &p_polygon) {
+	ZoneScopedS(60);
 	Polygon polygon;
 	polygon.indices = p_polygon;
 	polygons.push_back(polygon);
@@ -145,20 +185,24 @@ void NavigationPolygon::add_polygon(const Vector<int> &p_polygon) {
 }
 
 void NavigationPolygon::add_outline_at_index(const Vector<Vector2> &p_outline, int p_index) {
+	ZoneScopedS(60);
 	outlines.insert(p_index, p_outline);
 	rect_cache_dirty = true;
 }
 
 int NavigationPolygon::get_polygon_count() const {
+	ZoneScopedS(60);
 	return polygons.size();
 }
 
 Vector<int> NavigationPolygon::get_polygon(int p_idx) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, polygons.size(), Vector<int>());
 	return polygons[p_idx].indices;
 }
 
 void NavigationPolygon::clear_polygons() {
+	ZoneScopedS(60);
 	polygons.clear();
 	{
 		MutexLock lock(navmesh_generation);
@@ -167,6 +211,7 @@ void NavigationPolygon::clear_polygons() {
 }
 
 Ref<NavigationMesh> NavigationPolygon::get_mesh() {
+	ZoneScopedS(60);
 	MutexLock lock(navmesh_generation);
 
 	if (navmesh.is_null()) {
@@ -193,37 +238,44 @@ Ref<NavigationMesh> NavigationPolygon::get_mesh() {
 }
 
 void NavigationPolygon::add_outline(const Vector<Vector2> &p_outline) {
+	ZoneScopedS(60);
 	outlines.push_back(p_outline);
 	rect_cache_dirty = true;
 }
 
 int NavigationPolygon::get_outline_count() const {
+	ZoneScopedS(60);
 	return outlines.size();
 }
 
 void NavigationPolygon::set_outline(int p_idx, const Vector<Vector2> &p_outline) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_idx, outlines.size());
 	outlines.write[p_idx] = p_outline;
 	rect_cache_dirty = true;
 }
 
 void NavigationPolygon::remove_outline(int p_idx) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_idx, outlines.size());
 	outlines.remove_at(p_idx);
 	rect_cache_dirty = true;
 }
 
 Vector<Vector2> NavigationPolygon::get_outline(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, outlines.size(), Vector<Vector2>());
 	return outlines[p_idx];
 }
 
 void NavigationPolygon::clear_outlines() {
+	ZoneScopedS(60);
 	outlines.clear();
 	rect_cache_dirty = true;
 }
 
 void NavigationPolygon::make_polygons_from_outlines() {
+	ZoneScopedS(60);
 	{
 		MutexLock lock(navmesh_generation);
 		navmesh.unref();
@@ -325,6 +377,7 @@ void NavigationPolygon::make_polygons_from_outlines() {
 }
 
 void NavigationPolygon::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_vertices", "vertices"), &NavigationPolygon::set_vertices);
 	ClassDB::bind_method(D_METHOD("get_vertices"), &NavigationPolygon::get_vertices);
 
@@ -357,6 +410,7 @@ void NavigationPolygon::_bind_methods() {
 /////////////////////////////
 
 void NavigationRegion2D::set_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	if (enabled == p_enabled) {
 		return;
 	}
@@ -383,10 +437,12 @@ void NavigationRegion2D::set_enabled(bool p_enabled) {
 }
 
 bool NavigationRegion2D::is_enabled() const {
+	ZoneScopedS(60);
 	return enabled;
 }
 
 void NavigationRegion2D::set_navigation_layers(uint32_t p_navigation_layers) {
+	ZoneScopedS(60);
 	if (navigation_layers == p_navigation_layers) {
 		return;
 	}
@@ -397,10 +453,12 @@ void NavigationRegion2D::set_navigation_layers(uint32_t p_navigation_layers) {
 }
 
 uint32_t NavigationRegion2D::get_navigation_layers() const {
+	ZoneScopedS(60);
 	return navigation_layers;
 }
 
 void NavigationRegion2D::set_navigation_layer_value(int p_layer_number, bool p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_layer_number < 1, "Navigation layer number must be between 1 and 32 inclusive.");
 	ERR_FAIL_COND_MSG(p_layer_number > 32, "Navigation layer number must be between 1 and 32 inclusive.");
 
@@ -416,6 +474,7 @@ void NavigationRegion2D::set_navigation_layer_value(int p_layer_number, bool p_v
 }
 
 bool NavigationRegion2D::get_navigation_layer_value(int p_layer_number) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(p_layer_number < 1, false, "Navigation layer number must be between 1 and 32 inclusive.");
 	ERR_FAIL_COND_V_MSG(p_layer_number > 32, false, "Navigation layer number must be between 1 and 32 inclusive.");
 
@@ -423,6 +482,7 @@ bool NavigationRegion2D::get_navigation_layer_value(int p_layer_number) const {
 }
 
 void NavigationRegion2D::set_enter_cost(real_t p_enter_cost) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_enter_cost < 0.0, "The enter_cost must be positive.");
 	if (Math::is_equal_approx(enter_cost, p_enter_cost)) {
 		return;
@@ -434,10 +494,12 @@ void NavigationRegion2D::set_enter_cost(real_t p_enter_cost) {
 }
 
 real_t NavigationRegion2D::get_enter_cost() const {
+	ZoneScopedS(60);
 	return enter_cost;
 }
 
 void NavigationRegion2D::set_travel_cost(real_t p_travel_cost) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_travel_cost < 0.0, "The travel_cost must be positive.");
 	if (Math::is_equal_approx(travel_cost, p_travel_cost)) {
 		return;
@@ -449,24 +511,29 @@ void NavigationRegion2D::set_travel_cost(real_t p_travel_cost) {
 }
 
 real_t NavigationRegion2D::get_travel_cost() const {
+	ZoneScopedS(60);
 	return travel_cost;
 }
 
 RID NavigationRegion2D::get_region_rid() const {
+	ZoneScopedS(60);
 	return region;
 }
 
 #ifdef TOOLS_ENABLED
 Rect2 NavigationRegion2D::_edit_get_rect() const {
+	ZoneScopedS(60);
 	return navpoly.is_valid() ? navpoly->_edit_get_rect() : Rect2();
 }
 
 bool NavigationRegion2D::_edit_is_selected_on_click(const Point2 &p_point, double p_tolerance) const {
+	ZoneScopedS(60);
 	return navpoly.is_valid() ? navpoly->_edit_is_selected_on_click(p_point, p_tolerance) : false;
 }
 #endif
 
 void NavigationRegion2D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			if (enabled) {
@@ -548,6 +615,7 @@ void NavigationRegion2D::_notification(int p_what) {
 }
 
 void NavigationRegion2D::set_navigation_polygon(const Ref<NavigationPolygon> &p_navpoly) {
+	ZoneScopedS(60);
 	if (p_navpoly == navpoly) {
 		return;
 	}
@@ -568,10 +636,12 @@ void NavigationRegion2D::set_navigation_polygon(const Ref<NavigationPolygon> &p_
 }
 
 Ref<NavigationPolygon> NavigationRegion2D::get_navigation_polygon() const {
+	ZoneScopedS(60);
 	return navpoly;
 }
 
 void NavigationRegion2D::_navpoly_changed() {
+	ZoneScopedS(60);
 	if (is_inside_tree() && (Engine::get_singleton()->is_editor_hint() || get_tree()->is_debugging_navigation_hint())) {
 		queue_redraw();
 	}
@@ -589,6 +659,7 @@ void NavigationRegion2D::_map_changed(RID p_map) {
 }
 
 PackedStringArray NavigationRegion2D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node2D::get_configuration_warnings();
 
 	if (is_visible_in_tree() && is_inside_tree()) {
@@ -601,6 +672,7 @@ PackedStringArray NavigationRegion2D::get_configuration_warnings() const {
 }
 
 void NavigationRegion2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_navigation_polygon", "navpoly"), &NavigationRegion2D::set_navigation_polygon);
 	ClassDB::bind_method(D_METHOD("get_navigation_polygon"), &NavigationRegion2D::get_navigation_polygon);
 
@@ -631,6 +703,7 @@ void NavigationRegion2D::_bind_methods() {
 }
 
 NavigationRegion2D::NavigationRegion2D() {
+	ZoneScopedS(60);
 	set_notify_transform(true);
 	region = NavigationServer2D::get_singleton()->region_create();
 	NavigationServer2D::get_singleton()->region_set_enter_cost(region, get_enter_cost());
@@ -643,6 +716,7 @@ NavigationRegion2D::NavigationRegion2D() {
 }
 
 NavigationRegion2D::~NavigationRegion2D() {
+	ZoneScopedS(60);
 	NavigationServer2D::get_singleton()->free(region);
 
 #ifdef DEBUG_ENABLED

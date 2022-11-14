@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  cpu_particles_2d.cpp                                                 */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "cpu_particles_2d.h"
 
 #include "core/core_string_names.h"
@@ -35,6 +66,7 @@
 #include "scene/resources/particle_process_material.h"
 
 void CPUParticles2D::set_emitting(bool p_emitting) {
+	ZoneScopedS(60);
 	if (emitting == p_emitting) {
 		return;
 	}
@@ -46,6 +78,7 @@ void CPUParticles2D::set_emitting(bool p_emitting) {
 }
 
 void CPUParticles2D::set_amount(int p_amount) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_amount < 1, "Amount of particles must be greater than 0.");
 
 	particles.resize(p_amount);
@@ -64,88 +97,109 @@ void CPUParticles2D::set_amount(int p_amount) {
 }
 
 void CPUParticles2D::set_lifetime(double p_lifetime) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_lifetime <= 0, "Particles lifetime must be greater than 0.");
 	lifetime = p_lifetime;
 }
 
 void CPUParticles2D::set_one_shot(bool p_one_shot) {
+	ZoneScopedS(60);
 	one_shot = p_one_shot;
 }
 
 void CPUParticles2D::set_pre_process_time(double p_time) {
+	ZoneScopedS(60);
 	pre_process_time = p_time;
 }
 
 void CPUParticles2D::set_explosiveness_ratio(real_t p_ratio) {
+	ZoneScopedS(60);
 	explosiveness_ratio = p_ratio;
 }
 
 void CPUParticles2D::set_randomness_ratio(real_t p_ratio) {
+	ZoneScopedS(60);
 	randomness_ratio = p_ratio;
 }
 
 void CPUParticles2D::set_lifetime_randomness(double p_random) {
+	ZoneScopedS(60);
 	lifetime_randomness = p_random;
 }
 
 void CPUParticles2D::set_use_local_coordinates(bool p_enable) {
+	ZoneScopedS(60);
 	local_coords = p_enable;
 	set_notify_transform(!p_enable);
 }
 
 void CPUParticles2D::set_speed_scale(double p_scale) {
+	ZoneScopedS(60);
 	speed_scale = p_scale;
 }
 
 bool CPUParticles2D::is_emitting() const {
+	ZoneScopedS(60);
 	return emitting;
 }
 
 int CPUParticles2D::get_amount() const {
+	ZoneScopedS(60);
 	return particles.size();
 }
 
 double CPUParticles2D::get_lifetime() const {
+	ZoneScopedS(60);
 	return lifetime;
 }
 
 bool CPUParticles2D::get_one_shot() const {
+	ZoneScopedS(60);
 	return one_shot;
 }
 
 double CPUParticles2D::get_pre_process_time() const {
+	ZoneScopedS(60);
 	return pre_process_time;
 }
 
 real_t CPUParticles2D::get_explosiveness_ratio() const {
+	ZoneScopedS(60);
 	return explosiveness_ratio;
 }
 
 real_t CPUParticles2D::get_randomness_ratio() const {
+	ZoneScopedS(60);
 	return randomness_ratio;
 }
 
 double CPUParticles2D::get_lifetime_randomness() const {
+	ZoneScopedS(60);
 	return lifetime_randomness;
 }
 
 bool CPUParticles2D::get_use_local_coordinates() const {
+	ZoneScopedS(60);
 	return local_coords;
 }
 
 double CPUParticles2D::get_speed_scale() const {
+	ZoneScopedS(60);
 	return speed_scale;
 }
 
 void CPUParticles2D::set_draw_order(DrawOrder p_order) {
+	ZoneScopedS(60);
 	draw_order = p_order;
 }
 
 CPUParticles2D::DrawOrder CPUParticles2D::get_draw_order() const {
+	ZoneScopedS(60);
 	return draw_order;
 }
 
 void CPUParticles2D::_update_mesh_texture() {
+	ZoneScopedS(60);
 	Size2 tex_size;
 	if (texture.is_valid()) {
 		tex_size = texture->get_size();
@@ -197,6 +251,7 @@ void CPUParticles2D::_update_mesh_texture() {
 }
 
 void CPUParticles2D::set_texture(const Ref<Texture2D> &p_texture) {
+	ZoneScopedS(60);
 	if (p_texture == texture) {
 		return;
 	}
@@ -216,6 +271,7 @@ void CPUParticles2D::set_texture(const Ref<Texture2D> &p_texture) {
 }
 
 void CPUParticles2D::_texture_changed() {
+	ZoneScopedS(60);
 	if (texture.is_valid()) {
 		queue_redraw();
 		_update_mesh_texture();
@@ -223,26 +279,32 @@ void CPUParticles2D::_texture_changed() {
 }
 
 Ref<Texture2D> CPUParticles2D::get_texture() const {
+	ZoneScopedS(60);
 	return texture;
 }
 
 void CPUParticles2D::set_fixed_fps(int p_count) {
+	ZoneScopedS(60);
 	fixed_fps = p_count;
 }
 
 int CPUParticles2D::get_fixed_fps() const {
+	ZoneScopedS(60);
 	return fixed_fps;
 }
 
 void CPUParticles2D::set_fractional_delta(bool p_enable) {
+	ZoneScopedS(60);
 	fractional_delta = p_enable;
 }
 
 bool CPUParticles2D::get_fractional_delta() const {
+	ZoneScopedS(60);
 	return fractional_delta;
 }
 
 PackedStringArray CPUParticles2D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node2D::get_configuration_warnings();
 
 	CanvasItemMaterial *mat = Object::cast_to<CanvasItemMaterial>(get_material().ptr());
@@ -258,6 +320,7 @@ PackedStringArray CPUParticles2D::get_configuration_warnings() const {
 }
 
 void CPUParticles2D::restart() {
+	ZoneScopedS(60);
 	time = 0;
 	inactive_time = 0;
 	frame_remainder = 0;
@@ -277,22 +340,27 @@ void CPUParticles2D::restart() {
 }
 
 void CPUParticles2D::set_direction(Vector2 p_direction) {
+	ZoneScopedS(60);
 	direction = p_direction;
 }
 
 Vector2 CPUParticles2D::get_direction() const {
+	ZoneScopedS(60);
 	return direction;
 }
 
 void CPUParticles2D::set_spread(real_t p_spread) {
+	ZoneScopedS(60);
 	spread = p_spread;
 }
 
 real_t CPUParticles2D::get_spread() const {
+	ZoneScopedS(60);
 	return spread;
 }
 
 void CPUParticles2D::set_param_min(Parameter p_param, real_t p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_param, PARAM_MAX);
 
 	parameters_min[p_param] = p_value;
@@ -302,12 +370,14 @@ void CPUParticles2D::set_param_min(Parameter p_param, real_t p_value) {
 }
 
 real_t CPUParticles2D::get_param_min(Parameter p_param) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_param, PARAM_MAX, 0);
 
 	return parameters_min[p_param];
 }
 
 void CPUParticles2D::set_param_max(Parameter p_param, real_t p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_param, PARAM_MAX);
 
 	parameters_max[p_param] = p_value;
@@ -319,12 +389,14 @@ void CPUParticles2D::set_param_max(Parameter p_param, real_t p_value) {
 }
 
 real_t CPUParticles2D::get_param_max(Parameter p_param) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_param, PARAM_MAX, 0);
 
 	return parameters_max[p_param];
 }
 
 static void _adjust_curve_range(const Ref<Curve> &p_curve, real_t p_min, real_t p_max) {
+	ZoneScopedS(60);
 	Ref<Curve> curve = p_curve;
 	if (!curve.is_valid()) {
 		return;
@@ -334,6 +406,7 @@ static void _adjust_curve_range(const Ref<Curve> &p_curve, real_t p_min, real_t 
 }
 
 void CPUParticles2D::set_param_curve(Parameter p_param, const Ref<Curve> &p_curve) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_param, PARAM_MAX);
 
 	curve_parameters[p_param] = p_curve;
@@ -381,129 +454,159 @@ void CPUParticles2D::set_param_curve(Parameter p_param, const Ref<Curve> &p_curv
 }
 
 Ref<Curve> CPUParticles2D::get_param_curve(Parameter p_param) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_param, PARAM_MAX, Ref<Curve>());
 
 	return curve_parameters[p_param];
 }
 
 void CPUParticles2D::set_color(const Color &p_color) {
+	ZoneScopedS(60);
 	color = p_color;
 }
 
 Color CPUParticles2D::get_color() const {
+	ZoneScopedS(60);
 	return color;
 }
 
 void CPUParticles2D::set_color_ramp(const Ref<Gradient> &p_ramp) {
+	ZoneScopedS(60);
 	color_ramp = p_ramp;
 }
 
 Ref<Gradient> CPUParticles2D::get_color_ramp() const {
+	ZoneScopedS(60);
 	return color_ramp;
 }
 
 void CPUParticles2D::set_color_initial_ramp(const Ref<Gradient> &p_ramp) {
+	ZoneScopedS(60);
 	color_initial_ramp = p_ramp;
 }
 
 Ref<Gradient> CPUParticles2D::get_color_initial_ramp() const {
+	ZoneScopedS(60);
 	return color_initial_ramp;
 }
 
 void CPUParticles2D::set_particle_flag(ParticleFlags p_particle_flag, bool p_enable) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_particle_flag, PARTICLE_FLAG_MAX);
 	particle_flags[p_particle_flag] = p_enable;
 }
 
 bool CPUParticles2D::get_particle_flag(ParticleFlags p_particle_flag) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_particle_flag, PARTICLE_FLAG_MAX, false);
 	return particle_flags[p_particle_flag];
 }
 
 void CPUParticles2D::set_emission_shape(EmissionShape p_shape) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_shape, EMISSION_SHAPE_MAX);
 	emission_shape = p_shape;
 	notify_property_list_changed();
 }
 
 void CPUParticles2D::set_emission_sphere_radius(real_t p_radius) {
+	ZoneScopedS(60);
 	emission_sphere_radius = p_radius;
 }
 
 void CPUParticles2D::set_emission_rect_extents(Vector2 p_extents) {
+	ZoneScopedS(60);
 	emission_rect_extents = p_extents;
 }
 
 void CPUParticles2D::set_emission_points(const Vector<Vector2> &p_points) {
+	ZoneScopedS(60);
 	emission_points = p_points;
 }
 
 void CPUParticles2D::set_emission_normals(const Vector<Vector2> &p_normals) {
+	ZoneScopedS(60);
 	emission_normals = p_normals;
 }
 
 void CPUParticles2D::set_emission_colors(const Vector<Color> &p_colors) {
+	ZoneScopedS(60);
 	emission_colors = p_colors;
 }
 
 real_t CPUParticles2D::get_emission_sphere_radius() const {
+	ZoneScopedS(60);
 	return emission_sphere_radius;
 }
 
 Vector2 CPUParticles2D::get_emission_rect_extents() const {
+	ZoneScopedS(60);
 	return emission_rect_extents;
 }
 
 Vector<Vector2> CPUParticles2D::get_emission_points() const {
+	ZoneScopedS(60);
 	return emission_points;
 }
 
 Vector<Vector2> CPUParticles2D::get_emission_normals() const {
+	ZoneScopedS(60);
 	return emission_normals;
 }
 
 Vector<Color> CPUParticles2D::get_emission_colors() const {
+	ZoneScopedS(60);
 	return emission_colors;
 }
 
 CPUParticles2D::EmissionShape CPUParticles2D::get_emission_shape() const {
+	ZoneScopedS(60);
 	return emission_shape;
 }
 
 void CPUParticles2D::set_gravity(const Vector2 &p_gravity) {
+	ZoneScopedS(60);
 	gravity = p_gravity;
 }
 
 Vector2 CPUParticles2D::get_gravity() const {
+	ZoneScopedS(60);
 	return gravity;
 }
 
 void CPUParticles2D::set_scale_curve_x(Ref<Curve> p_scale_curve) {
+	ZoneScopedS(60);
 	scale_curve_x = p_scale_curve;
 }
 
 void CPUParticles2D::set_scale_curve_y(Ref<Curve> p_scale_curve) {
+	ZoneScopedS(60);
 	scale_curve_y = p_scale_curve;
 }
 
 void CPUParticles2D::set_split_scale(bool p_split_scale) {
+	ZoneScopedS(60);
 	split_scale = p_split_scale;
 	notify_property_list_changed();
 }
 
 Ref<Curve> CPUParticles2D::get_scale_curve_x() const {
+	ZoneScopedS(60);
 	return scale_curve_x;
 }
 
 Ref<Curve> CPUParticles2D::get_scale_curve_y() const {
+	ZoneScopedS(60);
 	return scale_curve_y;
 }
 
 bool CPUParticles2D::get_split_scale() {
+	ZoneScopedS(60);
 	return split_scale;
 }
 
 void CPUParticles2D::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (p_property.name == "emission_sphere_radius" && (emission_shape != EMISSION_SHAPE_SPHERE && emission_shape != EMISSION_SHAPE_SPHERE_SURFACE)) {
 		p_property.usage = PROPERTY_USAGE_NONE;
 	}
@@ -533,6 +636,7 @@ void CPUParticles2D::_validate_property(PropertyInfo &p_property) const {
 }
 
 static uint32_t idhash(uint32_t x) {
+	ZoneScopedS(60);
 	x = ((x >> uint32_t(16)) ^ x) * uint32_t(0x45d9f3b);
 	x = ((x >> uint32_t(16)) ^ x) * uint32_t(0x45d9f3b);
 	x = (x >> uint32_t(16)) ^ x;
@@ -540,6 +644,7 @@ static uint32_t idhash(uint32_t x) {
 }
 
 static real_t rand_from_seed(uint32_t &seed) {
+	ZoneScopedS(60);
 	int k;
 	int s = int(seed);
 	if (s == 0) {
@@ -555,6 +660,7 @@ static real_t rand_from_seed(uint32_t &seed) {
 }
 
 void CPUParticles2D::_update_internal() {
+	ZoneScopedS(60);
 	if (particles.size() == 0 || !is_visible_in_tree()) {
 		_set_do_redraw(false);
 		return;
@@ -622,6 +728,7 @@ void CPUParticles2D::_update_internal() {
 }
 
 void CPUParticles2D::_particles_process(double p_delta) {
+	ZoneScopedS(60);
 	p_delta *= speed_scale;
 
 	int pcount = particles.size();
@@ -998,6 +1105,7 @@ void CPUParticles2D::_particles_process(double p_delta) {
 }
 
 void CPUParticles2D::_update_particle_data_buffer() {
+	ZoneScopedS(60);
 	MutexLock lock(update_mutex);
 
 	int pc = particles.size();
@@ -1063,6 +1171,7 @@ void CPUParticles2D::_update_particle_data_buffer() {
 }
 
 void CPUParticles2D::_set_do_redraw(bool p_do_redraw) {
+	ZoneScopedS(60);
 	if (do_redraw == p_do_redraw) {
 		return;
 	}
@@ -1090,12 +1199,14 @@ void CPUParticles2D::_set_do_redraw(bool p_do_redraw) {
 }
 
 void CPUParticles2D::_update_render_thread() {
+	ZoneScopedS(60);
 	MutexLock lock(update_mutex);
 
 	RS::get_singleton()->multimesh_set_buffer(multimesh, particle_data);
 }
 
 void CPUParticles2D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			set_process_internal(emitting);
@@ -1162,6 +1273,7 @@ void CPUParticles2D::_notification(int p_what) {
 }
 
 void CPUParticles2D::convert_from_particles(Node *p_particles) {
+	ZoneScopedS(60);
 	GPUParticles2D *gpu_particles = Object::cast_to<GPUParticles2D>(p_particles);
 	ERR_FAIL_COND_MSG(!gpu_particles, "Only GPUParticles2D nodes can be converted to CPUParticles2D.");
 
@@ -1247,6 +1359,7 @@ void CPUParticles2D::convert_from_particles(Node *p_particles) {
 }
 
 void CPUParticles2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_emitting", "emitting"), &CPUParticles2D::set_emitting);
 	ClassDB::bind_method(D_METHOD("set_amount", "amount"), &CPUParticles2D::set_amount);
 	ClassDB::bind_method(D_METHOD("set_lifetime", "secs"), &CPUParticles2D::set_lifetime);
@@ -1463,6 +1576,7 @@ void CPUParticles2D::_bind_methods() {
 }
 
 CPUParticles2D::CPUParticles2D() {
+	ZoneScopedS(60);
 	mesh = RenderingServer::get_singleton()->mesh_create();
 	multimesh = RenderingServer::get_singleton()->multimesh_create();
 	RenderingServer::get_singleton()->multimesh_set_mesh(multimesh, mesh);
@@ -1507,6 +1621,7 @@ CPUParticles2D::CPUParticles2D() {
 }
 
 CPUParticles2D::~CPUParticles2D() {
+	ZoneScopedS(60);
 	RS::get_singleton()->free(multimesh);
 	RS::get_singleton()->free(mesh);
 }

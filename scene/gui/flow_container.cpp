@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  flow_container.cpp                                                   */
 /*************************************************************************/
@@ -39,6 +40,7 @@ struct _LineData {
 };
 
 void FlowContainer::_resort() {
+	ZoneScopedS(60);
 	// Avoid resorting if invisible.
 	if (!is_visible_in_tree()) {
 		return;
@@ -215,6 +217,7 @@ void FlowContainer::_resort() {
 }
 
 Size2 FlowContainer::get_minimum_size() const {
+	ZoneScopedS(60);
 	Size2i minimum;
 
 	for (int i = 0; i < get_child_count(); i++) {
@@ -246,6 +249,7 @@ Size2 FlowContainer::get_minimum_size() const {
 }
 
 Vector<int> FlowContainer::get_allowed_size_flags_horizontal() const {
+	ZoneScopedS(60);
 	Vector<int> flags;
 	flags.append(SIZE_FILL);
 	if (!vertical) {
@@ -258,6 +262,7 @@ Vector<int> FlowContainer::get_allowed_size_flags_horizontal() const {
 }
 
 Vector<int> FlowContainer::get_allowed_size_flags_vertical() const {
+	ZoneScopedS(60);
 	Vector<int> flags;
 	flags.append(SIZE_FILL);
 	if (vertical) {
@@ -270,6 +275,7 @@ Vector<int> FlowContainer::get_allowed_size_flags_vertical() const {
 }
 
 void FlowContainer::_update_theme_item_cache() {
+	ZoneScopedS(60);
 	Container::_update_theme_item_cache();
 
 	theme_cache.h_separation = get_theme_constant(SNAME("h_separation"));
@@ -277,6 +283,7 @@ void FlowContainer::_update_theme_item_cache() {
 }
 
 void FlowContainer::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_SORT_CHILDREN: {
 			_resort();
@@ -295,16 +302,19 @@ void FlowContainer::_notification(int p_what) {
 }
 
 void FlowContainer::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (is_fixed && p_property.name == "vertical") {
 		p_property.usage = PROPERTY_USAGE_NONE;
 	}
 }
 
 int FlowContainer::get_line_count() const {
+	ZoneScopedS(60);
 	return cached_line_count;
 }
 
 void FlowContainer::set_alignment(AlignmentMode p_alignment) {
+	ZoneScopedS(60);
 	if (alignment == p_alignment) {
 		return;
 	}
@@ -313,10 +323,12 @@ void FlowContainer::set_alignment(AlignmentMode p_alignment) {
 }
 
 FlowContainer::AlignmentMode FlowContainer::get_alignment() const {
+	ZoneScopedS(60);
 	return alignment;
 }
 
 void FlowContainer::set_vertical(bool p_vertical) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(is_fixed, "Can't change orientation of " + get_class() + ".");
 	vertical = p_vertical;
 	update_minimum_size();
@@ -324,14 +336,17 @@ void FlowContainer::set_vertical(bool p_vertical) {
 }
 
 bool FlowContainer::is_vertical() const {
+	ZoneScopedS(60);
 	return vertical;
 }
 
 FlowContainer::FlowContainer(bool p_vertical) {
+	ZoneScopedS(60);
 	vertical = p_vertical;
 }
 
 void FlowContainer::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_line_count"), &FlowContainer::get_line_count);
 
 	ClassDB::bind_method(D_METHOD("set_alignment", "alignment"), &FlowContainer::set_alignment);

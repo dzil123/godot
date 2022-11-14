@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  dir_access_unix.cpp                                                  */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "dir_access_unix.h"
 
 #if defined(UNIX_ENABLED)
@@ -48,6 +79,7 @@
 #endif
 
 Error DirAccessUnix::list_dir_begin() {
+	ZoneScopedS(60);
 	list_dir_end(); //close any previous dir opening!
 
 	//char real_current_dir_name[2048]; //is this enough?!
@@ -63,6 +95,7 @@ Error DirAccessUnix::list_dir_begin() {
 }
 
 bool DirAccessUnix::file_exists(String p_file) {
+	ZoneScopedS(60);
 	GLOBAL_LOCK_FUNCTION
 
 	if (p_file.is_relative_path()) {
@@ -82,6 +115,7 @@ bool DirAccessUnix::file_exists(String p_file) {
 }
 
 bool DirAccessUnix::dir_exists(String p_dir) {
+	ZoneScopedS(60);
 	GLOBAL_LOCK_FUNCTION
 
 	if (p_dir.is_relative_path()) {
@@ -97,6 +131,7 @@ bool DirAccessUnix::dir_exists(String p_dir) {
 }
 
 bool DirAccessUnix::is_readable(String p_dir) {
+	ZoneScopedS(60);
 	GLOBAL_LOCK_FUNCTION
 
 	if (p_dir.is_relative_path()) {
@@ -108,6 +143,7 @@ bool DirAccessUnix::is_readable(String p_dir) {
 }
 
 bool DirAccessUnix::is_writable(String p_dir) {
+	ZoneScopedS(60);
 	GLOBAL_LOCK_FUNCTION
 
 	if (p_dir.is_relative_path()) {
@@ -119,6 +155,7 @@ bool DirAccessUnix::is_writable(String p_dir) {
 }
 
 uint64_t DirAccessUnix::get_modified_time(String p_file) {
+	ZoneScopedS(60);
 	if (p_file.is_relative_path()) {
 		p_file = current_dir.path_join(p_file);
 	}
@@ -137,6 +174,7 @@ uint64_t DirAccessUnix::get_modified_time(String p_file) {
 }
 
 String DirAccessUnix::get_next() {
+	ZoneScopedS(60);
 	if (!dir_stream) {
 		return "";
 	}
@@ -174,14 +212,17 @@ String DirAccessUnix::get_next() {
 }
 
 bool DirAccessUnix::current_is_dir() const {
+	ZoneScopedS(60);
 	return _cisdir;
 }
 
 bool DirAccessUnix::current_is_hidden() const {
+	ZoneScopedS(60);
 	return _cishidden;
 }
 
 void DirAccessUnix::list_dir_end() {
+	ZoneScopedS(60);
 	if (dir_stream) {
 		closedir(dir_stream);
 	}
@@ -191,6 +232,7 @@ void DirAccessUnix::list_dir_end() {
 
 #if defined(HAVE_MNTENT) && defined(X11_ENABLED)
 static bool _filter_drive(struct mntent *mnt) {
+	ZoneScopedS(60);
 	// Ignore devices that don't point to /dev
 	if (strncmp(mnt->mnt_fsname, "/dev", 4) != 0) {
 		return false;
@@ -210,6 +252,7 @@ static bool _filter_drive(struct mntent *mnt) {
 #endif
 
 static void _get_drives(List<String> *list) {
+	ZoneScopedS(60);
 	// Add root.
 	list->push_back("/");
 
@@ -275,6 +318,7 @@ static void _get_drives(List<String> *list) {
 }
 
 int DirAccessUnix::get_drive_count() {
+	ZoneScopedS(60);
 	List<String> list;
 	_get_drives(&list);
 
@@ -282,6 +326,7 @@ int DirAccessUnix::get_drive_count() {
 }
 
 String DirAccessUnix::get_drive(int p_drive) {
+	ZoneScopedS(60);
 	List<String> list;
 	_get_drives(&list);
 
@@ -291,6 +336,7 @@ String DirAccessUnix::get_drive(int p_drive) {
 }
 
 int DirAccessUnix::get_current_drive() {
+	ZoneScopedS(60);
 	int drive = 0;
 	int max_length = -1;
 	const String path = get_current_dir().to_lower();
@@ -305,10 +351,12 @@ int DirAccessUnix::get_current_drive() {
 }
 
 bool DirAccessUnix::drives_are_shortcuts() {
+	ZoneScopedS(60);
 	return true;
 }
 
 Error DirAccessUnix::make_dir(String p_dir) {
+	ZoneScopedS(60);
 	GLOBAL_LOCK_FUNCTION
 
 	if (p_dir.is_relative_path()) {
@@ -332,6 +380,7 @@ Error DirAccessUnix::make_dir(String p_dir) {
 }
 
 Error DirAccessUnix::change_dir(String p_dir) {
+	ZoneScopedS(60);
 	GLOBAL_LOCK_FUNCTION
 
 	p_dir = fix_path(p_dir);
@@ -377,6 +426,7 @@ Error DirAccessUnix::change_dir(String p_dir) {
 }
 
 String DirAccessUnix::get_current_dir(bool p_include_drive) const {
+	ZoneScopedS(60);
 	String base = _get_root_path();
 	if (!base.is_empty()) {
 		String bd = current_dir.replace_first(base, "");
@@ -390,6 +440,7 @@ String DirAccessUnix::get_current_dir(bool p_include_drive) const {
 }
 
 Error DirAccessUnix::rename(String p_path, String p_new_path) {
+	ZoneScopedS(60);
 	if (p_path.is_relative_path()) {
 		p_path = get_current_dir().path_join(p_path);
 	}
@@ -406,6 +457,7 @@ Error DirAccessUnix::rename(String p_path, String p_new_path) {
 }
 
 Error DirAccessUnix::remove(String p_path) {
+	ZoneScopedS(60);
 	if (p_path.is_relative_path()) {
 		p_path = get_current_dir().path_join(p_path);
 	}
@@ -425,6 +477,7 @@ Error DirAccessUnix::remove(String p_path) {
 }
 
 bool DirAccessUnix::is_link(String p_file) {
+	ZoneScopedS(60);
 	if (p_file.is_relative_path()) {
 		p_file = get_current_dir().path_join(p_file);
 	}
@@ -440,6 +493,7 @@ bool DirAccessUnix::is_link(String p_file) {
 }
 
 String DirAccessUnix::read_link(String p_file) {
+	ZoneScopedS(60);
 	if (p_file.is_relative_path()) {
 		p_file = get_current_dir().path_join(p_file);
 	}
@@ -457,6 +511,7 @@ String DirAccessUnix::read_link(String p_file) {
 }
 
 Error DirAccessUnix::create_link(String p_source, String p_target) {
+	ZoneScopedS(60);
 	if (p_target.is_relative_path()) {
 		p_target = get_current_dir().path_join(p_target);
 	}
@@ -472,6 +527,7 @@ Error DirAccessUnix::create_link(String p_source, String p_target) {
 }
 
 uint64_t DirAccessUnix::get_space_left() {
+	ZoneScopedS(60);
 	struct statvfs vfs;
 	if (statvfs(current_dir.utf8().get_data(), &vfs) != 0) {
 		return 0;
@@ -481,14 +537,17 @@ uint64_t DirAccessUnix::get_space_left() {
 }
 
 String DirAccessUnix::get_filesystem_type() const {
+	ZoneScopedS(60);
 	return ""; //TODO this should be implemented
 }
 
 bool DirAccessUnix::is_hidden(const String &p_name) {
+	ZoneScopedS(60);
 	return p_name != "." && p_name != ".." && p_name.begins_with(".");
 }
 
 DirAccessUnix::DirAccessUnix() {
+	ZoneScopedS(60);
 	dir_stream = nullptr;
 	_cisdir = false;
 
@@ -505,6 +564,7 @@ DirAccessUnix::DirAccessUnix() {
 }
 
 DirAccessUnix::~DirAccessUnix() {
+	ZoneScopedS(60);
 	list_dir_end();
 }
 

@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  missing_node.cpp                                                     */
 /*************************************************************************/
@@ -31,6 +32,7 @@
 #include "missing_node.h"
 
 bool MissingNode::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	if (is_recording_properties()) {
 		properties.insert(p_name, p_value);
 		return true; //always valid to set (add)
@@ -45,6 +47,7 @@ bool MissingNode::_set(const StringName &p_name, const Variant &p_value) {
 }
 
 bool MissingNode::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	if (!properties.has(p_name)) {
 		return false;
 	}
@@ -53,28 +56,34 @@ bool MissingNode::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void MissingNode::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	for (const KeyValue<StringName, Variant> &E : properties) {
 		p_list->push_back(PropertyInfo(E.value.get_type(), E.key));
 	}
 }
 
 void MissingNode::set_original_class(const String &p_class) {
+	ZoneScopedS(60);
 	original_class = p_class;
 }
 
 String MissingNode::get_original_class() const {
+	ZoneScopedS(60);
 	return original_class;
 }
 
 void MissingNode::set_recording_properties(bool p_enable) {
+	ZoneScopedS(60);
 	recording_properties = p_enable;
 }
 
 bool MissingNode::is_recording_properties() const {
+	ZoneScopedS(60);
 	return recording_properties;
 }
 
 PackedStringArray MissingNode::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	// The mere existence of this node is warning.
 	PackedStringArray ret;
 	ret.push_back(vformat(RTR("This node was saved as class type '%s', which was no longer available when this scene was loaded."), original_class));
@@ -83,6 +92,7 @@ PackedStringArray MissingNode::get_configuration_warnings() const {
 }
 
 void MissingNode::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_original_class", "name"), &MissingNode::set_original_class);
 	ClassDB::bind_method(D_METHOD("get_original_class"), &MissingNode::get_original_class);
 

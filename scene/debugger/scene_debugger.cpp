@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  scene_debugger.cpp                                                   */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "scene_debugger.h"
 
 #include "core/debugger/engine_debugger.h"
@@ -40,6 +71,7 @@
 #include "scene/resources/packed_scene.h"
 
 Array SceneDebugger::RPCProfilerFrame::serialize() {
+	ZoneScopedS(60);
 	Array arr;
 	arr.push_back(infos.size() * 4);
 	for (int i = 0; i < infos.size(); ++i) {
@@ -52,6 +84,7 @@ Array SceneDebugger::RPCProfilerFrame::serialize() {
 }
 
 bool SceneDebugger::RPCProfilerFrame::deserialize(const Array &p_arr) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_arr.size() < 1, false);
 	uint32_t size = p_arr[0];
 	ERR_FAIL_COND_V(size % 4, false);
@@ -117,6 +150,7 @@ public:
 SceneDebugger *SceneDebugger::singleton = nullptr;
 
 SceneDebugger::SceneDebugger() {
+	ZoneScopedS(60);
 	singleton = this;
 	rpc_profiler.instantiate();
 	rpc_profiler->bind("rpc");
@@ -138,12 +172,14 @@ SceneDebugger::~SceneDebugger() {
 }
 
 void SceneDebugger::initialize() {
+	ZoneScopedS(60);
 	if (EngineDebugger::is_active()) {
 		memnew(SceneDebugger);
 	}
 }
 
 void SceneDebugger::deinitialize() {
+	ZoneScopedS(60);
 	if (singleton) {
 		memdelete(singleton);
 	}
@@ -151,6 +187,7 @@ void SceneDebugger::deinitialize() {
 
 #ifdef DEBUG_ENABLED
 Error SceneDebugger::parse_message(void *p_user, const String &p_msg, const Array &p_args, bool &r_captured) {
+	ZoneScopedS(60);
 	SceneTree *scene_tree = SceneTree::get_singleton();
 	if (!scene_tree) {
 		return ERR_UNCONFIGURED;
@@ -294,6 +331,7 @@ Error SceneDebugger::parse_message(void *p_user, const String &p_msg, const Arra
 }
 
 void SceneDebugger::_save_node(ObjectID id, const String &p_path) {
+	ZoneScopedS(60);
 	Node *node = Object::cast_to<Node>(ObjectDB::get_instance(id));
 	ERR_FAIL_COND(!node);
 
@@ -303,6 +341,7 @@ void SceneDebugger::_save_node(ObjectID id, const String &p_path) {
 }
 
 void SceneDebugger::_send_object_id(ObjectID p_id, int p_max_size) {
+	ZoneScopedS(60);
 	SceneDebuggerObject obj(p_id);
 	if (obj.id.is_null()) {
 		return;
@@ -314,6 +353,7 @@ void SceneDebugger::_send_object_id(ObjectID p_id, int p_max_size) {
 }
 
 void SceneDebugger::_set_object_property(ObjectID p_id, const String &p_property, const Variant &p_value) {
+	ZoneScopedS(60);
 	Object *obj = ObjectDB::get_instance(p_id);
 	if (!obj) {
 		return;
@@ -329,6 +369,7 @@ void SceneDebugger::_set_object_property(ObjectID p_id, const String &p_property
 }
 
 void SceneDebugger::add_to_cache(const String &p_filename, Node *p_node) {
+	ZoneScopedS(60);
 	LiveEditor *debugger = LiveEditor::get_singleton();
 	if (!debugger) {
 		return;
@@ -340,6 +381,7 @@ void SceneDebugger::add_to_cache(const String &p_filename, Node *p_node) {
 }
 
 void SceneDebugger::remove_from_cache(const String &p_filename, Node *p_node) {
+	ZoneScopedS(60);
 	LiveEditor *debugger = LiveEditor::get_singleton();
 	if (!debugger) {
 		return;
@@ -366,6 +408,7 @@ void SceneDebugger::remove_from_cache(const String &p_filename, Node *p_node) {
 
 /// SceneDebuggerObject
 SceneDebuggerObject::SceneDebuggerObject(ObjectID p_id) {
+	ZoneScopedS(60);
 	id = ObjectID();
 	Object *obj = ObjectDB::get_instance(p_id);
 	if (!obj) {
@@ -408,6 +451,7 @@ SceneDebuggerObject::SceneDebuggerObject(ObjectID p_id) {
 }
 
 void SceneDebuggerObject::_parse_script_properties(Script *p_script, ScriptInstance *p_instance) {
+	ZoneScopedS(60);
 	typedef HashMap<const Script *, HashSet<StringName>> ScriptMemberMap;
 	typedef HashMap<const Script *, HashMap<StringName, Variant>> ScriptConstantsMap;
 
@@ -462,6 +506,7 @@ void SceneDebuggerObject::_parse_script_properties(Script *p_script, ScriptInsta
 }
 
 void SceneDebuggerObject::serialize(Array &r_arr, int p_max_size) {
+	ZoneScopedS(60);
 	Array send_props;
 	for (int i = 0; i < properties.size(); i++) {
 		const PropertyInfo &pi = properties[i].first;
@@ -545,6 +590,7 @@ void SceneDebuggerObject::deserialize(const Array &p_arr) {
 
 /// SceneDebuggerTree
 SceneDebuggerTree::SceneDebuggerTree(Node *p_root) {
+	ZoneScopedS(60);
 	// Flatten tree into list, depth first, use stack to avoid recursion.
 	List<Node *> stack;
 	stack.push_back(p_root);
@@ -582,6 +628,7 @@ SceneDebuggerTree::SceneDebuggerTree(Node *p_root) {
 }
 
 void SceneDebuggerTree::serialize(Array &p_arr) {
+	ZoneScopedS(60);
 	for (const RemoteNode &n : nodes) {
 		p_arr.push_back(n.child_count);
 		p_arr.push_back(n.name);
@@ -593,6 +640,7 @@ void SceneDebuggerTree::serialize(Array &p_arr) {
 }
 
 void SceneDebuggerTree::deserialize(const Array &p_arr) {
+	ZoneScopedS(60);
 	int idx = 0;
 	while (p_arr.size() > idx) {
 		ERR_FAIL_COND(p_arr.size() < 6);
@@ -610,10 +658,12 @@ void SceneDebuggerTree::deserialize(const Array &p_arr) {
 /// LiveEditor
 LiveEditor *LiveEditor::singleton = nullptr;
 LiveEditor *LiveEditor::get_singleton() {
+	ZoneScopedS(60);
 	return singleton;
 }
 
 void LiveEditor::_send_tree() {
+	ZoneScopedS(60);
 	SceneTree *scene_tree = SceneTree::get_singleton();
 	if (!scene_tree) {
 		return;
@@ -627,14 +677,17 @@ void LiveEditor::_send_tree() {
 }
 
 void LiveEditor::_node_path_func(const NodePath &p_path, int p_id) {
+	ZoneScopedS(60);
 	live_edit_node_path_cache[p_id] = p_path;
 }
 
 void LiveEditor::_res_path_func(const String &p_path, int p_id) {
+	ZoneScopedS(60);
 	live_edit_resource_cache[p_id] = p_path;
 }
 
 void LiveEditor::_node_set_func(int p_id, const StringName &p_prop, const Variant &p_value) {
+	ZoneScopedS(60);
 	SceneTree *scene_tree = SceneTree::get_singleton();
 	if (!scene_tree) {
 		return;
@@ -672,6 +725,7 @@ void LiveEditor::_node_set_func(int p_id, const StringName &p_prop, const Varian
 }
 
 void LiveEditor::_node_set_res_func(int p_id, const StringName &p_prop, const String &p_value) {
+	ZoneScopedS(60);
 	Ref<Resource> r = ResourceLoader::load(p_value);
 	if (!r.is_valid()) {
 		return;
@@ -680,6 +734,7 @@ void LiveEditor::_node_set_res_func(int p_id, const StringName &p_prop, const St
 }
 
 void LiveEditor::_node_call_func(int p_id, const StringName &p_method, const Variant **p_args, int p_argcount) {
+	ZoneScopedS(60);
 	SceneTree *scene_tree = SceneTree::get_singleton();
 	if (!scene_tree) {
 		return;
@@ -717,6 +772,7 @@ void LiveEditor::_node_call_func(int p_id, const StringName &p_method, const Var
 }
 
 void LiveEditor::_res_set_func(int p_id, const StringName &p_prop, const Variant &p_value) {
+	ZoneScopedS(60);
 	if (!live_edit_resource_cache.has(p_id)) {
 		return;
 	}
@@ -736,6 +792,7 @@ void LiveEditor::_res_set_func(int p_id, const StringName &p_prop, const Variant
 }
 
 void LiveEditor::_res_set_res_func(int p_id, const StringName &p_prop, const String &p_value) {
+	ZoneScopedS(60);
 	Ref<Resource> r = ResourceLoader::load(p_value);
 	if (!r.is_valid()) {
 		return;
@@ -744,6 +801,7 @@ void LiveEditor::_res_set_res_func(int p_id, const StringName &p_prop, const Str
 }
 
 void LiveEditor::_res_call_func(int p_id, const StringName &p_method, const Variant **p_args, int p_argcount) {
+	ZoneScopedS(60);
 	if (!live_edit_resource_cache.has(p_id)) {
 		return;
 	}
@@ -764,11 +822,13 @@ void LiveEditor::_res_call_func(int p_id, const StringName &p_method, const Vari
 }
 
 void LiveEditor::_root_func(const NodePath &p_scene_path, const String &p_scene_from) {
+	ZoneScopedS(60);
 	live_edit_root = p_scene_path;
 	live_edit_scene = p_scene_from;
 }
 
 void LiveEditor::_create_node_func(const NodePath &p_parent, const String &p_type, const String &p_name) {
+	ZoneScopedS(60);
 	SceneTree *scene_tree = SceneTree::get_singleton();
 	if (!scene_tree) {
 		return;
@@ -807,6 +867,7 @@ void LiveEditor::_create_node_func(const NodePath &p_parent, const String &p_typ
 }
 
 void LiveEditor::_instance_node_func(const NodePath &p_parent, const String &p_path, const String &p_name) {
+	ZoneScopedS(60);
 	SceneTree *scene_tree = SceneTree::get_singleton();
 	if (!scene_tree) {
 		return;
@@ -851,6 +912,7 @@ void LiveEditor::_instance_node_func(const NodePath &p_parent, const String &p_p
 }
 
 void LiveEditor::_remove_node_func(const NodePath &p_at) {
+	ZoneScopedS(60);
 	SceneTree *scene_tree = SceneTree::get_singleton();
 	if (!scene_tree) {
 		return;
@@ -889,6 +951,7 @@ void LiveEditor::_remove_node_func(const NodePath &p_at) {
 }
 
 void LiveEditor::_remove_and_keep_node_func(const NodePath &p_at, ObjectID p_keep_id) {
+	ZoneScopedS(60);
 	SceneTree *scene_tree = SceneTree::get_singleton();
 	if (!scene_tree) {
 		return;
@@ -928,6 +991,7 @@ void LiveEditor::_remove_and_keep_node_func(const NodePath &p_at, ObjectID p_kee
 }
 
 void LiveEditor::_restore_node_func(ObjectID p_id, const NodePath &p_at, int p_at_pos) {
+	ZoneScopedS(60);
 	SceneTree *scene_tree = SceneTree::get_singleton();
 	if (!scene_tree) {
 		return;
@@ -982,6 +1046,7 @@ void LiveEditor::_restore_node_func(ObjectID p_id, const NodePath &p_at, int p_a
 }
 
 void LiveEditor::_duplicate_node_func(const NodePath &p_at, const String &p_new_name) {
+	ZoneScopedS(60);
 	SceneTree *scene_tree = SceneTree::get_singleton();
 	if (!scene_tree) {
 		return;
@@ -1021,6 +1086,7 @@ void LiveEditor::_duplicate_node_func(const NodePath &p_at, const String &p_new_
 }
 
 void LiveEditor::_reparent_node_func(const NodePath &p_at, const NodePath &p_new_place, const String &p_new_name, int p_at_pos) {
+	ZoneScopedS(60);
 	SceneTree *scene_tree = SceneTree::get_singleton();
 	if (!scene_tree) {
 		return;

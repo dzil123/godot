@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  tab_container.cpp                                                    */
 /*************************************************************************/
@@ -35,6 +36,7 @@
 #include "scene/gui/texture_rect.h"
 
 int TabContainer::_get_top_margin() const {
+	ZoneScopedS(60);
 	int height = 0;
 	if (tabs_visible && get_tab_count() > 0) {
 		height = tab_bar->get_minimum_size().height;
@@ -44,6 +46,7 @@ int TabContainer::_get_top_margin() const {
 }
 
 void TabContainer::gui_input(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_event.is_null());
 
 	Ref<InputEventMouseButton> mb = p_event;
@@ -134,6 +137,7 @@ void TabContainer::gui_input(const Ref<InputEvent> &p_event) {
 }
 
 void TabContainer::_update_theme_item_cache() {
+	ZoneScopedS(60);
 	Container::_update_theme_item_cache();
 
 	theme_cache.side_margin = get_theme_constant(SNAME("side_margin"));
@@ -169,6 +173,7 @@ void TabContainer::_update_theme_item_cache() {
 }
 
 void TabContainer::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			// If some nodes happen to be renamed outside the tree, the tab names need to be updated manually.
@@ -221,6 +226,7 @@ void TabContainer::_notification(int p_what) {
 }
 
 void TabContainer::_on_theme_changed() {
+	ZoneScopedS(60);
 	if (!theme_changing) {
 		return;
 	}
@@ -259,6 +265,7 @@ void TabContainer::_on_theme_changed() {
 }
 
 void TabContainer::_repaint() {
+	ZoneScopedS(60);
 	Vector<Control *> controls = _get_tab_controls();
 	int current = get_current_tab();
 
@@ -286,6 +293,7 @@ void TabContainer::_repaint() {
 }
 
 void TabContainer::_update_margins() {
+	ZoneScopedS(60);
 	int menu_width = theme_cache.menu_icon->get_width();
 
 	// Directly check for validity, to avoid errors when quitting.
@@ -335,6 +343,7 @@ void TabContainer::_update_margins() {
 }
 
 void TabContainer::_on_mouse_exited() {
+	ZoneScopedS(60);
 	if (menu_hovered) {
 		menu_hovered = false;
 		queue_redraw();
@@ -342,6 +351,7 @@ void TabContainer::_on_mouse_exited() {
 }
 
 Vector<Control *> TabContainer::_get_tab_controls() const {
+	ZoneScopedS(60);
 	Vector<Control *> controls;
 	for (int i = 0; i < get_child_count(); i++) {
 		Control *control = Object::cast_to<Control>(get_child(i));
@@ -356,6 +366,7 @@ Vector<Control *> TabContainer::_get_tab_controls() const {
 }
 
 Variant TabContainer::_get_drag_data_fw(const Point2 &p_point, Control *p_from_control) {
+	ZoneScopedS(60);
 	if (!drag_to_rearrange_enabled) {
 		return Variant();
 	}
@@ -387,6 +398,7 @@ Variant TabContainer::_get_drag_data_fw(const Point2 &p_point, Control *p_from_c
 }
 
 bool TabContainer::_can_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from_control) const {
+	ZoneScopedS(60);
 	if (!drag_to_rearrange_enabled) {
 		return false;
 	}
@@ -415,6 +427,7 @@ bool TabContainer::_can_drop_data_fw(const Point2 &p_point, const Variant &p_dat
 }
 
 void TabContainer::_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from_control) {
+	ZoneScopedS(60);
 	if (!drag_to_rearrange_enabled) {
 		return;
 	}
@@ -492,12 +505,14 @@ void TabContainer::_drop_data_fw(const Point2 &p_point, const Variant &p_data, C
 }
 
 void TabContainer::_on_tab_changed(int p_tab) {
+	ZoneScopedS(60);
 	call_deferred(SNAME("_repaint"));
 
 	emit_signal(SNAME("tab_changed"), p_tab);
 }
 
 void TabContainer::_on_tab_selected(int p_tab) {
+	ZoneScopedS(60);
 	if (p_tab != get_previous_tab()) {
 		call_deferred(SNAME("_repaint"));
 	}
@@ -506,10 +521,12 @@ void TabContainer::_on_tab_selected(int p_tab) {
 }
 
 void TabContainer::_on_tab_button_pressed(int p_tab) {
+	ZoneScopedS(60);
 	emit_signal(SNAME("tab_button_pressed"), p_tab);
 }
 
 void TabContainer::_refresh_tab_names() {
+	ZoneScopedS(60);
 	Vector<Control *> controls = _get_tab_controls();
 	for (int i = 0; i < controls.size(); i++) {
 		if (!controls[i]->has_meta("_tab_name") && String(controls[i]->get_name()) != get_tab_title(i)) {
@@ -519,6 +536,7 @@ void TabContainer::_refresh_tab_names() {
 }
 
 void TabContainer::add_child_notify(Node *p_child) {
+	ZoneScopedS(60);
 	Container::add_child_notify(p_child);
 
 	if (p_child == tab_bar) {
@@ -547,6 +565,7 @@ void TabContainer::add_child_notify(Node *p_child) {
 }
 
 void TabContainer::move_child_notify(Node *p_child) {
+	ZoneScopedS(60);
 	if (p_child == tab_bar) {
 		return;
 	}
@@ -571,6 +590,7 @@ void TabContainer::move_child_notify(Node *p_child) {
 }
 
 void TabContainer::remove_child_notify(Node *p_child) {
+	ZoneScopedS(60);
 	if (p_child == tab_bar) {
 		return;
 	}
@@ -604,22 +624,27 @@ void TabContainer::remove_child_notify(Node *p_child) {
 }
 
 int TabContainer::get_tab_count() const {
+	ZoneScopedS(60);
 	return tab_bar->get_tab_count();
 }
 
 void TabContainer::set_current_tab(int p_current) {
+	ZoneScopedS(60);
 	tab_bar->set_current_tab(p_current);
 }
 
 int TabContainer::get_current_tab() const {
+	ZoneScopedS(60);
 	return tab_bar->get_current_tab();
 }
 
 int TabContainer::get_previous_tab() const {
+	ZoneScopedS(60);
 	return tab_bar->get_previous_tab();
 }
 
 Control *TabContainer::get_tab_control(int p_idx) const {
+	ZoneScopedS(60);
 	Vector<Control *> controls = _get_tab_controls();
 	if (p_idx >= 0 && p_idx < controls.size()) {
 		return controls[p_idx];
@@ -629,14 +654,17 @@ Control *TabContainer::get_tab_control(int p_idx) const {
 }
 
 Control *TabContainer::get_current_tab_control() const {
+	ZoneScopedS(60);
 	return get_tab_control(tab_bar->get_current_tab());
 }
 
 int TabContainer::get_tab_idx_at_point(const Point2 &p_point) const {
+	ZoneScopedS(60);
 	return tab_bar->get_tab_idx_at_point(p_point);
 }
 
 int TabContainer::get_tab_idx_from_control(Control *p_child) const {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL_V(p_child, -1);
 	ERR_FAIL_COND_V(p_child->get_parent() != this, -1);
 
@@ -651,6 +679,7 @@ int TabContainer::get_tab_idx_from_control(Control *p_child) const {
 }
 
 void TabContainer::set_tab_alignment(TabBar::AlignmentMode p_alignment) {
+	ZoneScopedS(60);
 	if (tab_bar->get_tab_alignment() == p_alignment) {
 		return;
 	}
@@ -660,18 +689,22 @@ void TabContainer::set_tab_alignment(TabBar::AlignmentMode p_alignment) {
 }
 
 TabBar::AlignmentMode TabContainer::get_tab_alignment() const {
+	ZoneScopedS(60);
 	return tab_bar->get_tab_alignment();
 }
 
 void TabContainer::set_clip_tabs(bool p_clip_tabs) {
+	ZoneScopedS(60);
 	tab_bar->set_clip_tabs(p_clip_tabs);
 }
 
 bool TabContainer::get_clip_tabs() const {
+	ZoneScopedS(60);
 	return tab_bar->get_clip_tabs();
 }
 
 void TabContainer::set_tabs_visible(bool p_visible) {
+	ZoneScopedS(60);
 	if (p_visible == tabs_visible) {
 		return;
 	}
@@ -694,10 +727,12 @@ void TabContainer::set_tabs_visible(bool p_visible) {
 }
 
 bool TabContainer::are_tabs_visible() const {
+	ZoneScopedS(60);
 	return tabs_visible;
 }
 
 void TabContainer::set_all_tabs_in_front(bool p_in_front) {
+	ZoneScopedS(60);
 	if (p_in_front == all_tabs_in_front) {
 		return;
 	}
@@ -709,10 +744,12 @@ void TabContainer::set_all_tabs_in_front(bool p_in_front) {
 }
 
 bool TabContainer::is_all_tabs_in_front() const {
+	ZoneScopedS(60);
 	return all_tabs_in_front;
 }
 
 void TabContainer::set_tab_title(int p_tab, const String &p_title) {
+	ZoneScopedS(60);
 	Control *child = get_tab_control(p_tab);
 	ERR_FAIL_COND(!child);
 
@@ -735,10 +772,12 @@ void TabContainer::set_tab_title(int p_tab, const String &p_title) {
 }
 
 String TabContainer::get_tab_title(int p_tab) const {
+	ZoneScopedS(60);
 	return tab_bar->get_tab_title(p_tab);
 }
 
 void TabContainer::set_tab_icon(int p_tab, const Ref<Texture2D> &p_icon) {
+	ZoneScopedS(60);
 	if (tab_bar->get_tab_icon(p_tab) == p_icon) {
 		return;
 	}
@@ -750,10 +789,12 @@ void TabContainer::set_tab_icon(int p_tab, const Ref<Texture2D> &p_icon) {
 }
 
 Ref<Texture2D> TabContainer::get_tab_icon(int p_tab) const {
+	ZoneScopedS(60);
 	return tab_bar->get_tab_icon(p_tab);
 }
 
 void TabContainer::set_tab_disabled(int p_tab, bool p_disabled) {
+	ZoneScopedS(60);
 	if (tab_bar->is_tab_disabled(p_tab) == p_disabled) {
 		return;
 	}
@@ -767,10 +808,12 @@ void TabContainer::set_tab_disabled(int p_tab, bool p_disabled) {
 }
 
 bool TabContainer::is_tab_disabled(int p_tab) const {
+	ZoneScopedS(60);
 	return tab_bar->is_tab_disabled(p_tab);
 }
 
 void TabContainer::set_tab_hidden(int p_tab, bool p_hidden) {
+	ZoneScopedS(60);
 	Control *child = get_tab_control(p_tab);
 	ERR_FAIL_COND(!child);
 
@@ -789,10 +832,12 @@ void TabContainer::set_tab_hidden(int p_tab, bool p_hidden) {
 }
 
 bool TabContainer::is_tab_hidden(int p_tab) const {
+	ZoneScopedS(60);
 	return tab_bar->is_tab_hidden(p_tab);
 }
 
 void TabContainer::set_tab_button_icon(int p_tab, const Ref<Texture2D> &p_icon) {
+	ZoneScopedS(60);
 	tab_bar->set_tab_button_icon(p_tab, p_icon);
 
 	_update_margins();
@@ -800,10 +845,12 @@ void TabContainer::set_tab_button_icon(int p_tab, const Ref<Texture2D> &p_icon) 
 }
 
 Ref<Texture2D> TabContainer::get_tab_button_icon(int p_tab) const {
+	ZoneScopedS(60);
 	return tab_bar->get_tab_button_icon(p_tab);
 }
 
 void TabContainer::get_translatable_strings(List<String> *p_strings) const {
+	ZoneScopedS(60);
 	Vector<Control *> controls = _get_tab_controls();
 	for (int i = 0; i < controls.size(); i++) {
 		Control *c = controls[i];
@@ -820,6 +867,7 @@ void TabContainer::get_translatable_strings(List<String> *p_strings) const {
 }
 
 Size2 TabContainer::get_minimum_size() const {
+	ZoneScopedS(60);
 	Size2 ms;
 
 	if (tabs_visible) {
@@ -861,6 +909,7 @@ Size2 TabContainer::get_minimum_size() const {
 }
 
 void TabContainer::set_popup(Node *p_popup) {
+	ZoneScopedS(60);
 	bool had_popup = get_popup();
 
 	Popup *popup = Object::cast_to<Popup>(p_popup);
@@ -880,6 +929,7 @@ void TabContainer::set_popup(Node *p_popup) {
 }
 
 Popup *TabContainer::get_popup() const {
+	ZoneScopedS(60);
 	if (popup_obj_id.is_valid()) {
 		Popup *popup = Object::cast_to<Popup>(ObjectDB::get_instance(popup_obj_id));
 		if (popup) {
@@ -896,22 +946,27 @@ Popup *TabContainer::get_popup() const {
 }
 
 void TabContainer::set_drag_to_rearrange_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	drag_to_rearrange_enabled = p_enabled;
 }
 
 bool TabContainer::get_drag_to_rearrange_enabled() const {
+	ZoneScopedS(60);
 	return drag_to_rearrange_enabled;
 }
 
 void TabContainer::set_tabs_rearrange_group(int p_group_id) {
+	ZoneScopedS(60);
 	tab_bar->set_tabs_rearrange_group(p_group_id);
 }
 
 int TabContainer::get_tabs_rearrange_group() const {
+	ZoneScopedS(60);
 	return tab_bar->get_tabs_rearrange_group();
 }
 
 void TabContainer::set_use_hidden_tabs_for_min_size(bool p_use_hidden_tabs) {
+	ZoneScopedS(60);
 	if (use_hidden_tabs_for_min_size == p_use_hidden_tabs) {
 		return;
 	}
@@ -921,18 +976,22 @@ void TabContainer::set_use_hidden_tabs_for_min_size(bool p_use_hidden_tabs) {
 }
 
 bool TabContainer::get_use_hidden_tabs_for_min_size() const {
+	ZoneScopedS(60);
 	return use_hidden_tabs_for_min_size;
 }
 
 Vector<int> TabContainer::get_allowed_size_flags_horizontal() const {
+	ZoneScopedS(60);
 	return Vector<int>();
 }
 
 Vector<int> TabContainer::get_allowed_size_flags_vertical() const {
+	ZoneScopedS(60);
 	return Vector<int>();
 }
 
 void TabContainer::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_tab_count"), &TabContainer::get_tab_count);
 	ClassDB::bind_method(D_METHOD("set_current_tab", "tab_idx"), &TabContainer::set_current_tab);
 	ClassDB::bind_method(D_METHOD("get_current_tab"), &TabContainer::get_current_tab);
@@ -990,6 +1049,7 @@ void TabContainer::_bind_methods() {
 }
 
 TabContainer::TabContainer() {
+	ZoneScopedS(60);
 	tab_bar = memnew(TabBar);
 	tab_bar->set_drag_forwarding(this);
 	add_child(tab_bar, false, INTERNAL_MODE_FRONT);

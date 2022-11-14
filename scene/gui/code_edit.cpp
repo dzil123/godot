@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  code_edit.cpp                                                        */
 /*************************************************************************/
@@ -35,6 +36,7 @@
 #include "core/string/ustring.h"
 
 void CodeEdit::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_THEME_CHANGED:
 		case NOTIFICATION_ENTER_TREE: {
@@ -258,6 +260,7 @@ void CodeEdit::_notification(int p_what) {
 }
 
 void CodeEdit::gui_input(const Ref<InputEvent> &p_gui_input) {
+	ZoneScopedS(60);
 	Ref<InputEventMouseButton> mb = p_gui_input;
 
 	if (mb.is_valid()) {
@@ -589,6 +592,7 @@ void CodeEdit::gui_input(const Ref<InputEvent> &p_gui_input) {
 
 /* General overrides */
 Control::CursorShape CodeEdit::get_cursor_shape(const Point2 &p_pos) const {
+	ZoneScopedS(60);
 	if (!symbol_lookup_word.is_empty()) {
 		return CURSOR_POINTING_HAND;
 	}
@@ -623,6 +627,7 @@ Control::CursorShape CodeEdit::get_cursor_shape(const Point2 &p_pos) const {
 
 // Overridable actions
 void CodeEdit::_handle_unicode_input_internal(const uint32_t p_unicode, int p_caret) {
+	ZoneScopedS(60);
 	start_action(EditAction::ACTION_TYPING);
 	Vector<int> caret_edit_order = get_caret_index_edit_order();
 	for (const int &i : caret_edit_order) {
@@ -690,6 +695,7 @@ void CodeEdit::_handle_unicode_input_internal(const uint32_t p_unicode, int p_ca
 }
 
 void CodeEdit::_backspace_internal(int p_caret) {
+	ZoneScopedS(60);
 	if (!is_editable()) {
 		return;
 	}
@@ -762,6 +768,7 @@ void CodeEdit::_backspace_internal(int p_caret) {
 
 /* Indent management */
 void CodeEdit::set_indent_size(const int p_size) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_size <= 0, "Indend size must be greater than 0.");
 	if (indent_size == p_size) {
 		return;
@@ -777,10 +784,12 @@ void CodeEdit::set_indent_size(const int p_size) {
 }
 
 int CodeEdit::get_indent_size() const {
+	ZoneScopedS(60);
 	return indent_size;
 }
 
 void CodeEdit::set_indent_using_spaces(const bool p_use_spaces) {
+	ZoneScopedS(60);
 	indent_using_spaces = p_use_spaces;
 	if (indent_using_spaces) {
 		indent_text = String(" ").repeat(indent_size);
@@ -790,18 +799,22 @@ void CodeEdit::set_indent_using_spaces(const bool p_use_spaces) {
 }
 
 bool CodeEdit::is_indent_using_spaces() const {
+	ZoneScopedS(60);
 	return indent_using_spaces;
 }
 
 void CodeEdit::set_auto_indent_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	auto_indent = p_enabled;
 }
 
 bool CodeEdit::is_auto_indent_enabled() const {
+	ZoneScopedS(60);
 	return auto_indent;
 }
 
 void CodeEdit::set_auto_indent_prefixes(const TypedArray<String> &p_prefixes) {
+	ZoneScopedS(60);
 	auto_indent_prefixes.clear();
 	for (int i = 0; i < p_prefixes.size(); i++) {
 		const String prefix = p_prefixes[i];
@@ -810,6 +823,7 @@ void CodeEdit::set_auto_indent_prefixes(const TypedArray<String> &p_prefixes) {
 }
 
 TypedArray<String> CodeEdit::get_auto_indent_prefixes() const {
+	ZoneScopedS(60);
 	TypedArray<String> prefixes;
 	for (const char32_t &E : auto_indent_prefixes) {
 		prefixes.push_back(String::chr(E));
@@ -818,6 +832,7 @@ TypedArray<String> CodeEdit::get_auto_indent_prefixes() const {
 }
 
 void CodeEdit::do_indent() {
+	ZoneScopedS(60);
 	if (!is_editable()) {
 		return;
 	}
@@ -844,6 +859,7 @@ void CodeEdit::do_indent() {
 }
 
 void CodeEdit::indent_lines() {
+	ZoneScopedS(60);
 	if (!is_editable()) {
 		return;
 	}
@@ -896,6 +912,7 @@ void CodeEdit::indent_lines() {
 }
 
 void CodeEdit::do_unindent() {
+	ZoneScopedS(60);
 	if (!is_editable()) {
 		return;
 	}
@@ -940,6 +957,7 @@ void CodeEdit::do_unindent() {
 }
 
 void CodeEdit::unindent_lines() {
+	ZoneScopedS(60);
 	if (!is_editable()) {
 		return;
 	}
@@ -1017,6 +1035,7 @@ void CodeEdit::unindent_lines() {
 }
 
 int CodeEdit::_calculate_spaces_till_next_left_indent(int p_column) const {
+	ZoneScopedS(60);
 	int spaces_till_indent = p_column % indent_size;
 	if (spaces_till_indent == 0) {
 		spaces_till_indent = indent_size;
@@ -1025,10 +1044,12 @@ int CodeEdit::_calculate_spaces_till_next_left_indent(int p_column) const {
 }
 
 int CodeEdit::_calculate_spaces_till_next_right_indent(int p_column) const {
+	ZoneScopedS(60);
 	return indent_size - p_column % indent_size;
 }
 
 void CodeEdit::_new_line(bool p_split_current_line, bool p_above) {
+	ZoneScopedS(60);
 	if (!is_editable()) {
 		return;
 	}
@@ -1142,23 +1163,28 @@ void CodeEdit::_new_line(bool p_split_current_line, bool p_above) {
 
 /* Auto brace completion */
 void CodeEdit::set_auto_brace_completion_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	auto_brace_completion_enabled = p_enabled;
 }
 
 bool CodeEdit::is_auto_brace_completion_enabled() const {
+	ZoneScopedS(60);
 	return auto_brace_completion_enabled;
 }
 
 void CodeEdit::set_highlight_matching_braces_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	highlight_matching_braces_enabled = p_enabled;
 	queue_redraw();
 }
 
 bool CodeEdit::is_highlight_matching_braces_enabled() const {
+	ZoneScopedS(60);
 	return highlight_matching_braces_enabled;
 }
 
 void CodeEdit::add_auto_brace_completion_pair(const String &p_open_key, const String &p_close_key) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_open_key.is_empty(), "auto brace completion open key cannot be empty");
 	ERR_FAIL_COND_MSG(p_close_key.is_empty(), "auto brace completion close key cannot be empty");
 
@@ -1184,6 +1210,7 @@ void CodeEdit::add_auto_brace_completion_pair(const String &p_open_key, const St
 }
 
 void CodeEdit::set_auto_brace_completion_pairs(const Dictionary &p_auto_brace_completion_pairs) {
+	ZoneScopedS(60);
 	auto_brace_completion_pairs.clear();
 
 	Array keys = p_auto_brace_completion_pairs.keys();
@@ -1193,6 +1220,7 @@ void CodeEdit::set_auto_brace_completion_pairs(const Dictionary &p_auto_brace_co
 }
 
 Dictionary CodeEdit::get_auto_brace_completion_pairs() const {
+	ZoneScopedS(60);
 	Dictionary brace_pairs;
 	for (int i = 0; i < auto_brace_completion_pairs.size(); i++) {
 		brace_pairs[auto_brace_completion_pairs[i].open_key] = auto_brace_completion_pairs[i].close_key;
@@ -1201,6 +1229,7 @@ Dictionary CodeEdit::get_auto_brace_completion_pairs() const {
 }
 
 bool CodeEdit::has_auto_brace_completion_open_key(const String &p_open_key) const {
+	ZoneScopedS(60);
 	for (int i = 0; i < auto_brace_completion_pairs.size(); i++) {
 		if (auto_brace_completion_pairs[i].open_key == p_open_key) {
 			return true;
@@ -1210,6 +1239,7 @@ bool CodeEdit::has_auto_brace_completion_open_key(const String &p_open_key) cons
 }
 
 bool CodeEdit::has_auto_brace_completion_close_key(const String &p_close_key) const {
+	ZoneScopedS(60);
 	for (int i = 0; i < auto_brace_completion_pairs.size(); i++) {
 		if (auto_brace_completion_pairs[i].close_key == p_close_key) {
 			return true;
@@ -1219,6 +1249,7 @@ bool CodeEdit::has_auto_brace_completion_close_key(const String &p_close_key) co
 }
 
 String CodeEdit::get_auto_brace_completion_close_key(const String &p_open_key) const {
+	ZoneScopedS(60);
 	for (int i = 0; i < auto_brace_completion_pairs.size(); i++) {
 		if (auto_brace_completion_pairs[i].open_key == p_open_key) {
 			return auto_brace_completion_pairs[i].close_key;
@@ -1229,38 +1260,46 @@ String CodeEdit::get_auto_brace_completion_close_key(const String &p_open_key) c
 
 /* Main Gutter */
 void CodeEdit::_update_draw_main_gutter() {
+	ZoneScopedS(60);
 	set_gutter_draw(main_gutter, draw_breakpoints || draw_bookmarks || draw_executing_lines);
 }
 
 void CodeEdit::set_draw_breakpoints_gutter(bool p_draw) {
+	ZoneScopedS(60);
 	draw_breakpoints = p_draw;
 	set_gutter_clickable(main_gutter, p_draw);
 	_update_draw_main_gutter();
 }
 
 bool CodeEdit::is_drawing_breakpoints_gutter() const {
+	ZoneScopedS(60);
 	return draw_breakpoints;
 }
 
 void CodeEdit::set_draw_bookmarks_gutter(bool p_draw) {
+	ZoneScopedS(60);
 	draw_bookmarks = p_draw;
 	_update_draw_main_gutter();
 }
 
 bool CodeEdit::is_drawing_bookmarks_gutter() const {
+	ZoneScopedS(60);
 	return draw_bookmarks;
 }
 
 void CodeEdit::set_draw_executing_lines_gutter(bool p_draw) {
+	ZoneScopedS(60);
 	draw_executing_lines = p_draw;
 	_update_draw_main_gutter();
 }
 
 bool CodeEdit::is_drawing_executing_lines_gutter() const {
+	ZoneScopedS(60);
 	return draw_executing_lines;
 }
 
 void CodeEdit::_main_gutter_draw_callback(int p_line, int p_gutter, const Rect2 &p_region) {
+	ZoneScopedS(60);
 	if (draw_breakpoints && breakpoint_icon.is_valid()) {
 		bool breakpointed = is_line_breakpointed(p_line);
 		bool hovering = p_region.has_point(get_local_mouse_pos());
@@ -1313,6 +1352,7 @@ void CodeEdit::_main_gutter_draw_callback(int p_line, int p_gutter, const Rect2 
 
 // Breakpoints
 void CodeEdit::set_line_as_breakpoint(int p_line, bool p_breakpointed) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_line, get_line_count());
 
 	int mask = get_line_gutter_metadata(p_line, main_gutter);
@@ -1327,10 +1367,12 @@ void CodeEdit::set_line_as_breakpoint(int p_line, bool p_breakpointed) {
 }
 
 bool CodeEdit::is_line_breakpointed(int p_line) const {
+	ZoneScopedS(60);
 	return (int)get_line_gutter_metadata(p_line, main_gutter) & MAIN_GUTTER_BREAKPOINT;
 }
 
 void CodeEdit::clear_breakpointed_lines() {
+	ZoneScopedS(60);
 	for (int i = 0; i < get_line_count(); i++) {
 		if (is_line_breakpointed(i)) {
 			set_line_as_breakpoint(i, false);
@@ -1339,6 +1381,7 @@ void CodeEdit::clear_breakpointed_lines() {
 }
 
 PackedInt32Array CodeEdit::get_breakpointed_lines() const {
+	ZoneScopedS(60);
 	PackedInt32Array ret;
 	for (int i = 0; i < get_line_count(); i++) {
 		if (is_line_breakpointed(i)) {
@@ -1350,16 +1393,19 @@ PackedInt32Array CodeEdit::get_breakpointed_lines() const {
 
 // Bookmarks
 void CodeEdit::set_line_as_bookmarked(int p_line, bool p_bookmarked) {
+	ZoneScopedS(60);
 	int mask = get_line_gutter_metadata(p_line, main_gutter);
 	set_line_gutter_metadata(p_line, main_gutter, p_bookmarked ? mask | MAIN_GUTTER_BOOKMARK : mask & ~MAIN_GUTTER_BOOKMARK);
 	queue_redraw();
 }
 
 bool CodeEdit::is_line_bookmarked(int p_line) const {
+	ZoneScopedS(60);
 	return (int)get_line_gutter_metadata(p_line, main_gutter) & MAIN_GUTTER_BOOKMARK;
 }
 
 void CodeEdit::clear_bookmarked_lines() {
+	ZoneScopedS(60);
 	for (int i = 0; i < get_line_count(); i++) {
 		if (is_line_bookmarked(i)) {
 			set_line_as_bookmarked(i, false);
@@ -1368,6 +1414,7 @@ void CodeEdit::clear_bookmarked_lines() {
 }
 
 PackedInt32Array CodeEdit::get_bookmarked_lines() const {
+	ZoneScopedS(60);
 	PackedInt32Array ret;
 	for (int i = 0; i < get_line_count(); i++) {
 		if (is_line_bookmarked(i)) {
@@ -1379,16 +1426,19 @@ PackedInt32Array CodeEdit::get_bookmarked_lines() const {
 
 // executing lines
 void CodeEdit::set_line_as_executing(int p_line, bool p_executing) {
+	ZoneScopedS(60);
 	int mask = get_line_gutter_metadata(p_line, main_gutter);
 	set_line_gutter_metadata(p_line, main_gutter, p_executing ? mask | MAIN_GUTTER_EXECUTING : mask & ~MAIN_GUTTER_EXECUTING);
 	queue_redraw();
 }
 
 bool CodeEdit::is_line_executing(int p_line) const {
+	ZoneScopedS(60);
 	return (int)get_line_gutter_metadata(p_line, main_gutter) & MAIN_GUTTER_EXECUTING;
 }
 
 void CodeEdit::clear_executing_lines() {
+	ZoneScopedS(60);
 	for (int i = 0; i < get_line_count(); i++) {
 		if (is_line_executing(i)) {
 			set_line_as_executing(i, false);
@@ -1397,6 +1447,7 @@ void CodeEdit::clear_executing_lines() {
 }
 
 PackedInt32Array CodeEdit::get_executing_lines() const {
+	ZoneScopedS(60);
 	PackedInt32Array ret;
 	for (int i = 0; i < get_line_count(); i++) {
 		if (is_line_executing(i)) {
@@ -1408,23 +1459,28 @@ PackedInt32Array CodeEdit::get_executing_lines() const {
 
 /* Line numbers */
 void CodeEdit::set_draw_line_numbers(bool p_draw) {
+	ZoneScopedS(60);
 	set_gutter_draw(line_number_gutter, p_draw);
 }
 
 bool CodeEdit::is_draw_line_numbers_enabled() const {
+	ZoneScopedS(60);
 	return is_gutter_drawn(line_number_gutter);
 }
 
 void CodeEdit::set_line_numbers_zero_padded(bool p_zero_padded) {
+	ZoneScopedS(60);
 	p_zero_padded ? line_number_padding = "0" : line_number_padding = " ";
 	queue_redraw();
 }
 
 bool CodeEdit::is_line_numbers_zero_padded() const {
+	ZoneScopedS(60);
 	return line_number_padding == "0";
 }
 
 void CodeEdit::_line_number_draw_callback(int p_line, int p_gutter, const Rect2 &p_region) {
+	ZoneScopedS(60);
 	String fc = TS->format_number(String::num(p_line + 1).lpad(line_number_digits, line_number_padding));
 	Ref<TextLine> tl;
 	tl.instantiate();
@@ -1439,14 +1495,17 @@ void CodeEdit::_line_number_draw_callback(int p_line, int p_gutter, const Rect2 
 
 /* Fold Gutter */
 void CodeEdit::set_draw_fold_gutter(bool p_draw) {
+	ZoneScopedS(60);
 	set_gutter_draw(fold_gutter, p_draw);
 }
 
 bool CodeEdit::is_drawing_fold_gutter() const {
+	ZoneScopedS(60);
 	return is_gutter_drawn(fold_gutter);
 }
 
 void CodeEdit::_fold_gutter_draw_callback(int p_line, int p_gutter, Rect2 p_region) {
+	ZoneScopedS(60);
 	if (!can_fold_line(p_line) && !is_line_folded(p_line)) {
 		set_line_gutter_clickable(p_line, fold_gutter, false);
 		return;
@@ -1468,15 +1527,18 @@ void CodeEdit::_fold_gutter_draw_callback(int p_line, int p_gutter, Rect2 p_regi
 
 /* Line Folding */
 void CodeEdit::set_line_folding_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	line_folding_enabled = p_enabled;
 	_set_hiding_enabled(p_enabled);
 }
 
 bool CodeEdit::is_line_folding_enabled() const {
+	ZoneScopedS(60);
 	return line_folding_enabled;
 }
 
 bool CodeEdit::can_fold_line(int p_line) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_line, get_line_count(), false);
 	if (!line_folding_enabled) {
 		return false;
@@ -1529,6 +1591,7 @@ bool CodeEdit::can_fold_line(int p_line) const {
 }
 
 void CodeEdit::fold_line(int p_line) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_line, get_line_count());
 	if (!is_line_folding_enabled() || !can_fold_line(p_line)) {
 		return;
@@ -1595,6 +1658,7 @@ void CodeEdit::fold_line(int p_line) {
 }
 
 void CodeEdit::unfold_line(int p_line) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_line, get_line_count());
 	if (!is_line_folded(p_line) && !_is_line_hidden(p_line)) {
 		return;
@@ -1618,6 +1682,7 @@ void CodeEdit::unfold_line(int p_line) {
 }
 
 void CodeEdit::fold_all_lines() {
+	ZoneScopedS(60);
 	for (int i = 0; i < get_line_count(); i++) {
 		fold_line(i);
 	}
@@ -1625,10 +1690,12 @@ void CodeEdit::fold_all_lines() {
 }
 
 void CodeEdit::unfold_all_lines() {
+	ZoneScopedS(60);
 	_unhide_all_lines();
 }
 
 void CodeEdit::toggle_foldable_line(int p_line) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_line, get_line_count());
 	if (is_line_folded(p_line)) {
 		unfold_line(p_line);
@@ -1638,11 +1705,13 @@ void CodeEdit::toggle_foldable_line(int p_line) {
 }
 
 bool CodeEdit::is_line_folded(int p_line) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_line, get_line_count(), false);
 	return p_line + 1 < get_line_count() && !_is_line_hidden(p_line) && _is_line_hidden(p_line + 1);
 }
 
 TypedArray<int> CodeEdit::get_folded_lines() const {
+	ZoneScopedS(60);
 	TypedArray<int> folded_lines;
 	for (int i = 0; i < get_line_count(); i++) {
 		if (is_line_folded(i)) {
@@ -1655,73 +1724,90 @@ TypedArray<int> CodeEdit::get_folded_lines() const {
 /* Delimiters */
 // Strings
 void CodeEdit::add_string_delimiter(const String &p_start_key, const String &p_end_key, bool p_line_only) {
+	ZoneScopedS(60);
 	_add_delimiter(p_start_key, p_end_key, p_line_only, TYPE_STRING);
 }
 
 void CodeEdit::remove_string_delimiter(const String &p_start_key) {
+	ZoneScopedS(60);
 	_remove_delimiter(p_start_key, TYPE_STRING);
 }
 
 bool CodeEdit::has_string_delimiter(const String &p_start_key) const {
+	ZoneScopedS(60);
 	return _has_delimiter(p_start_key, TYPE_STRING);
 }
 
 void CodeEdit::set_string_delimiters(const TypedArray<String> &p_string_delimiters) {
+	ZoneScopedS(60);
 	_set_delimiters(p_string_delimiters, TYPE_STRING);
 }
 
 void CodeEdit::clear_string_delimiters() {
+	ZoneScopedS(60);
 	_clear_delimiters(TYPE_STRING);
 }
 
 TypedArray<String> CodeEdit::get_string_delimiters() const {
+	ZoneScopedS(60);
 	return _get_delimiters(TYPE_STRING);
 }
 
 int CodeEdit::is_in_string(int p_line, int p_column) const {
+	ZoneScopedS(60);
 	return _is_in_delimiter(p_line, p_column, TYPE_STRING);
 }
 
 // Comments
 void CodeEdit::add_comment_delimiter(const String &p_start_key, const String &p_end_key, bool p_line_only) {
+	ZoneScopedS(60);
 	_add_delimiter(p_start_key, p_end_key, p_line_only, TYPE_COMMENT);
 }
 
 void CodeEdit::remove_comment_delimiter(const String &p_start_key) {
+	ZoneScopedS(60);
 	_remove_delimiter(p_start_key, TYPE_COMMENT);
 }
 
 bool CodeEdit::has_comment_delimiter(const String &p_start_key) const {
+	ZoneScopedS(60);
 	return _has_delimiter(p_start_key, TYPE_COMMENT);
 }
 
 void CodeEdit::set_comment_delimiters(const TypedArray<String> &p_comment_delimiters) {
+	ZoneScopedS(60);
 	_set_delimiters(p_comment_delimiters, TYPE_COMMENT);
 }
 
 void CodeEdit::clear_comment_delimiters() {
+	ZoneScopedS(60);
 	_clear_delimiters(TYPE_COMMENT);
 }
 
 TypedArray<String> CodeEdit::get_comment_delimiters() const {
+	ZoneScopedS(60);
 	return _get_delimiters(TYPE_COMMENT);
 }
 
 int CodeEdit::is_in_comment(int p_line, int p_column) const {
+	ZoneScopedS(60);
 	return _is_in_delimiter(p_line, p_column, TYPE_COMMENT);
 }
 
 String CodeEdit::get_delimiter_start_key(int p_delimiter_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_delimiter_idx, delimiters.size(), "");
 	return delimiters[p_delimiter_idx].start_key;
 }
 
 String CodeEdit::get_delimiter_end_key(int p_delimiter_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_delimiter_idx, delimiters.size(), "");
 	return delimiters[p_delimiter_idx].end_key;
 }
 
 Point2 CodeEdit::get_delimiter_start_position(int p_line, int p_column) const {
+	ZoneScopedS(60);
 	if (delimiters.size() == 0) {
 		return Point2(-1, -1);
 	}
@@ -1773,6 +1859,7 @@ Point2 CodeEdit::get_delimiter_start_position(int p_line, int p_column) const {
 }
 
 Point2 CodeEdit::get_delimiter_end_position(int p_line, int p_column) const {
+	ZoneScopedS(60);
 	if (delimiters.size() == 0) {
 		return Point2(-1, -1);
 	}
@@ -1825,26 +1912,31 @@ Point2 CodeEdit::get_delimiter_end_position(int p_line, int p_column) const {
 
 /* Code hint */
 void CodeEdit::set_code_hint(const String &p_hint) {
+	ZoneScopedS(60);
 	code_hint = p_hint;
 	code_hint_xpos = -0xFFFF;
 	queue_redraw();
 }
 
 void CodeEdit::set_code_hint_draw_below(bool p_below) {
+	ZoneScopedS(60);
 	code_hint_draw_below = p_below;
 	queue_redraw();
 }
 
 /* Code Completion */
 void CodeEdit::set_code_completion_enabled(bool p_enable) {
+	ZoneScopedS(60);
 	code_completion_enabled = p_enable;
 }
 
 bool CodeEdit::is_code_completion_enabled() const {
+	ZoneScopedS(60);
 	return code_completion_enabled;
 }
 
 void CodeEdit::set_code_completion_prefixes(const TypedArray<String> &p_prefixes) {
+	ZoneScopedS(60);
 	code_completion_prefixes.clear();
 	for (int i = 0; i < p_prefixes.size(); i++) {
 		const String prefix = p_prefixes[i];
@@ -1855,6 +1947,7 @@ void CodeEdit::set_code_completion_prefixes(const TypedArray<String> &p_prefixes
 }
 
 TypedArray<String> CodeEdit::get_code_completion_prefixes() const {
+	ZoneScopedS(60);
 	TypedArray<String> prefixes;
 	for (const char32_t &E : code_completion_prefixes) {
 		prefixes.push_back(String::chr(E));
@@ -1863,6 +1956,7 @@ TypedArray<String> CodeEdit::get_code_completion_prefixes() const {
 }
 
 String CodeEdit::get_text_for_code_completion() const {
+	ZoneScopedS(60);
 	StringBuilder completion_text;
 	const int text_size = get_line_count();
 	for (int i = 0; i < text_size; i++) {
@@ -1885,6 +1979,7 @@ String CodeEdit::get_text_for_code_completion() const {
 }
 
 void CodeEdit::request_code_completion(bool p_force) {
+	ZoneScopedS(60);
 	if (GDVIRTUAL_CALL(_request_code_completion, p_force)) {
 		return;
 	}
@@ -1928,6 +2023,7 @@ void CodeEdit::request_code_completion(bool p_force) {
 }
 
 void CodeEdit::add_code_completion_option(CodeCompletionKind p_type, const String &p_display_text, const String &p_insert_text, const Color &p_text_color, const Ref<Resource> &p_icon, const Variant &p_value) {
+	ZoneScopedS(60);
 	ScriptLanguage::CodeCompletionOption completion_option;
 	completion_option.kind = (ScriptLanguage::CodeCompletionKind)p_type;
 	completion_option.display = p_display_text;
@@ -1939,6 +2035,7 @@ void CodeEdit::add_code_completion_option(CodeCompletionKind p_type, const Strin
 }
 
 void CodeEdit::update_code_completion_options(bool p_forced) {
+	ZoneScopedS(60);
 	code_completion_forced = p_forced;
 	code_completion_option_sources = code_completion_option_submitted;
 	code_completion_option_submitted.clear();
@@ -1946,6 +2043,7 @@ void CodeEdit::update_code_completion_options(bool p_forced) {
 }
 
 TypedArray<Dictionary> CodeEdit::get_code_completion_options() const {
+	ZoneScopedS(60);
 	if (!code_completion_active) {
 		return TypedArray<Dictionary>();
 	}
@@ -1966,6 +2064,7 @@ TypedArray<Dictionary> CodeEdit::get_code_completion_options() const {
 }
 
 Dictionary CodeEdit::get_code_completion_option(int p_index) const {
+	ZoneScopedS(60);
 	if (!code_completion_active) {
 		return Dictionary();
 	}
@@ -1982,10 +2081,12 @@ Dictionary CodeEdit::get_code_completion_option(int p_index) const {
 }
 
 int CodeEdit::get_code_completion_selected_index() const {
+	ZoneScopedS(60);
 	return (code_completion_active) ? code_completion_current_selected : -1;
 }
 
 void CodeEdit::set_code_completion_selected_index(int p_index) {
+	ZoneScopedS(60);
 	if (!code_completion_active) {
 		return;
 	}
@@ -1996,6 +2097,7 @@ void CodeEdit::set_code_completion_selected_index(int p_index) {
 }
 
 void CodeEdit::confirm_code_completion(bool p_replace) {
+	ZoneScopedS(60);
 	if (!is_editable() || !code_completion_active) {
 		return;
 	}
@@ -2111,6 +2213,7 @@ void CodeEdit::confirm_code_completion(bool p_replace) {
 }
 
 void CodeEdit::cancel_code_completion() {
+	ZoneScopedS(60);
 	if (!code_completion_active) {
 		return;
 	}
@@ -2121,25 +2224,30 @@ void CodeEdit::cancel_code_completion() {
 
 /* Line length guidelines */
 void CodeEdit::set_line_length_guidelines(TypedArray<int> p_guideline_columns) {
+	ZoneScopedS(60);
 	line_length_guideline_columns = p_guideline_columns;
 	queue_redraw();
 }
 
 TypedArray<int> CodeEdit::get_line_length_guidelines() const {
+	ZoneScopedS(60);
 	return line_length_guideline_columns;
 }
 
 /* Symbol lookup */
 void CodeEdit::set_symbol_lookup_on_click_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	symbol_lookup_on_click_enabled = p_enabled;
 	set_symbol_lookup_word_as_valid(false);
 }
 
 bool CodeEdit::is_symbol_lookup_on_click_enabled() const {
+	ZoneScopedS(60);
 	return symbol_lookup_on_click_enabled;
 }
 
 String CodeEdit::get_text_for_symbol_lookup() {
+	ZoneScopedS(60);
 	Point2i mp = get_local_mouse_pos();
 
 	Point2i pos = get_line_column_at_pos(mp, false);
@@ -2172,6 +2280,7 @@ String CodeEdit::get_text_for_symbol_lookup() {
 }
 
 void CodeEdit::set_symbol_lookup_word_as_valid(bool p_valid) {
+	ZoneScopedS(60);
 	symbol_lookup_word = p_valid ? symbol_lookup_new_word : "";
 	symbol_lookup_new_word = "";
 	if (lookup_symbol_word != symbol_lookup_word) {
@@ -2180,6 +2289,7 @@ void CodeEdit::set_symbol_lookup_word_as_valid(bool p_valid) {
 }
 
 void CodeEdit::_bind_methods() {
+	ZoneScopedS(60);
 	/* Indent management */
 	ClassDB::bind_method(D_METHOD("set_indent_size", "size"), &CodeEdit::set_indent_size);
 	ClassDB::bind_method(D_METHOD("get_indent_size"), &CodeEdit::get_indent_size);
@@ -2401,6 +2511,7 @@ void CodeEdit::_bind_methods() {
 
 /* Auto brace completion */
 int CodeEdit::_get_auto_brace_pair_open_at_pos(int p_line, int p_col) {
+	ZoneScopedS(60);
 	const String &line = get_line(p_line);
 
 	/* Should be fast enough, expecting low amount of pairs... */
@@ -2426,6 +2537,7 @@ int CodeEdit::_get_auto_brace_pair_open_at_pos(int p_line, int p_col) {
 }
 
 int CodeEdit::_get_auto_brace_pair_close_at_pos(int p_line, int p_col) {
+	ZoneScopedS(60);
 	const String &line = get_line(p_line);
 
 	/* Should be fast enough, expecting low amount of pairs... */
@@ -2451,6 +2563,7 @@ int CodeEdit::_get_auto_brace_pair_close_at_pos(int p_line, int p_col) {
 
 /* Gutters */
 void CodeEdit::_gutter_clicked(int p_line, int p_gutter) {
+	ZoneScopedS(60);
 	bool shift_pressed = Input::get_singleton()->is_key_pressed(Key::SHIFT);
 
 	if (p_gutter == main_gutter) {
@@ -2482,6 +2595,7 @@ void CodeEdit::_gutter_clicked(int p_line, int p_gutter) {
 }
 
 void CodeEdit::_update_gutter_indexes() {
+	ZoneScopedS(60);
 	for (int i = 0; i < get_gutter_count(); i++) {
 		if (get_gutter_name(i) == "main_gutter") {
 			main_gutter = i;
@@ -2502,6 +2616,7 @@ void CodeEdit::_update_gutter_indexes() {
 
 /* Delimiters */
 void CodeEdit::_update_delimiter_cache(int p_from_line, int p_to_line) {
+	ZoneScopedS(60);
 	if (delimiters.size() == 0) {
 		return;
 	}
@@ -2652,6 +2767,7 @@ void CodeEdit::_update_delimiter_cache(int p_from_line, int p_to_line) {
 }
 
 int CodeEdit::_is_in_delimiter(int p_line, int p_column, DelimiterType p_type) const {
+	ZoneScopedS(60);
 	if (delimiters.size() == 0) {
 		return -1;
 	}
@@ -2710,6 +2826,7 @@ int CodeEdit::_is_in_delimiter(int p_line, int p_column, DelimiterType p_type) c
 }
 
 void CodeEdit::_add_delimiter(const String &p_start_key, const String &p_end_key, bool p_line_only, DelimiterType p_type) {
+	ZoneScopedS(60);
 	// If we are the editor allow "null" as a valid start key, otherwise users cannot add delimiters via the inspector.
 	if (!(Engine::get_singleton()->is_editor_hint() && p_start_key == "null")) {
 		ERR_FAIL_COND_MSG(p_start_key.is_empty(), "delimiter start key cannot be empty");
@@ -2746,6 +2863,7 @@ void CodeEdit::_add_delimiter(const String &p_start_key, const String &p_end_key
 }
 
 void CodeEdit::_remove_delimiter(const String &p_start_key, DelimiterType p_type) {
+	ZoneScopedS(60);
 	for (int i = 0; i < delimiters.size(); i++) {
 		if (delimiters[i].start_key != p_start_key) {
 			continue;
@@ -2765,6 +2883,7 @@ void CodeEdit::_remove_delimiter(const String &p_start_key, DelimiterType p_type
 }
 
 bool CodeEdit::_has_delimiter(const String &p_start_key, DelimiterType p_type) const {
+	ZoneScopedS(60);
 	for (int i = 0; i < delimiters.size(); i++) {
 		if (delimiters[i].start_key == p_start_key) {
 			return delimiters[i].type == p_type;
@@ -2774,6 +2893,7 @@ bool CodeEdit::_has_delimiter(const String &p_start_key, DelimiterType p_type) c
 }
 
 void CodeEdit::_set_delimiters(const TypedArray<String> &p_delimiters, DelimiterType p_type) {
+	ZoneScopedS(60);
 	setting_delimiters = true;
 	_clear_delimiters(p_type);
 
@@ -2794,6 +2914,7 @@ void CodeEdit::_set_delimiters(const TypedArray<String> &p_delimiters, Delimiter
 }
 
 void CodeEdit::_clear_delimiters(DelimiterType p_type) {
+	ZoneScopedS(60);
 	for (int i = delimiters.size() - 1; i >= 0; i--) {
 		if (delimiters[i].type == p_type) {
 			delimiters.remove_at(i);
@@ -2806,6 +2927,7 @@ void CodeEdit::_clear_delimiters(DelimiterType p_type) {
 }
 
 TypedArray<String> CodeEdit::_get_delimiters(DelimiterType p_type) const {
+	ZoneScopedS(60);
 	TypedArray<String> r_delimiters;
 	for (int i = 0; i < delimiters.size(); i++) {
 		if (delimiters[i].type != p_type) {
@@ -2818,6 +2940,7 @@ TypedArray<String> CodeEdit::_get_delimiters(DelimiterType p_type) const {
 
 /* Code Completion */
 void CodeEdit::_update_scroll_selected_line(float p_mouse_y) {
+	ZoneScopedS(60);
 	float percent = (float)(p_mouse_y - code_completion_scroll_rect.position.y) / code_completion_scroll_rect.size.height;
 	percent = CLAMP(percent, 0.0f, 1.0f);
 
@@ -2826,6 +2949,7 @@ void CodeEdit::_update_scroll_selected_line(float p_mouse_y) {
 }
 
 void CodeEdit::_filter_code_completion_candidates_impl() {
+	ZoneScopedS(60);
 	int line_height = get_line_height();
 
 	if (GDVIRTUAL_IS_OVERRIDDEN(_filter_code_completion_candidates)) {
@@ -3145,6 +3269,7 @@ void CodeEdit::_filter_code_completion_candidates_impl() {
 }
 
 void CodeEdit::_lines_edited_from(int p_from_line, int p_to_line) {
+	ZoneScopedS(60);
 	_update_delimiter_cache(p_from_line, p_to_line);
 
 	if (p_from_line == p_to_line) {
@@ -3157,12 +3282,14 @@ void CodeEdit::_lines_edited_from(int p_from_line, int p_to_line) {
 }
 
 void CodeEdit::_text_set() {
+	ZoneScopedS(60);
 	lines_edited_from = 0;
 	lines_edited_to = 9999;
 	_text_changed();
 }
 
 void CodeEdit::_text_changed() {
+	ZoneScopedS(60);
 	if (lines_edited_from == -1) {
 		return;
 	}
@@ -3204,6 +3331,7 @@ void CodeEdit::_text_changed() {
 }
 
 CodeEdit::CodeEdit() {
+	ZoneScopedS(60);
 	/* Indent management */
 	auto_indent_prefixes.insert(':');
 	auto_indent_prefixes.insert('{');

@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  style_box.cpp                                                        */
 /*************************************************************************/
@@ -35,6 +36,7 @@
 #include <limits.h>
 
 float StyleBox::get_style_margin(Side p_side) const {
+	ZoneScopedS(60);
 	float ret;
 	if (GDVIRTUAL_REQUIRED_CALL(_get_style_margin, p_side, ret)) {
 		return ret;
@@ -43,18 +45,21 @@ float StyleBox::get_style_margin(Side p_side) const {
 }
 
 bool StyleBox::test_mask(const Point2 &p_point, const Rect2 &p_rect) const {
+	ZoneScopedS(60);
 	bool ret = true;
 	GDVIRTUAL_CALL(_test_mask, p_point, p_rect, ret);
 	return ret;
 }
 
 void StyleBox::draw(RID p_canvas_item, const Rect2 &p_rect) const {
+	ZoneScopedS(60);
 	if (GDVIRTUAL_REQUIRED_CALL(_draw, p_canvas_item, p_rect)) {
 		return;
 	}
 }
 
 void StyleBox::set_default_margin(Side p_side, float p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX((int)p_side, 4);
 
 	margin[p_side] = p_value;
@@ -62,6 +67,7 @@ void StyleBox::set_default_margin(Side p_side, float p_value) {
 }
 
 void StyleBox::set_default_margin_all(float p_value) {
+	ZoneScopedS(60);
 	for (int i = 0; i < 4; i++) {
 		margin[i] = p_value;
 	}
@@ -69,6 +75,7 @@ void StyleBox::set_default_margin_all(float p_value) {
 }
 
 void StyleBox::set_default_margin_individual(float p_left, float p_top, float p_right, float p_bottom) {
+	ZoneScopedS(60);
 	margin[SIDE_LEFT] = p_left;
 	margin[SIDE_TOP] = p_top;
 	margin[SIDE_RIGHT] = p_right;
@@ -77,12 +84,14 @@ void StyleBox::set_default_margin_individual(float p_left, float p_top, float p_
 }
 
 float StyleBox::get_default_margin(Side p_side) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V((int)p_side, 4, 0.0);
 
 	return margin[p_side];
 }
 
 float StyleBox::get_margin(Side p_side) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V((int)p_side, 4, 0.0);
 
 	if (margin[p_side] < 0) {
@@ -93,24 +102,29 @@ float StyleBox::get_margin(Side p_side) const {
 }
 
 CanvasItem *StyleBox::get_current_item_drawn() const {
+	ZoneScopedS(60);
 	return CanvasItem::get_current_item_drawn();
 }
 
 Size2 StyleBox::get_minimum_size() const {
+	ZoneScopedS(60);
 	return Size2(get_margin(SIDE_LEFT) + get_margin(SIDE_RIGHT), get_margin(SIDE_TOP) + get_margin(SIDE_BOTTOM));
 }
 
 Point2 StyleBox::get_offset() const {
+	ZoneScopedS(60);
 	return Point2(get_margin(SIDE_LEFT), get_margin(SIDE_TOP));
 }
 
 Size2 StyleBox::get_center_size() const {
+	ZoneScopedS(60);
 	Size2 ret;
 	GDVIRTUAL_CALL(_get_center_size, ret);
 	return ret;
 }
 
 Rect2 StyleBox::get_draw_rect(const Rect2 &p_rect) const {
+	ZoneScopedS(60);
 	Rect2 ret;
 	if (GDVIRTUAL_CALL(_get_draw_rect, p_rect, ret)) {
 		return ret;
@@ -119,6 +133,7 @@ Rect2 StyleBox::get_draw_rect(const Rect2 &p_rect) const {
 }
 
 void StyleBox::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("test_mask", "point", "rect"), &StyleBox::test_mask);
 
 	ClassDB::bind_method(D_METHOD("set_default_margin", "margin", "offset"), &StyleBox::set_default_margin);
@@ -147,12 +162,14 @@ void StyleBox::_bind_methods() {
 }
 
 StyleBox::StyleBox() {
+	ZoneScopedS(60);
 	for (int i = 0; i < 4; i++) {
 		margin[i] = -1;
 	}
 }
 
 void StyleBoxTexture::set_texture(Ref<Texture2D> p_texture) {
+	ZoneScopedS(60);
 	if (texture == p_texture) {
 		return;
 	}
@@ -166,10 +183,12 @@ void StyleBoxTexture::set_texture(Ref<Texture2D> p_texture) {
 }
 
 Ref<Texture2D> StyleBoxTexture::get_texture() const {
+	ZoneScopedS(60);
 	return texture;
 }
 
 void StyleBoxTexture::set_margin_size(Side p_side, float p_size) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX((int)p_side, 4);
 
 	margin[p_side] = p_size;
@@ -177,6 +196,7 @@ void StyleBoxTexture::set_margin_size(Side p_side, float p_size) {
 }
 
 void StyleBoxTexture::set_margin_size_all(float p_size) {
+	ZoneScopedS(60);
 	for (int i = 0; i < 4; i++) {
 		margin[i] = p_size;
 	}
@@ -184,6 +204,7 @@ void StyleBoxTexture::set_margin_size_all(float p_size) {
 }
 
 void StyleBoxTexture::set_margin_size_individual(float p_left, float p_top, float p_right, float p_bottom) {
+	ZoneScopedS(60);
 	margin[SIDE_LEFT] = p_left;
 	margin[SIDE_TOP] = p_top;
 	margin[SIDE_RIGHT] = p_right;
@@ -192,22 +213,26 @@ void StyleBoxTexture::set_margin_size_individual(float p_left, float p_top, floa
 }
 
 float StyleBoxTexture::get_margin_size(Side p_side) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V((int)p_side, 4, 0.0);
 
 	return margin[p_side];
 }
 
 float StyleBoxTexture::get_style_margin(Side p_side) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V((int)p_side, 4, 0.0);
 
 	return margin[p_side];
 }
 
 Rect2 StyleBoxTexture::get_draw_rect(const Rect2 &p_rect) const {
+	ZoneScopedS(60);
 	return p_rect.grow_individual(expand_margin[SIDE_LEFT], expand_margin[SIDE_TOP], expand_margin[SIDE_RIGHT], expand_margin[SIDE_BOTTOM]);
 }
 
 void StyleBoxTexture::draw(RID p_canvas_item, const Rect2 &p_rect) const {
+	ZoneScopedS(60);
 	if (texture.is_null()) {
 		return;
 	}
@@ -226,15 +251,18 @@ void StyleBoxTexture::draw(RID p_canvas_item, const Rect2 &p_rect) const {
 }
 
 void StyleBoxTexture::set_draw_center(bool p_enabled) {
+	ZoneScopedS(60);
 	draw_center = p_enabled;
 	emit_changed();
 }
 
 bool StyleBoxTexture::is_draw_center_enabled() const {
+	ZoneScopedS(60);
 	return draw_center;
 }
 
 Size2 StyleBoxTexture::get_center_size() const {
+	ZoneScopedS(60);
 	if (texture.is_null()) {
 		return Size2();
 	}
@@ -243,12 +271,14 @@ Size2 StyleBoxTexture::get_center_size() const {
 }
 
 void StyleBoxTexture::set_expand_margin_size(Side p_side, float p_size) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX((int)p_side, 4);
 	expand_margin[p_side] = p_size;
 	emit_changed();
 }
 
 void StyleBoxTexture::set_expand_margin_size_individual(float p_left, float p_top, float p_right, float p_bottom) {
+	ZoneScopedS(60);
 	expand_margin[SIDE_LEFT] = p_left;
 	expand_margin[SIDE_TOP] = p_top;
 	expand_margin[SIDE_RIGHT] = p_right;
@@ -257,6 +287,7 @@ void StyleBoxTexture::set_expand_margin_size_individual(float p_left, float p_to
 }
 
 void StyleBoxTexture::set_expand_margin_size_all(float p_expand_margin_size) {
+	ZoneScopedS(60);
 	for (int i = 0; i < 4; i++) {
 		expand_margin[i] = p_expand_margin_size;
 	}
@@ -264,11 +295,13 @@ void StyleBoxTexture::set_expand_margin_size_all(float p_expand_margin_size) {
 }
 
 float StyleBoxTexture::get_expand_margin_size(Side p_side) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V((int)p_side, 4, 0);
 	return expand_margin[p_side];
 }
 
 void StyleBoxTexture::set_region_rect(const Rect2 &p_region_rect) {
+	ZoneScopedS(60);
 	if (region_rect == p_region_rect) {
 		return;
 	}
@@ -278,30 +311,36 @@ void StyleBoxTexture::set_region_rect(const Rect2 &p_region_rect) {
 }
 
 Rect2 StyleBoxTexture::get_region_rect() const {
+	ZoneScopedS(60);
 	return region_rect;
 }
 
 void StyleBoxTexture::set_h_axis_stretch_mode(AxisStretchMode p_mode) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX((int)p_mode, 3);
 	axis_h = p_mode;
 	emit_changed();
 }
 
 StyleBoxTexture::AxisStretchMode StyleBoxTexture::get_h_axis_stretch_mode() const {
+	ZoneScopedS(60);
 	return axis_h;
 }
 
 void StyleBoxTexture::set_v_axis_stretch_mode(AxisStretchMode p_mode) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX((int)p_mode, 3);
 	axis_v = p_mode;
 	emit_changed();
 }
 
 StyleBoxTexture::AxisStretchMode StyleBoxTexture::get_v_axis_stretch_mode() const {
+	ZoneScopedS(60);
 	return axis_v;
 }
 
 void StyleBoxTexture::set_modulate(const Color &p_modulate) {
+	ZoneScopedS(60);
 	if (modulate == p_modulate) {
 		return;
 	}
@@ -310,10 +349,12 @@ void StyleBoxTexture::set_modulate(const Color &p_modulate) {
 }
 
 Color StyleBoxTexture::get_modulate() const {
+	ZoneScopedS(60);
 	return modulate;
 }
 
 void StyleBoxTexture::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_texture", "texture"), &StyleBoxTexture::set_texture);
 	ClassDB::bind_method(D_METHOD("get_texture"), &StyleBoxTexture::get_texture);
 
@@ -377,24 +418,29 @@ StyleBoxTexture::~StyleBoxTexture() {}
 ////////////////
 
 void StyleBoxFlat::set_bg_color(const Color &p_color) {
+	ZoneScopedS(60);
 	bg_color = p_color;
 	emit_changed();
 }
 
 Color StyleBoxFlat::get_bg_color() const {
+	ZoneScopedS(60);
 	return bg_color;
 }
 
 void StyleBoxFlat::set_border_color(const Color &p_color) {
+	ZoneScopedS(60);
 	border_color = p_color;
 	emit_changed();
 }
 
 Color StyleBoxFlat::get_border_color() const {
+	ZoneScopedS(60);
 	return border_color;
 }
 
 void StyleBoxFlat::set_border_width_all(int p_size) {
+	ZoneScopedS(60);
 	border_width[0] = p_size;
 	border_width[1] = p_size;
 	border_width[2] = p_size;
@@ -403,30 +449,36 @@ void StyleBoxFlat::set_border_width_all(int p_size) {
 }
 
 int StyleBoxFlat::get_border_width_min() const {
+	ZoneScopedS(60);
 	return MIN(MIN(border_width[0], border_width[1]), MIN(border_width[2], border_width[3]));
 }
 
 void StyleBoxFlat::set_border_width(Side p_side, int p_width) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX((int)p_side, 4);
 	border_width[p_side] = p_width;
 	emit_changed();
 }
 
 int StyleBoxFlat::get_border_width(Side p_side) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V((int)p_side, 4, 0);
 	return border_width[p_side];
 }
 
 void StyleBoxFlat::set_border_blend(bool p_blend) {
+	ZoneScopedS(60);
 	blend_border = p_blend;
 	emit_changed();
 }
 
 bool StyleBoxFlat::get_border_blend() const {
+	ZoneScopedS(60);
 	return blend_border;
 }
 
 void StyleBoxFlat::set_corner_radius_all(int radius) {
+	ZoneScopedS(60);
 	for (int i = 0; i < 4; i++) {
 		corner_radius[i] = radius;
 	}
@@ -435,6 +487,7 @@ void StyleBoxFlat::set_corner_radius_all(int radius) {
 }
 
 void StyleBoxFlat::set_corner_radius_individual(const int radius_top_left, const int radius_top_right, const int radius_bottom_right, const int radius_bottom_left) {
+	ZoneScopedS(60);
 	corner_radius[0] = radius_top_left;
 	corner_radius[1] = radius_top_right;
 	corner_radius[2] = radius_bottom_right;
@@ -444,23 +497,27 @@ void StyleBoxFlat::set_corner_radius_individual(const int radius_top_left, const
 }
 
 void StyleBoxFlat::set_corner_radius(const Corner p_corner, const int radius) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX((int)p_corner, 4);
 	corner_radius[p_corner] = radius;
 	emit_changed();
 }
 
 int StyleBoxFlat::get_corner_radius(const Corner p_corner) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V((int)p_corner, 4, 0);
 	return corner_radius[p_corner];
 }
 
 void StyleBoxFlat::set_expand_margin_size(Side p_side, float p_size) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX((int)p_side, 4);
 	expand_margin[p_side] = p_size;
 	emit_changed();
 }
 
 void StyleBoxFlat::set_expand_margin_size_individual(float p_left, float p_top, float p_right, float p_bottom) {
+	ZoneScopedS(60);
 	expand_margin[SIDE_LEFT] = p_left;
 	expand_margin[SIDE_TOP] = p_top;
 	expand_margin[SIDE_RIGHT] = p_right;
@@ -469,6 +526,7 @@ void StyleBoxFlat::set_expand_margin_size_individual(float p_left, float p_top, 
 }
 
 void StyleBoxFlat::set_expand_margin_size_all(float p_expand_margin_size) {
+	ZoneScopedS(60);
 	for (int i = 0; i < 4; i++) {
 		expand_margin[i] = p_expand_margin_size;
 	}
@@ -476,88 +534,107 @@ void StyleBoxFlat::set_expand_margin_size_all(float p_expand_margin_size) {
 }
 
 float StyleBoxFlat::get_expand_margin_size(Side p_side) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V((int)p_side, 4, 0.0);
 	return expand_margin[p_side];
 }
 
 void StyleBoxFlat::set_draw_center(bool p_enabled) {
+	ZoneScopedS(60);
 	draw_center = p_enabled;
 	emit_changed();
 }
 
 bool StyleBoxFlat::is_draw_center_enabled() const {
+	ZoneScopedS(60);
 	return draw_center;
 }
 
 void StyleBoxFlat::set_skew(Vector2 p_skew) {
+	ZoneScopedS(60);
 	skew = p_skew;
 	emit_changed();
 }
 
 Vector2 StyleBoxFlat::get_skew() const {
+	ZoneScopedS(60);
 	return skew;
 }
 
 void StyleBoxFlat::set_shadow_color(const Color &p_color) {
+	ZoneScopedS(60);
 	shadow_color = p_color;
 	emit_changed();
 }
 
 Color StyleBoxFlat::get_shadow_color() const {
+	ZoneScopedS(60);
 	return shadow_color;
 }
 
 void StyleBoxFlat::set_shadow_size(const int &p_size) {
+	ZoneScopedS(60);
 	shadow_size = p_size;
 	emit_changed();
 }
 
 int StyleBoxFlat::get_shadow_size() const {
+	ZoneScopedS(60);
 	return shadow_size;
 }
 
 void StyleBoxFlat::set_shadow_offset(const Point2 &p_offset) {
+	ZoneScopedS(60);
 	shadow_offset = p_offset;
 	emit_changed();
 }
 
 Point2 StyleBoxFlat::get_shadow_offset() const {
+	ZoneScopedS(60);
 	return shadow_offset;
 }
 
 void StyleBoxFlat::set_anti_aliased(const bool &p_anti_aliased) {
+	ZoneScopedS(60);
 	anti_aliased = p_anti_aliased;
 	emit_changed();
 	notify_property_list_changed();
 }
 
 bool StyleBoxFlat::is_anti_aliased() const {
+	ZoneScopedS(60);
 	return anti_aliased;
 }
 
 void StyleBoxFlat::set_aa_size(const real_t p_aa_size) {
+	ZoneScopedS(60);
 	aa_size = CLAMP(p_aa_size, 0.01, 10);
 	emit_changed();
 }
 
 real_t StyleBoxFlat::get_aa_size() const {
+	ZoneScopedS(60);
 	return aa_size;
 }
 
 void StyleBoxFlat::set_corner_detail(const int &p_corner_detail) {
+	ZoneScopedS(60);
 	corner_detail = CLAMP(p_corner_detail, 1, 20);
 	emit_changed();
 }
 
 int StyleBoxFlat::get_corner_detail() const {
+	ZoneScopedS(60);
 	return corner_detail;
 }
 
 Size2 StyleBoxFlat::get_center_size() const {
+	ZoneScopedS(60);
 	return Size2();
 }
 
 inline void set_inner_corner_radius(const Rect2 style_rect, const Rect2 inner_rect, const real_t corner_radius[4], real_t *inner_corner_radius) {
+	ZoneScopedS(60);
 	real_t border_left = inner_rect.position.x - style_rect.position.x;
 	real_t border_top = inner_rect.position.y - style_rect.position.y;
 	real_t border_right = style_rect.size.width - inner_rect.size.width - border_left;
@@ -664,6 +741,7 @@ inline void draw_ring(Vector<Vector2> &verts, Vector<int> &indices, Vector<Color
 }
 
 inline void adapt_values(int p_index_a, int p_index_b, real_t *adapted_values, const real_t *p_values, const real_t p_width, const real_t p_max_a, const real_t p_max_b) {
+	ZoneScopedS(60);
 	if (p_values[p_index_a] + p_values[p_index_b] > p_width) {
 		real_t factor;
 		real_t new_value;
@@ -687,6 +765,7 @@ inline void adapt_values(int p_index_a, int p_index_b, real_t *adapted_values, c
 }
 
 Rect2 StyleBoxFlat::get_draw_rect(const Rect2 &p_rect) const {
+	ZoneScopedS(60);
 	Rect2 draw_rect = p_rect.grow_individual(expand_margin[SIDE_LEFT], expand_margin[SIDE_TOP], expand_margin[SIDE_RIGHT], expand_margin[SIDE_BOTTOM]);
 
 	if (shadow_size > 0) {
@@ -699,6 +778,7 @@ Rect2 StyleBoxFlat::get_draw_rect(const Rect2 &p_rect) const {
 }
 
 void StyleBoxFlat::draw(RID p_canvas_item, const Rect2 &p_rect) const {
+	ZoneScopedS(60);
 	bool draw_border = (border_width[0] > 0) || (border_width[1] > 0) || (border_width[2] > 0) || (border_width[3] > 0);
 	bool draw_shadow = (shadow_size > 0);
 	if (!draw_border && !draw_center && !draw_shadow) {
@@ -864,17 +944,20 @@ void StyleBoxFlat::draw(RID p_canvas_item, const Rect2 &p_rect) const {
 }
 
 float StyleBoxFlat::get_style_margin(Side p_side) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V((int)p_side, 4, 0.0);
 	return border_width[p_side];
 }
 
 void StyleBoxFlat::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (!anti_aliased && p_property.name == "anti_aliasing_size") {
 		p_property.usage = PROPERTY_USAGE_NO_EDITOR;
 	}
 }
 
 void StyleBoxFlat::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_bg_color", "color"), &StyleBoxFlat::set_bg_color);
 	ClassDB::bind_method(D_METHOD("get_bg_color"), &StyleBoxFlat::get_bg_color);
 
@@ -968,51 +1051,62 @@ StyleBoxFlat::StyleBoxFlat() {}
 StyleBoxFlat::~StyleBoxFlat() {}
 
 void StyleBoxLine::set_color(const Color &p_color) {
+	ZoneScopedS(60);
 	color = p_color;
 	emit_changed();
 }
 
 Color StyleBoxLine::get_color() const {
+	ZoneScopedS(60);
 	return color;
 }
 
 void StyleBoxLine::set_thickness(int p_thickness) {
+	ZoneScopedS(60);
 	thickness = p_thickness;
 	emit_changed();
 }
 
 int StyleBoxLine::get_thickness() const {
+	ZoneScopedS(60);
 	return thickness;
 }
 
 void StyleBoxLine::set_vertical(bool p_vertical) {
+	ZoneScopedS(60);
 	vertical = p_vertical;
 	emit_changed();
 }
 
 bool StyleBoxLine::is_vertical() const {
+	ZoneScopedS(60);
 	return vertical;
 }
 
 void StyleBoxLine::set_grow_end(float p_grow_end) {
+	ZoneScopedS(60);
 	grow_end = p_grow_end;
 	emit_changed();
 }
 
 float StyleBoxLine::get_grow_end() const {
+	ZoneScopedS(60);
 	return grow_end;
 }
 
 void StyleBoxLine::set_grow_begin(float p_grow_begin) {
+	ZoneScopedS(60);
 	grow_begin = p_grow_begin;
 	emit_changed();
 }
 
 float StyleBoxLine::get_grow_begin() const {
+	ZoneScopedS(60);
 	return grow_begin;
 }
 
 void StyleBoxLine::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_color", "color"), &StyleBoxLine::set_color);
 	ClassDB::bind_method(D_METHOD("get_color"), &StyleBoxLine::get_color);
 	ClassDB::bind_method(D_METHOD("set_thickness", "thickness"), &StyleBoxLine::set_thickness);
@@ -1032,6 +1126,7 @@ void StyleBoxLine::_bind_methods() {
 }
 
 float StyleBoxLine::get_style_margin(Side p_side) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V((int)p_side, 4, 0);
 
 	if (vertical) {
@@ -1046,10 +1141,12 @@ float StyleBoxLine::get_style_margin(Side p_side) const {
 }
 
 Size2 StyleBoxLine::get_center_size() const {
+	ZoneScopedS(60);
 	return Size2();
 }
 
 void StyleBoxLine::draw(RID p_canvas_item, const Rect2 &p_rect) const {
+	ZoneScopedS(60);
 	RenderingServer *vs = RenderingServer::get_singleton();
 	Rect2i r = p_rect;
 

@@ -28,18 +28,51 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  animation_blend_space_2d.cpp                                         */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "animation_blend_space_2d.h"
 
 #include "animation_blend_tree.h"
 #include "core/math/geometry_2d.h"
 
 void AnimationNodeBlendSpace2D::get_parameter_list(List<PropertyInfo> *r_list) const {
+	ZoneScopedS(60);
 	r_list->push_back(PropertyInfo(Variant::VECTOR2, blend_position));
 	r_list->push_back(PropertyInfo(Variant::INT, closest, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE));
 	r_list->push_back(PropertyInfo(Variant::FLOAT, length_internal, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE));
 }
 
 Variant AnimationNodeBlendSpace2D::get_parameter_default_value(const StringName &p_parameter) const {
+	ZoneScopedS(60);
 	if (p_parameter == closest) {
 		return -1;
 	} else if (p_parameter == length_internal) {
@@ -50,6 +83,7 @@ Variant AnimationNodeBlendSpace2D::get_parameter_default_value(const StringName 
 }
 
 void AnimationNodeBlendSpace2D::get_child_nodes(List<ChildNode> *r_child_nodes) {
+	ZoneScopedS(60);
 	for (int i = 0; i < blend_points_used; i++) {
 		ChildNode cn;
 		cn.name = itos(i);
@@ -59,6 +93,7 @@ void AnimationNodeBlendSpace2D::get_child_nodes(List<ChildNode> *r_child_nodes) 
 }
 
 void AnimationNodeBlendSpace2D::add_blend_point(const Ref<AnimationRootNode> &p_node, const Vector2 &p_position, int p_at_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(blend_points_used >= MAX_BLEND_POINTS);
 	ERR_FAIL_COND(p_node.is_null());
 	ERR_FAIL_COND(p_at_index < -1 || p_at_index > blend_points_used);
@@ -89,12 +124,14 @@ void AnimationNodeBlendSpace2D::add_blend_point(const Ref<AnimationRootNode> &p_
 }
 
 void AnimationNodeBlendSpace2D::set_blend_point_position(int p_point, const Vector2 &p_position) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_point, blend_points_used);
 	blend_points[p_point].position = p_position;
 	_queue_auto_triangles();
 }
 
 void AnimationNodeBlendSpace2D::set_blend_point_node(int p_point, const Ref<AnimationRootNode> &p_node) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_point, blend_points_used);
 	ERR_FAIL_COND(p_node.is_null());
 
@@ -108,16 +145,19 @@ void AnimationNodeBlendSpace2D::set_blend_point_node(int p_point, const Ref<Anim
 }
 
 Vector2 AnimationNodeBlendSpace2D::get_blend_point_position(int p_point) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_point, blend_points_used, Vector2());
 	return blend_points[p_point].position;
 }
 
 Ref<AnimationRootNode> AnimationNodeBlendSpace2D::get_blend_point_node(int p_point) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_point, blend_points_used, Ref<AnimationRootNode>());
 	return blend_points[p_point].node;
 }
 
 void AnimationNodeBlendSpace2D::remove_blend_point(int p_point) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_point, blend_points_used);
 
 	ERR_FAIL_COND(blend_points[p_point].node.is_null());
@@ -148,10 +188,12 @@ void AnimationNodeBlendSpace2D::remove_blend_point(int p_point) {
 }
 
 int AnimationNodeBlendSpace2D::get_blend_point_count() const {
+	ZoneScopedS(60);
 	return blend_points_used;
 }
 
 bool AnimationNodeBlendSpace2D::has_triangle(int p_x, int p_y, int p_z) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_x, blend_points_used, false);
 	ERR_FAIL_INDEX_V(p_y, blend_points_used, false);
 	ERR_FAIL_INDEX_V(p_z, blend_points_used, false);
@@ -181,6 +223,7 @@ bool AnimationNodeBlendSpace2D::has_triangle(int p_x, int p_y, int p_z) const {
 }
 
 void AnimationNodeBlendSpace2D::add_triangle(int p_x, int p_y, int p_z, int p_at_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_x, blend_points_used);
 	ERR_FAIL_INDEX(p_y, blend_points_used);
 	ERR_FAIL_INDEX(p_z, blend_points_used);
@@ -214,6 +257,7 @@ void AnimationNodeBlendSpace2D::add_triangle(int p_x, int p_y, int p_z, int p_at
 }
 
 int AnimationNodeBlendSpace2D::get_triangle_point(int p_triangle, int p_point) {
+	ZoneScopedS(60);
 	_update_triangles();
 
 	ERR_FAIL_INDEX_V(p_point, 3, -1);
@@ -222,16 +266,19 @@ int AnimationNodeBlendSpace2D::get_triangle_point(int p_triangle, int p_point) {
 }
 
 void AnimationNodeBlendSpace2D::remove_triangle(int p_triangle) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_triangle, triangles.size());
 
 	triangles.remove_at(p_triangle);
 }
 
 int AnimationNodeBlendSpace2D::get_triangle_count() const {
+	ZoneScopedS(60);
 	return triangles.size();
 }
 
 void AnimationNodeBlendSpace2D::set_min_space(const Vector2 &p_min) {
+	ZoneScopedS(60);
 	min_space = p_min;
 	if (min_space.x >= max_space.x) {
 		min_space.x = max_space.x - 1;
@@ -242,10 +289,12 @@ void AnimationNodeBlendSpace2D::set_min_space(const Vector2 &p_min) {
 }
 
 Vector2 AnimationNodeBlendSpace2D::get_min_space() const {
+	ZoneScopedS(60);
 	return min_space;
 }
 
 void AnimationNodeBlendSpace2D::set_max_space(const Vector2 &p_max) {
+	ZoneScopedS(60);
 	max_space = p_max;
 	if (max_space.x <= min_space.x) {
 		max_space.x = min_space.x + 1;
@@ -256,34 +305,42 @@ void AnimationNodeBlendSpace2D::set_max_space(const Vector2 &p_max) {
 }
 
 Vector2 AnimationNodeBlendSpace2D::get_max_space() const {
+	ZoneScopedS(60);
 	return max_space;
 }
 
 void AnimationNodeBlendSpace2D::set_snap(const Vector2 &p_snap) {
+	ZoneScopedS(60);
 	snap = p_snap;
 }
 
 Vector2 AnimationNodeBlendSpace2D::get_snap() const {
+	ZoneScopedS(60);
 	return snap;
 }
 
 void AnimationNodeBlendSpace2D::set_x_label(const String &p_label) {
+	ZoneScopedS(60);
 	x_label = p_label;
 }
 
 String AnimationNodeBlendSpace2D::get_x_label() const {
+	ZoneScopedS(60);
 	return x_label;
 }
 
 void AnimationNodeBlendSpace2D::set_y_label(const String &p_label) {
+	ZoneScopedS(60);
 	y_label = p_label;
 }
 
 String AnimationNodeBlendSpace2D::get_y_label() const {
+	ZoneScopedS(60);
 	return y_label;
 }
 
 void AnimationNodeBlendSpace2D::_add_blend_point(int p_index, const Ref<AnimationRootNode> &p_node) {
+	ZoneScopedS(60);
 	if (p_index == blend_points_used) {
 		add_blend_point(p_node, Vector2());
 	} else {
@@ -292,6 +349,7 @@ void AnimationNodeBlendSpace2D::_add_blend_point(int p_index, const Ref<Animatio
 }
 
 void AnimationNodeBlendSpace2D::_set_triangles(const Vector<int> &p_triangles) {
+	ZoneScopedS(60);
 	if (auto_triangles) {
 		return;
 	}
@@ -302,6 +360,7 @@ void AnimationNodeBlendSpace2D::_set_triangles(const Vector<int> &p_triangles) {
 }
 
 Vector<int> AnimationNodeBlendSpace2D::_get_triangles() const {
+	ZoneScopedS(60);
 	Vector<int> t;
 	if (auto_triangles && trianges_dirty) {
 		return t;
@@ -317,6 +376,7 @@ Vector<int> AnimationNodeBlendSpace2D::_get_triangles() const {
 }
 
 void AnimationNodeBlendSpace2D::_queue_auto_triangles() {
+	ZoneScopedS(60);
 	if (!auto_triangles || trianges_dirty) {
 		return;
 	}
@@ -326,6 +386,7 @@ void AnimationNodeBlendSpace2D::_queue_auto_triangles() {
 }
 
 void AnimationNodeBlendSpace2D::_update_triangles() {
+	ZoneScopedS(60);
 	if (!auto_triangles || !trianges_dirty) {
 		return;
 	}
@@ -352,6 +413,7 @@ void AnimationNodeBlendSpace2D::_update_triangles() {
 }
 
 Vector2 AnimationNodeBlendSpace2D::get_closest_point(const Vector2 &p_point) {
+	ZoneScopedS(60);
 	_update_triangles();
 
 	if (triangles.size() == 0) {
@@ -388,6 +450,7 @@ Vector2 AnimationNodeBlendSpace2D::get_closest_point(const Vector2 &p_point) {
 }
 
 void AnimationNodeBlendSpace2D::_blend_triangle(const Vector2 &p_pos, const Vector2 *p_points, float *r_weights) {
+	ZoneScopedS(60);
 	if (p_pos.is_equal_approx(p_points[0])) {
 		r_weights[0] = 1;
 		r_weights[1] = 0;
@@ -433,6 +496,7 @@ void AnimationNodeBlendSpace2D::_blend_triangle(const Vector2 &p_pos, const Vect
 }
 
 double AnimationNodeBlendSpace2D::process(double p_time, bool p_seek, bool p_seek_root) {
+	ZoneScopedS(60);
 	_update_triangles();
 
 	Vector2 blend_pos = get_parameter(blend_position);
@@ -563,10 +627,12 @@ double AnimationNodeBlendSpace2D::process(double p_time, bool p_seek, bool p_see
 }
 
 String AnimationNodeBlendSpace2D::get_caption() const {
+	ZoneScopedS(60);
 	return "BlendSpace2D";
 }
 
 void AnimationNodeBlendSpace2D::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (auto_triangles && p_property.name == "triangles") {
 		p_property.usage = PROPERTY_USAGE_NONE;
 	}
@@ -580,6 +646,7 @@ void AnimationNodeBlendSpace2D::_validate_property(PropertyInfo &p_property) con
 }
 
 void AnimationNodeBlendSpace2D::set_auto_triangles(bool p_enable) {
+	ZoneScopedS(60);
 	if (auto_triangles == p_enable) {
 		return;
 	}
@@ -589,34 +656,42 @@ void AnimationNodeBlendSpace2D::set_auto_triangles(bool p_enable) {
 }
 
 bool AnimationNodeBlendSpace2D::get_auto_triangles() const {
+	ZoneScopedS(60);
 	return auto_triangles;
 }
 
 Ref<AnimationNode> AnimationNodeBlendSpace2D::get_child_by_name(const StringName &p_name) {
+	ZoneScopedS(60);
 	return get_blend_point_node(p_name.operator String().to_int());
 }
 
 void AnimationNodeBlendSpace2D::_tree_changed() {
+	ZoneScopedS(60);
 	emit_signal(SNAME("tree_changed"));
 }
 
 void AnimationNodeBlendSpace2D::set_blend_mode(BlendMode p_blend_mode) {
+	ZoneScopedS(60);
 	blend_mode = p_blend_mode;
 }
 
 AnimationNodeBlendSpace2D::BlendMode AnimationNodeBlendSpace2D::get_blend_mode() const {
+	ZoneScopedS(60);
 	return blend_mode;
 }
 
 void AnimationNodeBlendSpace2D::set_use_sync(bool p_sync) {
+	ZoneScopedS(60);
 	sync = p_sync;
 }
 
 bool AnimationNodeBlendSpace2D::is_using_sync() const {
+	ZoneScopedS(60);
 	return sync;
 }
 
 void AnimationNodeBlendSpace2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("add_blend_point", "node", "pos", "at_index"), &AnimationNodeBlendSpace2D::add_blend_point, DEFVAL(-1));
 	ClassDB::bind_method(D_METHOD("set_blend_point_position", "point", "pos"), &AnimationNodeBlendSpace2D::set_blend_point_position);
 	ClassDB::bind_method(D_METHOD("get_blend_point_position", "point"), &AnimationNodeBlendSpace2D::get_blend_point_position);
@@ -685,6 +760,7 @@ void AnimationNodeBlendSpace2D::_bind_methods() {
 }
 
 AnimationNodeBlendSpace2D::AnimationNodeBlendSpace2D() {
+	ZoneScopedS(60);
 	for (int i = 0; i < MAX_BLEND_POINTS; i++) {
 		blend_points[i].name = itos(i);
 	}

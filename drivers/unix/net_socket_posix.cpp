@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  net_socket_posix.cpp                                                 */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "net_socket_posix.h"
 
 // Some proprietary Unix-derived platforms don't expose Unix sockets
@@ -94,6 +125,7 @@
 #endif // UNIX_ENABLED
 
 size_t NetSocketPosix::_set_addr_storage(struct sockaddr_storage *p_addr, const IPAddress &p_ip, uint16_t p_port, IP::Type p_ip_type) {
+	ZoneScopedS(60);
 	memset(p_addr, 0, sizeof(struct sockaddr_storage));
 	if (p_ip_type == IP::TYPE_IPV6 || p_ip_type == IP::TYPE_ANY) { // IPv6 socket
 
@@ -129,6 +161,7 @@ size_t NetSocketPosix::_set_addr_storage(struct sockaddr_storage *p_addr, const 
 }
 
 void NetSocketPosix::_set_ip_port(struct sockaddr_storage *p_addr, IPAddress *r_ip, uint16_t *r_port) {
+	ZoneScopedS(60);
 	if (p_addr->ss_family == AF_INET) {
 		struct sockaddr_in *addr4 = (struct sockaddr_in *)p_addr;
 		if (r_ip) {
@@ -149,6 +182,7 @@ void NetSocketPosix::_set_ip_port(struct sockaddr_storage *p_addr, IPAddress *r_
 }
 
 NetSocket *NetSocketPosix::_create_func() {
+	ZoneScopedS(60);
 	return memnew(NetSocketPosix);
 }
 
@@ -176,6 +210,7 @@ NetSocketPosix::NetSocketPosix() :
 }
 
 NetSocketPosix::~NetSocketPosix() {
+	ZoneScopedS(60);
 	close();
 }
 
@@ -232,6 +267,7 @@ NetSocketPosix::NetError NetSocketPosix::_get_socket_error() const {
 #endif
 
 bool NetSocketPosix::_can_use_ip(const IPAddress &p_ip, const bool p_for_bind) const {
+	ZoneScopedS(60);
 	if (p_for_bind && !(p_ip.is_valid() || p_ip.is_wildcard())) {
 		return false;
 	} else if (!p_for_bind && !p_ip.is_valid()) {
@@ -243,6 +279,7 @@ bool NetSocketPosix::_can_use_ip(const IPAddress &p_ip, const bool p_for_bind) c
 }
 
 _FORCE_INLINE_ Error NetSocketPosix::_change_multicast_group(IPAddress p_ip, String p_if_name, bool p_add) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!is_open(), ERR_UNCONFIGURED);
 	ERR_FAIL_COND_V(!_can_use_ip(p_ip, false), ERR_INVALID_PARAMETER);
 
@@ -297,6 +334,7 @@ _FORCE_INLINE_ Error NetSocketPosix::_change_multicast_group(IPAddress p_ip, Str
 }
 
 void NetSocketPosix::_set_socket(SOCKET_TYPE p_sock, IP::Type p_ip_type, bool p_is_stream) {
+	ZoneScopedS(60);
 	_sock = p_sock;
 	_ip_type = p_ip_type;
 	_is_stream = p_is_stream;
@@ -313,6 +351,7 @@ void NetSocketPosix::_set_close_exec_enabled(bool p_enabled) {
 }
 
 Error NetSocketPosix::open(Type p_sock_type, IP::Type &ip_type) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(is_open(), ERR_ALREADY_IN_USE);
 	ERR_FAIL_COND_V(ip_type > IP::TYPE_ANY || ip_type < IP::TYPE_NONE, ERR_INVALID_PARAMETER);
 
@@ -380,6 +419,7 @@ Error NetSocketPosix::open(Type p_sock_type, IP::Type &ip_type) {
 }
 
 void NetSocketPosix::close() {
+	ZoneScopedS(60);
 	if (_sock != SOCK_EMPTY) {
 		SOCK_CLOSE(_sock);
 	}
@@ -390,6 +430,7 @@ void NetSocketPosix::close() {
 }
 
 Error NetSocketPosix::bind(IPAddress p_addr, uint16_t p_port) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!is_open(), ERR_UNCONFIGURED);
 	ERR_FAIL_COND_V(!_can_use_ip(p_addr, true), ERR_INVALID_PARAMETER);
 
@@ -407,6 +448,7 @@ Error NetSocketPosix::bind(IPAddress p_addr, uint16_t p_port) {
 }
 
 Error NetSocketPosix::listen(int p_max_pending) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!is_open(), ERR_UNCONFIGURED);
 
 	if (::listen(_sock, p_max_pending) != 0) {
@@ -420,6 +462,7 @@ Error NetSocketPosix::listen(int p_max_pending) {
 }
 
 Error NetSocketPosix::connect_to_host(IPAddress p_host, uint16_t p_port) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!is_open(), ERR_UNCONFIGURED);
 	ERR_FAIL_COND_V(!_can_use_ip(p_host, false), ERR_INVALID_PARAMETER);
 
@@ -448,6 +491,7 @@ Error NetSocketPosix::connect_to_host(IPAddress p_host, uint16_t p_port) {
 }
 
 Error NetSocketPosix::poll(PollType p_type, int p_timeout) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!is_open(), ERR_UNCONFIGURED);
 
 #if defined(WINDOWS_ENABLED)
@@ -540,6 +584,7 @@ Error NetSocketPosix::poll(PollType p_type, int p_timeout) const {
 }
 
 Error NetSocketPosix::recv(uint8_t *p_buffer, int p_len, int &r_read) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!is_open(), ERR_UNCONFIGURED);
 
 	r_read = ::recv(_sock, SOCK_BUF(p_buffer), p_len, 0);
@@ -557,6 +602,7 @@ Error NetSocketPosix::recv(uint8_t *p_buffer, int p_len, int &r_read) {
 }
 
 Error NetSocketPosix::recvfrom(uint8_t *p_buffer, int p_len, int &r_read, IPAddress &r_ip, uint16_t &r_port, bool p_peek) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!is_open(), ERR_UNCONFIGURED);
 
 	struct sockaddr_storage from;
@@ -591,6 +637,7 @@ Error NetSocketPosix::recvfrom(uint8_t *p_buffer, int p_len, int &r_read, IPAddr
 }
 
 Error NetSocketPosix::send(const uint8_t *p_buffer, int p_len, int &r_sent) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!is_open(), ERR_UNCONFIGURED);
 
 	int flags = 0;
@@ -614,6 +661,7 @@ Error NetSocketPosix::send(const uint8_t *p_buffer, int p_len, int &r_sent) {
 }
 
 Error NetSocketPosix::sendto(const uint8_t *p_buffer, int p_len, int &r_sent, IPAddress p_ip, uint16_t p_port) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!is_open(), ERR_UNCONFIGURED);
 
 	struct sockaddr_storage addr;
@@ -633,6 +681,7 @@ Error NetSocketPosix::sendto(const uint8_t *p_buffer, int p_len, int &r_sent, IP
 }
 
 Error NetSocketPosix::set_broadcasting_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!is_open(), ERR_UNCONFIGURED);
 	// IPv6 has no broadcast support.
 	if (_ip_type == IP::TYPE_IPV6) {
@@ -648,6 +697,7 @@ Error NetSocketPosix::set_broadcasting_enabled(bool p_enabled) {
 }
 
 void NetSocketPosix::set_blocking_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!is_open());
 
 	int ret = 0;
@@ -669,6 +719,7 @@ void NetSocketPosix::set_blocking_enabled(bool p_enabled) {
 }
 
 void NetSocketPosix::set_ipv6_only_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!is_open());
 	// This option is only available in IPv6 sockets.
 	ERR_FAIL_COND(_ip_type == IP::TYPE_IPV4);
@@ -680,6 +731,7 @@ void NetSocketPosix::set_ipv6_only_enabled(bool p_enabled) {
 }
 
 void NetSocketPosix::set_tcp_no_delay_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!is_open());
 	ERR_FAIL_COND(!_is_stream); // Not TCP
 
@@ -690,6 +742,7 @@ void NetSocketPosix::set_tcp_no_delay_enabled(bool p_enabled) {
 }
 
 void NetSocketPosix::set_reuse_address_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!is_open());
 
 // On Windows, enabling SO_REUSEADDR actually would also enable reuse port, very bad on TCP. Denying...
@@ -703,6 +756,7 @@ void NetSocketPosix::set_reuse_address_enabled(bool p_enabled) {
 }
 
 void NetSocketPosix::set_reuse_port_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!is_open());
 
 // See comment above...
@@ -716,10 +770,12 @@ void NetSocketPosix::set_reuse_port_enabled(bool p_enabled) {
 }
 
 bool NetSocketPosix::is_open() const {
+	ZoneScopedS(60);
 	return _sock != SOCK_EMPTY;
 }
 
 int NetSocketPosix::get_available_bytes() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!is_open(), -1);
 
 	unsigned long len;
@@ -733,6 +789,7 @@ int NetSocketPosix::get_available_bytes() const {
 }
 
 Error NetSocketPosix::get_socket_address(IPAddress *r_ip, uint16_t *r_port) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!is_open(), FAILED);
 
 	struct sockaddr_storage saddr;
@@ -747,6 +804,7 @@ Error NetSocketPosix::get_socket_address(IPAddress *r_ip, uint16_t *r_port) cons
 }
 
 Ref<NetSocket> NetSocketPosix::accept(IPAddress &r_ip, uint16_t &r_port) {
+	ZoneScopedS(60);
 	Ref<NetSocket> out;
 	ERR_FAIL_COND_V(!is_open(), out);
 
@@ -768,10 +826,12 @@ Ref<NetSocket> NetSocketPosix::accept(IPAddress &r_ip, uint16_t &r_port) {
 }
 
 Error NetSocketPosix::join_multicast_group(const IPAddress &p_multi_address, String p_if_name) {
+	ZoneScopedS(60);
 	return _change_multicast_group(p_multi_address, p_if_name, true);
 }
 
 Error NetSocketPosix::leave_multicast_group(const IPAddress &p_multi_address, String p_if_name) {
+	ZoneScopedS(60);
 	return _change_multicast_group(p_multi_address, p_if_name, false);
 }
 

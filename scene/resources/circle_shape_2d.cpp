@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  circle_shape_2d.cpp                                                  */
 /*************************************************************************/
@@ -34,25 +35,30 @@
 #include "servers/rendering_server.h"
 
 bool CircleShape2D::_edit_is_selected_on_click(const Point2 &p_point, double p_tolerance) const {
+	ZoneScopedS(60);
 	return p_point.length() < get_radius() + p_tolerance;
 }
 
 void CircleShape2D::_update_shape() {
+	ZoneScopedS(60);
 	PhysicsServer2D::get_singleton()->shape_set_data(get_rid(), radius);
 	emit_changed();
 }
 
 void CircleShape2D::set_radius(real_t p_radius) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_radius < 0, "CircleShape2D radius cannot be negative.");
 	radius = p_radius;
 	_update_shape();
 }
 
 real_t CircleShape2D::get_radius() const {
+	ZoneScopedS(60);
 	return radius;
 }
 
 void CircleShape2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_radius", "radius"), &CircleShape2D::set_radius);
 	ClassDB::bind_method(D_METHOD("get_radius"), &CircleShape2D::get_radius);
 
@@ -60,6 +66,7 @@ void CircleShape2D::_bind_methods() {
 }
 
 Rect2 CircleShape2D::get_rect() const {
+	ZoneScopedS(60);
 	Rect2 rect;
 	rect.position = -Point2(get_radius(), get_radius());
 	rect.size = Point2(get_radius(), get_radius()) * 2.0;
@@ -67,10 +74,12 @@ Rect2 CircleShape2D::get_rect() const {
 }
 
 real_t CircleShape2D::get_enclosing_radius() const {
+	ZoneScopedS(60);
 	return radius;
 }
 
 void CircleShape2D::draw(const RID &p_to_rid, const Color &p_color) {
+	ZoneScopedS(60);
 	Vector<Vector2> points;
 	points.resize(24);
 

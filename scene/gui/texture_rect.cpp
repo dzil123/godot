@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  texture_rect.cpp                                                     */
 /*************************************************************************/
@@ -34,6 +35,7 @@
 #include "servers/rendering_server.h"
 
 void TextureRect::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
 			if (texture.is_null()) {
@@ -114,6 +116,7 @@ void TextureRect::_notification(int p_what) {
 }
 
 Size2 TextureRect::get_minimum_size() const {
+	ZoneScopedS(60);
 	if (!ignore_texture_size && !texture.is_null()) {
 		return texture->get_size();
 	} else {
@@ -122,6 +125,7 @@ Size2 TextureRect::get_minimum_size() const {
 }
 
 void TextureRect::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_texture", "texture"), &TextureRect::set_texture);
 	ClassDB::bind_method(D_METHOD("get_texture"), &TextureRect::get_texture);
 	ClassDB::bind_method(D_METHOD("set_ignore_texture_size", "ignore"), &TextureRect::set_ignore_texture_size);
@@ -149,6 +153,7 @@ void TextureRect::_bind_methods() {
 }
 
 void TextureRect::_texture_changed() {
+	ZoneScopedS(60);
 	if (texture.is_valid()) {
 		queue_redraw();
 		update_minimum_size();
@@ -156,6 +161,7 @@ void TextureRect::_texture_changed() {
 }
 
 void TextureRect::set_texture(const Ref<Texture2D> &p_tex) {
+	ZoneScopedS(60);
 	if (p_tex == texture) {
 		return;
 	}
@@ -175,10 +181,12 @@ void TextureRect::set_texture(const Ref<Texture2D> &p_tex) {
 }
 
 Ref<Texture2D> TextureRect::get_texture() const {
+	ZoneScopedS(60);
 	return texture;
 }
 
 void TextureRect::set_ignore_texture_size(bool p_ignore) {
+	ZoneScopedS(60);
 	if (ignore_texture_size == p_ignore) {
 		return;
 	}
@@ -189,10 +197,12 @@ void TextureRect::set_ignore_texture_size(bool p_ignore) {
 }
 
 bool TextureRect::get_ignore_texture_size() const {
+	ZoneScopedS(60);
 	return ignore_texture_size;
 }
 
 void TextureRect::set_stretch_mode(StretchMode p_mode) {
+	ZoneScopedS(60);
 	if (stretch_mode == p_mode) {
 		return;
 	}
@@ -202,10 +212,12 @@ void TextureRect::set_stretch_mode(StretchMode p_mode) {
 }
 
 TextureRect::StretchMode TextureRect::get_stretch_mode() const {
+	ZoneScopedS(60);
 	return stretch_mode;
 }
 
 void TextureRect::set_flip_h(bool p_flip) {
+	ZoneScopedS(60);
 	if (hflip == p_flip) {
 		return;
 	}
@@ -215,10 +227,12 @@ void TextureRect::set_flip_h(bool p_flip) {
 }
 
 bool TextureRect::is_flipped_h() const {
+	ZoneScopedS(60);
 	return hflip;
 }
 
 void TextureRect::set_flip_v(bool p_flip) {
+	ZoneScopedS(60);
 	if (vflip == p_flip) {
 		return;
 	}
@@ -228,10 +242,12 @@ void TextureRect::set_flip_v(bool p_flip) {
 }
 
 bool TextureRect::is_flipped_v() const {
+	ZoneScopedS(60);
 	return vflip;
 }
 
 TextureRect::TextureRect() {
+	ZoneScopedS(60);
 	set_mouse_filter(MOUSE_FILTER_PASS);
 }
 

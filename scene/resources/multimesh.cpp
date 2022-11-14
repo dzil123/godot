@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  multimesh.cpp                                                        */
 /*************************************************************************/
@@ -36,6 +37,7 @@
 // Kept for compatibility from 3.x to 4.0.
 
 void MultiMesh::_set_transform_array(const Vector<Vector3> &p_array) {
+	ZoneScopedS(60);
 	if (transform_format != TRANSFORM_3D) {
 		return;
 	}
@@ -61,6 +63,7 @@ void MultiMesh::_set_transform_array(const Vector<Vector3> &p_array) {
 }
 
 Vector<Vector3> MultiMesh::_get_transform_array() const {
+	ZoneScopedS(60);
 	if (transform_format != TRANSFORM_3D) {
 		return Vector<Vector3>();
 	}
@@ -86,6 +89,7 @@ Vector<Vector3> MultiMesh::_get_transform_array() const {
 }
 
 void MultiMesh::_set_transform_2d_array(const Vector<Vector2> &p_array) {
+	ZoneScopedS(60);
 	if (transform_format != TRANSFORM_2D) {
 		return;
 	}
@@ -110,6 +114,7 @@ void MultiMesh::_set_transform_2d_array(const Vector<Vector2> &p_array) {
 }
 
 Vector<Vector2> MultiMesh::_get_transform_2d_array() const {
+	ZoneScopedS(60);
 	if (transform_format != TRANSFORM_2D) {
 		return Vector<Vector2>();
 	}
@@ -134,6 +139,7 @@ Vector<Vector2> MultiMesh::_get_transform_2d_array() const {
 }
 
 void MultiMesh::_set_color_array(const Vector<Color> &p_array) {
+	ZoneScopedS(60);
 	const Vector<Color> &colors = p_array;
 	int len = colors.size();
 	if (len == 0) {
@@ -149,6 +155,7 @@ void MultiMesh::_set_color_array(const Vector<Color> &p_array) {
 }
 
 Vector<Color> MultiMesh::_get_color_array() const {
+	ZoneScopedS(60);
 	if (instance_count == 0 || !use_colors) {
 		return Vector<Color>();
 	}
@@ -164,6 +171,7 @@ Vector<Color> MultiMesh::_get_color_array() const {
 }
 
 void MultiMesh::_set_custom_data_array(const Vector<Color> &p_array) {
+	ZoneScopedS(60);
 	const Vector<Color> &custom_datas = p_array;
 	int len = custom_datas.size();
 	if (len == 0) {
@@ -179,6 +187,7 @@ void MultiMesh::_set_custom_data_array(const Vector<Color> &p_array) {
 }
 
 Vector<Color> MultiMesh::_get_custom_data_array() const {
+	ZoneScopedS(60);
 	if (instance_count == 0 || !use_custom_data) {
 		return Vector<Color>();
 	}
@@ -195,14 +204,17 @@ Vector<Color> MultiMesh::_get_custom_data_array() const {
 #endif // DISABLE_DEPRECATED
 
 void MultiMesh::set_buffer(const Vector<float> &p_buffer) {
+	ZoneScopedS(60);
 	RS::get_singleton()->multimesh_set_buffer(multimesh, p_buffer);
 }
 
 Vector<float> MultiMesh::get_buffer() const {
+	ZoneScopedS(60);
 	return RS::get_singleton()->multimesh_get_buffer(multimesh);
 }
 
 void MultiMesh::set_mesh(const Ref<Mesh> &p_mesh) {
+	ZoneScopedS(60);
 	mesh = p_mesh;
 	if (!mesh.is_null()) {
 		RenderingServer::get_singleton()->multimesh_set_mesh(multimesh, mesh->get_rid());
@@ -212,20 +224,24 @@ void MultiMesh::set_mesh(const Ref<Mesh> &p_mesh) {
 }
 
 Ref<Mesh> MultiMesh::get_mesh() const {
+	ZoneScopedS(60);
 	return mesh;
 }
 
 void MultiMesh::set_instance_count(int p_count) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_count < 0);
 	RenderingServer::get_singleton()->multimesh_allocate_data(multimesh, p_count, RS::MultimeshTransformFormat(transform_format), use_colors, use_custom_data);
 	instance_count = p_count;
 }
 
 int MultiMesh::get_instance_count() const {
+	ZoneScopedS(60);
 	return instance_count;
 }
 
 void MultiMesh::set_visible_instance_count(int p_count) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_count < -1);
 	ERR_FAIL_COND(p_count > instance_count);
 	RenderingServer::get_singleton()->multimesh_set_visible_instances(multimesh, p_count);
@@ -233,77 +249,95 @@ void MultiMesh::set_visible_instance_count(int p_count) {
 }
 
 int MultiMesh::get_visible_instance_count() const {
+	ZoneScopedS(60);
 	return visible_instance_count;
 }
 
 void MultiMesh::set_instance_transform(int p_instance, const Transform3D &p_transform) {
+	ZoneScopedS(60);
 	RenderingServer::get_singleton()->multimesh_instance_set_transform(multimesh, p_instance, p_transform);
 }
 
 void MultiMesh::set_instance_transform_2d(int p_instance, const Transform2D &p_transform) {
+	ZoneScopedS(60);
 	RenderingServer::get_singleton()->multimesh_instance_set_transform_2d(multimesh, p_instance, p_transform);
 }
 
 Transform3D MultiMesh::get_instance_transform(int p_instance) const {
+	ZoneScopedS(60);
 	return RenderingServer::get_singleton()->multimesh_instance_get_transform(multimesh, p_instance);
 }
 
 Transform2D MultiMesh::get_instance_transform_2d(int p_instance) const {
+	ZoneScopedS(60);
 	return RenderingServer::get_singleton()->multimesh_instance_get_transform_2d(multimesh, p_instance);
 }
 
 void MultiMesh::set_instance_color(int p_instance, const Color &p_color) {
+	ZoneScopedS(60);
 	RenderingServer::get_singleton()->multimesh_instance_set_color(multimesh, p_instance, p_color);
 }
 
 Color MultiMesh::get_instance_color(int p_instance) const {
+	ZoneScopedS(60);
 	return RenderingServer::get_singleton()->multimesh_instance_get_color(multimesh, p_instance);
 }
 
 void MultiMesh::set_instance_custom_data(int p_instance, const Color &p_custom_data) {
+	ZoneScopedS(60);
 	RenderingServer::get_singleton()->multimesh_instance_set_custom_data(multimesh, p_instance, p_custom_data);
 }
 
 Color MultiMesh::get_instance_custom_data(int p_instance) const {
+	ZoneScopedS(60);
 	return RenderingServer::get_singleton()->multimesh_instance_get_custom_data(multimesh, p_instance);
 }
 
 AABB MultiMesh::get_aabb() const {
+	ZoneScopedS(60);
 	return RenderingServer::get_singleton()->multimesh_get_aabb(multimesh);
 }
 
 RID MultiMesh::get_rid() const {
+	ZoneScopedS(60);
 	return multimesh;
 }
 
 void MultiMesh::set_use_colors(bool p_enable) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(instance_count > 0);
 	use_colors = p_enable;
 }
 
 bool MultiMesh::is_using_colors() const {
+	ZoneScopedS(60);
 	return use_colors;
 }
 
 void MultiMesh::set_use_custom_data(bool p_enable) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(instance_count > 0);
 	use_custom_data = p_enable;
 }
 
 bool MultiMesh::is_using_custom_data() const {
+	ZoneScopedS(60);
 	return use_custom_data;
 }
 
 void MultiMesh::set_transform_format(TransformFormat p_transform_format) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(instance_count > 0);
 	transform_format = p_transform_format;
 }
 
 MultiMesh::TransformFormat MultiMesh::get_transform_format() const {
+	ZoneScopedS(60);
 	return transform_format;
 }
 
 void MultiMesh::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_mesh", "mesh"), &MultiMesh::set_mesh);
 	ClassDB::bind_method(D_METHOD("get_mesh"), &MultiMesh::get_mesh);
 	ClassDB::bind_method(D_METHOD("set_use_colors", "enable"), &MultiMesh::set_use_colors);
@@ -360,9 +394,11 @@ void MultiMesh::_bind_methods() {
 }
 
 MultiMesh::MultiMesh() {
+	ZoneScopedS(60);
 	multimesh = RenderingServer::get_singleton()->multimesh_create();
 }
 
 MultiMesh::~MultiMesh() {
+	ZoneScopedS(60);
 	RenderingServer::get_singleton()->free(multimesh);
 }

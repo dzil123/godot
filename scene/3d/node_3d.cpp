@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  node_3d.cpp                                                          */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "node_3d.h"
 
 #include "core/object/message_queue.h"
@@ -85,6 +116,7 @@ void Node3D::_notify_dirty() {
 }
 
 void Node3D::_update_local_transform() const {
+	ZoneScopedS(60);
 	// This function is called when the local transform (data.local_transform) is dirty and the right value is contained in the Euler rotation and scale.
 
 	data.local_transform.basis.set_euler_scale(data.euler_rotation, data.scale, data.euler_rotation_order);
@@ -93,6 +125,7 @@ void Node3D::_update_local_transform() const {
 }
 
 void Node3D::_update_rotation_and_scale() const {
+	ZoneScopedS(60);
 	// This function is called when the Euler rotation (data.euler_rotation) is dirty and the right value is contained in the local transform
 
 	data.scale = data.local_transform.basis.get_scale();
@@ -102,6 +135,7 @@ void Node3D::_update_rotation_and_scale() const {
 }
 
 void Node3D::_propagate_transform_changed(Node3D *p_origin) {
+	ZoneScopedS(60);
 	if (!is_inside_tree()) {
 		return;
 	}
@@ -127,6 +161,7 @@ void Node3D::_propagate_transform_changed(Node3D *p_origin) {
 }
 
 void Node3D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			ERR_FAIL_COND(!get_tree());
@@ -217,9 +252,11 @@ void Node3D::_notification(int p_what) {
 }
 
 void Node3D::set_basis(const Basis &p_basis) {
+	ZoneScopedS(60);
 	set_transform(Transform3D(p_basis, data.local_transform.origin));
 }
 void Node3D::set_quaternion(const Quaternion &p_quaternion) {
+	ZoneScopedS(60);
 	if (data.dirty & DIRTY_EULER_ROTATION_AND_SCALE) {
 		// We need the scale part, so if these are dirty, update it
 		data.scale = data.local_transform.basis.get_scale();
@@ -238,26 +275,31 @@ void Node3D::set_quaternion(const Quaternion &p_quaternion) {
 }
 
 Vector3 Node3D::get_global_position() const {
+	ZoneScopedS(60);
 	return get_global_transform().get_origin();
 }
 
 void Node3D::set_global_position(const Vector3 &p_position) {
+	ZoneScopedS(60);
 	Transform3D transform = get_global_transform();
 	transform.set_origin(p_position);
 	set_global_transform(transform);
 }
 
 Vector3 Node3D::get_global_rotation() const {
+	ZoneScopedS(60);
 	return get_global_transform().get_basis().get_euler();
 }
 
 void Node3D::set_global_rotation(const Vector3 &p_euler_rad) {
+	ZoneScopedS(60);
 	Transform3D transform = get_global_transform();
 	transform.basis = Basis::from_euler(p_euler_rad);
 	set_global_transform(transform);
 }
 
 void Node3D::set_transform(const Transform3D &p_transform) {
+	ZoneScopedS(60);
 	data.local_transform = p_transform;
 	data.dirty = DIRTY_EULER_ROTATION_AND_SCALE; // Make rot/scale dirty.
 
@@ -268,10 +310,12 @@ void Node3D::set_transform(const Transform3D &p_transform) {
 }
 
 Basis Node3D::get_basis() const {
+	ZoneScopedS(60);
 	return get_transform().basis;
 }
 
 Quaternion Node3D::get_quaternion() const {
+	ZoneScopedS(60);
 	if (data.dirty & DIRTY_LOCAL_TRANSFORM) {
 		_update_local_transform();
 	}
@@ -280,6 +324,7 @@ Quaternion Node3D::get_quaternion() const {
 }
 
 void Node3D::set_global_transform(const Transform3D &p_transform) {
+	ZoneScopedS(60);
 	Transform3D xform = (data.parent && !data.top_level_active)
 			? data.parent->get_global_transform().affine_inverse() * p_transform
 			: p_transform;
@@ -288,6 +333,7 @@ void Node3D::set_global_transform(const Transform3D &p_transform) {
 }
 
 Transform3D Node3D::get_transform() const {
+	ZoneScopedS(60);
 	if (data.dirty & DIRTY_LOCAL_TRANSFORM) {
 		_update_local_transform();
 	}
@@ -295,6 +341,7 @@ Transform3D Node3D::get_transform() const {
 	return data.local_transform;
 }
 Transform3D Node3D::get_global_transform() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!is_inside_tree(), Transform3D());
 
 	if (data.dirty & DIRTY_GLOBAL_TRANSFORM) {
@@ -320,15 +367,18 @@ Transform3D Node3D::get_global_transform() const {
 
 #ifdef TOOLS_ENABLED
 Transform3D Node3D::get_global_gizmo_transform() const {
+	ZoneScopedS(60);
 	return get_global_transform();
 }
 
 Transform3D Node3D::get_local_gizmo_transform() const {
+	ZoneScopedS(60);
 	return get_transform();
 }
 #endif
 
 Node3D *Node3D::get_parent_node_3d() const {
+	ZoneScopedS(60);
 	if (data.top_level) {
 		return nullptr;
 	}
@@ -337,6 +387,7 @@ Node3D *Node3D::get_parent_node_3d() const {
 }
 
 Transform3D Node3D::get_relative_transform(const Node *p_parent) const {
+	ZoneScopedS(60);
 	if (p_parent == this) {
 		return Transform3D();
 	}
@@ -351,6 +402,7 @@ Transform3D Node3D::get_relative_transform(const Node *p_parent) const {
 }
 
 void Node3D::set_position(const Vector3 &p_position) {
+	ZoneScopedS(60);
 	data.local_transform.origin = p_position;
 	_propagate_transform_changed(this);
 	if (data.notify_local_transform) {
@@ -359,6 +411,7 @@ void Node3D::set_position(const Vector3 &p_position) {
 }
 
 void Node3D::set_rotation_edit_mode(RotationEditMode p_mode) {
+	ZoneScopedS(60);
 	if (data.rotation_edit_mode == p_mode) {
 		return;
 	}
@@ -389,10 +442,12 @@ void Node3D::set_rotation_edit_mode(RotationEditMode p_mode) {
 }
 
 Node3D::RotationEditMode Node3D::get_rotation_edit_mode() const {
+	ZoneScopedS(60);
 	return data.rotation_edit_mode;
 }
 
 void Node3D::set_rotation_order(EulerOrder p_order) {
+	ZoneScopedS(60);
 	if (data.euler_rotation_order == p_order) {
 		return;
 	}
@@ -422,10 +477,12 @@ void Node3D::set_rotation_order(EulerOrder p_order) {
 }
 
 EulerOrder Node3D::get_rotation_order() const {
+	ZoneScopedS(60);
 	return data.euler_rotation_order;
 }
 
 void Node3D::set_rotation(const Vector3 &p_euler_rad) {
+	ZoneScopedS(60);
 	if (data.dirty & DIRTY_EULER_ROTATION_AND_SCALE) {
 		// Update scale only if rotation and scale are dirty, as rotation will be overridden.
 		data.scale = data.local_transform.basis.get_scale();
@@ -441,6 +498,7 @@ void Node3D::set_rotation(const Vector3 &p_euler_rad) {
 }
 
 void Node3D::set_scale(const Vector3 &p_scale) {
+	ZoneScopedS(60);
 	if (data.dirty & DIRTY_EULER_ROTATION_AND_SCALE) {
 		// Update rotation only if rotation and scale are dirty, as scale will be overridden.
 		data.euler_rotation = data.local_transform.basis.get_euler_normalized(data.euler_rotation_order);
@@ -456,10 +514,12 @@ void Node3D::set_scale(const Vector3 &p_scale) {
 }
 
 Vector3 Node3D::get_position() const {
+	ZoneScopedS(60);
 	return data.local_transform.origin;
 }
 
 Vector3 Node3D::get_rotation() const {
+	ZoneScopedS(60);
 	if (data.dirty & DIRTY_EULER_ROTATION_AND_SCALE) {
 		_update_rotation_and_scale();
 	}
@@ -468,6 +528,7 @@ Vector3 Node3D::get_rotation() const {
 }
 
 Vector3 Node3D::get_scale() const {
+	ZoneScopedS(60);
 	if (data.dirty & DIRTY_EULER_ROTATION_AND_SCALE) {
 		_update_rotation_and_scale();
 	}
@@ -558,6 +619,7 @@ void Node3D::clear_gizmos() {
 }
 
 TypedArray<Node3DGizmo> Node3D::get_gizmos_bind() const {
+	ZoneScopedS(60);
 	TypedArray<Node3DGizmo> ret;
 
 #ifdef TOOLS_ENABLED
@@ -604,14 +666,17 @@ void Node3D::set_disable_gizmos(bool p_enabled) {
 }
 
 void Node3D::set_disable_scale(bool p_enabled) {
+	ZoneScopedS(60);
 	data.disable_scale = p_enabled;
 }
 
 bool Node3D::is_scale_disabled() const {
+	ZoneScopedS(60);
 	return data.disable_scale;
 }
 
 void Node3D::set_as_top_level(bool p_enabled) {
+	ZoneScopedS(60);
 	if (data.top_level == p_enabled) {
 		return;
 	}
@@ -630,10 +695,12 @@ void Node3D::set_as_top_level(bool p_enabled) {
 }
 
 bool Node3D::is_set_as_top_level() const {
+	ZoneScopedS(60);
 	return data.top_level;
 }
 
 Ref<World3D> Node3D::get_world_3d() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!is_inside_world(), Ref<World3D>());
 	ERR_FAIL_COND_V(!data.viewport, Ref<World3D>());
 
@@ -641,6 +708,7 @@ Ref<World3D> Node3D::get_world_3d() const {
 }
 
 void Node3D::_propagate_visibility_changed() {
+	ZoneScopedS(60);
 	notification(NOTIFICATION_VISIBILITY_CHANGED);
 	emit_signal(SceneStringNames::get_singleton()->visibility_changed);
 
@@ -660,14 +728,17 @@ void Node3D::_propagate_visibility_changed() {
 }
 
 void Node3D::show() {
+	ZoneScopedS(60);
 	set_visible(true);
 }
 
 void Node3D::hide() {
+	ZoneScopedS(60);
 	set_visible(false);
 }
 
 void Node3D::set_visible(bool p_visible) {
+	ZoneScopedS(60);
 	if (data.visible == p_visible) {
 		return;
 	}
@@ -681,10 +752,12 @@ void Node3D::set_visible(bool p_visible) {
 }
 
 bool Node3D::is_visible() const {
+	ZoneScopedS(60);
 	return data.visible;
 }
 
 bool Node3D::is_visible_in_tree() const {
+	ZoneScopedS(60);
 	const Node3D *s = this;
 
 	while (s) {
@@ -698,42 +771,49 @@ bool Node3D::is_visible_in_tree() const {
 }
 
 void Node3D::rotate_object_local(const Vector3 &p_axis, real_t p_angle) {
+	ZoneScopedS(60);
 	Transform3D t = get_transform();
 	t.basis.rotate_local(p_axis, p_angle);
 	set_transform(t);
 }
 
 void Node3D::rotate(const Vector3 &p_axis, real_t p_angle) {
+	ZoneScopedS(60);
 	Transform3D t = get_transform();
 	t.basis.rotate(p_axis, p_angle);
 	set_transform(t);
 }
 
 void Node3D::rotate_x(real_t p_angle) {
+	ZoneScopedS(60);
 	Transform3D t = get_transform();
 	t.basis.rotate(Vector3(1, 0, 0), p_angle);
 	set_transform(t);
 }
 
 void Node3D::rotate_y(real_t p_angle) {
+	ZoneScopedS(60);
 	Transform3D t = get_transform();
 	t.basis.rotate(Vector3(0, 1, 0), p_angle);
 	set_transform(t);
 }
 
 void Node3D::rotate_z(real_t p_angle) {
+	ZoneScopedS(60);
 	Transform3D t = get_transform();
 	t.basis.rotate(Vector3(0, 0, 1), p_angle);
 	set_transform(t);
 }
 
 void Node3D::translate(const Vector3 &p_offset) {
+	ZoneScopedS(60);
 	Transform3D t = get_transform();
 	t.translate_local(p_offset);
 	set_transform(t);
 }
 
 void Node3D::translate_object_local(const Vector3 &p_offset) {
+	ZoneScopedS(60);
 	Transform3D t = get_transform();
 
 	Transform3D s;
@@ -742,52 +822,61 @@ void Node3D::translate_object_local(const Vector3 &p_offset) {
 }
 
 void Node3D::scale(const Vector3 &p_ratio) {
+	ZoneScopedS(60);
 	Transform3D t = get_transform();
 	t.basis.scale(p_ratio);
 	set_transform(t);
 }
 
 void Node3D::scale_object_local(const Vector3 &p_scale) {
+	ZoneScopedS(60);
 	Transform3D t = get_transform();
 	t.basis.scale_local(p_scale);
 	set_transform(t);
 }
 
 void Node3D::global_rotate(const Vector3 &p_axis, real_t p_angle) {
+	ZoneScopedS(60);
 	Transform3D t = get_global_transform();
 	t.basis.rotate(p_axis, p_angle);
 	set_global_transform(t);
 }
 
 void Node3D::global_scale(const Vector3 &p_scale) {
+	ZoneScopedS(60);
 	Transform3D t = get_global_transform();
 	t.basis.scale(p_scale);
 	set_global_transform(t);
 }
 
 void Node3D::global_translate(const Vector3 &p_offset) {
+	ZoneScopedS(60);
 	Transform3D t = get_global_transform();
 	t.origin += p_offset;
 	set_global_transform(t);
 }
 
 void Node3D::orthonormalize() {
+	ZoneScopedS(60);
 	Transform3D t = get_transform();
 	t.orthonormalize();
 	set_transform(t);
 }
 
 void Node3D::set_identity() {
+	ZoneScopedS(60);
 	set_transform(Transform3D());
 }
 
 void Node3D::look_at(const Vector3 &p_target, const Vector3 &p_up) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!is_inside_tree(), "Node not inside tree. Use look_at_from_position() instead.");
 	Vector3 origin = get_global_transform().origin;
 	look_at_from_position(origin, p_target, p_up);
 }
 
 void Node3D::look_at_from_position(const Vector3 &p_pos, const Vector3 &p_target, const Vector3 &p_up) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_pos.is_equal_approx(p_target), "Node origin and target are in the same position, look_at() failed.");
 	ERR_FAIL_COND_MSG(p_up.is_zero_approx(), "The up vector can't be zero, look_at() failed.");
 	ERR_FAIL_COND_MSG(p_up.cross(p_target - p_pos).is_zero_approx(), "Up vector and direction between node origin and target are aligned, look_at() failed.");
@@ -799,30 +888,37 @@ void Node3D::look_at_from_position(const Vector3 &p_pos, const Vector3 &p_target
 }
 
 Vector3 Node3D::to_local(Vector3 p_global) const {
+	ZoneScopedS(60);
 	return get_global_transform().affine_inverse().xform(p_global);
 }
 
 Vector3 Node3D::to_global(Vector3 p_local) const {
+	ZoneScopedS(60);
 	return get_global_transform().xform(p_local);
 }
 
 void Node3D::set_notify_transform(bool p_enabled) {
+	ZoneScopedS(60);
 	data.notify_transform = p_enabled;
 }
 
 bool Node3D::is_transform_notification_enabled() const {
+	ZoneScopedS(60);
 	return data.notify_transform;
 }
 
 void Node3D::set_notify_local_transform(bool p_enabled) {
+	ZoneScopedS(60);
 	data.notify_local_transform = p_enabled;
 }
 
 bool Node3D::is_local_transform_notification_enabled() const {
+	ZoneScopedS(60);
 	return data.notify_local_transform;
 }
 
 void Node3D::force_update_transform() {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!is_inside_tree());
 	if (!xform_change.in_list()) {
 		return; //nothing to update
@@ -833,6 +929,7 @@ void Node3D::force_update_transform() {
 }
 
 void Node3D::_update_visibility_parent(bool p_update_root) {
+	ZoneScopedS(60);
 	RID new_parent;
 
 	if (!visibility_parent_path.is_empty()) {
@@ -866,6 +963,7 @@ void Node3D::_update_visibility_parent(bool p_update_root) {
 }
 
 void Node3D::set_visibility_parent(const NodePath &p_path) {
+	ZoneScopedS(60);
 	visibility_parent_path = p_path;
 	if (is_inside_tree()) {
 		_update_visibility_parent(true);
@@ -873,10 +971,12 @@ void Node3D::set_visibility_parent(const NodePath &p_path) {
 }
 
 NodePath Node3D::get_visibility_parent() const {
+	ZoneScopedS(60);
 	return visibility_parent_path;
 }
 
 void Node3D::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (data.rotation_edit_mode != ROTATION_EDIT_MODE_BASIS && p_property.name == "basis") {
 		p_property.usage = 0;
 	}
@@ -895,6 +995,7 @@ void Node3D::_validate_property(PropertyInfo &p_property) const {
 }
 
 bool Node3D::_property_can_revert(const StringName &p_name) const {
+	ZoneScopedS(60);
 	if (p_name == "basis") {
 		return true;
 	} else if (p_name == "scale") {
@@ -910,6 +1011,7 @@ bool Node3D::_property_can_revert(const StringName &p_name) const {
 }
 
 bool Node3D::_property_get_revert(const StringName &p_name, Variant &r_property) const {
+	ZoneScopedS(60);
 	bool valid = false;
 
 	if (p_name == "basis") {
@@ -954,6 +1056,7 @@ bool Node3D::_property_get_revert(const StringName &p_name, Variant &r_property)
 }
 
 void Node3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_transform", "local"), &Node3D::set_transform);
 	ClassDB::bind_method(D_METHOD("get_transform"), &Node3D::get_transform);
 	ClassDB::bind_method(D_METHOD("set_position", "position"), &Node3D::set_position);

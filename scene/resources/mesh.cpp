@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  mesh.cpp                                                             */
 /*************************************************************************/
@@ -40,6 +41,7 @@
 Mesh::ConvexDecompositionFunc Mesh::convex_decomposition_function = nullptr;
 
 int Mesh::get_surface_count() const {
+	ZoneScopedS(60);
 	int ret;
 	if (GDVIRTUAL_REQUIRED_CALL(_get_surface_count, ret)) {
 		return ret;
@@ -48,6 +50,7 @@ int Mesh::get_surface_count() const {
 }
 
 int Mesh::surface_get_array_len(int p_idx) const {
+	ZoneScopedS(60);
 	int ret;
 	if (GDVIRTUAL_REQUIRED_CALL(_surface_get_array_len, p_idx, ret)) {
 		return ret;
@@ -56,6 +59,7 @@ int Mesh::surface_get_array_len(int p_idx) const {
 }
 
 int Mesh::surface_get_array_index_len(int p_idx) const {
+	ZoneScopedS(60);
 	int ret;
 	if (GDVIRTUAL_REQUIRED_CALL(_surface_get_array_index_len, p_idx, ret)) {
 		return ret;
@@ -64,6 +68,7 @@ int Mesh::surface_get_array_index_len(int p_idx) const {
 }
 
 Array Mesh::surface_get_arrays(int p_surface) const {
+	ZoneScopedS(60);
 	Array ret;
 	if (GDVIRTUAL_REQUIRED_CALL(_surface_get_arrays, p_surface, ret)) {
 		return ret;
@@ -72,6 +77,7 @@ Array Mesh::surface_get_arrays(int p_surface) const {
 }
 
 TypedArray<Array> Mesh::surface_get_blend_shape_arrays(int p_surface) const {
+	ZoneScopedS(60);
 	TypedArray<Array> ret;
 	if (GDVIRTUAL_REQUIRED_CALL(_surface_get_blend_shape_arrays, p_surface, ret)) {
 		return ret;
@@ -81,6 +87,7 @@ TypedArray<Array> Mesh::surface_get_blend_shape_arrays(int p_surface) const {
 }
 
 Dictionary Mesh::surface_get_lods(int p_surface) const {
+	ZoneScopedS(60);
 	Dictionary ret;
 	if (GDVIRTUAL_REQUIRED_CALL(_surface_get_lods, p_surface, ret)) {
 		return ret;
@@ -90,6 +97,7 @@ Dictionary Mesh::surface_get_lods(int p_surface) const {
 }
 
 uint32_t Mesh::surface_get_format(int p_idx) const {
+	ZoneScopedS(60);
 	uint32_t ret;
 	if (GDVIRTUAL_REQUIRED_CALL(_surface_get_format, p_idx, ret)) {
 		return ret;
@@ -99,6 +107,7 @@ uint32_t Mesh::surface_get_format(int p_idx) const {
 }
 
 Mesh::PrimitiveType Mesh::surface_get_primitive_type(int p_idx) const {
+	ZoneScopedS(60);
 	uint32_t ret;
 	if (GDVIRTUAL_REQUIRED_CALL(_surface_get_primitive_type, p_idx, ret)) {
 		return (Mesh::PrimitiveType)ret;
@@ -108,12 +117,14 @@ Mesh::PrimitiveType Mesh::surface_get_primitive_type(int p_idx) const {
 }
 
 void Mesh::surface_set_material(int p_idx, const Ref<Material> &p_material) {
+	ZoneScopedS(60);
 	if (GDVIRTUAL_REQUIRED_CALL(_surface_set_material, p_idx, p_material)) {
 		return;
 	}
 }
 
 Ref<Material> Mesh::surface_get_material(int p_idx) const {
+	ZoneScopedS(60);
 	Ref<Material> ret;
 	if (GDVIRTUAL_REQUIRED_CALL(_surface_get_material, p_idx, ret)) {
 		return ret;
@@ -123,6 +134,7 @@ Ref<Material> Mesh::surface_get_material(int p_idx) const {
 }
 
 int Mesh::get_blend_shape_count() const {
+	ZoneScopedS(60);
 	int ret;
 	if (GDVIRTUAL_REQUIRED_CALL(_get_blend_shape_count, ret)) {
 		return ret;
@@ -132,6 +144,7 @@ int Mesh::get_blend_shape_count() const {
 }
 
 StringName Mesh::get_blend_shape_name(int p_index) const {
+	ZoneScopedS(60);
 	StringName ret;
 	if (GDVIRTUAL_REQUIRED_CALL(_get_blend_shape_name, p_index, ret)) {
 		return ret;
@@ -141,12 +154,14 @@ StringName Mesh::get_blend_shape_name(int p_index) const {
 }
 
 void Mesh::set_blend_shape_name(int p_index, const StringName &p_name) {
+	ZoneScopedS(60);
 	if (GDVIRTUAL_REQUIRED_CALL(_set_blend_shape_name, p_index, p_name)) {
 		return;
 	}
 }
 
 AABB Mesh::get_aabb() const {
+	ZoneScopedS(60);
 	AABB ret;
 	if (GDVIRTUAL_REQUIRED_CALL(_get_aabb, ret)) {
 		return ret;
@@ -156,6 +171,7 @@ AABB Mesh::get_aabb() const {
 }
 
 Ref<TriangleMesh> Mesh::generate_triangle_mesh() const {
+	ZoneScopedS(60);
 	if (triangle_mesh.is_valid()) {
 		return triangle_mesh;
 	}
@@ -263,6 +279,7 @@ Ref<TriangleMesh> Mesh::generate_triangle_mesh() const {
 }
 
 Ref<TriangleMesh> Mesh::generate_surface_triangle_mesh(int p_surface) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_surface, get_surface_count(), Ref<TriangleMesh>());
 
 	if (surface_triangle_meshes.size() != get_surface_count()) {
@@ -321,6 +338,7 @@ Ref<TriangleMesh> Mesh::generate_surface_triangle_mesh(int p_surface) const {
 }
 
 void Mesh::generate_debug_mesh_lines(Vector<Vector3> &r_lines) {
+	ZoneScopedS(60);
 	if (debug_lines.size() > 0) {
 		r_lines = debug_lines;
 		return;
@@ -358,6 +376,7 @@ void Mesh::generate_debug_mesh_lines(Vector<Vector3> &r_lines) {
 }
 
 void Mesh::generate_debug_mesh_indices(Vector<Vector3> &r_points) {
+	ZoneScopedS(60);
 	Ref<TriangleMesh> tm = generate_triangle_mesh();
 	if (tm.is_null()) {
 		return;
@@ -373,6 +392,7 @@ void Mesh::generate_debug_mesh_indices(Vector<Vector3> &r_points) {
 }
 
 Vector<Face3> Mesh::get_faces() const {
+	ZoneScopedS(60);
 	Ref<TriangleMesh> tm = generate_triangle_mesh();
 	if (tm.is_valid()) {
 		return tm->get_faces();
@@ -381,6 +401,7 @@ Vector<Face3> Mesh::get_faces() const {
 }
 
 Vector<Face3> Mesh::get_surface_faces(int p_surface) const {
+	ZoneScopedS(60);
 	Ref<TriangleMesh> tm = generate_surface_triangle_mesh(p_surface);
 	if (tm.is_valid()) {
 		return tm->get_faces();
@@ -389,6 +410,7 @@ Vector<Face3> Mesh::get_surface_faces(int p_surface) const {
 }
 
 Ref<Shape3D> Mesh::create_convex_shape(bool p_clean, bool p_simplify) const {
+	ZoneScopedS(60);
 	if (p_simplify) {
 		ConvexDecompositionSettings settings;
 		settings.max_convex_hulls = 1;
@@ -426,6 +448,7 @@ Ref<Shape3D> Mesh::create_convex_shape(bool p_clean, bool p_simplify) const {
 }
 
 Ref<Shape3D> Mesh::create_trimesh_shape() const {
+	ZoneScopedS(60);
 	Vector<Face3> faces = get_faces();
 	if (faces.size() == 0) {
 		return Ref<Shape3D>();
@@ -447,6 +470,7 @@ Ref<Shape3D> Mesh::create_trimesh_shape() const {
 }
 
 Ref<Mesh> Mesh::create_outline(float p_margin) const {
+	ZoneScopedS(60);
 	Array arrays;
 	int index_accum = 0;
 	for (int i = 0; i < get_surface_count(); i++) {
@@ -643,14 +667,17 @@ Ref<Mesh> Mesh::create_outline(float p_margin) const {
 }
 
 void Mesh::set_lightmap_size_hint(const Size2i &p_size) {
+	ZoneScopedS(60);
 	lightmap_size_hint = p_size;
 }
 
 Size2i Mesh::get_lightmap_size_hint() const {
+	ZoneScopedS(60);
 	return lightmap_size_hint;
 }
 
 void Mesh::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_lightmap_size_hint", "size"), &Mesh::set_lightmap_size_hint);
 	ClassDB::bind_method(D_METHOD("get_lightmap_size_hint"), &Mesh::get_lightmap_size_hint);
 	ClassDB::bind_method(D_METHOD("get_aabb"), &Mesh::get_aabb);
@@ -744,11 +771,13 @@ void Mesh::_bind_methods() {
 }
 
 void Mesh::clear_cache() const {
+	ZoneScopedS(60);
 	triangle_mesh.unref();
 	debug_lines.clear();
 }
 
 Vector<Ref<Shape3D>> Mesh::convex_decompose(const ConvexDecompositionSettings &p_settings) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!convex_decomposition_function, Vector<Ref<Shape3D>>());
 
 	Ref<TriangleMesh> tm = generate_triangle_mesh();
@@ -786,10 +815,12 @@ Vector<Ref<Shape3D>> Mesh::convex_decompose(const ConvexDecompositionSettings &p
 }
 
 int Mesh::get_builtin_bind_pose_count() const {
+	ZoneScopedS(60);
 	return 0;
 }
 
 Transform3D Mesh::get_builtin_bind_pose(int p_index) const {
+	ZoneScopedS(60);
 	return Transform3D();
 }
 
@@ -840,6 +871,7 @@ enum OldArrayFormat {
 
 #ifndef DISABLE_DEPRECATED
 static Array _convert_old_array(const Array &p_old) {
+	ZoneScopedS(60);
 	Array new_array;
 	new_array.resize(Mesh::ARRAY_MAX);
 	new_array[Mesh::ARRAY_VERTEX] = p_old[OLD_ARRAY_VERTEX];
@@ -866,6 +898,7 @@ static Mesh::PrimitiveType _old_primitives[7] = {
 #endif // DISABLE_DEPRECATED
 
 void _fix_array_compatibility(const Vector<uint8_t> &p_src, uint32_t p_old_format, uint32_t p_new_format, uint32_t p_elements, Vector<uint8_t> &vertex_data, Vector<uint8_t> &attribute_data, Vector<uint8_t> &skin_data) {
+	ZoneScopedS(60);
 	uint32_t dst_vertex_stride;
 	uint32_t dst_attribute_stride;
 	uint32_t dst_skin_stride;
@@ -1147,6 +1180,7 @@ void _fix_array_compatibility(const Vector<uint8_t> &p_src, uint32_t p_old_forma
 }
 
 bool ArrayMesh::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	String sname = p_name;
 
 	if (sname.begins_with("surface_")) {
@@ -1306,6 +1340,7 @@ bool ArrayMesh::_set(const StringName &p_name, const Variant &p_value) {
 }
 
 void ArrayMesh::_set_blend_shape_names(const PackedStringArray &p_names) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(surfaces.size() > 0);
 
 	blend_shapes.resize(p_names.size());
@@ -1319,6 +1354,7 @@ void ArrayMesh::_set_blend_shape_names(const PackedStringArray &p_names) {
 }
 
 PackedStringArray ArrayMesh::_get_blend_shape_names() const {
+	ZoneScopedS(60);
 	PackedStringArray sarr;
 	sarr.resize(blend_shapes.size());
 	for (int i = 0; i < blend_shapes.size(); i++) {
@@ -1328,6 +1364,7 @@ PackedStringArray ArrayMesh::_get_blend_shape_names() const {
 }
 
 Array ArrayMesh::_get_surfaces() const {
+	ZoneScopedS(60);
 	if (mesh.is_null()) {
 		return Array();
 	}
@@ -1393,6 +1430,7 @@ Array ArrayMesh::_get_surfaces() const {
 }
 
 void ArrayMesh::_create_if_empty() const {
+	ZoneScopedS(60);
 	if (!mesh.is_valid()) {
 		mesh = RS::get_singleton()->mesh_create();
 		RS::get_singleton()->mesh_set_blend_shape_mode(mesh, (RS::BlendShapeMode)blend_shape_mode);
@@ -1401,6 +1439,7 @@ void ArrayMesh::_create_if_empty() const {
 }
 
 void ArrayMesh::_set_surfaces(const Array &p_surfaces) {
+	ZoneScopedS(60);
 	Vector<RS::SurfaceData> surface_data;
 	Vector<Ref<Material>> surface_materials;
 	Vector<String> surface_names;
@@ -1517,6 +1556,7 @@ void ArrayMesh::_set_surfaces(const Array &p_surfaces) {
 }
 
 bool ArrayMesh::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	if (_is_generated()) {
 		return false;
 	}
@@ -1541,6 +1581,7 @@ bool ArrayMesh::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void ArrayMesh::reset_state() {
+	ZoneScopedS(60);
 	clear_surfaces();
 	clear_blend_shapes();
 
@@ -1550,6 +1591,7 @@ void ArrayMesh::reset_state() {
 }
 
 void ArrayMesh::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	if (_is_generated()) {
 		return;
 	}
@@ -1565,6 +1607,7 @@ void ArrayMesh::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 void ArrayMesh::_recompute_aabb() {
+	ZoneScopedS(60);
 	// regenerate AABB
 	aabb = AABB();
 
@@ -1579,6 +1622,7 @@ void ArrayMesh::_recompute_aabb() {
 
 // TODO: Need to add binding to add_surface using future MeshSurfaceData object.
 void ArrayMesh::add_surface(uint32_t p_format, PrimitiveType p_primitive, const Vector<uint8_t> &p_array, const Vector<uint8_t> &p_attribute_array, const Vector<uint8_t> &p_skin_array, int p_vertex_count, const Vector<uint8_t> &p_index_array, int p_index_count, const AABB &p_aabb, const Vector<uint8_t> &p_blend_shape_data, const Vector<AABB> &p_bone_aabbs, const Vector<RS::SurfaceData::LOD> &p_lods) {
+	ZoneScopedS(60);
 	_create_if_empty();
 
 	Surface s;
@@ -1614,6 +1658,7 @@ void ArrayMesh::add_surface(uint32_t p_format, PrimitiveType p_primitive, const 
 }
 
 void ArrayMesh::add_surface_from_arrays(PrimitiveType p_primitive, const Array &p_arrays, const TypedArray<Array> &p_blend_shapes, const Dictionary &p_lods, uint32_t p_flags) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_arrays.size() != ARRAY_MAX);
 
 	RS::SurfaceData surface;
@@ -1635,25 +1680,30 @@ void ArrayMesh::add_surface_from_arrays(PrimitiveType p_primitive, const Array &
 }
 
 Array ArrayMesh::surface_get_arrays(int p_surface) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_surface, surfaces.size(), Array());
 	return RenderingServer::get_singleton()->mesh_surface_get_arrays(mesh, p_surface);
 }
 
 TypedArray<Array> ArrayMesh::surface_get_blend_shape_arrays(int p_surface) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_surface, surfaces.size(), TypedArray<Array>());
 	return RenderingServer::get_singleton()->mesh_surface_get_blend_shape_arrays(mesh, p_surface);
 }
 
 Dictionary ArrayMesh::surface_get_lods(int p_surface) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_surface, surfaces.size(), Dictionary());
 	return RenderingServer::get_singleton()->mesh_surface_get_lods(mesh, p_surface);
 }
 
 int ArrayMesh::get_surface_count() const {
+	ZoneScopedS(60);
 	return surfaces.size();
 }
 
 void ArrayMesh::add_blend_shape(const StringName &p_name) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(surfaces.size(), "Can't add a shape key count if surfaces are already created.");
 
 	StringName shape_name = p_name;
@@ -1674,15 +1724,18 @@ void ArrayMesh::add_blend_shape(const StringName &p_name) {
 }
 
 int ArrayMesh::get_blend_shape_count() const {
+	ZoneScopedS(60);
 	return blend_shapes.size();
 }
 
 StringName ArrayMesh::get_blend_shape_name(int p_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_index, blend_shapes.size(), StringName());
 	return blend_shapes[p_index];
 }
 
 void ArrayMesh::set_blend_shape_name(int p_index, const StringName &p_name) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, blend_shapes.size());
 
 	StringName shape_name = p_name;
@@ -1699,6 +1752,7 @@ void ArrayMesh::set_blend_shape_name(int p_index, const StringName &p_name) {
 }
 
 void ArrayMesh::clear_blend_shapes() {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(surfaces.size(), "Can't set shape key count if surfaces are already created.");
 
 	blend_shapes.clear();
@@ -1709,6 +1763,7 @@ void ArrayMesh::clear_blend_shapes() {
 }
 
 void ArrayMesh::set_blend_shape_mode(BlendShapeMode p_mode) {
+	ZoneScopedS(60);
 	blend_shape_mode = p_mode;
 	if (mesh.is_valid()) {
 		RS::get_singleton()->mesh_set_blend_shape_mode(mesh, (RS::BlendShapeMode)p_mode);
@@ -1716,30 +1771,36 @@ void ArrayMesh::set_blend_shape_mode(BlendShapeMode p_mode) {
 }
 
 ArrayMesh::BlendShapeMode ArrayMesh::get_blend_shape_mode() const {
+	ZoneScopedS(60);
 	return blend_shape_mode;
 }
 
 int ArrayMesh::surface_get_array_len(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, surfaces.size(), -1);
 	return surfaces[p_idx].array_length;
 }
 
 int ArrayMesh::surface_get_array_index_len(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, surfaces.size(), -1);
 	return surfaces[p_idx].index_array_length;
 }
 
 uint32_t ArrayMesh::surface_get_format(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, surfaces.size(), 0);
 	return surfaces[p_idx].format;
 }
 
 ArrayMesh::PrimitiveType ArrayMesh::surface_get_primitive_type(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, surfaces.size(), PRIMITIVE_LINES);
 	return surfaces[p_idx].primitive;
 }
 
 void ArrayMesh::surface_set_material(int p_idx, const Ref<Material> &p_material) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_idx, surfaces.size());
 	if (surfaces[p_idx].material == p_material) {
 		return;
@@ -1751,6 +1812,7 @@ void ArrayMesh::surface_set_material(int p_idx, const Ref<Material> &p_material)
 }
 
 int ArrayMesh::surface_find_by_name(const String &p_name) const {
+	ZoneScopedS(60);
 	for (int i = 0; i < surfaces.size(); i++) {
 		if (surfaces[i].name == p_name) {
 			return i;
@@ -1760,6 +1822,7 @@ int ArrayMesh::surface_find_by_name(const String &p_name) const {
 }
 
 void ArrayMesh::surface_set_name(int p_idx, const String &p_name) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_idx, surfaces.size());
 
 	surfaces.write[p_idx].name = p_name;
@@ -1767,29 +1830,34 @@ void ArrayMesh::surface_set_name(int p_idx, const String &p_name) {
 }
 
 String ArrayMesh::surface_get_name(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, surfaces.size(), String());
 	return surfaces[p_idx].name;
 }
 
 void ArrayMesh::surface_update_vertex_region(int p_surface, int p_offset, const Vector<uint8_t> &p_data) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_surface, surfaces.size());
 	RS::get_singleton()->mesh_surface_update_vertex_region(mesh, p_surface, p_offset, p_data);
 	emit_changed();
 }
 
 void ArrayMesh::surface_update_attribute_region(int p_surface, int p_offset, const Vector<uint8_t> &p_data) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_surface, surfaces.size());
 	RS::get_singleton()->mesh_surface_update_attribute_region(mesh, p_surface, p_offset, p_data);
 	emit_changed();
 }
 
 void ArrayMesh::surface_update_skin_region(int p_surface, int p_offset, const Vector<uint8_t> &p_data) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_surface, surfaces.size());
 	RS::get_singleton()->mesh_surface_update_skin_region(mesh, p_surface, p_offset, p_data);
 	emit_changed();
 }
 
 void ArrayMesh::surface_set_custom_aabb(int p_idx, const AABB &p_aabb) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_idx, surfaces.size());
 	surfaces.write[p_idx].aabb = p_aabb;
 	// set custom aabb too?
@@ -1797,20 +1865,24 @@ void ArrayMesh::surface_set_custom_aabb(int p_idx, const AABB &p_aabb) {
 }
 
 Ref<Material> ArrayMesh::surface_get_material(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, surfaces.size(), Ref<Material>());
 	return surfaces[p_idx].material;
 }
 
 RID ArrayMesh::get_rid() const {
+	ZoneScopedS(60);
 	_create_if_empty();
 	return mesh;
 }
 
 AABB ArrayMesh::get_aabb() const {
+	ZoneScopedS(60);
 	return aabb;
 }
 
 void ArrayMesh::clear_surfaces() {
+	ZoneScopedS(60);
 	if (!mesh.is_valid()) {
 		return;
 	}
@@ -1820,6 +1892,7 @@ void ArrayMesh::clear_surfaces() {
 }
 
 void ArrayMesh::set_custom_aabb(const AABB &p_custom) {
+	ZoneScopedS(60);
 	_create_if_empty();
 	custom_aabb = p_custom;
 	RS::get_singleton()->mesh_set_custom_aabb(mesh, custom_aabb);
@@ -1827,10 +1900,12 @@ void ArrayMesh::set_custom_aabb(const AABB &p_custom) {
 }
 
 AABB ArrayMesh::get_custom_aabb() const {
+	ZoneScopedS(60);
 	return custom_aabb;
 }
 
 void ArrayMesh::regen_normal_maps() {
+	ZoneScopedS(60);
 	if (surfaces.size() == 0) {
 		return;
 	}
@@ -1860,11 +1935,13 @@ struct ArrayMeshLightmapSurface {
 };
 
 Error ArrayMesh::lightmap_unwrap(const Transform3D &p_base_transform, float p_texel_size) {
+	ZoneScopedS(60);
 	Vector<uint8_t> null_cache;
 	return lightmap_unwrap_cached(p_base_transform, p_texel_size, null_cache, null_cache, false);
 }
 
 Error ArrayMesh::lightmap_unwrap_cached(const Transform3D &p_base_transform, float p_texel_size, const Vector<uint8_t> &p_src_cache, Vector<uint8_t> &r_dst_cache, bool p_generate_cache) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!array_mesh_lightmap_unwrap_callback, ERR_UNCONFIGURED);
 	ERR_FAIL_COND_V_MSG(blend_shapes.size() != 0, ERR_UNAVAILABLE, "Can't unwrap mesh with blend shapes.");
 	ERR_FAIL_COND_V_MSG(p_texel_size <= 0.0f, ERR_PARAMETER_RANGE_ERROR, "Texel size must be greater than 0.");
@@ -2061,6 +2138,7 @@ Error ArrayMesh::lightmap_unwrap_cached(const Transform3D &p_base_transform, flo
 }
 
 void ArrayMesh::set_shadow_mesh(const Ref<ArrayMesh> &p_mesh) {
+	ZoneScopedS(60);
 	shadow_mesh = p_mesh;
 	if (shadow_mesh.is_valid()) {
 		RS::get_singleton()->mesh_set_shadow_mesh(mesh, shadow_mesh->get_rid());
@@ -2070,10 +2148,12 @@ void ArrayMesh::set_shadow_mesh(const Ref<ArrayMesh> &p_mesh) {
 }
 
 Ref<ArrayMesh> ArrayMesh::get_shadow_mesh() const {
+	ZoneScopedS(60);
 	return shadow_mesh;
 }
 
 void ArrayMesh::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("add_blend_shape", "name"), &ArrayMesh::add_blend_shape);
 	ClassDB::bind_method(D_METHOD("get_blend_shape_count"), &ArrayMesh::get_blend_shape_count);
 	ClassDB::bind_method(D_METHOD("get_blend_shape_name", "index"), &ArrayMesh::get_blend_shape_name);
@@ -2124,6 +2204,7 @@ void ArrayMesh::_bind_methods() {
 }
 
 void ArrayMesh::reload_from_file() {
+	ZoneScopedS(60);
 	RenderingServer::get_singleton()->mesh_clear(mesh);
 	surfaces.clear();
 	clear_blend_shapes();
@@ -2135,11 +2216,13 @@ void ArrayMesh::reload_from_file() {
 }
 
 ArrayMesh::ArrayMesh() {
+	ZoneScopedS(60);
 	//mesh is now created on demand
 	//mesh = RenderingServer::get_singleton()->mesh_create();
 }
 
 ArrayMesh::~ArrayMesh() {
+	ZoneScopedS(60);
 	if (mesh.is_valid()) {
 		RenderingServer::get_singleton()->free(mesh);
 	}
@@ -2147,14 +2230,17 @@ ArrayMesh::~ArrayMesh() {
 ///////////////
 
 void PlaceholderMesh::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_aabb", "aabb"), &PlaceholderMesh::set_aabb);
 	ADD_PROPERTY(PropertyInfo(Variant::AABB, "aabb", PROPERTY_HINT_NONE, "suffix:m"), "set_aabb", "get_aabb");
 }
 
 PlaceholderMesh::PlaceholderMesh() {
+	ZoneScopedS(60);
 	rid = RS::get_singleton()->mesh_create();
 }
 
 PlaceholderMesh::~PlaceholderMesh() {
+	ZoneScopedS(60);
 	RS::get_singleton()->free(rid);
 }

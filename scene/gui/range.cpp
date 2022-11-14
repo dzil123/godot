@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  range.cpp                                                            */
 /*************************************************************************/
@@ -31,6 +32,7 @@
 #include "range.h"
 
 PackedStringArray Range::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (shared->exp_ratio && shared->min <= 0) {
@@ -41,15 +43,18 @@ PackedStringArray Range::get_configuration_warnings() const {
 }
 
 void Range::_value_changed(double p_value) {
+	ZoneScopedS(60);
 	GDVIRTUAL_CALL(_value_changed, p_value);
 }
 void Range::_value_changed_notify() {
+	ZoneScopedS(60);
 	_value_changed(shared->val);
 	emit_signal(SNAME("value_changed"), shared->val);
 	queue_redraw();
 }
 
 void Range::Shared::emit_value_changed() {
+	ZoneScopedS(60);
 	for (Range *E : owners) {
 		Range *r = E;
 		if (!r->is_inside_tree()) {
@@ -60,16 +65,19 @@ void Range::Shared::emit_value_changed() {
 }
 
 void Range::_changed_notify(const char *p_what) {
+	ZoneScopedS(60);
 	emit_signal(SNAME("changed"));
 	queue_redraw();
 }
 
 void Range::_validate_values() {
+	ZoneScopedS(60);
 	shared->max = MAX(shared->max, shared->min);
 	shared->page = CLAMP(shared->page, 0, shared->max - shared->min);
 }
 
 void Range::Shared::emit_changed(const char *p_what) {
+	ZoneScopedS(60);
 	for (Range *E : owners) {
 		Range *r = E;
 		if (!r->is_inside_tree()) {
@@ -80,6 +88,7 @@ void Range::Shared::emit_changed(const char *p_what) {
 }
 
 void Range::set_value(double p_val) {
+	ZoneScopedS(60);
 	double prev_val = shared->val;
 	set_value_no_signal(p_val);
 
@@ -89,6 +98,7 @@ void Range::set_value(double p_val) {
 }
 
 void Range::set_value_no_signal(double p_val) {
+	ZoneScopedS(60);
 	if (shared->step > 0) {
 		p_val = Math::round(p_val / shared->step) * shared->step;
 	}
@@ -113,6 +123,7 @@ void Range::set_value_no_signal(double p_val) {
 }
 
 void Range::set_min(double p_min) {
+	ZoneScopedS(60);
 	if (shared->min == p_min) {
 		return;
 	}
@@ -127,6 +138,7 @@ void Range::set_min(double p_min) {
 }
 
 void Range::set_max(double p_max) {
+	ZoneScopedS(60);
 	if (shared->max == p_max) {
 		return;
 	}
@@ -139,6 +151,7 @@ void Range::set_max(double p_max) {
 }
 
 void Range::set_step(double p_step) {
+	ZoneScopedS(60);
 	if (shared->step == p_step) {
 		return;
 	}
@@ -148,6 +161,7 @@ void Range::set_step(double p_step) {
 }
 
 void Range::set_page(double p_page) {
+	ZoneScopedS(60);
 	if (shared->page == p_page) {
 		return;
 	}
@@ -160,26 +174,32 @@ void Range::set_page(double p_page) {
 }
 
 double Range::get_value() const {
+	ZoneScopedS(60);
 	return shared->val;
 }
 
 double Range::get_min() const {
+	ZoneScopedS(60);
 	return shared->min;
 }
 
 double Range::get_max() const {
+	ZoneScopedS(60);
 	return shared->max;
 }
 
 double Range::get_step() const {
+	ZoneScopedS(60);
 	return shared->step;
 }
 
 double Range::get_page() const {
+	ZoneScopedS(60);
 	return shared->page;
 }
 
 void Range::set_as_ratio(double p_value) {
+	ZoneScopedS(60);
 	double v;
 
 	if (shared->exp_ratio && get_min() >= 0) {
@@ -200,6 +220,7 @@ void Range::set_as_ratio(double p_value) {
 }
 
 double Range::get_as_ratio() const {
+	ZoneScopedS(60);
 	if (Math::is_equal_approx(get_max(), get_min())) {
 		// Avoid division by zero.
 		return 1.0;
@@ -219,12 +240,14 @@ double Range::get_as_ratio() const {
 }
 
 void Range::_share(Node *p_range) {
+	ZoneScopedS(60);
 	Range *r = Object::cast_to<Range>(p_range);
 	ERR_FAIL_COND(!r);
 	share(r);
 }
 
 void Range::share(Range *p_range) {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_range);
 
 	p_range->_ref_shared(shared);
@@ -233,6 +256,7 @@ void Range::share(Range *p_range) {
 }
 
 void Range::unshare() {
+	ZoneScopedS(60);
 	Shared *nshared = memnew(Shared);
 	nshared->min = shared->min;
 	nshared->max = shared->max;
@@ -247,6 +271,7 @@ void Range::unshare() {
 }
 
 void Range::_ref_shared(Shared *p_shared) {
+	ZoneScopedS(60);
 	if (shared && p_shared == shared) {
 		return;
 	}
@@ -257,6 +282,7 @@ void Range::_ref_shared(Shared *p_shared) {
 }
 
 void Range::_unref_shared() {
+	ZoneScopedS(60);
 	if (shared) {
 		shared->owners.erase(this);
 		if (shared->owners.size() == 0) {
@@ -267,6 +293,7 @@ void Range::_unref_shared() {
 }
 
 void Range::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_value"), &Range::get_value);
 	ClassDB::bind_method(D_METHOD("get_min"), &Range::get_min);
 	ClassDB::bind_method(D_METHOD("get_max"), &Range::get_max);
@@ -316,14 +343,17 @@ void Range::_bind_methods() {
 }
 
 void Range::set_use_rounded_values(bool p_enable) {
+	ZoneScopedS(60);
 	_rounded_values = p_enable;
 }
 
 bool Range::is_using_rounded_values() const {
+	ZoneScopedS(60);
 	return _rounded_values;
 }
 
 void Range::set_exp_ratio(bool p_enable) {
+	ZoneScopedS(60);
 	if (shared->exp_ratio == p_enable) {
 		return;
 	}
@@ -334,30 +364,37 @@ void Range::set_exp_ratio(bool p_enable) {
 }
 
 bool Range::is_ratio_exp() const {
+	ZoneScopedS(60);
 	return shared->exp_ratio;
 }
 
 void Range::set_allow_greater(bool p_allow) {
+	ZoneScopedS(60);
 	shared->allow_greater = p_allow;
 }
 
 bool Range::is_greater_allowed() const {
+	ZoneScopedS(60);
 	return shared->allow_greater;
 }
 
 void Range::set_allow_lesser(bool p_allow) {
+	ZoneScopedS(60);
 	shared->allow_lesser = p_allow;
 }
 
 bool Range::is_lesser_allowed() const {
+	ZoneScopedS(60);
 	return shared->allow_lesser;
 }
 
 Range::Range() {
+	ZoneScopedS(60);
 	shared = memnew(Shared);
 	shared->owners.insert(this);
 }
 
 Range::~Range() {
+	ZoneScopedS(60);
 	_unref_shared();
 }

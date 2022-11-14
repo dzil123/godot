@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  physics_material.cpp                                                 */
 /*************************************************************************/
@@ -31,6 +32,7 @@
 #include "physics_material.h"
 
 void PhysicsMaterial::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_friction", "friction"), &PhysicsMaterial::set_friction);
 	ClassDB::bind_method(D_METHOD("get_friction"), &PhysicsMaterial::get_friction);
 
@@ -50,21 +52,25 @@ void PhysicsMaterial::_bind_methods() {
 }
 
 void PhysicsMaterial::set_friction(real_t p_val) {
+	ZoneScopedS(60);
 	friction = p_val;
 	emit_changed();
 }
 
 void PhysicsMaterial::set_rough(bool p_val) {
+	ZoneScopedS(60);
 	rough = p_val;
 	emit_changed();
 }
 
 void PhysicsMaterial::set_bounce(real_t p_val) {
+	ZoneScopedS(60);
 	bounce = p_val;
 	emit_changed();
 }
 
 void PhysicsMaterial::set_absorbent(bool p_val) {
+	ZoneScopedS(60);
 	absorbent = p_val;
 	emit_changed();
 }

@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  panel.cpp                                                            */
 /*************************************************************************/
@@ -31,12 +32,14 @@
 #include "panel.h"
 
 void Panel::_update_theme_item_cache() {
+	ZoneScopedS(60);
 	Control::_update_theme_item_cache();
 
 	theme_cache.panel_style = get_theme_stylebox(SNAME("panel"));
 }
 
 void Panel::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
 			RID ci = get_canvas_item();
@@ -46,6 +49,7 @@ void Panel::_notification(int p_what) {
 }
 
 Panel::Panel() {
+	ZoneScopedS(60);
 	// Has visible stylebox, so stop by default.
 	set_mouse_filter(MOUSE_FILTER_STOP);
 }

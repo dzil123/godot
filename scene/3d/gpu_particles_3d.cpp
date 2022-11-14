@@ -28,15 +28,48 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  gpu_particles_3d.cpp                                                 */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "gpu_particles_3d.h"
 
 #include "scene/resources/particle_process_material.h"
 
 AABB GPUParticles3D::get_aabb() const {
+	ZoneScopedS(60);
 	return AABB();
 }
 
 void GPUParticles3D::set_emitting(bool p_emitting) {
+	ZoneScopedS(60);
 	RS::get_singleton()->particles_set_emitting(particles, p_emitting);
 
 	if (p_emitting && one_shot) {
@@ -47,18 +80,21 @@ void GPUParticles3D::set_emitting(bool p_emitting) {
 }
 
 void GPUParticles3D::set_amount(int p_amount) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_amount < 1, "Amount of particles cannot be smaller than 1.");
 	amount = p_amount;
 	RS::get_singleton()->particles_set_amount(particles, amount);
 }
 
 void GPUParticles3D::set_lifetime(double p_lifetime) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_lifetime <= 0, "Particles lifetime must be greater than 0.");
 	lifetime = p_lifetime;
 	RS::get_singleton()->particles_set_lifetime(particles, lifetime);
 }
 
 void GPUParticles3D::set_one_shot(bool p_one_shot) {
+	ZoneScopedS(60);
 	one_shot = p_one_shot;
 	RS::get_singleton()->particles_set_one_shot(particles, one_shot);
 
@@ -75,32 +111,38 @@ void GPUParticles3D::set_one_shot(bool p_one_shot) {
 }
 
 void GPUParticles3D::set_pre_process_time(double p_time) {
+	ZoneScopedS(60);
 	pre_process_time = p_time;
 	RS::get_singleton()->particles_set_pre_process_time(particles, pre_process_time);
 }
 
 void GPUParticles3D::set_explosiveness_ratio(real_t p_ratio) {
+	ZoneScopedS(60);
 	explosiveness_ratio = p_ratio;
 	RS::get_singleton()->particles_set_explosiveness_ratio(particles, explosiveness_ratio);
 }
 
 void GPUParticles3D::set_randomness_ratio(real_t p_ratio) {
+	ZoneScopedS(60);
 	randomness_ratio = p_ratio;
 	RS::get_singleton()->particles_set_randomness_ratio(particles, randomness_ratio);
 }
 
 void GPUParticles3D::set_visibility_aabb(const AABB &p_aabb) {
+	ZoneScopedS(60);
 	visibility_aabb = p_aabb;
 	RS::get_singleton()->particles_set_custom_aabb(particles, visibility_aabb);
 	update_gizmos();
 }
 
 void GPUParticles3D::set_use_local_coordinates(bool p_enable) {
+	ZoneScopedS(60);
 	local_coords = p_enable;
 	RS::get_singleton()->particles_set_use_local_coordinates(particles, local_coords);
 }
 
 void GPUParticles3D::set_process_material(const Ref<Material> &p_material) {
+	ZoneScopedS(60);
 	process_material = p_material;
 	RID material_rid;
 	if (process_material.is_valid()) {
@@ -112,93 +154,114 @@ void GPUParticles3D::set_process_material(const Ref<Material> &p_material) {
 }
 
 void GPUParticles3D::set_speed_scale(double p_scale) {
+	ZoneScopedS(60);
 	speed_scale = p_scale;
 	RS::get_singleton()->particles_set_speed_scale(particles, p_scale);
 }
 
 void GPUParticles3D::set_collision_base_size(real_t p_size) {
+	ZoneScopedS(60);
 	collision_base_size = p_size;
 	RS::get_singleton()->particles_set_collision_base_size(particles, p_size);
 }
 
 bool GPUParticles3D::is_emitting() const {
+	ZoneScopedS(60);
 	return RS::get_singleton()->particles_get_emitting(particles);
 }
 
 int GPUParticles3D::get_amount() const {
+	ZoneScopedS(60);
 	return amount;
 }
 
 double GPUParticles3D::get_lifetime() const {
+	ZoneScopedS(60);
 	return lifetime;
 }
 
 bool GPUParticles3D::get_one_shot() const {
+	ZoneScopedS(60);
 	return one_shot;
 }
 
 double GPUParticles3D::get_pre_process_time() const {
+	ZoneScopedS(60);
 	return pre_process_time;
 }
 
 real_t GPUParticles3D::get_explosiveness_ratio() const {
+	ZoneScopedS(60);
 	return explosiveness_ratio;
 }
 
 real_t GPUParticles3D::get_randomness_ratio() const {
+	ZoneScopedS(60);
 	return randomness_ratio;
 }
 
 AABB GPUParticles3D::get_visibility_aabb() const {
+	ZoneScopedS(60);
 	return visibility_aabb;
 }
 
 bool GPUParticles3D::get_use_local_coordinates() const {
+	ZoneScopedS(60);
 	return local_coords;
 }
 
 Ref<Material> GPUParticles3D::get_process_material() const {
+	ZoneScopedS(60);
 	return process_material;
 }
 
 double GPUParticles3D::get_speed_scale() const {
+	ZoneScopedS(60);
 	return speed_scale;
 }
 
 real_t GPUParticles3D::get_collision_base_size() const {
+	ZoneScopedS(60);
 	return collision_base_size;
 }
 
 void GPUParticles3D::set_draw_order(DrawOrder p_order) {
+	ZoneScopedS(60);
 	draw_order = p_order;
 	RS::get_singleton()->particles_set_draw_order(particles, RS::ParticlesDrawOrder(p_order));
 }
 
 void GPUParticles3D::set_trail_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	trail_enabled = p_enabled;
 	RS::get_singleton()->particles_set_trails(particles, trail_enabled, trail_lifetime);
 	update_configuration_warnings();
 }
 
 void GPUParticles3D::set_trail_lifetime(double p_seconds) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_seconds < 0.001);
 	trail_lifetime = p_seconds;
 	RS::get_singleton()->particles_set_trails(particles, trail_enabled, trail_lifetime);
 }
 
 bool GPUParticles3D::is_trail_enabled() const {
+	ZoneScopedS(60);
 	return trail_enabled;
 }
 
 double GPUParticles3D::get_trail_lifetime() const {
+	ZoneScopedS(60);
 	return trail_lifetime;
 }
 
 GPUParticles3D::DrawOrder GPUParticles3D::get_draw_order() const {
+	ZoneScopedS(60);
 	return draw_order;
 }
 
 void GPUParticles3D::set_draw_passes(int p_count) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_count < 1);
 	for (int i = p_count; i < draw_passes.size(); i++) {
 		set_draw_pass_mesh(i, Ref<Mesh>());
@@ -209,10 +272,12 @@ void GPUParticles3D::set_draw_passes(int p_count) {
 }
 
 int GPUParticles3D::get_draw_passes() const {
+	ZoneScopedS(60);
 	return draw_passes.size();
 }
 
 void GPUParticles3D::set_draw_pass_mesh(int p_pass, const Ref<Mesh> &p_mesh) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_pass, draw_passes.size());
 
 	if (Engine::get_singleton()->is_editor_hint() && draw_passes.write[p_pass].is_valid()) {
@@ -237,39 +302,47 @@ void GPUParticles3D::set_draw_pass_mesh(int p_pass, const Ref<Mesh> &p_mesh) {
 }
 
 Ref<Mesh> GPUParticles3D::get_draw_pass_mesh(int p_pass) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_pass, draw_passes.size(), Ref<Mesh>());
 
 	return draw_passes[p_pass];
 }
 
 void GPUParticles3D::set_fixed_fps(int p_count) {
+	ZoneScopedS(60);
 	fixed_fps = p_count;
 	RS::get_singleton()->particles_set_fixed_fps(particles, p_count);
 }
 
 int GPUParticles3D::get_fixed_fps() const {
+	ZoneScopedS(60);
 	return fixed_fps;
 }
 
 void GPUParticles3D::set_fractional_delta(bool p_enable) {
+	ZoneScopedS(60);
 	fractional_delta = p_enable;
 	RS::get_singleton()->particles_set_fractional_delta(particles, p_enable);
 }
 
 bool GPUParticles3D::get_fractional_delta() const {
+	ZoneScopedS(60);
 	return fractional_delta;
 }
 
 void GPUParticles3D::set_interpolate(bool p_enable) {
+	ZoneScopedS(60);
 	interpolate = p_enable;
 	RS::get_singleton()->particles_set_interpolate(particles, p_enable);
 }
 
 bool GPUParticles3D::get_interpolate() const {
+	ZoneScopedS(60);
 	return interpolate;
 }
 
 PackedStringArray GPUParticles3D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = GeometryInstance3D::get_configuration_warnings();
 
 	if (RenderingServer::get_singleton()->is_low_end()) {
@@ -368,15 +441,18 @@ PackedStringArray GPUParticles3D::get_configuration_warnings() const {
 }
 
 void GPUParticles3D::restart() {
+	ZoneScopedS(60);
 	RenderingServer::get_singleton()->particles_restart(particles);
 	RenderingServer::get_singleton()->particles_set_emitting(particles, true);
 }
 
 AABB GPUParticles3D::capture_aabb() const {
+	ZoneScopedS(60);
 	return RS::get_singleton()->particles_get_current_aabb(particles);
 }
 
 void GPUParticles3D::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (p_property.name.begins_with("draw_pass_")) {
 		int index = p_property.name.get_slicec('_', 2).to_int() - 1;
 		if (index >= draw_passes.size()) {
@@ -387,10 +463,12 @@ void GPUParticles3D::_validate_property(PropertyInfo &p_property) const {
 }
 
 void GPUParticles3D::emit_particle(const Transform3D &p_transform, const Vector3 &p_velocity, const Color &p_color, const Color &p_custom, uint32_t p_emit_flags) {
+	ZoneScopedS(60);
 	RS::get_singleton()->particles_emit(particles, p_transform, p_velocity, p_color, p_custom, p_emit_flags);
 }
 
 void GPUParticles3D::_attach_sub_emitter() {
+	ZoneScopedS(60);
 	Node *n = get_node_or_null(sub_emitter);
 	if (n) {
 		GPUParticles3D *sen = Object::cast_to<GPUParticles3D>(n);
@@ -401,6 +479,7 @@ void GPUParticles3D::_attach_sub_emitter() {
 }
 
 void GPUParticles3D::set_sub_emitter(const NodePath &p_path) {
+	ZoneScopedS(60);
 	if (is_inside_tree()) {
 		RS::get_singleton()->particles_set_subemitter(particles, RID());
 	}
@@ -413,10 +492,12 @@ void GPUParticles3D::set_sub_emitter(const NodePath &p_path) {
 }
 
 NodePath GPUParticles3D::get_sub_emitter() const {
+	ZoneScopedS(60);
 	return sub_emitter;
 }
 
 void GPUParticles3D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_PAUSED:
 		case NOTIFICATION_UNPAUSED: {
@@ -456,6 +537,7 @@ void GPUParticles3D::_notification(int p_what) {
 }
 
 void GPUParticles3D::_skinning_changed() {
+	ZoneScopedS(60);
 	Vector<Transform3D> xforms;
 	if (skin.is_valid()) {
 		xforms.resize(skin->get_bind_count());
@@ -480,24 +562,29 @@ void GPUParticles3D::_skinning_changed() {
 }
 
 void GPUParticles3D::set_skin(const Ref<Skin> &p_skin) {
+	ZoneScopedS(60);
 	skin = p_skin;
 	_skinning_changed();
 }
 
 Ref<Skin> GPUParticles3D::get_skin() const {
+	ZoneScopedS(60);
 	return skin;
 }
 
 void GPUParticles3D::set_transform_align(TransformAlign p_align) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(uint32_t(p_align), 4);
 	transform_align = p_align;
 	RS::get_singleton()->particles_set_transform_align(particles, RS::ParticlesTransformAlign(transform_align));
 }
 GPUParticles3D::TransformAlign GPUParticles3D::get_transform_align() const {
+	ZoneScopedS(60);
 	return transform_align;
 }
 
 void GPUParticles3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_emitting", "emitting"), &GPUParticles3D::set_emitting);
 	ClassDB::bind_method(D_METHOD("set_amount", "amount"), &GPUParticles3D::set_amount);
 	ClassDB::bind_method(D_METHOD("set_lifetime", "secs"), &GPUParticles3D::set_lifetime);
@@ -613,6 +700,7 @@ void GPUParticles3D::_bind_methods() {
 }
 
 GPUParticles3D::GPUParticles3D() {
+	ZoneScopedS(60);
 	particles = RS::get_singleton()->particles_create();
 	RS::get_singleton()->particles_set_mode(particles, RS::PARTICLES_MODE_3D);
 	set_base(particles);
@@ -638,5 +726,6 @@ GPUParticles3D::GPUParticles3D() {
 }
 
 GPUParticles3D::~GPUParticles3D() {
+	ZoneScopedS(60);
 	RS::get_singleton()->free(particles);
 }

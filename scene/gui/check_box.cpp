@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  check_box.cpp                                                        */
 /*************************************************************************/
@@ -33,6 +34,7 @@
 #include "servers/rendering_server.h"
 
 Size2 CheckBox::get_icon_size() const {
+	ZoneScopedS(60);
 	Size2 tex_size = Size2(0, 0);
 	if (!theme_cache.checked.is_null()) {
 		tex_size = Size2(theme_cache.checked->get_width(), theme_cache.checked->get_height());
@@ -62,6 +64,7 @@ Size2 CheckBox::get_icon_size() const {
 }
 
 Size2 CheckBox::get_minimum_size() const {
+	ZoneScopedS(60);
 	Size2 minsize = Button::get_minimum_size();
 	Size2 tex_size = get_icon_size();
 	minsize.width += tex_size.width;
@@ -74,6 +77,7 @@ Size2 CheckBox::get_minimum_size() const {
 }
 
 void CheckBox::_update_theme_item_cache() {
+	ZoneScopedS(60);
 	Button::_update_theme_item_cache();
 
 	theme_cache.h_separation = get_theme_constant(SNAME("h_separation"));
@@ -91,6 +95,7 @@ void CheckBox::_update_theme_item_cache() {
 }
 
 void CheckBox::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_THEME_CHANGED:
 		case NOTIFICATION_LAYOUT_DIRECTION_CHANGED:
@@ -146,6 +151,7 @@ void CheckBox::_notification(int p_what) {
 }
 
 bool CheckBox::is_radio() {
+	ZoneScopedS(60);
 	return get_button_group().is_valid();
 }
 

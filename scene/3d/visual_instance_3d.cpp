@@ -28,17 +28,50 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  visual_instance_3d.cpp                                               */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "visual_instance_3d.h"
 
 #include "scene/scene_string_names.h"
 
 AABB VisualInstance3D::get_aabb() const {
+	ZoneScopedS(60);
 	AABB ret;
 	GDVIRTUAL_CALL(_get_aabb, ret);
 	return ret;
 }
 
 void VisualInstance3D::_update_visibility() {
+	ZoneScopedS(60);
 	if (!is_inside_tree()) {
 		return;
 	}
@@ -47,6 +80,7 @@ void VisualInstance3D::_update_visibility() {
 }
 
 void VisualInstance3D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_WORLD: {
 			ERR_FAIL_COND(get_world_3d().is_null());
@@ -71,19 +105,23 @@ void VisualInstance3D::_notification(int p_what) {
 }
 
 RID VisualInstance3D::get_instance() const {
+	ZoneScopedS(60);
 	return instance;
 }
 
 void VisualInstance3D::set_layer_mask(uint32_t p_mask) {
+	ZoneScopedS(60);
 	layers = p_mask;
 	RenderingServer::get_singleton()->instance_set_layer_mask(instance, p_mask);
 }
 
 uint32_t VisualInstance3D::get_layer_mask() const {
+	ZoneScopedS(60);
 	return layers;
 }
 
 void VisualInstance3D::set_layer_mask_value(int p_layer_number, bool p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_layer_number < 1, "Render layer number must be between 1 and 20 inclusive.");
 	ERR_FAIL_COND_MSG(p_layer_number > 20, "Render layer number must be between 1 and 20 inclusive.");
 	uint32_t mask = get_layer_mask();
@@ -96,12 +134,14 @@ void VisualInstance3D::set_layer_mask_value(int p_layer_number, bool p_value) {
 }
 
 bool VisualInstance3D::get_layer_mask_value(int p_layer_number) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(p_layer_number < 1, false, "Render layer number must be between 1 and 20 inclusive.");
 	ERR_FAIL_COND_V_MSG(p_layer_number > 20, false, "Render layer number must be between 1 and 20 inclusive.");
 	return layers & (1 << (p_layer_number - 1));
 }
 
 void VisualInstance3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_base", "base"), &VisualInstance3D::set_base);
 	ClassDB::bind_method(D_METHOD("get_base"), &VisualInstance3D::get_base);
 	ClassDB::bind_method(D_METHOD("get_instance"), &VisualInstance3D::get_instance);
@@ -115,102 +155,123 @@ void VisualInstance3D::_bind_methods() {
 }
 
 void VisualInstance3D::set_base(const RID &p_base) {
+	ZoneScopedS(60);
 	RenderingServer::get_singleton()->instance_set_base(instance, p_base);
 	base = p_base;
 }
 
 RID VisualInstance3D::get_base() const {
+	ZoneScopedS(60);
 	return base;
 }
 
 VisualInstance3D::VisualInstance3D() {
+	ZoneScopedS(60);
 	instance = RenderingServer::get_singleton()->instance_create();
 	RenderingServer::get_singleton()->instance_attach_object_instance_id(instance, get_instance_id());
 	set_notify_transform(true);
 }
 
 VisualInstance3D::~VisualInstance3D() {
+	ZoneScopedS(60);
 	RenderingServer::get_singleton()->free(instance);
 }
 
 void GeometryInstance3D::set_material_override(const Ref<Material> &p_material) {
+	ZoneScopedS(60);
 	material_override = p_material;
 	RS::get_singleton()->instance_geometry_set_material_override(get_instance(), p_material.is_valid() ? p_material->get_rid() : RID());
 }
 
 Ref<Material> GeometryInstance3D::get_material_override() const {
+	ZoneScopedS(60);
 	return material_override;
 }
 
 void GeometryInstance3D::set_material_overlay(const Ref<Material> &p_material) {
+	ZoneScopedS(60);
 	material_overlay = p_material;
 	RS::get_singleton()->instance_geometry_set_material_overlay(get_instance(), p_material.is_valid() ? p_material->get_rid() : RID());
 }
 
 Ref<Material> GeometryInstance3D::get_material_overlay() const {
+	ZoneScopedS(60);
 	return material_overlay;
 }
 
 void GeometryInstance3D::set_transparency(float p_transparency) {
+	ZoneScopedS(60);
 	transparency = CLAMP(p_transparency, 0.0f, 1.0f);
 	RS::get_singleton()->instance_geometry_set_transparency(get_instance(), transparency);
 }
 
 float GeometryInstance3D::get_transparency() const {
+	ZoneScopedS(60);
 	return transparency;
 }
 
 void GeometryInstance3D::set_visibility_range_begin(float p_dist) {
+	ZoneScopedS(60);
 	visibility_range_begin = p_dist;
 	RS::get_singleton()->instance_geometry_set_visibility_range(get_instance(), visibility_range_begin, visibility_range_end, visibility_range_begin_margin, visibility_range_end_margin, (RS::VisibilityRangeFadeMode)visibility_range_fade_mode);
 	update_configuration_warnings();
 }
 
 float GeometryInstance3D::get_visibility_range_begin() const {
+	ZoneScopedS(60);
 	return visibility_range_begin;
 }
 
 void GeometryInstance3D::set_visibility_range_end(float p_dist) {
+	ZoneScopedS(60);
 	visibility_range_end = p_dist;
 	RS::get_singleton()->instance_geometry_set_visibility_range(get_instance(), visibility_range_begin, visibility_range_end, visibility_range_begin_margin, visibility_range_end_margin, (RS::VisibilityRangeFadeMode)visibility_range_fade_mode);
 	update_configuration_warnings();
 }
 
 float GeometryInstance3D::get_visibility_range_end() const {
+	ZoneScopedS(60);
 	return visibility_range_end;
 }
 
 void GeometryInstance3D::set_visibility_range_begin_margin(float p_dist) {
+	ZoneScopedS(60);
 	visibility_range_begin_margin = p_dist;
 	RS::get_singleton()->instance_geometry_set_visibility_range(get_instance(), visibility_range_begin, visibility_range_end, visibility_range_begin_margin, visibility_range_end_margin, (RS::VisibilityRangeFadeMode)visibility_range_fade_mode);
 	update_configuration_warnings();
 }
 
 float GeometryInstance3D::get_visibility_range_begin_margin() const {
+	ZoneScopedS(60);
 	return visibility_range_begin_margin;
 }
 
 void GeometryInstance3D::set_visibility_range_end_margin(float p_dist) {
+	ZoneScopedS(60);
 	visibility_range_end_margin = p_dist;
 	RS::get_singleton()->instance_geometry_set_visibility_range(get_instance(), visibility_range_begin, visibility_range_end, visibility_range_begin_margin, visibility_range_end_margin, (RS::VisibilityRangeFadeMode)visibility_range_fade_mode);
 	update_configuration_warnings();
 }
 
 float GeometryInstance3D::get_visibility_range_end_margin() const {
+	ZoneScopedS(60);
 	return visibility_range_end_margin;
 }
 
 void GeometryInstance3D::set_visibility_range_fade_mode(VisibilityRangeFadeMode p_mode) {
+	ZoneScopedS(60);
 	visibility_range_fade_mode = p_mode;
 	RS::get_singleton()->instance_geometry_set_visibility_range(get_instance(), visibility_range_begin, visibility_range_end, visibility_range_begin_margin, visibility_range_end_margin, (RS::VisibilityRangeFadeMode)visibility_range_fade_mode);
 	update_configuration_warnings();
 }
 
 GeometryInstance3D::VisibilityRangeFadeMode GeometryInstance3D::get_visibility_range_fade_mode() const {
+	ZoneScopedS(60);
 	return visibility_range_fade_mode;
 }
 
 const StringName *GeometryInstance3D::_instance_uniform_get_remap(const StringName p_name) const {
+	ZoneScopedS(60);
 	StringName *r = instance_shader_parameter_property_remap.getptr(p_name);
 	if (!r) {
 		String s = p_name;
@@ -232,6 +293,7 @@ const StringName *GeometryInstance3D::_instance_uniform_get_remap(const StringNa
 }
 
 bool GeometryInstance3D::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	const StringName *r = _instance_uniform_get_remap(p_name);
 	if (r) {
 		set_instance_shader_parameter(*r, p_value);
@@ -252,6 +314,7 @@ bool GeometryInstance3D::_set(const StringName &p_name, const Variant &p_value) 
 }
 
 bool GeometryInstance3D::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	const StringName *r = _instance_uniform_get_remap(p_name);
 	if (r) {
 		r_ret = get_instance_shader_parameter(*r);
@@ -262,6 +325,7 @@ bool GeometryInstance3D::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void GeometryInstance3D::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	List<PropertyInfo> pinfo;
 	RS::get_singleton()->instance_geometry_get_shader_parameter_list(get_instance(), &pinfo);
 	for (PropertyInfo &pi : pinfo) {
@@ -282,36 +346,43 @@ void GeometryInstance3D::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 void GeometryInstance3D::set_cast_shadows_setting(ShadowCastingSetting p_shadow_casting_setting) {
+	ZoneScopedS(60);
 	shadow_casting_setting = p_shadow_casting_setting;
 
 	RS::get_singleton()->instance_geometry_set_cast_shadows_setting(get_instance(), (RS::ShadowCastingSetting)p_shadow_casting_setting);
 }
 
 GeometryInstance3D::ShadowCastingSetting GeometryInstance3D::get_cast_shadows_setting() const {
+	ZoneScopedS(60);
 	return shadow_casting_setting;
 }
 
 void GeometryInstance3D::set_extra_cull_margin(float p_margin) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_margin < 0);
 	extra_cull_margin = p_margin;
 	RS::get_singleton()->instance_set_extra_visibility_margin(get_instance(), extra_cull_margin);
 }
 
 float GeometryInstance3D::get_extra_cull_margin() const {
+	ZoneScopedS(60);
 	return extra_cull_margin;
 }
 
 void GeometryInstance3D::set_lod_bias(float p_bias) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_bias < 0.0);
 	lod_bias = p_bias;
 	RS::get_singleton()->instance_geometry_set_lod_bias(get_instance(), lod_bias);
 }
 
 float GeometryInstance3D::get_lod_bias() const {
+	ZoneScopedS(60);
 	return lod_bias;
 }
 
 void GeometryInstance3D::set_instance_shader_parameter(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	if (p_value.get_type() == Variant::NIL) {
 		Variant def_value = RS::get_singleton()->instance_geometry_get_shader_parameter_default_value(get_instance(), p_name);
 		RS::get_singleton()->instance_geometry_set_shader_parameter(get_instance(), p_name, def_value);
@@ -328,23 +399,28 @@ void GeometryInstance3D::set_instance_shader_parameter(const StringName &p_name,
 }
 
 Variant GeometryInstance3D::get_instance_shader_parameter(const StringName &p_name) const {
+	ZoneScopedS(60);
 	return RS::get_singleton()->instance_geometry_get_shader_parameter(get_instance(), p_name);
 }
 
 void GeometryInstance3D::set_custom_aabb(AABB aabb) {
+	ZoneScopedS(60);
 	RS::get_singleton()->instance_set_custom_aabb(get_instance(), aabb);
 }
 
 void GeometryInstance3D::set_lightmap_scale(LightmapScale p_scale) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_scale, LIGHTMAP_SCALE_MAX);
 	lightmap_scale = p_scale;
 }
 
 GeometryInstance3D::LightmapScale GeometryInstance3D::get_lightmap_scale() const {
+	ZoneScopedS(60);
 	return lightmap_scale;
 }
 
 void GeometryInstance3D::set_gi_mode(GIMode p_mode) {
+	ZoneScopedS(60);
 	switch (p_mode) {
 		case GI_MODE_DISABLED: {
 			RS::get_singleton()->instance_geometry_set_flag(get_instance(), RS::INSTANCE_FLAG_USE_BAKED_LIGHT, false);
@@ -365,19 +441,23 @@ void GeometryInstance3D::set_gi_mode(GIMode p_mode) {
 }
 
 GeometryInstance3D::GIMode GeometryInstance3D::get_gi_mode() const {
+	ZoneScopedS(60);
 	return gi_mode;
 }
 
 void GeometryInstance3D::set_ignore_occlusion_culling(bool p_enabled) {
+	ZoneScopedS(60);
 	ignore_occlusion_culling = p_enabled;
 	RS::get_singleton()->instance_geometry_set_flag(get_instance(), RS::INSTANCE_FLAG_IGNORE_OCCLUSION_CULLING, ignore_occlusion_culling);
 }
 
 bool GeometryInstance3D::is_ignoring_occlusion_culling() {
+	ZoneScopedS(60);
 	return ignore_occlusion_culling;
 }
 
 PackedStringArray GeometryInstance3D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (!Math::is_zero_approx(visibility_range_end) && visibility_range_end <= visibility_range_begin) {
@@ -396,6 +476,7 @@ PackedStringArray GeometryInstance3D::get_configuration_warnings() const {
 }
 
 void GeometryInstance3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_material_override", "material"), &GeometryInstance3D::set_material_override);
 	ClassDB::bind_method(D_METHOD("get_material_override"), &GeometryInstance3D::get_material_override);
 
@@ -489,6 +570,7 @@ GeometryInstance3D::GeometryInstance3D() {
 }
 
 GeometryInstance3D::~GeometryInstance3D() {
+	ZoneScopedS(60);
 	if (material_overlay.is_valid()) {
 		set_material_overlay(Ref<Material>());
 	}

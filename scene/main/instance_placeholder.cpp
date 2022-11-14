@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  instance_placeholder.cpp                                             */
 /*************************************************************************/
@@ -34,6 +35,7 @@
 #include "scene/resources/packed_scene.h"
 
 bool InstancePlaceholder::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	PropSet ps;
 	ps.name = p_name;
 	ps.value = p_value;
@@ -42,6 +44,7 @@ bool InstancePlaceholder::_set(const StringName &p_name, const Variant &p_value)
 }
 
 bool InstancePlaceholder::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	for (const PropSet &E : stored_values) {
 		if (E.name == p_name) {
 			r_ret = E.value;
@@ -52,6 +55,7 @@ bool InstancePlaceholder::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void InstancePlaceholder::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	for (const PropSet &E : stored_values) {
 		PropertyInfo pi;
 		pi.name = E.name;
@@ -63,14 +67,17 @@ void InstancePlaceholder::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 void InstancePlaceholder::set_instance_path(const String &p_name) {
+	ZoneScopedS(60);
 	path = p_name;
 }
 
 String InstancePlaceholder::get_instance_path() const {
+	ZoneScopedS(60);
 	return path;
 }
 
 Node *InstancePlaceholder::create_instance(bool p_replace, const Ref<PackedScene> &p_custom_scene) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!is_inside_tree(), nullptr);
 
 	Node *base = get_parent();
@@ -111,6 +118,7 @@ Node *InstancePlaceholder::create_instance(bool p_replace, const Ref<PackedScene
 }
 
 Dictionary InstancePlaceholder::get_stored_values(bool p_with_order) {
+	ZoneScopedS(60);
 	Dictionary ret;
 	PackedStringArray order;
 
@@ -129,6 +137,7 @@ Dictionary InstancePlaceholder::get_stored_values(bool p_with_order) {
 };
 
 void InstancePlaceholder::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_stored_values", "with_order"), &InstancePlaceholder::get_stored_values, DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("create_instance", "replace", "custom_scene"), &InstancePlaceholder::create_instance, DEFVAL(false), DEFVAL(Variant()));
 	ClassDB::bind_method(D_METHOD("get_instance_path"), &InstancePlaceholder::get_instance_path);

@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  capsule_shape_3d.cpp                                                 */
 /*************************************************************************/
@@ -33,6 +34,7 @@
 #include "servers/physics_server_3d.h"
 
 Vector<Vector3> CapsuleShape3D::get_debug_mesh_lines() const {
+	ZoneScopedS(60);
 	float c_radius = get_radius();
 	float c_height = get_height();
 
@@ -68,10 +70,12 @@ Vector<Vector3> CapsuleShape3D::get_debug_mesh_lines() const {
 }
 
 real_t CapsuleShape3D::get_enclosing_radius() const {
+	ZoneScopedS(60);
 	return height * 0.5;
 }
 
 void CapsuleShape3D::_update_shape() {
+	ZoneScopedS(60);
 	Dictionary d;
 	d["radius"] = radius;
 	d["height"] = height;
@@ -80,6 +84,7 @@ void CapsuleShape3D::_update_shape() {
 }
 
 void CapsuleShape3D::set_radius(float p_radius) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_radius < 0, "CapsuleShape3D radius cannot be negative.");
 	radius = p_radius;
 	if (radius > height * 0.5) {
@@ -90,10 +95,12 @@ void CapsuleShape3D::set_radius(float p_radius) {
 }
 
 float CapsuleShape3D::get_radius() const {
+	ZoneScopedS(60);
 	return radius;
 }
 
 void CapsuleShape3D::set_height(float p_height) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_height < 0, "CapsuleShape3D height cannot be negative.");
 	height = p_height;
 	if (radius > height * 0.5) {
@@ -104,10 +111,12 @@ void CapsuleShape3D::set_height(float p_height) {
 }
 
 float CapsuleShape3D::get_height() const {
+	ZoneScopedS(60);
 	return height;
 }
 
 void CapsuleShape3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_radius", "radius"), &CapsuleShape3D::set_radius);
 	ClassDB::bind_method(D_METHOD("get_radius"), &CapsuleShape3D::get_radius);
 	ClassDB::bind_method(D_METHOD("set_height", "height"), &CapsuleShape3D::set_height);

@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  slider.cpp                                                           */
 /*************************************************************************/
@@ -33,6 +34,7 @@
 #include "core/os/keyboard.h"
 
 Size2 Slider::get_minimum_size() const {
+	ZoneScopedS(60);
 	Size2i ss = theme_cache.slider_style->get_minimum_size() + theme_cache.slider_style->get_center_size();
 	Size2i rs = theme_cache.grabber_icon->get_size();
 
@@ -44,6 +46,7 @@ Size2 Slider::get_minimum_size() const {
 }
 
 void Slider::gui_input(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_event.is_null());
 
 	if (!editable) {
@@ -149,6 +152,7 @@ void Slider::gui_input(const Ref<InputEvent> &p_event) {
 }
 
 void Slider::_update_theme_item_cache() {
+	ZoneScopedS(60);
 	Range::_update_theme_item_cache();
 
 	theme_cache.slider_style = get_theme_stylebox(SNAME("slider"));
@@ -162,6 +166,7 @@ void Slider::_update_theme_item_cache() {
 }
 
 void Slider::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_THEME_CHANGED: {
 			update_minimum_size();
@@ -252,14 +257,17 @@ void Slider::_notification(int p_what) {
 }
 
 void Slider::set_custom_step(double p_custom_step) {
+	ZoneScopedS(60);
 	custom_step = p_custom_step;
 }
 
 double Slider::get_custom_step() const {
+	ZoneScopedS(60);
 	return custom_step;
 }
 
 void Slider::set_ticks(int p_count) {
+	ZoneScopedS(60);
 	if (ticks == p_count) {
 		return;
 	}
@@ -269,14 +277,17 @@ void Slider::set_ticks(int p_count) {
 }
 
 int Slider::get_ticks() const {
+	ZoneScopedS(60);
 	return ticks;
 }
 
 bool Slider::get_ticks_on_borders() const {
+	ZoneScopedS(60);
 	return ticks_on_borders;
 }
 
 void Slider::set_ticks_on_borders(bool _tob) {
+	ZoneScopedS(60);
 	if (ticks_on_borders == _tob) {
 		return;
 	}
@@ -286,6 +297,7 @@ void Slider::set_ticks_on_borders(bool _tob) {
 }
 
 void Slider::set_editable(bool p_editable) {
+	ZoneScopedS(60);
 	if (editable == p_editable) {
 		return;
 	}
@@ -295,18 +307,22 @@ void Slider::set_editable(bool p_editable) {
 }
 
 bool Slider::is_editable() const {
+	ZoneScopedS(60);
 	return editable;
 }
 
 void Slider::set_scrollable(bool p_scrollable) {
+	ZoneScopedS(60);
 	scrollable = p_scrollable;
 }
 
 bool Slider::is_scrollable() const {
+	ZoneScopedS(60);
 	return scrollable;
 }
 
 void Slider::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_ticks", "count"), &Slider::set_ticks);
 	ClassDB::bind_method(D_METHOD("get_ticks"), &Slider::get_ticks);
 
@@ -328,6 +344,7 @@ void Slider::_bind_methods() {
 }
 
 Slider::Slider(Orientation p_orientation) {
+	ZoneScopedS(60);
 	orientation = p_orientation;
 	set_focus_mode(FOCUS_ALL);
 }

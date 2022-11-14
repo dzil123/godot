@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  nine_patch_rect.cpp                                                  */
 /*************************************************************************/
@@ -34,6 +35,7 @@
 #include "servers/rendering_server.h"
 
 void NinePatchRect::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
 			if (texture.is_null()) {
@@ -52,10 +54,12 @@ void NinePatchRect::_notification(int p_what) {
 }
 
 Size2 NinePatchRect::get_minimum_size() const {
+	ZoneScopedS(60);
 	return Size2(margin[SIDE_LEFT] + margin[SIDE_RIGHT], margin[SIDE_TOP] + margin[SIDE_BOTTOM]);
 }
 
 void NinePatchRect::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_texture", "texture"), &NinePatchRect::set_texture);
 	ClassDB::bind_method(D_METHOD("get_texture"), &NinePatchRect::get_texture);
 	ClassDB::bind_method(D_METHOD("set_patch_margin", "margin", "value"), &NinePatchRect::set_patch_margin);
@@ -90,6 +94,7 @@ void NinePatchRect::_bind_methods() {
 }
 
 void NinePatchRect::set_texture(const Ref<Texture2D> &p_tex) {
+	ZoneScopedS(60);
 	if (texture == p_tex) {
 		return;
 	}
@@ -100,10 +105,12 @@ void NinePatchRect::set_texture(const Ref<Texture2D> &p_tex) {
 }
 
 Ref<Texture2D> NinePatchRect::get_texture() const {
+	ZoneScopedS(60);
 	return texture;
 }
 
 void NinePatchRect::set_patch_margin(Side p_side, int p_size) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX((int)p_side, 4);
 
 	if (margin[p_side] == p_size) {
@@ -116,11 +123,13 @@ void NinePatchRect::set_patch_margin(Side p_side, int p_size) {
 }
 
 int NinePatchRect::get_patch_margin(Side p_side) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V((int)p_side, 4, 0);
 	return margin[p_side];
 }
 
 void NinePatchRect::set_region_rect(const Rect2 &p_region_rect) {
+	ZoneScopedS(60);
 	if (region_rect == p_region_rect) {
 		return;
 	}
@@ -131,10 +140,12 @@ void NinePatchRect::set_region_rect(const Rect2 &p_region_rect) {
 }
 
 Rect2 NinePatchRect::get_region_rect() const {
+	ZoneScopedS(60);
 	return region_rect;
 }
 
 void NinePatchRect::set_draw_center(bool p_enabled) {
+	ZoneScopedS(60);
 	if (draw_center == p_enabled) {
 		return;
 	}
@@ -144,10 +155,12 @@ void NinePatchRect::set_draw_center(bool p_enabled) {
 }
 
 bool NinePatchRect::is_draw_center_enabled() const {
+	ZoneScopedS(60);
 	return draw_center;
 }
 
 void NinePatchRect::set_h_axis_stretch_mode(AxisStretchMode p_mode) {
+	ZoneScopedS(60);
 	if (axis_h == p_mode) {
 		return;
 	}
@@ -157,10 +170,12 @@ void NinePatchRect::set_h_axis_stretch_mode(AxisStretchMode p_mode) {
 }
 
 NinePatchRect::AxisStretchMode NinePatchRect::get_h_axis_stretch_mode() const {
+	ZoneScopedS(60);
 	return axis_h;
 }
 
 void NinePatchRect::set_v_axis_stretch_mode(AxisStretchMode p_mode) {
+	ZoneScopedS(60);
 	if (axis_v == p_mode) {
 		return;
 	}
@@ -170,10 +185,12 @@ void NinePatchRect::set_v_axis_stretch_mode(AxisStretchMode p_mode) {
 }
 
 NinePatchRect::AxisStretchMode NinePatchRect::get_v_axis_stretch_mode() const {
+	ZoneScopedS(60);
 	return axis_v;
 }
 
 NinePatchRect::NinePatchRect() {
+	ZoneScopedS(60);
 	set_mouse_filter(MOUSE_FILTER_IGNORE);
 }
 

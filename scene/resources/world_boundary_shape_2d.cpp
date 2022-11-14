@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  world_boundary_shape_2d.cpp                                          */
 /*************************************************************************/
@@ -35,6 +36,7 @@
 #include "servers/rendering_server.h"
 
 bool WorldBoundaryShape2D::_edit_is_selected_on_click(const Point2 &p_point, double p_tolerance) const {
+	ZoneScopedS(60);
 	Vector2 point = get_distance() * get_normal();
 	Vector2 l[2][2] = { { point - get_normal().orthogonal() * 100, point + get_normal().orthogonal() * 100 }, { point, point + get_normal() * 30 } };
 
@@ -49,6 +51,7 @@ bool WorldBoundaryShape2D::_edit_is_selected_on_click(const Point2 &p_point, dou
 }
 
 void WorldBoundaryShape2D::_update_shape() {
+	ZoneScopedS(60);
 	Array arr;
 	arr.push_back(normal);
 	arr.push_back(distance);
@@ -57,24 +60,29 @@ void WorldBoundaryShape2D::_update_shape() {
 }
 
 void WorldBoundaryShape2D::set_normal(const Vector2 &p_normal) {
+	ZoneScopedS(60);
 	normal = p_normal;
 	_update_shape();
 }
 
 void WorldBoundaryShape2D::set_distance(real_t p_distance) {
+	ZoneScopedS(60);
 	distance = p_distance;
 	_update_shape();
 }
 
 Vector2 WorldBoundaryShape2D::get_normal() const {
+	ZoneScopedS(60);
 	return normal;
 }
 
 real_t WorldBoundaryShape2D::get_distance() const {
+	ZoneScopedS(60);
 	return distance;
 }
 
 void WorldBoundaryShape2D::draw(const RID &p_to_rid, const Color &p_color) {
+	ZoneScopedS(60);
 	Vector2 point = get_distance() * get_normal();
 
 	Vector2 l1[2] = { point - get_normal().orthogonal() * 100, point + get_normal().orthogonal() * 100 };
@@ -84,6 +92,7 @@ void WorldBoundaryShape2D::draw(const RID &p_to_rid, const Color &p_color) {
 }
 
 Rect2 WorldBoundaryShape2D::get_rect() const {
+	ZoneScopedS(60);
 	Vector2 point = get_distance() * get_normal();
 
 	Vector2 l1[2] = { point - get_normal().orthogonal() * 100, point + get_normal().orthogonal() * 100 };
@@ -97,10 +106,12 @@ Rect2 WorldBoundaryShape2D::get_rect() const {
 }
 
 real_t WorldBoundaryShape2D::get_enclosing_radius() const {
+	ZoneScopedS(60);
 	return distance;
 }
 
 void WorldBoundaryShape2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_normal", "normal"), &WorldBoundaryShape2D::set_normal);
 	ClassDB::bind_method(D_METHOD("get_normal"), &WorldBoundaryShape2D::get_normal);
 

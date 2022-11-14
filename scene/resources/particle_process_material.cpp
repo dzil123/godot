@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  particle_process_material.cpp                                        */
 /*************************************************************************/
@@ -38,6 +39,7 @@ HashMap<ParticleProcessMaterial::MaterialKey, ParticleProcessMaterial::ShaderDat
 ParticleProcessMaterial::ShaderNames *ParticleProcessMaterial::shader_names = nullptr;
 
 void ParticleProcessMaterial::init_shaders() {
+	ZoneScopedS(60);
 	dirty_materials = memnew(SelfList<ParticleProcessMaterial>::List);
 
 	shader_names = memnew(ShaderNames);
@@ -123,6 +125,7 @@ void ParticleProcessMaterial::init_shaders() {
 }
 
 void ParticleProcessMaterial::finish_shaders() {
+	ZoneScopedS(60);
 	memdelete(dirty_materials);
 	dirty_materials = nullptr;
 
@@ -130,6 +133,7 @@ void ParticleProcessMaterial::finish_shaders() {
 }
 
 void ParticleProcessMaterial::_update_shader() {
+	ZoneScopedS(60);
 	dirty_materials->remove(&element);
 
 	MaterialKey mk = _compute_key();
@@ -905,6 +909,7 @@ void ParticleProcessMaterial::_update_shader() {
 }
 
 void ParticleProcessMaterial::flush_changes() {
+	ZoneScopedS(60);
 	MutexLock lock(material_mutex);
 
 	while (dirty_materials->first()) {
@@ -913,6 +918,7 @@ void ParticleProcessMaterial::flush_changes() {
 }
 
 void ParticleProcessMaterial::_queue_shader_change() {
+	ZoneScopedS(60);
 	MutexLock lock(material_mutex);
 
 	if (is_initialized && !element.in_list()) {
@@ -921,39 +927,47 @@ void ParticleProcessMaterial::_queue_shader_change() {
 }
 
 bool ParticleProcessMaterial::_is_shader_dirty() const {
+	ZoneScopedS(60);
 	MutexLock lock(material_mutex);
 
 	return element.in_list();
 }
 
 void ParticleProcessMaterial::set_direction(Vector3 p_direction) {
+	ZoneScopedS(60);
 	direction = p_direction;
 	RenderingServer::get_singleton()->material_set_param(_get_material(), shader_names->direction, direction);
 }
 
 Vector3 ParticleProcessMaterial::get_direction() const {
+	ZoneScopedS(60);
 	return direction;
 }
 
 void ParticleProcessMaterial::set_spread(float p_spread) {
+	ZoneScopedS(60);
 	spread = p_spread;
 	RenderingServer::get_singleton()->material_set_param(_get_material(), shader_names->spread, p_spread);
 }
 
 float ParticleProcessMaterial::get_spread() const {
+	ZoneScopedS(60);
 	return spread;
 }
 
 void ParticleProcessMaterial::set_flatness(float p_flatness) {
+	ZoneScopedS(60);
 	flatness = p_flatness;
 	RenderingServer::get_singleton()->material_set_param(_get_material(), shader_names->flatness, p_flatness);
 }
 
 float ParticleProcessMaterial::get_flatness() const {
+	ZoneScopedS(60);
 	return flatness;
 }
 
 void ParticleProcessMaterial::set_param_min(Parameter p_param, float p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_param, PARAM_MAX);
 
 	params_min[p_param] = p_value;
@@ -1013,12 +1027,14 @@ void ParticleProcessMaterial::set_param_min(Parameter p_param, float p_value) {
 }
 
 float ParticleProcessMaterial::get_param_min(Parameter p_param) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_param, PARAM_MAX, 0);
 
 	return params_min[p_param];
 }
 
 void ParticleProcessMaterial::set_param_max(Parameter p_param, float p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_param, PARAM_MAX);
 
 	params_max[p_param] = p_value;
@@ -1078,12 +1094,14 @@ void ParticleProcessMaterial::set_param_max(Parameter p_param, float p_value) {
 }
 
 float ParticleProcessMaterial::get_param_max(Parameter p_param) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_param, PARAM_MAX, 0);
 
 	return params_max[p_param];
 }
 
 static void _adjust_curve_range(const Ref<Texture2D> &p_texture, float p_min, float p_max) {
+	ZoneScopedS(60);
 	Ref<CurveTexture> curve_tex = p_texture;
 	if (!curve_tex.is_valid()) {
 		return;
@@ -1093,6 +1111,7 @@ static void _adjust_curve_range(const Ref<Texture2D> &p_texture, float p_min, fl
 }
 
 void ParticleProcessMaterial::set_param_texture(Parameter p_param, const Ref<Texture2D> &p_texture) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_param, PARAM_MAX);
 
 	tex_parameters[p_param] = p_texture;
@@ -1164,21 +1183,25 @@ void ParticleProcessMaterial::set_param_texture(Parameter p_param, const Ref<Tex
 }
 
 Ref<Texture2D> ParticleProcessMaterial::get_param_texture(Parameter p_param) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_param, PARAM_MAX, Ref<Texture2D>());
 
 	return tex_parameters[p_param];
 }
 
 void ParticleProcessMaterial::set_color(const Color &p_color) {
+	ZoneScopedS(60);
 	RenderingServer::get_singleton()->material_set_param(_get_material(), shader_names->color, p_color);
 	color = p_color;
 }
 
 Color ParticleProcessMaterial::get_color() const {
+	ZoneScopedS(60);
 	return color;
 }
 
 void ParticleProcessMaterial::set_color_ramp(const Ref<Texture2D> &p_texture) {
+	ZoneScopedS(60);
 	color_ramp = p_texture;
 	RID tex_rid = p_texture.is_valid() ? p_texture->get_rid() : RID();
 	RenderingServer::get_singleton()->material_set_param(_get_material(), shader_names->color_ramp, tex_rid);
@@ -1187,10 +1210,12 @@ void ParticleProcessMaterial::set_color_ramp(const Ref<Texture2D> &p_texture) {
 }
 
 Ref<Texture2D> ParticleProcessMaterial::get_color_ramp() const {
+	ZoneScopedS(60);
 	return color_ramp;
 }
 
 void ParticleProcessMaterial::set_color_initial_ramp(const Ref<Texture2D> &p_texture) {
+	ZoneScopedS(60);
 	color_initial_ramp = p_texture;
 	RID tex_rid = p_texture.is_valid() ? p_texture->get_rid() : RID();
 	RenderingServer::get_singleton()->material_set_param(_get_material(), shader_names->color_initial_ramp, tex_rid);
@@ -1199,10 +1224,12 @@ void ParticleProcessMaterial::set_color_initial_ramp(const Ref<Texture2D> &p_tex
 }
 
 Ref<Texture2D> ParticleProcessMaterial::get_color_initial_ramp() const {
+	ZoneScopedS(60);
 	return color_initial_ramp;
 }
 
 void ParticleProcessMaterial::set_particle_flag(ParticleFlags p_particle_flag, bool p_enable) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_particle_flag, PARTICLE_FLAG_MAX);
 	particle_flags[p_particle_flag] = p_enable;
 	_queue_shader_change();
@@ -1212,11 +1239,13 @@ void ParticleProcessMaterial::set_particle_flag(ParticleFlags p_particle_flag, b
 }
 
 bool ParticleProcessMaterial::get_particle_flag(ParticleFlags p_particle_flag) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_particle_flag, PARTICLE_FLAG_MAX, false);
 	return particle_flags[p_particle_flag];
 }
 
 void ParticleProcessMaterial::set_emission_shape(EmissionShape p_shape) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_shape, EMISSION_SHAPE_MAX);
 	emission_shape = p_shape;
 	notify_property_list_changed();
@@ -1224,28 +1253,33 @@ void ParticleProcessMaterial::set_emission_shape(EmissionShape p_shape) {
 }
 
 void ParticleProcessMaterial::set_emission_sphere_radius(real_t p_radius) {
+	ZoneScopedS(60);
 	emission_sphere_radius = p_radius;
 	RenderingServer::get_singleton()->material_set_param(_get_material(), shader_names->emission_sphere_radius, p_radius);
 }
 
 void ParticleProcessMaterial::set_emission_box_extents(Vector3 p_extents) {
+	ZoneScopedS(60);
 	emission_box_extents = p_extents;
 	RenderingServer::get_singleton()->material_set_param(_get_material(), shader_names->emission_box_extents, p_extents);
 }
 
 void ParticleProcessMaterial::set_emission_point_texture(const Ref<Texture2D> &p_points) {
+	ZoneScopedS(60);
 	emission_point_texture = p_points;
 	RID tex_rid = p_points.is_valid() ? p_points->get_rid() : RID();
 	RenderingServer::get_singleton()->material_set_param(_get_material(), shader_names->emission_texture_points, tex_rid);
 }
 
 void ParticleProcessMaterial::set_emission_normal_texture(const Ref<Texture2D> &p_normals) {
+	ZoneScopedS(60);
 	emission_normal_texture = p_normals;
 	RID tex_rid = p_normals.is_valid() ? p_normals->get_rid() : RID();
 	RenderingServer::get_singleton()->material_set_param(_get_material(), shader_names->emission_texture_normal, tex_rid);
 }
 
 void ParticleProcessMaterial::set_emission_color_texture(const Ref<Texture2D> &p_colors) {
+	ZoneScopedS(60);
 	emission_color_texture = p_colors;
 	RID tex_rid = p_colors.is_valid() ? p_colors->get_rid() : RID();
 	RenderingServer::get_singleton()->material_set_param(_get_material(), shader_names->emission_texture_color, tex_rid);
@@ -1253,75 +1287,92 @@ void ParticleProcessMaterial::set_emission_color_texture(const Ref<Texture2D> &p
 }
 
 void ParticleProcessMaterial::set_emission_point_count(int p_count) {
+	ZoneScopedS(60);
 	emission_point_count = p_count;
 	RenderingServer::get_singleton()->material_set_param(_get_material(), shader_names->emission_texture_point_count, p_count);
 }
 
 void ParticleProcessMaterial::set_emission_ring_axis(Vector3 p_axis) {
+	ZoneScopedS(60);
 	emission_ring_axis = p_axis;
 	RenderingServer::get_singleton()->material_set_param(_get_material(), shader_names->emission_ring_axis, p_axis);
 }
 
 void ParticleProcessMaterial::set_emission_ring_height(real_t p_height) {
+	ZoneScopedS(60);
 	emission_ring_height = p_height;
 	RenderingServer::get_singleton()->material_set_param(_get_material(), shader_names->emission_ring_height, p_height);
 }
 
 void ParticleProcessMaterial::set_emission_ring_radius(real_t p_radius) {
+	ZoneScopedS(60);
 	emission_ring_radius = p_radius;
 	RenderingServer::get_singleton()->material_set_param(_get_material(), shader_names->emission_ring_radius, p_radius);
 }
 
 void ParticleProcessMaterial::set_emission_ring_inner_radius(real_t p_radius) {
+	ZoneScopedS(60);
 	emission_ring_inner_radius = p_radius;
 	RenderingServer::get_singleton()->material_set_param(_get_material(), shader_names->emission_ring_inner_radius, p_radius);
 }
 
 ParticleProcessMaterial::EmissionShape ParticleProcessMaterial::get_emission_shape() const {
+	ZoneScopedS(60);
 	return emission_shape;
 }
 
 real_t ParticleProcessMaterial::get_emission_sphere_radius() const {
+	ZoneScopedS(60);
 	return emission_sphere_radius;
 }
 
 Vector3 ParticleProcessMaterial::get_emission_box_extents() const {
+	ZoneScopedS(60);
 	return emission_box_extents;
 }
 
 Ref<Texture2D> ParticleProcessMaterial::get_emission_point_texture() const {
+	ZoneScopedS(60);
 	return emission_point_texture;
 }
 
 Ref<Texture2D> ParticleProcessMaterial::get_emission_normal_texture() const {
+	ZoneScopedS(60);
 	return emission_normal_texture;
 }
 
 Ref<Texture2D> ParticleProcessMaterial::get_emission_color_texture() const {
+	ZoneScopedS(60);
 	return emission_color_texture;
 }
 
 int ParticleProcessMaterial::get_emission_point_count() const {
+	ZoneScopedS(60);
 	return emission_point_count;
 }
 
 Vector3 ParticleProcessMaterial::get_emission_ring_axis() const {
+	ZoneScopedS(60);
 	return emission_ring_axis;
 }
 
 real_t ParticleProcessMaterial::get_emission_ring_height() const {
+	ZoneScopedS(60);
 	return emission_ring_height;
 }
 
 real_t ParticleProcessMaterial::get_emission_ring_radius() const {
+	ZoneScopedS(60);
 	return emission_ring_radius;
 }
 
 real_t ParticleProcessMaterial::get_emission_ring_inner_radius() const {
+	ZoneScopedS(60);
 	return emission_ring_inner_radius;
 }
 
 void ParticleProcessMaterial::set_turbulence_enabled(const bool p_turbulence_enabled) {
+	ZoneScopedS(60);
 	turbulence_enabled = p_turbulence_enabled;
 	RenderingServer::get_singleton()->material_set_param(_get_material(), shader_names->turbulence_enabled, turbulence_enabled);
 	_queue_shader_change();
@@ -1329,47 +1380,57 @@ void ParticleProcessMaterial::set_turbulence_enabled(const bool p_turbulence_ena
 }
 
 bool ParticleProcessMaterial::get_turbulence_enabled() const {
+	ZoneScopedS(60);
 	return turbulence_enabled;
 }
 
 void ParticleProcessMaterial::set_turbulence_noise_strength(float p_turbulence_noise_strength) {
+	ZoneScopedS(60);
 	turbulence_noise_strength = p_turbulence_noise_strength;
 	RenderingServer::get_singleton()->material_set_param(_get_material(), shader_names->turbulence_noise_strength, p_turbulence_noise_strength);
 }
 
 float ParticleProcessMaterial::get_turbulence_noise_strength() const {
+	ZoneScopedS(60);
 	return turbulence_noise_strength;
 }
 
 void ParticleProcessMaterial::set_turbulence_noise_scale(float p_turbulence_noise_scale) {
+	ZoneScopedS(60);
 	turbulence_noise_scale = p_turbulence_noise_scale;
 	float shader_turbulence_noise_scale = (pow(p_turbulence_noise_scale, 0.25) * 5.6234 / 10.0) * 4.0 - 3.0;
 	RenderingServer::get_singleton()->material_set_param(_get_material(), shader_names->turbulence_noise_scale, shader_turbulence_noise_scale);
 }
 
 float ParticleProcessMaterial::get_turbulence_noise_scale() const {
+	ZoneScopedS(60);
 	return turbulence_noise_scale;
 }
 
 void ParticleProcessMaterial::set_turbulence_noise_speed_random(float p_turbulence_noise_speed_random) {
+	ZoneScopedS(60);
 	turbulence_noise_speed_random = p_turbulence_noise_speed_random;
 	RenderingServer::get_singleton()->material_set_param(_get_material(), shader_names->turbulence_noise_speed_random, p_turbulence_noise_speed_random);
 }
 
 float ParticleProcessMaterial::get_turbulence_noise_speed_random() const {
+	ZoneScopedS(60);
 	return turbulence_noise_speed_random;
 }
 
 void ParticleProcessMaterial::set_turbulence_noise_speed(const Vector3 &p_turbulence_noise_speed) {
+	ZoneScopedS(60);
 	turbulence_noise_speed = p_turbulence_noise_speed;
 	RenderingServer::get_singleton()->material_set_param(_get_material(), shader_names->turbulence_noise_speed, turbulence_noise_speed);
 }
 
 Vector3 ParticleProcessMaterial::get_turbulence_noise_speed() const {
+	ZoneScopedS(60);
 	return turbulence_noise_speed;
 }
 
 void ParticleProcessMaterial::set_gravity(const Vector3 &p_gravity) {
+	ZoneScopedS(60);
 	gravity = p_gravity;
 	Vector3 gset = gravity;
 	if (gset == Vector3()) {
@@ -1379,24 +1440,29 @@ void ParticleProcessMaterial::set_gravity(const Vector3 &p_gravity) {
 }
 
 Vector3 ParticleProcessMaterial::get_gravity() const {
+	ZoneScopedS(60);
 	return gravity;
 }
 
 void ParticleProcessMaterial::set_lifetime_randomness(double p_lifetime) {
+	ZoneScopedS(60);
 	lifetime_randomness = p_lifetime;
 	RenderingServer::get_singleton()->material_set_param(_get_material(), shader_names->lifetime_randomness, lifetime_randomness);
 }
 
 double ParticleProcessMaterial::get_lifetime_randomness() const {
+	ZoneScopedS(60);
 	return lifetime_randomness;
 }
 
 RID ParticleProcessMaterial::get_shader_rid() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!shader_map.has(current_key), RID());
 	return shader_map[current_key].shader;
 }
 
 void ParticleProcessMaterial::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (p_property.name == "emission_sphere_radius" && (emission_shape != EMISSION_SHAPE_SPHERE && emission_shape != EMISSION_SHAPE_SPHERE_SURFACE)) {
 		p_property.usage = PROPERTY_USAGE_NONE;
 	}
@@ -1461,101 +1527,123 @@ void ParticleProcessMaterial::_validate_property(PropertyInfo &p_property) const
 }
 
 void ParticleProcessMaterial::set_sub_emitter_mode(SubEmitterMode p_sub_emitter_mode) {
+	ZoneScopedS(60);
 	sub_emitter_mode = p_sub_emitter_mode;
 	_queue_shader_change();
 	notify_property_list_changed();
 }
 
 ParticleProcessMaterial::SubEmitterMode ParticleProcessMaterial::get_sub_emitter_mode() const {
+	ZoneScopedS(60);
 	return sub_emitter_mode;
 }
 
 void ParticleProcessMaterial::set_sub_emitter_frequency(double p_frequency) {
+	ZoneScopedS(60);
 	sub_emitter_frequency = p_frequency;
 	RenderingServer::get_singleton()->material_set_param(_get_material(), shader_names->sub_emitter_frequency, 1.0 / p_frequency); //pass delta instead of frequency, since its easier to compute
 }
 
 double ParticleProcessMaterial::get_sub_emitter_frequency() const {
+	ZoneScopedS(60);
 	return sub_emitter_frequency;
 }
 
 void ParticleProcessMaterial::set_sub_emitter_amount_at_end(int p_amount) {
+	ZoneScopedS(60);
 	sub_emitter_amount_at_end = p_amount;
 	RenderingServer::get_singleton()->material_set_param(_get_material(), shader_names->sub_emitter_amount_at_end, p_amount);
 }
 
 int ParticleProcessMaterial::get_sub_emitter_amount_at_end() const {
+	ZoneScopedS(60);
 	return sub_emitter_amount_at_end;
 }
 
 void ParticleProcessMaterial::set_sub_emitter_amount_at_collision(int p_amount) {
+	ZoneScopedS(60);
 	sub_emitter_amount_at_collision = p_amount;
 	RenderingServer::get_singleton()->material_set_param(_get_material(), shader_names->sub_emitter_amount_at_collision, p_amount);
 }
 
 int ParticleProcessMaterial::get_sub_emitter_amount_at_collision() const {
+	ZoneScopedS(60);
 	return sub_emitter_amount_at_collision;
 }
 
 void ParticleProcessMaterial::set_sub_emitter_keep_velocity(bool p_enable) {
+	ZoneScopedS(60);
 	sub_emitter_keep_velocity = p_enable;
 	RenderingServer::get_singleton()->material_set_param(_get_material(), shader_names->sub_emitter_keep_velocity, p_enable);
 }
 bool ParticleProcessMaterial::get_sub_emitter_keep_velocity() const {
+	ZoneScopedS(60);
 	return sub_emitter_keep_velocity;
 }
 
 void ParticleProcessMaterial::set_attractor_interaction_enabled(bool p_enable) {
+	ZoneScopedS(60);
 	attractor_interaction_enabled = p_enable;
 	_queue_shader_change();
 }
 
 bool ParticleProcessMaterial::is_attractor_interaction_enabled() const {
+	ZoneScopedS(60);
 	return attractor_interaction_enabled;
 }
 
 void ParticleProcessMaterial::set_collision_mode(CollisionMode p_collision_mode) {
+	ZoneScopedS(60);
 	collision_mode = p_collision_mode;
 	_queue_shader_change();
 	notify_property_list_changed();
 }
 
 ParticleProcessMaterial::CollisionMode ParticleProcessMaterial::get_collision_mode() const {
+	ZoneScopedS(60);
 	return collision_mode;
 }
 
 void ParticleProcessMaterial::set_collision_use_scale(bool p_scale) {
+	ZoneScopedS(60);
 	collision_scale = p_scale;
 	_queue_shader_change();
 }
 
 bool ParticleProcessMaterial::is_collision_using_scale() const {
+	ZoneScopedS(60);
 	return collision_scale;
 }
 
 void ParticleProcessMaterial::set_collision_friction(float p_friction) {
+	ZoneScopedS(60);
 	collision_friction = p_friction;
 	RenderingServer::get_singleton()->material_set_param(_get_material(), shader_names->collision_friction, p_friction);
 }
 
 float ParticleProcessMaterial::get_collision_friction() const {
+	ZoneScopedS(60);
 	return collision_friction;
 }
 
 void ParticleProcessMaterial::set_collision_bounce(float p_bounce) {
+	ZoneScopedS(60);
 	collision_bounce = p_bounce;
 	RenderingServer::get_singleton()->material_set_param(_get_material(), shader_names->collision_bounce, p_bounce);
 }
 
 float ParticleProcessMaterial::get_collision_bounce() const {
+	ZoneScopedS(60);
 	return collision_bounce;
 }
 
 Shader::Mode ParticleProcessMaterial::get_shader_mode() const {
+	ZoneScopedS(60);
 	return Shader::MODE_PARTICLES;
 }
 
 void ParticleProcessMaterial::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_direction", "degrees"), &ParticleProcessMaterial::set_direction);
 	ClassDB::bind_method(D_METHOD("get_direction"), &ParticleProcessMaterial::get_direction);
 
@@ -1894,6 +1982,7 @@ ParticleProcessMaterial::ParticleProcessMaterial() :
 }
 
 ParticleProcessMaterial::~ParticleProcessMaterial() {
+	ZoneScopedS(60);
 	MutexLock lock(material_mutex);
 
 	if (shader_map.has(current_key)) {

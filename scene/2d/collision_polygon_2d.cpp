@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  collision_polygon_2d.cpp                                             */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "collision_polygon_2d.h"
 
 #include "collision_object_2d.h"
@@ -39,6 +70,7 @@
 #include "thirdparty/misc/polypartition.h"
 
 void CollisionPolygon2D::_build_polygon() {
+	ZoneScopedS(60);
 	parent->shape_owner_clear_shapes(owner_id);
 
 	bool solids = build_mode == BUILD_SOLIDS;
@@ -80,11 +112,13 @@ void CollisionPolygon2D::_build_polygon() {
 }
 
 Vector<Vector<Vector2>> CollisionPolygon2D::_decompose_in_convex() {
+	ZoneScopedS(60);
 	Vector<Vector<Vector2>> decomp = Geometry2D::decompose_polygon_in_convex(polygon);
 	return decomp;
 }
 
 void CollisionPolygon2D::_update_in_shape_owner(bool p_xform_only) {
+	ZoneScopedS(60);
 	parent->shape_owner_set_transform(owner_id, get_transform());
 	if (p_xform_only) {
 		return;
@@ -95,6 +129,7 @@ void CollisionPolygon2D::_update_in_shape_owner(bool p_xform_only) {
 }
 
 void CollisionPolygon2D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_PARENTED: {
 			parent = Object::cast_to<CollisionObject2D>(get_parent());
@@ -176,6 +211,7 @@ void CollisionPolygon2D::_notification(int p_what) {
 }
 
 void CollisionPolygon2D::set_polygon(const Vector<Point2> &p_polygon) {
+	ZoneScopedS(60);
 	polygon = p_polygon;
 
 	{
@@ -203,10 +239,12 @@ void CollisionPolygon2D::set_polygon(const Vector<Point2> &p_polygon) {
 }
 
 Vector<Point2> CollisionPolygon2D::get_polygon() const {
+	ZoneScopedS(60);
 	return polygon;
 }
 
 void CollisionPolygon2D::set_build_mode(BuildMode p_mode) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX((int)p_mode, 2);
 	build_mode = p_mode;
 	if (parent) {
@@ -218,24 +256,29 @@ void CollisionPolygon2D::set_build_mode(BuildMode p_mode) {
 }
 
 CollisionPolygon2D::BuildMode CollisionPolygon2D::get_build_mode() const {
+	ZoneScopedS(60);
 	return build_mode;
 }
 
 #ifdef TOOLS_ENABLED
 Rect2 CollisionPolygon2D::_edit_get_rect() const {
+	ZoneScopedS(60);
 	return aabb;
 }
 
 bool CollisionPolygon2D::_edit_use_rect() const {
+	ZoneScopedS(60);
 	return true;
 }
 
 bool CollisionPolygon2D::_edit_is_selected_on_click(const Point2 &p_point, double p_tolerance) const {
+	ZoneScopedS(60);
 	return Geometry2D::is_point_in_polygon(p_point, Variant(polygon));
 }
 #endif
 
 PackedStringArray CollisionPolygon2D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (!Object::cast_to<CollisionObject2D>(get_parent())) {
@@ -263,6 +306,7 @@ PackedStringArray CollisionPolygon2D::get_configuration_warnings() const {
 }
 
 void CollisionPolygon2D::set_disabled(bool p_disabled) {
+	ZoneScopedS(60);
 	disabled = p_disabled;
 	queue_redraw();
 	if (parent) {
@@ -271,10 +315,12 @@ void CollisionPolygon2D::set_disabled(bool p_disabled) {
 }
 
 bool CollisionPolygon2D::is_disabled() const {
+	ZoneScopedS(60);
 	return disabled;
 }
 
 void CollisionPolygon2D::set_one_way_collision(bool p_enable) {
+	ZoneScopedS(60);
 	one_way_collision = p_enable;
 	queue_redraw();
 	if (parent) {
@@ -284,10 +330,12 @@ void CollisionPolygon2D::set_one_way_collision(bool p_enable) {
 }
 
 bool CollisionPolygon2D::is_one_way_collision_enabled() const {
+	ZoneScopedS(60);
 	return one_way_collision;
 }
 
 void CollisionPolygon2D::set_one_way_collision_margin(real_t p_margin) {
+	ZoneScopedS(60);
 	one_way_collision_margin = p_margin;
 	if (parent) {
 		parent->shape_owner_set_one_way_collision_margin(owner_id, one_way_collision_margin);
@@ -295,10 +343,12 @@ void CollisionPolygon2D::set_one_way_collision_margin(real_t p_margin) {
 }
 
 real_t CollisionPolygon2D::get_one_way_collision_margin() const {
+	ZoneScopedS(60);
 	return one_way_collision_margin;
 }
 
 void CollisionPolygon2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_polygon", "polygon"), &CollisionPolygon2D::set_polygon);
 	ClassDB::bind_method(D_METHOD("get_polygon"), &CollisionPolygon2D::get_polygon);
 
@@ -322,5 +372,6 @@ void CollisionPolygon2D::_bind_methods() {
 }
 
 CollisionPolygon2D::CollisionPolygon2D() {
+	ZoneScopedS(60);
 	set_notify_local_transform(true);
 }

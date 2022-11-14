@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  line_2d.cpp                                                          */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "line_2d.h"
 
 #include "core/core_string_names.h"
@@ -44,6 +75,7 @@ Line2D::Line2D() {
 
 #ifdef TOOLS_ENABLED
 Rect2 Line2D::_edit_get_rect() const {
+	ZoneScopedS(60);
 	if (_points.size() == 0) {
 		return Rect2(0, 0, 0, 0);
 	}
@@ -57,10 +89,12 @@ Rect2 Line2D::_edit_get_rect() const {
 }
 
 bool Line2D::_edit_use_rect() const {
+	ZoneScopedS(60);
 	return true;
 }
 
 bool Line2D::_edit_is_selected_on_click(const Point2 &p_point, double p_tolerance) const {
+	ZoneScopedS(60);
 	const real_t d = _width / 2 + p_tolerance;
 	const Vector2 *points = _points.ptr();
 	for (int i = 0; i < _points.size() - 1; i++) {
@@ -75,11 +109,13 @@ bool Line2D::_edit_is_selected_on_click(const Point2 &p_point, double p_toleranc
 #endif
 
 void Line2D::set_points(const Vector<Vector2> &p_points) {
+	ZoneScopedS(60);
 	_points = p_points;
 	queue_redraw();
 }
 
 void Line2D::set_width(float p_width) {
+	ZoneScopedS(60);
 	if (p_width < 0.0) {
 		p_width = 0.0;
 	}
@@ -88,10 +124,12 @@ void Line2D::set_width(float p_width) {
 }
 
 float Line2D::get_width() const {
+	ZoneScopedS(60);
 	return _width;
 }
 
 void Line2D::set_curve(const Ref<Curve> &p_curve) {
+	ZoneScopedS(60);
 	// Cleanup previous connection if any
 	if (_curve.is_valid()) {
 		_curve->disconnect(CoreStringNames::get_singleton()->changed, callable_mp(this, &Line2D::_curve_changed));
@@ -108,29 +146,35 @@ void Line2D::set_curve(const Ref<Curve> &p_curve) {
 }
 
 Ref<Curve> Line2D::get_curve() const {
+	ZoneScopedS(60);
 	return _curve;
 }
 
 Vector<Vector2> Line2D::get_points() const {
+	ZoneScopedS(60);
 	return _points;
 }
 
 void Line2D::set_point_position(int i, Vector2 p_pos) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(i, _points.size());
 	_points.set(i, p_pos);
 	queue_redraw();
 }
 
 Vector2 Line2D::get_point_position(int i) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(i, _points.size(), Vector2());
 	return _points.get(i);
 }
 
 int Line2D::get_point_count() const {
+	ZoneScopedS(60);
 	return _points.size();
 }
 
 void Line2D::clear_points() {
+	ZoneScopedS(60);
 	int count = _points.size();
 	if (count > 0) {
 		_points.clear();
@@ -139,6 +183,7 @@ void Line2D::clear_points() {
 }
 
 void Line2D::add_point(Vector2 p_pos, int p_atpos) {
+	ZoneScopedS(60);
 	if (p_atpos < 0 || _points.size() < p_atpos) {
 		_points.push_back(p_pos);
 	} else {
@@ -148,20 +193,24 @@ void Line2D::add_point(Vector2 p_pos, int p_atpos) {
 }
 
 void Line2D::remove_point(int i) {
+	ZoneScopedS(60);
 	_points.remove_at(i);
 	queue_redraw();
 }
 
 void Line2D::set_default_color(Color p_color) {
+	ZoneScopedS(60);
 	_default_color = p_color;
 	queue_redraw();
 }
 
 Color Line2D::get_default_color() const {
+	ZoneScopedS(60);
 	return _default_color;
 }
 
 void Line2D::set_gradient(const Ref<Gradient> &p_gradient) {
+	ZoneScopedS(60);
 	// Cleanup previous connection if any
 	if (_gradient.is_valid()) {
 		_gradient->disconnect(CoreStringNames::get_singleton()->changed, callable_mp(this, &Line2D::_gradient_changed));
@@ -178,55 +227,67 @@ void Line2D::set_gradient(const Ref<Gradient> &p_gradient) {
 }
 
 Ref<Gradient> Line2D::get_gradient() const {
+	ZoneScopedS(60);
 	return _gradient;
 }
 
 void Line2D::set_texture(const Ref<Texture2D> &p_texture) {
+	ZoneScopedS(60);
 	_texture = p_texture;
 	queue_redraw();
 }
 
 Ref<Texture2D> Line2D::get_texture() const {
+	ZoneScopedS(60);
 	return _texture;
 }
 
 void Line2D::set_texture_mode(const LineTextureMode p_mode) {
+	ZoneScopedS(60);
 	_texture_mode = p_mode;
 	queue_redraw();
 }
 
 Line2D::LineTextureMode Line2D::get_texture_mode() const {
+	ZoneScopedS(60);
 	return _texture_mode;
 }
 
 void Line2D::set_joint_mode(LineJointMode p_mode) {
+	ZoneScopedS(60);
 	_joint_mode = p_mode;
 	queue_redraw();
 }
 
 Line2D::LineJointMode Line2D::get_joint_mode() const {
+	ZoneScopedS(60);
 	return _joint_mode;
 }
 
 void Line2D::set_begin_cap_mode(LineCapMode p_mode) {
+	ZoneScopedS(60);
 	_begin_cap_mode = p_mode;
 	queue_redraw();
 }
 
 Line2D::LineCapMode Line2D::get_begin_cap_mode() const {
+	ZoneScopedS(60);
 	return _begin_cap_mode;
 }
 
 void Line2D::set_end_cap_mode(LineCapMode p_mode) {
+	ZoneScopedS(60);
 	_end_cap_mode = p_mode;
 	queue_redraw();
 }
 
 Line2D::LineCapMode Line2D::get_end_cap_mode() const {
+	ZoneScopedS(60);
 	return _end_cap_mode;
 }
 
 void Line2D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
 			_draw();
@@ -235,6 +296,7 @@ void Line2D::_notification(int p_what) {
 }
 
 void Line2D::set_sharp_limit(float p_limit) {
+	ZoneScopedS(60);
 	if (p_limit < 0.f) {
 		p_limit = 0.f;
 	}
@@ -243,28 +305,34 @@ void Line2D::set_sharp_limit(float p_limit) {
 }
 
 float Line2D::get_sharp_limit() const {
+	ZoneScopedS(60);
 	return _sharp_limit;
 }
 
 void Line2D::set_round_precision(int p_precision) {
+	ZoneScopedS(60);
 	_round_precision = MAX(1, p_precision);
 	queue_redraw();
 }
 
 int Line2D::get_round_precision() const {
+	ZoneScopedS(60);
 	return _round_precision;
 }
 
 void Line2D::set_antialiased(bool p_antialiased) {
+	ZoneScopedS(60);
 	_antialiased = p_antialiased;
 	queue_redraw();
 }
 
 bool Line2D::get_antialiased() const {
+	ZoneScopedS(60);
 	return _antialiased;
 }
 
 void Line2D::_draw() {
+	ZoneScopedS(60);
 	int len = _points.size();
 	if (len <= 1 || _width == 0.f) {
 		return;
@@ -334,15 +402,18 @@ void Line2D::_draw() {
 }
 
 void Line2D::_gradient_changed() {
+	ZoneScopedS(60);
 	queue_redraw();
 }
 
 void Line2D::_curve_changed() {
+	ZoneScopedS(60);
 	queue_redraw();
 }
 
 // static
 void Line2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_points", "points"), &Line2D::set_points);
 	ClassDB::bind_method(D_METHOD("get_points"), &Line2D::get_points);
 

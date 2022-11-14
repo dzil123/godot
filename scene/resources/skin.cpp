@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  skin.cpp                                                             */
 /*************************************************************************/
@@ -31,6 +32,7 @@
 #include "skin.h"
 
 void Skin::set_bind_count(int p_size) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_size < 0);
 	binds.resize(p_size);
 	binds_ptr = binds.ptrw();
@@ -39,6 +41,7 @@ void Skin::set_bind_count(int p_size) {
 }
 
 void Skin::add_bind(int p_bone, const Transform3D &p_pose) {
+	ZoneScopedS(60);
 	uint32_t index = bind_count;
 	set_bind_count(bind_count + 1);
 	set_bind_bone(index, p_bone);
@@ -46,6 +49,7 @@ void Skin::add_bind(int p_bone, const Transform3D &p_pose) {
 }
 
 void Skin::add_named_bind(const String &p_name, const Transform3D &p_pose) {
+	ZoneScopedS(60);
 	uint32_t index = bind_count;
 	set_bind_count(bind_count + 1);
 	set_bind_name(index, p_name);
@@ -53,6 +57,7 @@ void Skin::add_named_bind(const String &p_name, const Transform3D &p_pose) {
 }
 
 void Skin::set_bind_name(int p_index, const StringName &p_name) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, bind_count);
 	bool notify_change = (binds_ptr[p_index].name != StringName()) != (p_name != StringName());
 	binds_ptr[p_index].name = p_name;
@@ -63,18 +68,21 @@ void Skin::set_bind_name(int p_index, const StringName &p_name) {
 }
 
 void Skin::set_bind_bone(int p_index, int p_bone) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, bind_count);
 	binds_ptr[p_index].bone = p_bone;
 	emit_changed();
 }
 
 void Skin::set_bind_pose(int p_index, const Transform3D &p_pose) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, bind_count);
 	binds_ptr[p_index].pose = p_pose;
 	emit_changed();
 }
 
 void Skin::clear_binds() {
+	ZoneScopedS(60);
 	binds.clear();
 	binds_ptr = nullptr;
 	bind_count = 0;
@@ -82,10 +90,12 @@ void Skin::clear_binds() {
 }
 
 void Skin::reset_state() {
+	ZoneScopedS(60);
 	clear_binds();
 }
 
 bool Skin::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	String prop_name = p_name;
 	if (prop_name == "bind_count") {
 		set_bind_count(p_value);
@@ -108,6 +118,7 @@ bool Skin::_set(const StringName &p_name, const Variant &p_value) {
 }
 
 bool Skin::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	String prop_name = p_name;
 	if (prop_name == "bind_count") {
 		r_ret = get_bind_count();
@@ -130,6 +141,7 @@ bool Skin::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void Skin::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	p_list->push_back(PropertyInfo(Variant::INT, PNAME("bind_count"), PROPERTY_HINT_RANGE, "0,16384,1,or_greater"));
 	for (int i = 0; i < get_bind_count(); i++) {
 		const String prefix = vformat("%s/%d/", PNAME("bind"), i);
@@ -140,6 +152,7 @@ void Skin::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 void Skin::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_bind_count", "bind_count"), &Skin::set_bind_count);
 	ClassDB::bind_method(D_METHOD("get_bind_count"), &Skin::get_bind_count);
 

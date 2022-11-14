@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  curve.cpp                                                            */
 /*************************************************************************/
@@ -38,6 +39,7 @@ Curve::Curve() {
 }
 
 void Curve::set_point_count(int p_count) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_count < 0);
 	if (_points.size() >= p_count) {
 		_points.resize(p_count);
@@ -51,6 +53,7 @@ void Curve::set_point_count(int p_count) {
 }
 
 int Curve::_add_point(Vector2 p_position, real_t p_left_tangent, real_t p_right_tangent, TangentMode p_left_mode, TangentMode p_right_mode) {
+	ZoneScopedS(60);
 	// Add a point and preserve order
 
 	// Curve bounds is in 0..1
@@ -102,6 +105,7 @@ int Curve::_add_point(Vector2 p_position, real_t p_left_tangent, real_t p_right_
 }
 
 int Curve::add_point(Vector2 p_position, real_t p_left_tangent, real_t p_right_tangent, TangentMode p_left_mode, TangentMode p_right_mode) {
+	ZoneScopedS(60);
 	int ret = _add_point(p_position, p_left_tangent, p_right_tangent, p_left_mode, p_right_mode);
 	notify_property_list_changed();
 
@@ -109,6 +113,7 @@ int Curve::add_point(Vector2 p_position, real_t p_left_tangent, real_t p_right_t
 }
 
 int Curve::get_index(real_t p_offset) const {
+	ZoneScopedS(60);
 	// Lower-bound float binary search
 
 	int imin = 0;
@@ -139,6 +144,7 @@ int Curve::get_index(real_t p_offset) const {
 }
 
 void Curve::clean_dupes() {
+	ZoneScopedS(60);
 	bool dirty = false;
 
 	for (int i = 1; i < _points.size(); ++i) {
@@ -156,6 +162,7 @@ void Curve::clean_dupes() {
 }
 
 void Curve::set_point_left_tangent(int p_index, real_t p_tangent) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, _points.size());
 	_points.write[p_index].left_tangent = p_tangent;
 	_points.write[p_index].left_mode = TANGENT_FREE;
@@ -163,6 +170,7 @@ void Curve::set_point_left_tangent(int p_index, real_t p_tangent) {
 }
 
 void Curve::set_point_right_tangent(int p_index, real_t p_tangent) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, _points.size());
 	_points.write[p_index].right_tangent = p_tangent;
 	_points.write[p_index].right_mode = TANGENT_FREE;
@@ -170,6 +178,7 @@ void Curve::set_point_right_tangent(int p_index, real_t p_tangent) {
 }
 
 void Curve::set_point_left_mode(int p_index, TangentMode p_mode) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, _points.size());
 	_points.write[p_index].left_mode = p_mode;
 	if (p_index > 0) {
@@ -182,6 +191,7 @@ void Curve::set_point_left_mode(int p_index, TangentMode p_mode) {
 }
 
 void Curve::set_point_right_mode(int p_index, TangentMode p_mode) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, _points.size());
 	_points.write[p_index].right_mode = p_mode;
 	if (p_index + 1 < _points.size()) {
@@ -194,43 +204,51 @@ void Curve::set_point_right_mode(int p_index, TangentMode p_mode) {
 }
 
 real_t Curve::get_point_left_tangent(int p_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_index, _points.size(), 0);
 	return _points[p_index].left_tangent;
 }
 
 real_t Curve::get_point_right_tangent(int p_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_index, _points.size(), 0);
 	return _points[p_index].right_tangent;
 }
 
 Curve::TangentMode Curve::get_point_left_mode(int p_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_index, _points.size(), TANGENT_FREE);
 	return _points[p_index].left_mode;
 }
 
 Curve::TangentMode Curve::get_point_right_mode(int p_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_index, _points.size(), TANGENT_FREE);
 	return _points[p_index].right_mode;
 }
 
 void Curve::_remove_point(int p_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, _points.size());
 	_points.remove_at(p_index);
 	mark_dirty();
 }
 
 void Curve::remove_point(int p_index) {
+	ZoneScopedS(60);
 	_remove_point(p_index);
 	notify_property_list_changed();
 }
 
 void Curve::clear_points() {
+	ZoneScopedS(60);
 	_points.clear();
 	mark_dirty();
 	notify_property_list_changed();
 }
 
 void Curve::set_point_value(int p_index, real_t p_position) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, _points.size());
 	_points.write[p_index].position.y = p_position;
 	update_auto_tangents(p_index);
@@ -238,6 +256,7 @@ void Curve::set_point_value(int p_index, real_t p_position) {
 }
 
 int Curve::set_point_offset(int p_index, real_t p_offset) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_index, _points.size(), -1);
 	Point p = _points[p_index];
 	_remove_point(p_index);
@@ -254,16 +273,19 @@ int Curve::set_point_offset(int p_index, real_t p_offset) {
 }
 
 Vector2 Curve::get_point_position(int p_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_index, _points.size(), Vector2(0, 0));
 	return _points[p_index].position;
 }
 
 Curve::Point Curve::get_point(int p_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_index, _points.size(), Point());
 	return _points[p_index];
 }
 
 void Curve::update_auto_tangents(int p_index) {
+	ZoneScopedS(60);
 	Point &p = _points.write[p_index];
 
 	if (p_index > 0) {
@@ -292,6 +314,7 @@ void Curve::update_auto_tangents(int p_index) {
 #define MIN_Y_RANGE 0.01
 
 void Curve::set_min_value(real_t p_min) {
+	ZoneScopedS(60);
 	if (_minmax_set_once & 0b11 && p_min > _max_value - MIN_Y_RANGE) {
 		_min_value = _max_value - MIN_Y_RANGE;
 	} else {
@@ -304,6 +327,7 @@ void Curve::set_min_value(real_t p_min) {
 }
 
 void Curve::set_max_value(real_t p_max) {
+	ZoneScopedS(60);
 	if (_minmax_set_once & 0b11 && p_max < _min_value + MIN_Y_RANGE) {
 		_max_value = _min_value + MIN_Y_RANGE;
 	} else {
@@ -314,6 +338,7 @@ void Curve::set_max_value(real_t p_max) {
 }
 
 real_t Curve::sample(real_t p_offset) const {
+	ZoneScopedS(60);
 	if (_points.size() == 0) {
 		return 0;
 	}
@@ -337,6 +362,7 @@ real_t Curve::sample(real_t p_offset) const {
 }
 
 real_t Curve::sample_local_nocheck(int p_index, real_t p_local_offset) const {
+	ZoneScopedS(60);
 	const Point a = _points[p_index];
 	const Point b = _points[p_index + 1];
 
@@ -370,11 +396,13 @@ real_t Curve::sample_local_nocheck(int p_index, real_t p_local_offset) const {
 }
 
 void Curve::mark_dirty() {
+	ZoneScopedS(60);
 	_baked_cache_dirty = true;
 	emit_signal(CoreStringNames::get_singleton()->changed);
 }
 
 Array Curve::get_data() const {
+	ZoneScopedS(60);
 	Array output;
 	const unsigned int ELEMS = 5;
 	output.resize(_points.size() * ELEMS);
@@ -394,6 +422,7 @@ Array Curve::get_data() const {
 }
 
 void Curve::set_data(const Array p_input) {
+	ZoneScopedS(60);
 	const unsigned int ELEMS = 5;
 	ERR_FAIL_COND(p_input.size() % ELEMS != 0);
 
@@ -434,6 +463,7 @@ void Curve::set_data(const Array p_input) {
 }
 
 void Curve::bake() {
+	ZoneScopedS(60);
 	_baked_cache.clear();
 
 	_baked_cache.resize(_bake_resolution);
@@ -453,6 +483,7 @@ void Curve::bake() {
 }
 
 void Curve::set_bake_resolution(int p_resolution) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_resolution < 1);
 	ERR_FAIL_COND(p_resolution > 1000);
 	_bake_resolution = p_resolution;
@@ -460,6 +491,7 @@ void Curve::set_bake_resolution(int p_resolution) {
 }
 
 real_t Curve::sample_baked(real_t p_offset) const {
+	ZoneScopedS(60);
 	if (_baked_cache_dirty) {
 		// Last-second bake if not done already
 		const_cast<Curve *>(this)->bake();
@@ -496,6 +528,7 @@ real_t Curve::sample_baked(real_t p_offset) const {
 }
 
 void Curve::ensure_default_setup(real_t p_min, real_t p_max) {
+	ZoneScopedS(60);
 	if (_points.size() == 0 && _min_value == 0 && _max_value == 1) {
 		add_point(Vector2(0, 1));
 		add_point(Vector2(1, 1));
@@ -505,6 +538,7 @@ void Curve::ensure_default_setup(real_t p_min, real_t p_max) {
 }
 
 bool Curve::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	Vector<String> components = String(p_name).split("/", true, 2);
 	if (components.size() >= 2 && components[0].begins_with("point_") && components[0].trim_prefix("point_").is_valid_int()) {
 		int point_index = components[0].trim_prefix("point_").to_int();
@@ -534,6 +568,7 @@ bool Curve::_set(const StringName &p_name, const Variant &p_value) {
 }
 
 bool Curve::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	Vector<String> components = String(p_name).split("/", true, 2);
 	if (components.size() >= 2 && components[0].begins_with("point_") && components[0].trim_prefix("point_").is_valid_int()) {
 		int point_index = components[0].trim_prefix("point_").to_int();
@@ -559,6 +594,7 @@ bool Curve::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void Curve::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	for (int i = 0; i < _points.size(); i++) {
 		PropertyInfo pi = PropertyInfo(Variant::VECTOR2, vformat("point_%d/position", i));
 		pi.usage &= ~PROPERTY_USAGE_STORAGE;
@@ -587,6 +623,7 @@ void Curve::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 void Curve::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_point_count"), &Curve::get_point_count);
 	ClassDB::bind_method(D_METHOD("set_point_count", "count"), &Curve::set_point_count);
 	ClassDB::bind_method(D_METHOD("add_point", "position", "left_tangent", "right_tangent", "left_mode", "right_mode"), &Curve::add_point, DEFVAL(0), DEFVAL(0), DEFVAL(TANGENT_FREE), DEFVAL(TANGENT_FREE));
@@ -630,10 +667,12 @@ void Curve::_bind_methods() {
 }
 
 int Curve2D::get_point_count() const {
+	ZoneScopedS(60);
 	return points.size();
 }
 
 void Curve2D::set_point_count(int p_count) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_count < 0);
 	if (points.size() >= p_count) {
 		points.resize(p_count);
@@ -647,6 +686,7 @@ void Curve2D::set_point_count(int p_count) {
 }
 
 void Curve2D::_add_point(const Vector2 &p_position, const Vector2 &p_in, const Vector2 &p_out, int p_atpos) {
+	ZoneScopedS(60);
 	Point n;
 	n.position = p_position;
 	n.in = p_in;
@@ -661,11 +701,13 @@ void Curve2D::_add_point(const Vector2 &p_position, const Vector2 &p_in, const V
 }
 
 void Curve2D::add_point(const Vector2 &p_position, const Vector2 &p_in, const Vector2 &p_out, int p_atpos) {
+	ZoneScopedS(60);
 	_add_point(p_position, p_in, p_out, p_atpos);
 	notify_property_list_changed();
 }
 
 void Curve2D::set_point_position(int p_index, const Vector2 &p_position) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, points.size());
 
 	points.write[p_index].position = p_position;
@@ -673,11 +715,13 @@ void Curve2D::set_point_position(int p_index, const Vector2 &p_position) {
 }
 
 Vector2 Curve2D::get_point_position(int p_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_index, points.size(), Vector2());
 	return points[p_index].position;
 }
 
 void Curve2D::set_point_in(int p_index, const Vector2 &p_in) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, points.size());
 
 	points.write[p_index].in = p_in;
@@ -685,11 +729,13 @@ void Curve2D::set_point_in(int p_index, const Vector2 &p_in) {
 }
 
 Vector2 Curve2D::get_point_in(int p_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_index, points.size(), Vector2());
 	return points[p_index].in;
 }
 
 void Curve2D::set_point_out(int p_index, const Vector2 &p_out) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, points.size());
 
 	points.write[p_index].out = p_out;
@@ -697,22 +743,26 @@ void Curve2D::set_point_out(int p_index, const Vector2 &p_out) {
 }
 
 Vector2 Curve2D::get_point_out(int p_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_index, points.size(), Vector2());
 	return points[p_index].out;
 }
 
 void Curve2D::_remove_point(int p_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, points.size());
 	points.remove_at(p_index);
 	mark_dirty();
 }
 
 void Curve2D::remove_point(int p_index) {
+	ZoneScopedS(60);
 	_remove_point(p_index);
 	notify_property_list_changed();
 }
 
 void Curve2D::clear_points() {
+	ZoneScopedS(60);
 	if (!points.is_empty()) {
 		points.clear();
 		mark_dirty();
@@ -721,6 +771,7 @@ void Curve2D::clear_points() {
 }
 
 Vector2 Curve2D::sample(int p_index, const real_t p_offset) const {
+	ZoneScopedS(60);
 	int pc = points.size();
 	ERR_FAIL_COND_V(pc == 0, Vector2());
 
@@ -739,6 +790,7 @@ Vector2 Curve2D::sample(int p_index, const real_t p_offset) const {
 }
 
 Vector2 Curve2D::samplef(real_t p_findex) const {
+	ZoneScopedS(60);
 	if (p_findex < 0) {
 		p_findex = 0;
 	} else if (p_findex >= points.size()) {
@@ -749,11 +801,13 @@ Vector2 Curve2D::samplef(real_t p_findex) const {
 }
 
 void Curve2D::mark_dirty() {
+	ZoneScopedS(60);
 	baked_cache_dirty = true;
 	emit_signal(CoreStringNames::get_singleton()->changed);
 }
 
 void Curve2D::_bake_segment2d(RBMap<real_t, Vector2> &r_bake, real_t p_begin, real_t p_end, const Vector2 &p_a, const Vector2 &p_out, const Vector2 &p_b, const Vector2 &p_in, int p_depth, int p_max_depth, real_t p_tol) const {
+	ZoneScopedS(60);
 	real_t mp = p_begin + (p_end - p_begin) * 0.5;
 	Vector2 beg = p_a.bezier_interpolate(p_a + p_out, p_b + p_in, p_b, p_begin);
 	Vector2 mid = p_a.bezier_interpolate(p_a + p_out, p_b + p_in, p_b, mp);
@@ -774,6 +828,7 @@ void Curve2D::_bake_segment2d(RBMap<real_t, Vector2> &r_bake, real_t p_begin, re
 }
 
 void Curve2D::_bake() const {
+	ZoneScopedS(60);
 	if (!baked_cache_dirty) {
 		return;
 	}
@@ -876,6 +931,7 @@ void Curve2D::_bake() const {
 }
 
 real_t Curve2D::get_baked_length() const {
+	ZoneScopedS(60);
 	if (baked_cache_dirty) {
 		_bake();
 	}
@@ -884,6 +940,7 @@ real_t Curve2D::get_baked_length() const {
 }
 
 Vector2 Curve2D::sample_baked(real_t p_offset, bool p_cubic) const {
+	ZoneScopedS(60);
 	if (baked_cache_dirty) {
 		_bake();
 	}
@@ -937,6 +994,7 @@ Vector2 Curve2D::sample_baked(real_t p_offset, bool p_cubic) const {
 }
 
 Transform2D Curve2D::sample_baked_with_rotation(real_t p_offset, bool p_cubic, bool p_loop, real_t p_lookahead) const {
+	ZoneScopedS(60);
 	real_t path_length = get_baked_length(); // Ensure baked.
 	ERR_FAIL_COND_V_MSG(path_length == 0, Transform2D(), "Length of Curve2D is 0.");
 
@@ -977,6 +1035,7 @@ Transform2D Curve2D::sample_baked_with_rotation(real_t p_offset, bool p_cubic, b
 }
 
 PackedVector2Array Curve2D::get_baked_points() const {
+	ZoneScopedS(60);
 	if (baked_cache_dirty) {
 		_bake();
 	}
@@ -985,15 +1044,18 @@ PackedVector2Array Curve2D::get_baked_points() const {
 }
 
 void Curve2D::set_bake_interval(real_t p_tolerance) {
+	ZoneScopedS(60);
 	bake_interval = p_tolerance;
 	mark_dirty();
 }
 
 real_t Curve2D::get_bake_interval() const {
+	ZoneScopedS(60);
 	return bake_interval;
 }
 
 Vector2 Curve2D::get_closest_point(const Vector2 &p_to_point) const {
+	ZoneScopedS(60);
 	// Brute force method.
 
 	if (baked_cache_dirty) {
@@ -1032,6 +1094,7 @@ Vector2 Curve2D::get_closest_point(const Vector2 &p_to_point) const {
 }
 
 real_t Curve2D::get_closest_offset(const Vector2 &p_to_point) const {
+	ZoneScopedS(60);
 	// Brute force method.
 
 	if (baked_cache_dirty) {
@@ -1073,6 +1136,7 @@ real_t Curve2D::get_closest_offset(const Vector2 &p_to_point) const {
 }
 
 Dictionary Curve2D::_get_data() const {
+	ZoneScopedS(60);
 	Dictionary dc;
 
 	PackedVector2Array d;
@@ -1091,6 +1155,7 @@ Dictionary Curve2D::_get_data() const {
 }
 
 void Curve2D::_set_data(const Dictionary &p_data) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!p_data.has("points"));
 
 	PackedVector2Array rp = p_data["points"];
@@ -1110,6 +1175,7 @@ void Curve2D::_set_data(const Dictionary &p_data) {
 }
 
 PackedVector2Array Curve2D::tessellate(int p_max_stages, real_t p_tolerance) const {
+	ZoneScopedS(60);
 	PackedVector2Array tess;
 
 	if (points.size() == 0) {
@@ -1147,6 +1213,7 @@ PackedVector2Array Curve2D::tessellate(int p_max_stages, real_t p_tolerance) con
 }
 
 bool Curve2D::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	Vector<String> components = String(p_name).split("/", true, 2);
 	if (components.size() >= 2 && components[0].begins_with("point_") && components[0].trim_prefix("point_").is_valid_int()) {
 		int point_index = components[0].trim_prefix("point_").to_int();
@@ -1166,6 +1233,7 @@ bool Curve2D::_set(const StringName &p_name, const Variant &p_value) {
 }
 
 bool Curve2D::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	Vector<String> components = String(p_name).split("/", true, 2);
 	if (components.size() >= 2 && components[0].begins_with("point_") && components[0].trim_prefix("point_").is_valid_int()) {
 		int point_index = components[0].trim_prefix("point_").to_int();
@@ -1185,6 +1253,7 @@ bool Curve2D::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void Curve2D::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	for (int i = 0; i < points.size(); i++) {
 		PropertyInfo pi = PropertyInfo(Variant::VECTOR2, vformat("point_%d/position", i));
 		pi.usage &= ~PROPERTY_USAGE_STORAGE;
@@ -1205,6 +1274,7 @@ void Curve2D::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 void Curve2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_point_count"), &Curve2D::get_point_count);
 	ClassDB::bind_method(D_METHOD("set_point_count", "count"), &Curve2D::set_point_count);
 	ClassDB::bind_method(D_METHOD("add_point", "position", "in", "out", "index"), &Curve2D::add_point, DEFVAL(Vector2()), DEFVAL(Vector2()), DEFVAL(-1));
@@ -1248,10 +1318,12 @@ Curve2D::Curve2D() {}
 /***********************************************************************************/
 
 int Curve3D::get_point_count() const {
+	ZoneScopedS(60);
 	return points.size();
 }
 
 void Curve3D::set_point_count(int p_count) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_count < 0);
 	if (points.size() >= p_count) {
 		points.resize(p_count);
@@ -1265,6 +1337,7 @@ void Curve3D::set_point_count(int p_count) {
 }
 
 void Curve3D::_add_point(const Vector3 &p_position, const Vector3 &p_in, const Vector3 &p_out, int p_atpos) {
+	ZoneScopedS(60);
 	Point n;
 	n.position = p_position;
 	n.in = p_in;
@@ -1279,11 +1352,13 @@ void Curve3D::_add_point(const Vector3 &p_position, const Vector3 &p_in, const V
 }
 
 void Curve3D::add_point(const Vector3 &p_position, const Vector3 &p_in, const Vector3 &p_out, int p_atpos) {
+	ZoneScopedS(60);
 	_add_point(p_position, p_in, p_out, p_atpos);
 	notify_property_list_changed();
 }
 
 void Curve3D::set_point_position(int p_index, const Vector3 &p_position) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, points.size());
 
 	points.write[p_index].position = p_position;
@@ -1291,11 +1366,13 @@ void Curve3D::set_point_position(int p_index, const Vector3 &p_position) {
 }
 
 Vector3 Curve3D::get_point_position(int p_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_index, points.size(), Vector3());
 	return points[p_index].position;
 }
 
 void Curve3D::set_point_tilt(int p_index, real_t p_tilt) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, points.size());
 
 	points.write[p_index].tilt = p_tilt;
@@ -1303,11 +1380,13 @@ void Curve3D::set_point_tilt(int p_index, real_t p_tilt) {
 }
 
 real_t Curve3D::get_point_tilt(int p_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_index, points.size(), 0);
 	return points[p_index].tilt;
 }
 
 void Curve3D::set_point_in(int p_index, const Vector3 &p_in) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, points.size());
 
 	points.write[p_index].in = p_in;
@@ -1315,11 +1394,13 @@ void Curve3D::set_point_in(int p_index, const Vector3 &p_in) {
 }
 
 Vector3 Curve3D::get_point_in(int p_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_index, points.size(), Vector3());
 	return points[p_index].in;
 }
 
 void Curve3D::set_point_out(int p_index, const Vector3 &p_out) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, points.size());
 
 	points.write[p_index].out = p_out;
@@ -1327,22 +1408,26 @@ void Curve3D::set_point_out(int p_index, const Vector3 &p_out) {
 }
 
 Vector3 Curve3D::get_point_out(int p_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_index, points.size(), Vector3());
 	return points[p_index].out;
 }
 
 void Curve3D::_remove_point(int p_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, points.size());
 	points.remove_at(p_index);
 	mark_dirty();
 }
 
 void Curve3D::remove_point(int p_index) {
+	ZoneScopedS(60);
 	_remove_point(p_index);
 	notify_property_list_changed();
 }
 
 void Curve3D::clear_points() {
+	ZoneScopedS(60);
 	if (!points.is_empty()) {
 		points.clear();
 		mark_dirty();
@@ -1351,6 +1436,7 @@ void Curve3D::clear_points() {
 }
 
 Vector3 Curve3D::sample(int p_index, real_t p_offset) const {
+	ZoneScopedS(60);
 	int pc = points.size();
 	ERR_FAIL_COND_V(pc == 0, Vector3());
 
@@ -1369,6 +1455,7 @@ Vector3 Curve3D::sample(int p_index, real_t p_offset) const {
 }
 
 Vector3 Curve3D::samplef(real_t p_findex) const {
+	ZoneScopedS(60);
 	if (p_findex < 0) {
 		p_findex = 0;
 	} else if (p_findex >= points.size()) {
@@ -1379,11 +1466,13 @@ Vector3 Curve3D::samplef(real_t p_findex) const {
 }
 
 void Curve3D::mark_dirty() {
+	ZoneScopedS(60);
 	baked_cache_dirty = true;
 	emit_signal(CoreStringNames::get_singleton()->changed);
 }
 
 void Curve3D::_bake_segment3d(RBMap<real_t, Vector3> &r_bake, real_t p_begin, real_t p_end, const Vector3 &p_a, const Vector3 &p_out, const Vector3 &p_b, const Vector3 &p_in, int p_depth, int p_max_depth, real_t p_tol) const {
+	ZoneScopedS(60);
 	real_t mp = p_begin + (p_end - p_begin) * 0.5;
 	Vector3 beg = p_a.bezier_interpolate(p_a + p_out, p_b + p_in, p_b, p_begin);
 	Vector3 mid = p_a.bezier_interpolate(p_a + p_out, p_b + p_in, p_b, mp);
@@ -1403,6 +1492,7 @@ void Curve3D::_bake_segment3d(RBMap<real_t, Vector3> &r_bake, real_t p_begin, re
 }
 
 void Curve3D::_bake() const {
+	ZoneScopedS(60);
 	if (!baked_cache_dirty) {
 		return;
 	}
@@ -1570,6 +1660,7 @@ void Curve3D::_bake() const {
 }
 
 real_t Curve3D::get_baked_length() const {
+	ZoneScopedS(60);
 	if (baked_cache_dirty) {
 		_bake();
 	}
@@ -1578,6 +1669,7 @@ real_t Curve3D::get_baked_length() const {
 }
 
 Vector3 Curve3D::sample_baked(real_t p_offset, bool p_cubic) const {
+	ZoneScopedS(60);
 	if (baked_cache_dirty) {
 		_bake();
 	}
@@ -1631,6 +1723,7 @@ Vector3 Curve3D::sample_baked(real_t p_offset, bool p_cubic) const {
 }
 
 real_t Curve3D::sample_baked_tilt(real_t p_offset) const {
+	ZoneScopedS(60);
 	if (baked_cache_dirty) {
 		_bake();
 	}
@@ -1678,6 +1771,7 @@ real_t Curve3D::sample_baked_tilt(real_t p_offset) const {
 }
 
 Vector3 Curve3D::sample_baked_up_vector(real_t p_offset, bool p_apply_tilt) const {
+	ZoneScopedS(60);
 	if (baked_cache_dirty) {
 		_bake();
 	}
@@ -1741,6 +1835,7 @@ Vector3 Curve3D::sample_baked_up_vector(real_t p_offset, bool p_apply_tilt) cons
 }
 
 PackedVector3Array Curve3D::get_baked_points() const {
+	ZoneScopedS(60);
 	if (baked_cache_dirty) {
 		_bake();
 	}
@@ -1749,6 +1844,7 @@ PackedVector3Array Curve3D::get_baked_points() const {
 }
 
 Vector<real_t> Curve3D::get_baked_tilts() const {
+	ZoneScopedS(60);
 	if (baked_cache_dirty) {
 		_bake();
 	}
@@ -1757,6 +1853,7 @@ Vector<real_t> Curve3D::get_baked_tilts() const {
 }
 
 PackedVector3Array Curve3D::get_baked_up_vectors() const {
+	ZoneScopedS(60);
 	if (baked_cache_dirty) {
 		_bake();
 	}
@@ -1765,6 +1862,7 @@ PackedVector3Array Curve3D::get_baked_up_vectors() const {
 }
 
 Vector3 Curve3D::get_closest_point(const Vector3 &p_to_point) const {
+	ZoneScopedS(60);
 	// Brute force method.
 
 	if (baked_cache_dirty) {
@@ -1803,6 +1901,7 @@ Vector3 Curve3D::get_closest_point(const Vector3 &p_to_point) const {
 }
 
 real_t Curve3D::get_closest_offset(const Vector3 &p_to_point) const {
+	ZoneScopedS(60);
 	// Brute force method.
 
 	if (baked_cache_dirty) {
@@ -1844,24 +1943,29 @@ real_t Curve3D::get_closest_offset(const Vector3 &p_to_point) const {
 }
 
 void Curve3D::set_bake_interval(real_t p_tolerance) {
+	ZoneScopedS(60);
 	bake_interval = p_tolerance;
 	mark_dirty();
 }
 
 real_t Curve3D::get_bake_interval() const {
+	ZoneScopedS(60);
 	return bake_interval;
 }
 
 void Curve3D::set_up_vector_enabled(bool p_enable) {
+	ZoneScopedS(60);
 	up_vector_enabled = p_enable;
 	mark_dirty();
 }
 
 bool Curve3D::is_up_vector_enabled() const {
+	ZoneScopedS(60);
 	return up_vector_enabled;
 }
 
 Dictionary Curve3D::_get_data() const {
+	ZoneScopedS(60);
 	Dictionary dc;
 
 	PackedVector3Array d;
@@ -1885,6 +1989,7 @@ Dictionary Curve3D::_get_data() const {
 }
 
 void Curve3D::_set_data(const Dictionary &p_data) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!p_data.has("points"));
 	ERR_FAIL_COND(!p_data.has("tilts"));
 
@@ -1908,6 +2013,7 @@ void Curve3D::_set_data(const Dictionary &p_data) {
 }
 
 PackedVector3Array Curve3D::tessellate(int p_max_stages, real_t p_tolerance) const {
+	ZoneScopedS(60);
 	PackedVector3Array tess;
 
 	if (points.size() == 0) {
@@ -1943,6 +2049,7 @@ PackedVector3Array Curve3D::tessellate(int p_max_stages, real_t p_tolerance) con
 }
 
 bool Curve3D::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	Vector<String> components = String(p_name).split("/", true, 2);
 	if (components.size() >= 2 && components[0].begins_with("point_") && components[0].trim_prefix("point_").is_valid_int()) {
 		int point_index = components[0].trim_prefix("point_").to_int();
@@ -1965,6 +2072,7 @@ bool Curve3D::_set(const StringName &p_name, const Variant &p_value) {
 }
 
 bool Curve3D::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	Vector<String> components = String(p_name).split("/", true, 2);
 	if (components.size() >= 2 && components[0].begins_with("point_") && components[0].trim_prefix("point_").is_valid_int()) {
 		int point_index = components[0].trim_prefix("point_").to_int();
@@ -1987,6 +2095,7 @@ bool Curve3D::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void Curve3D::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	for (int i = 0; i < points.size(); i++) {
 		PropertyInfo pi = PropertyInfo(Variant::VECTOR3, vformat("point_%d/position", i));
 		pi.usage &= ~PROPERTY_USAGE_STORAGE;
@@ -2011,6 +2120,7 @@ void Curve3D::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 void Curve3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_point_count"), &Curve3D::get_point_count);
 	ClassDB::bind_method(D_METHOD("set_point_count", "count"), &Curve3D::set_point_count);
 	ClassDB::bind_method(D_METHOD("add_point", "position", "in", "out", "index"), &Curve3D::add_point, DEFVAL(Vector3()), DEFVAL(Vector3()), DEFVAL(-1));

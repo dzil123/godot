@@ -28,12 +28,44 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  navigation_region_3d.cpp                                             */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "navigation_region_3d.h"
 
 #include "mesh_instance_3d.h"
 #include "servers/navigation_server_3d.h"
 
 void NavigationRegion3D::set_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	if (enabled == p_enabled) {
 		return;
 	}
@@ -78,10 +110,12 @@ void NavigationRegion3D::set_enabled(bool p_enabled) {
 }
 
 bool NavigationRegion3D::is_enabled() const {
+	ZoneScopedS(60);
 	return enabled;
 }
 
 void NavigationRegion3D::set_navigation_layers(uint32_t p_navigation_layers) {
+	ZoneScopedS(60);
 	if (navigation_layers == p_navigation_layers) {
 		return;
 	}
@@ -92,10 +126,12 @@ void NavigationRegion3D::set_navigation_layers(uint32_t p_navigation_layers) {
 }
 
 uint32_t NavigationRegion3D::get_navigation_layers() const {
+	ZoneScopedS(60);
 	return navigation_layers;
 }
 
 void NavigationRegion3D::set_navigation_layer_value(int p_layer_number, bool p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_layer_number < 1, "Navigation layer number must be between 1 and 32 inclusive.");
 	ERR_FAIL_COND_MSG(p_layer_number > 32, "Navigation layer number must be between 1 and 32 inclusive.");
 
@@ -111,6 +147,7 @@ void NavigationRegion3D::set_navigation_layer_value(int p_layer_number, bool p_v
 }
 
 bool NavigationRegion3D::get_navigation_layer_value(int p_layer_number) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(p_layer_number < 1, false, "Navigation layer number must be between 1 and 32 inclusive.");
 	ERR_FAIL_COND_V_MSG(p_layer_number > 32, false, "Navigation layer number must be between 1 and 32 inclusive.");
 
@@ -118,6 +155,7 @@ bool NavigationRegion3D::get_navigation_layer_value(int p_layer_number) const {
 }
 
 void NavigationRegion3D::set_enter_cost(real_t p_enter_cost) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_enter_cost < 0.0, "The enter_cost must be positive.");
 	if (Math::is_equal_approx(enter_cost, p_enter_cost)) {
 		return;
@@ -129,10 +167,12 @@ void NavigationRegion3D::set_enter_cost(real_t p_enter_cost) {
 }
 
 real_t NavigationRegion3D::get_enter_cost() const {
+	ZoneScopedS(60);
 	return enter_cost;
 }
 
 void NavigationRegion3D::set_travel_cost(real_t p_travel_cost) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_travel_cost < 0.0, "The travel_cost must be positive.");
 	if (Math::is_equal_approx(travel_cost, p_travel_cost)) {
 		return;
@@ -144,14 +184,17 @@ void NavigationRegion3D::set_travel_cost(real_t p_travel_cost) {
 }
 
 real_t NavigationRegion3D::get_travel_cost() const {
+	ZoneScopedS(60);
 	return travel_cost;
 }
 
 RID NavigationRegion3D::get_region_rid() const {
+	ZoneScopedS(60);
 	return region;
 }
 
 void NavigationRegion3D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			if (enabled) {
@@ -193,6 +236,7 @@ void NavigationRegion3D::_notification(int p_what) {
 }
 
 void NavigationRegion3D::set_navigation_mesh(const Ref<NavigationMesh> &p_navmesh) {
+	ZoneScopedS(60);
 	if (p_navmesh == navmesh) {
 		return;
 	}
@@ -232,6 +276,7 @@ void NavigationRegion3D::set_navigation_mesh(const Ref<NavigationMesh> &p_navmes
 }
 
 Ref<NavigationMesh> NavigationRegion3D::get_navigation_mesh() const {
+	ZoneScopedS(60);
 	return navmesh;
 }
 
@@ -240,6 +285,7 @@ struct BakeThreadsArgs {
 };
 
 void _bake_navigation_mesh(void *p_user_data) {
+	ZoneScopedS(60);
 	BakeThreadsArgs *args = static_cast<BakeThreadsArgs *>(p_user_data);
 
 	if (args->nav_region->get_navigation_mesh().is_valid()) {
@@ -256,6 +302,7 @@ void _bake_navigation_mesh(void *p_user_data) {
 }
 
 void NavigationRegion3D::bake_navigation_mesh(bool p_on_thread) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(bake_thread.is_started(), "Unable to start another bake request. The navigation mesh bake thread is already baking a navigation mesh.");
 
 	BakeThreadsArgs *args = memnew(BakeThreadsArgs);
@@ -269,12 +316,14 @@ void NavigationRegion3D::bake_navigation_mesh(bool p_on_thread) {
 }
 
 void NavigationRegion3D::_bake_finished(Ref<NavigationMesh> p_nav_mesh) {
+	ZoneScopedS(60);
 	set_navigation_mesh(p_nav_mesh);
 	bake_thread.wait_to_finish();
 	emit_signal(SNAME("bake_finished"));
 }
 
 PackedStringArray NavigationRegion3D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (is_visible_in_tree() && is_inside_tree()) {
@@ -287,6 +336,7 @@ PackedStringArray NavigationRegion3D::get_configuration_warnings() const {
 }
 
 void NavigationRegion3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_navigation_mesh", "navmesh"), &NavigationRegion3D::set_navigation_mesh);
 	ClassDB::bind_method(D_METHOD("get_navigation_mesh"), &NavigationRegion3D::get_navigation_mesh);
 
@@ -321,6 +371,7 @@ void NavigationRegion3D::_bind_methods() {
 }
 
 void NavigationRegion3D::_navigation_changed() {
+	ZoneScopedS(60);
 	update_gizmos();
 	update_configuration_warnings();
 
@@ -331,6 +382,7 @@ void NavigationRegion3D::_navigation_changed() {
 
 #ifdef DEBUG_ENABLED
 void NavigationRegion3D::_navigation_map_changed(RID p_map) {
+	ZoneScopedS(60);
 	if (is_inside_tree() && p_map == get_world_3d()->get_navigation_map()) {
 		_update_debug_edge_connections_mesh();
 	}
@@ -338,6 +390,7 @@ void NavigationRegion3D::_navigation_map_changed(RID p_map) {
 #endif // DEBUG_ENABLED
 
 NavigationRegion3D::NavigationRegion3D() {
+	ZoneScopedS(60);
 	set_notify_transform(true);
 	region = NavigationServer3D::get_singleton()->region_create();
 	NavigationServer3D::get_singleton()->region_set_enter_cost(region, get_enter_cost());
@@ -351,6 +404,7 @@ NavigationRegion3D::NavigationRegion3D() {
 }
 
 NavigationRegion3D::~NavigationRegion3D() {
+	ZoneScopedS(60);
 	if (navmesh.is_valid()) {
 		navmesh->disconnect("changed", callable_mp(this, &NavigationRegion3D::_navigation_changed));
 	}
@@ -377,6 +431,7 @@ NavigationRegion3D::~NavigationRegion3D() {
 
 #ifdef DEBUG_ENABLED
 void NavigationRegion3D::_update_debug_mesh() {
+	ZoneScopedS(60);
 	if (Engine::get_singleton()->is_editor_hint()) {
 		// don't update inside Editor as node 3d gizmo takes care of this
 		// as collisions and selections for Editor Viewport need to be updated
@@ -515,6 +570,7 @@ void NavigationRegion3D::_update_debug_mesh() {
 
 #ifdef DEBUG_ENABLED
 void NavigationRegion3D::_update_debug_edge_connections_mesh() {
+	ZoneScopedS(60);
 	if (!NavigationServer3D::get_singleton()->get_debug_enabled()) {
 		if (debug_edge_connections_instance.is_valid()) {
 			RS::get_singleton()->instance_set_visible(debug_edge_connections_instance, false);

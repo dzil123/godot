@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  graph_node.cpp                                                       */
 /*************************************************************************/
@@ -41,6 +42,7 @@ struct _MinSizeCache {
 };
 
 bool GraphNode::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	String str = p_name;
 
 	if (!str.begins_with("slot/")) {
@@ -83,6 +85,7 @@ bool GraphNode::_set(const StringName &p_name, const Variant &p_value) {
 }
 
 bool GraphNode::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	String str = p_name;
 	if (!str.begins_with("slot/")) {
 		return false;
@@ -122,6 +125,7 @@ bool GraphNode::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void GraphNode::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	int idx = 0;
 	for (int i = 0; i < get_child_count(); i++) {
 		Control *c = Object::cast_to<Control>(get_child(i));
@@ -145,6 +149,7 @@ void GraphNode::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 void GraphNode::_resort() {
+	ZoneScopedS(60);
 	/** First pass, determine minimum size AND amount of stretchable elements */
 
 	Size2i new_size = get_size();
@@ -293,6 +298,7 @@ void GraphNode::_resort() {
 }
 
 bool GraphNode::has_point(const Point2 &p_point) const {
+	ZoneScopedS(60);
 	if (comment) {
 		Ref<StyleBox> comment_sb = get_theme_stylebox(SNAME("comment"));
 		Ref<Texture2D> resizer = get_theme_icon(SNAME("resizer"));
@@ -313,6 +319,7 @@ bool GraphNode::has_point(const Point2 &p_point) const {
 }
 
 void GraphNode::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
 			Ref<StyleBox> sb;
@@ -422,6 +429,7 @@ void GraphNode::_notification(int p_what) {
 }
 
 void GraphNode::_shape() {
+	ZoneScopedS(60);
 	Ref<Font> font = get_theme_font(SNAME("title_font"));
 	int font_size = get_theme_font_size(SNAME("title_font_size"));
 
@@ -436,6 +444,7 @@ void GraphNode::_shape() {
 
 #ifdef TOOLS_ENABLED
 void GraphNode::_edit_set_position(const Point2 &p_position) {
+	ZoneScopedS(60);
 	GraphEdit *graph = Object::cast_to<GraphEdit>(get_parent());
 	if (graph) {
 		Point2 offset = (p_position + graph->get_scroll_ofs()) * graph->get_zoom();
@@ -446,6 +455,7 @@ void GraphNode::_edit_set_position(const Point2 &p_position) {
 #endif
 
 void GraphNode::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	GraphEdit *graph = Object::cast_to<GraphEdit>(get_parent());
 	if (graph) {
 		if (p_property.name == "position") {
@@ -455,6 +465,7 @@ void GraphNode::_validate_property(PropertyInfo &p_property) const {
 }
 
 void GraphNode::set_slot(int p_idx, bool p_enable_left, int p_type_left, const Color &p_color_left, bool p_enable_right, int p_type_right, const Color &p_color_right, const Ref<Texture2D> &p_custom_left, const Ref<Texture2D> &p_custom_right, bool p_draw_stylebox) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_idx < 0, vformat("Cannot set slot with p_idx (%d) lesser than zero.", p_idx));
 
 	if (!p_enable_left && p_type_left == 0 && p_color_left == Color(1, 1, 1, 1) &&
@@ -482,18 +493,21 @@ void GraphNode::set_slot(int p_idx, bool p_enable_left, int p_type_left, const C
 }
 
 void GraphNode::clear_slot(int p_idx) {
+	ZoneScopedS(60);
 	slot_info.erase(p_idx);
 	queue_redraw();
 	connpos_dirty = true;
 }
 
 void GraphNode::clear_all_slots() {
+	ZoneScopedS(60);
 	slot_info.clear();
 	queue_redraw();
 	connpos_dirty = true;
 }
 
 bool GraphNode::is_slot_enabled_left(int p_idx) const {
+	ZoneScopedS(60);
 	if (!slot_info.has(p_idx)) {
 		return false;
 	}
@@ -501,6 +515,7 @@ bool GraphNode::is_slot_enabled_left(int p_idx) const {
 }
 
 void GraphNode::set_slot_enabled_left(int p_idx, bool p_enable_left) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_idx < 0, vformat("Cannot set enable_left for the slot with p_idx (%d) lesser than zero.", p_idx));
 
 	if (slot_info[p_idx].enable_left == p_enable_left) {
@@ -515,6 +530,7 @@ void GraphNode::set_slot_enabled_left(int p_idx, bool p_enable_left) {
 }
 
 void GraphNode::set_slot_type_left(int p_idx, int p_type_left) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!slot_info.has(p_idx), vformat("Cannot set type_left for the slot '%d' because it hasn't been enabled.", p_idx));
 
 	if (slot_info[p_idx].type_left == p_type_left) {
@@ -529,6 +545,7 @@ void GraphNode::set_slot_type_left(int p_idx, int p_type_left) {
 }
 
 int GraphNode::get_slot_type_left(int p_idx) const {
+	ZoneScopedS(60);
 	if (!slot_info.has(p_idx)) {
 		return 0;
 	}
@@ -536,6 +553,7 @@ int GraphNode::get_slot_type_left(int p_idx) const {
 }
 
 void GraphNode::set_slot_color_left(int p_idx, const Color &p_color_left) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!slot_info.has(p_idx), vformat("Cannot set color_left for the slot '%d' because it hasn't been enabled.", p_idx));
 
 	if (slot_info[p_idx].color_left == p_color_left) {
@@ -550,6 +568,7 @@ void GraphNode::set_slot_color_left(int p_idx, const Color &p_color_left) {
 }
 
 Color GraphNode::get_slot_color_left(int p_idx) const {
+	ZoneScopedS(60);
 	if (!slot_info.has(p_idx)) {
 		return Color(1, 1, 1, 1);
 	}
@@ -557,6 +576,7 @@ Color GraphNode::get_slot_color_left(int p_idx) const {
 }
 
 bool GraphNode::is_slot_enabled_right(int p_idx) const {
+	ZoneScopedS(60);
 	if (!slot_info.has(p_idx)) {
 		return false;
 	}
@@ -564,6 +584,7 @@ bool GraphNode::is_slot_enabled_right(int p_idx) const {
 }
 
 void GraphNode::set_slot_enabled_right(int p_idx, bool p_enable_right) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_idx < 0, vformat("Cannot set enable_right for the slot with p_idx (%d) lesser than zero.", p_idx));
 
 	if (slot_info[p_idx].enable_right == p_enable_right) {
@@ -578,6 +599,7 @@ void GraphNode::set_slot_enabled_right(int p_idx, bool p_enable_right) {
 }
 
 void GraphNode::set_slot_type_right(int p_idx, int p_type_right) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!slot_info.has(p_idx), vformat("Cannot set type_right for the slot '%d' because it hasn't been enabled.", p_idx));
 
 	if (slot_info[p_idx].type_right == p_type_right) {
@@ -592,6 +614,7 @@ void GraphNode::set_slot_type_right(int p_idx, int p_type_right) {
 }
 
 int GraphNode::get_slot_type_right(int p_idx) const {
+	ZoneScopedS(60);
 	if (!slot_info.has(p_idx)) {
 		return 0;
 	}
@@ -599,6 +622,7 @@ int GraphNode::get_slot_type_right(int p_idx) const {
 }
 
 void GraphNode::set_slot_color_right(int p_idx, const Color &p_color_right) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!slot_info.has(p_idx), vformat("Cannot set color_right for the slot '%d' because it hasn't been enabled.", p_idx));
 
 	if (slot_info[p_idx].color_right == p_color_right) {
@@ -613,6 +637,7 @@ void GraphNode::set_slot_color_right(int p_idx, const Color &p_color_right) {
 }
 
 Color GraphNode::get_slot_color_right(int p_idx) const {
+	ZoneScopedS(60);
 	if (!slot_info.has(p_idx)) {
 		return Color(1, 1, 1, 1);
 	}
@@ -620,6 +645,7 @@ Color GraphNode::get_slot_color_right(int p_idx) const {
 }
 
 bool GraphNode::is_slot_draw_stylebox(int p_idx) const {
+	ZoneScopedS(60);
 	if (!slot_info.has(p_idx)) {
 		return false;
 	}
@@ -627,6 +653,7 @@ bool GraphNode::is_slot_draw_stylebox(int p_idx) const {
 }
 
 void GraphNode::set_slot_draw_stylebox(int p_idx, bool p_enable) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_idx < 0, vformat("Cannot set draw_stylebox for the slot with p_idx (%d) lesser than zero.", p_idx));
 
 	slot_info[p_idx].draw_stylebox = p_enable;
@@ -637,6 +664,7 @@ void GraphNode::set_slot_draw_stylebox(int p_idx, bool p_enable) {
 }
 
 Size2 GraphNode::get_minimum_size() const {
+	ZoneScopedS(60);
 	Ref<StyleBox> sb = get_theme_stylebox(SNAME("frame"));
 	Ref<StyleBox> sb_slot = get_theme_stylebox(SNAME("slot"));
 
@@ -682,6 +710,7 @@ Size2 GraphNode::get_minimum_size() const {
 }
 
 void GraphNode::set_title(const String &p_title) {
+	ZoneScopedS(60);
 	if (title == p_title) {
 		return;
 	}
@@ -693,10 +722,12 @@ void GraphNode::set_title(const String &p_title) {
 }
 
 String GraphNode::get_title() const {
+	ZoneScopedS(60);
 	return title;
 }
 
 void GraphNode::set_text_direction(Control::TextDirection p_text_direction) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND((int)p_text_direction < -1 || (int)p_text_direction > 3);
 	if (text_direction != p_text_direction) {
 		text_direction = p_text_direction;
@@ -706,10 +737,12 @@ void GraphNode::set_text_direction(Control::TextDirection p_text_direction) {
 }
 
 Control::TextDirection GraphNode::get_text_direction() const {
+	ZoneScopedS(60);
 	return text_direction;
 }
 
 void GraphNode::set_language(const String &p_language) {
+	ZoneScopedS(60);
 	if (language != p_language) {
 		language = p_language;
 		_shape();
@@ -718,10 +751,12 @@ void GraphNode::set_language(const String &p_language) {
 }
 
 String GraphNode::get_language() const {
+	ZoneScopedS(60);
 	return language;
 }
 
 void GraphNode::set_position_offset(const Vector2 &p_offset) {
+	ZoneScopedS(60);
 	if (position_offset == p_offset) {
 		return;
 	}
@@ -732,10 +767,12 @@ void GraphNode::set_position_offset(const Vector2 &p_offset) {
 }
 
 Vector2 GraphNode::get_position_offset() const {
+	ZoneScopedS(60);
 	return position_offset;
 }
 
 void GraphNode::set_selected(bool p_selected) {
+	ZoneScopedS(60);
 	if (!is_selectable() || selected == p_selected) {
 		return;
 	}
@@ -746,10 +783,12 @@ void GraphNode::set_selected(bool p_selected) {
 }
 
 bool GraphNode::is_selected() {
+	ZoneScopedS(60);
 	return selected;
 }
 
 void GraphNode::set_drag(bool p_drag) {
+	ZoneScopedS(60);
 	if (p_drag) {
 		drag_from = get_position_offset();
 	} else {
@@ -758,10 +797,12 @@ void GraphNode::set_drag(bool p_drag) {
 }
 
 Vector2 GraphNode::get_drag_from() {
+	ZoneScopedS(60);
 	return drag_from;
 }
 
 void GraphNode::set_show_close_button(bool p_enable) {
+	ZoneScopedS(60);
 	if (show_close == p_enable) {
 		return;
 	}
@@ -771,10 +812,12 @@ void GraphNode::set_show_close_button(bool p_enable) {
 }
 
 bool GraphNode::is_close_button_visible() const {
+	ZoneScopedS(60);
 	return show_close;
 }
 
 void GraphNode::_connpos_update() {
+	ZoneScopedS(60);
 	int edgeofs = get_theme_constant(SNAME("port_offset"));
 	int sep = get_theme_constant(SNAME("separation"));
 
@@ -833,6 +876,7 @@ void GraphNode::_connpos_update() {
 }
 
 int GraphNode::get_connection_input_count() {
+	ZoneScopedS(60);
 	if (connpos_dirty) {
 		_connpos_update();
 	}
@@ -841,6 +885,7 @@ int GraphNode::get_connection_input_count() {
 }
 
 int GraphNode::get_connection_input_height(int p_port) {
+	ZoneScopedS(60);
 	if (connpos_dirty) {
 		_connpos_update();
 	}
@@ -850,6 +895,7 @@ int GraphNode::get_connection_input_height(int p_port) {
 }
 
 Vector2 GraphNode::get_connection_input_position(int p_port) {
+	ZoneScopedS(60);
 	if (connpos_dirty) {
 		_connpos_update();
 	}
@@ -862,6 +908,7 @@ Vector2 GraphNode::get_connection_input_position(int p_port) {
 }
 
 int GraphNode::get_connection_input_type(int p_port) {
+	ZoneScopedS(60);
 	if (connpos_dirty) {
 		_connpos_update();
 	}
@@ -871,6 +918,7 @@ int GraphNode::get_connection_input_type(int p_port) {
 }
 
 Color GraphNode::get_connection_input_color(int p_port) {
+	ZoneScopedS(60);
 	if (connpos_dirty) {
 		_connpos_update();
 	}
@@ -880,6 +928,7 @@ Color GraphNode::get_connection_input_color(int p_port) {
 }
 
 int GraphNode::get_connection_input_slot(int p_port) {
+	ZoneScopedS(60);
 	if (connpos_dirty) {
 		_connpos_update();
 	}
@@ -889,6 +938,7 @@ int GraphNode::get_connection_input_slot(int p_port) {
 }
 
 int GraphNode::get_connection_output_count() {
+	ZoneScopedS(60);
 	if (connpos_dirty) {
 		_connpos_update();
 	}
@@ -897,6 +947,7 @@ int GraphNode::get_connection_output_count() {
 }
 
 int GraphNode::get_connection_output_height(int p_port) {
+	ZoneScopedS(60);
 	if (connpos_dirty) {
 		_connpos_update();
 	}
@@ -906,6 +957,7 @@ int GraphNode::get_connection_output_height(int p_port) {
 }
 
 Vector2 GraphNode::get_connection_output_position(int p_port) {
+	ZoneScopedS(60);
 	if (connpos_dirty) {
 		_connpos_update();
 	}
@@ -918,6 +970,7 @@ Vector2 GraphNode::get_connection_output_position(int p_port) {
 }
 
 int GraphNode::get_connection_output_type(int p_port) {
+	ZoneScopedS(60);
 	if (connpos_dirty) {
 		_connpos_update();
 	}
@@ -927,6 +980,7 @@ int GraphNode::get_connection_output_type(int p_port) {
 }
 
 Color GraphNode::get_connection_output_color(int p_port) {
+	ZoneScopedS(60);
 	if (connpos_dirty) {
 		_connpos_update();
 	}
@@ -936,6 +990,7 @@ Color GraphNode::get_connection_output_color(int p_port) {
 }
 
 int GraphNode::get_connection_output_slot(int p_port) {
+	ZoneScopedS(60);
 	if (connpos_dirty) {
 		_connpos_update();
 	}
@@ -945,6 +1000,7 @@ int GraphNode::get_connection_output_slot(int p_port) {
 }
 
 void GraphNode::gui_input(const Ref<InputEvent> &p_ev) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_ev.is_null());
 
 	Ref<InputEventMouseButton> mb = p_ev;
@@ -990,6 +1046,7 @@ void GraphNode::gui_input(const Ref<InputEvent> &p_ev) {
 }
 
 void GraphNode::set_overlay(Overlay p_overlay) {
+	ZoneScopedS(60);
 	if (overlay == p_overlay) {
 		return;
 	}
@@ -999,10 +1056,12 @@ void GraphNode::set_overlay(Overlay p_overlay) {
 }
 
 GraphNode::Overlay GraphNode::get_overlay() const {
+	ZoneScopedS(60);
 	return overlay;
 }
 
 void GraphNode::set_comment(bool p_enable) {
+	ZoneScopedS(60);
 	if (comment == p_enable) {
 		return;
 	}
@@ -1012,10 +1071,12 @@ void GraphNode::set_comment(bool p_enable) {
 }
 
 bool GraphNode::is_comment() const {
+	ZoneScopedS(60);
 	return comment;
 }
 
 void GraphNode::set_resizable(bool p_enable) {
+	ZoneScopedS(60);
 	if (resizable == p_enable) {
 		return;
 	}
@@ -1025,18 +1086,22 @@ void GraphNode::set_resizable(bool p_enable) {
 }
 
 bool GraphNode::is_resizable() const {
+	ZoneScopedS(60);
 	return resizable;
 }
 
 void GraphNode::set_draggable(bool p_draggable) {
+	ZoneScopedS(60);
 	draggable = p_draggable;
 }
 
 bool GraphNode::is_draggable() {
+	ZoneScopedS(60);
 	return draggable;
 }
 
 void GraphNode::set_selectable(bool p_selectable) {
+	ZoneScopedS(60);
 	if (!p_selectable) {
 		set_selected(false);
 	}
@@ -1044,10 +1109,12 @@ void GraphNode::set_selectable(bool p_selectable) {
 }
 
 bool GraphNode::is_selectable() {
+	ZoneScopedS(60);
 	return selectable;
 }
 
 Vector<int> GraphNode::get_allowed_size_flags_horizontal() const {
+	ZoneScopedS(60);
 	Vector<int> flags;
 	flags.append(SIZE_FILL);
 	flags.append(SIZE_SHRINK_BEGIN);
@@ -1057,6 +1124,7 @@ Vector<int> GraphNode::get_allowed_size_flags_horizontal() const {
 }
 
 Vector<int> GraphNode::get_allowed_size_flags_vertical() const {
+	ZoneScopedS(60);
 	Vector<int> flags;
 	flags.append(SIZE_FILL);
 	flags.append(SIZE_EXPAND);
@@ -1067,6 +1135,7 @@ Vector<int> GraphNode::get_allowed_size_flags_vertical() const {
 }
 
 void GraphNode::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_title", "title"), &GraphNode::set_title);
 	ClassDB::bind_method(D_METHOD("get_title"), &GraphNode::get_title);
 	ClassDB::bind_method(D_METHOD("set_text_direction", "direction"), &GraphNode::set_text_direction);
@@ -1167,6 +1236,7 @@ void GraphNode::_bind_methods() {
 }
 
 GraphNode::GraphNode() {
+	ZoneScopedS(60);
 	title_buf.instantiate();
 	set_mouse_filter(MOUSE_FILTER_STOP);
 }

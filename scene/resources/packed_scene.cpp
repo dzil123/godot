@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  packed_scene.cpp                                                     */
 /*************************************************************************/
@@ -46,10 +47,12 @@
 #define PACKED_SCENE_VERSION 2
 #define META_POINTER_PROPERTY_BASE "metadata/_editor_prop_ptr_"
 bool SceneState::can_instantiate() const {
+	ZoneScopedS(60);
 	return nodes.size() > 0;
 }
 
 static Array _sanitize_node_pinned_properties(Node *p_node) {
+	ZoneScopedS(60);
 	Array pinned = p_node->get_meta("_edit_pinned_properties_", Array());
 	if (pinned.is_empty()) {
 		return Array();
@@ -71,6 +74,7 @@ static Array _sanitize_node_pinned_properties(Node *p_node) {
 }
 
 Node *SceneState::instantiate(GenEditState p_edit_state) const {
+	ZoneScopedS(60);
 	// nodes where instancing failed (because something is missing)
 	List<Node *> stray_instances;
 
@@ -472,6 +476,7 @@ Node *SceneState::instantiate(GenEditState p_edit_state) const {
 }
 
 static int _nm_get_string(const String &p_string, HashMap<StringName, int> &name_map) {
+	ZoneScopedS(60);
 	if (name_map.has(p_string)) {
 		return name_map[p_string];
 	}
@@ -482,6 +487,7 @@ static int _nm_get_string(const String &p_string, HashMap<StringName, int> &name
 }
 
 static int _vm_get_variant(const Variant &p_variant, HashMap<Variant, int, VariantHasher, VariantComparator> &variant_map) {
+	ZoneScopedS(60);
 	if (variant_map.has(p_variant)) {
 		return variant_map[p_variant];
 	}
@@ -492,6 +498,7 @@ static int _vm_get_variant(const Variant &p_variant, HashMap<Variant, int, Varia
 }
 
 Error SceneState::_parse_node(Node *p_owner, Node *p_node, int p_parent_idx, HashMap<StringName, int> &name_map, HashMap<Variant, int, VariantHasher, VariantComparator> &variant_map, HashMap<Node *, int> &node_map, HashMap<Node *, int> &nodepath_map) {
+	ZoneScopedS(60);
 	// this function handles all the work related to properly packing scenes, be it
 	// instantiated or inherited.
 	// given the complexity of this process, an attempt will be made to properly
@@ -727,6 +734,7 @@ Error SceneState::_parse_node(Node *p_owner, Node *p_node, int p_parent_idx, Has
 }
 
 Error SceneState::_parse_connections(Node *p_owner, Node *p_node, HashMap<StringName, int> &name_map, HashMap<Variant, int, VariantHasher, VariantComparator> &variant_map, HashMap<Node *, int> &node_map, HashMap<Node *, int> &nodepath_map) {
+	ZoneScopedS(60);
 	if (p_node != p_owner && p_node->get_owner() && p_node->get_owner() != p_owner && !p_owner->is_editable_instance(p_node->get_owner())) {
 		return OK;
 	}
@@ -925,6 +933,7 @@ Error SceneState::_parse_connections(Node *p_owner, Node *p_node, HashMap<String
 }
 
 Error SceneState::pack(Node *p_scene) {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL_V(p_scene, ERR_INVALID_PARAMETER);
 
 	clear();
@@ -987,14 +996,17 @@ Error SceneState::pack(Node *p_scene) {
 }
 
 void SceneState::set_path(const String &p_path) {
+	ZoneScopedS(60);
 	path = p_path;
 }
 
 String SceneState::get_path() const {
+	ZoneScopedS(60);
 	return path;
 }
 
 void SceneState::clear() {
+	ZoneScopedS(60);
 	names.clear();
 	variants.clear();
 	nodes.clear();
@@ -1006,6 +1018,7 @@ void SceneState::clear() {
 }
 
 Ref<SceneState> SceneState::get_base_scene_state() const {
+	ZoneScopedS(60);
 	if (base_scene_idx >= 0) {
 		Ref<PackedScene> ps = variants[base_scene_idx];
 		if (ps.is_valid()) {
@@ -1017,6 +1030,7 @@ Ref<SceneState> SceneState::get_base_scene_state() const {
 }
 
 int SceneState::find_node_by_path(const NodePath &p_node) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V_MSG(node_path_cache.size() == 0, -1, "This operation requires the node cache to have been built.");
 
 	if (!node_path_cache.has(p_node)) {
@@ -1050,6 +1064,7 @@ int SceneState::find_node_by_path(const NodePath &p_node) const {
 }
 
 int SceneState::_find_base_scene_node_remap_key(int p_idx) const {
+	ZoneScopedS(60);
 	for (const KeyValue<int, int> &E : base_scene_node_remap) {
 		if (E.value == p_idx) {
 			return E.key;
@@ -1059,6 +1074,7 @@ int SceneState::_find_base_scene_node_remap_key(int p_idx) const {
 }
 
 Variant SceneState::get_property_value(int p_node, const StringName &p_property, bool &found) const {
+	ZoneScopedS(60);
 	found = false;
 
 	ERR_FAIL_COND_V(p_node < 0, Variant());
@@ -1087,6 +1103,7 @@ Variant SceneState::get_property_value(int p_node, const StringName &p_property,
 }
 
 bool SceneState::is_node_in_group(int p_node, const StringName &p_group) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_node < 0, false);
 
 	if (p_node < nodes.size()) {
@@ -1108,10 +1125,12 @@ bool SceneState::is_node_in_group(int p_node, const StringName &p_group) const {
 bool SceneState::disable_placeholders = false;
 
 void SceneState::set_disable_placeholders(bool p_disable) {
+	ZoneScopedS(60);
 	disable_placeholders = p_disable;
 }
 
 bool SceneState::is_connection(int p_node, const StringName &p_signal, int p_to_node, const StringName &p_to_method) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(p_node < 0, false);
 	ERR_FAIL_COND_V(p_to_node < 0, false);
 
@@ -1145,6 +1164,7 @@ bool SceneState::is_connection(int p_node, const StringName &p_signal, int p_to_
 }
 
 void SceneState::set_bundled_scene(const Dictionary &p_dictionary) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!p_dictionary.has("names"));
 	ERR_FAIL_COND(!p_dictionary.has("variants"));
 	ERR_FAIL_COND(!p_dictionary.has("node_count"));
@@ -1263,6 +1283,7 @@ void SceneState::set_bundled_scene(const Dictionary &p_dictionary) {
 }
 
 Dictionary SceneState::get_bundled_scene() const {
+	ZoneScopedS(60);
 	Vector<String> rnames;
 	rnames.resize(names.size());
 
@@ -1346,10 +1367,12 @@ Dictionary SceneState::get_bundled_scene() const {
 }
 
 int SceneState::get_node_count() const {
+	ZoneScopedS(60);
 	return nodes.size();
 }
 
 StringName SceneState::get_node_type(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, nodes.size(), StringName());
 	if (nodes[p_idx].type == TYPE_INSTANCED) {
 		return StringName();
@@ -1358,22 +1381,26 @@ StringName SceneState::get_node_type(int p_idx) const {
 }
 
 StringName SceneState::get_node_name(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, nodes.size(), StringName());
 	return names[nodes[p_idx].name];
 }
 
 int SceneState::get_node_index(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, nodes.size(), -1);
 	return nodes[p_idx].index;
 }
 
 bool SceneState::is_node_instance_placeholder(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, nodes.size(), false);
 
 	return nodes[p_idx].instance >= 0 && (nodes[p_idx].instance & FLAG_INSTANCE_IS_PLACEHOLDER);
 }
 
 Ref<PackedScene> SceneState::get_node_instance(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, nodes.size(), Ref<PackedScene>());
 
 	if (nodes[p_idx].instance >= 0) {
@@ -1392,6 +1419,7 @@ Ref<PackedScene> SceneState::get_node_instance(int p_idx) const {
 }
 
 String SceneState::get_node_instance_placeholder(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, nodes.size(), String());
 
 	if (nodes[p_idx].instance >= 0 && (nodes[p_idx].instance & FLAG_INSTANCE_IS_PLACEHOLDER)) {
@@ -1402,6 +1430,7 @@ String SceneState::get_node_instance_placeholder(int p_idx) const {
 }
 
 Vector<StringName> SceneState::get_node_groups(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, nodes.size(), Vector<StringName>());
 	Vector<StringName> groups;
 	for (int i = 0; i < nodes[p_idx].groups.size(); i++) {
@@ -1411,6 +1440,7 @@ Vector<StringName> SceneState::get_node_groups(int p_idx) const {
 }
 
 NodePath SceneState::get_node_path(int p_idx, bool p_for_parent) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, nodes.size(), NodePath());
 
 	if (nodes[p_idx].parent < 0 || nodes[p_idx].parent == NO_PARENT_SAVED) {
@@ -1454,17 +1484,20 @@ NodePath SceneState::get_node_path(int p_idx, bool p_for_parent) const {
 }
 
 int SceneState::get_node_property_count(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, nodes.size(), -1);
 	return nodes[p_idx].properties.size();
 }
 
 StringName SceneState::get_node_property_name(int p_idx, int p_prop) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, nodes.size(), StringName());
 	ERR_FAIL_INDEX_V(p_prop, nodes[p_idx].properties.size(), StringName());
 	return names[nodes[p_idx].properties[p_prop].name & FLAG_PROP_NAME_MASK];
 }
 
 Vector<String> SceneState::get_node_deferred_nodepath_properties(int p_idx) const {
+	ZoneScopedS(60);
 	Vector<String> ret;
 	ERR_FAIL_INDEX_V(p_idx, nodes.size(), ret);
 	for (int i = 0; i < nodes[p_idx].properties.size(); i++) {
@@ -1477,6 +1510,7 @@ Vector<String> SceneState::get_node_deferred_nodepath_properties(int p_idx) cons
 }
 
 Variant SceneState::get_node_property_value(int p_idx, int p_prop) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, nodes.size(), Variant());
 	ERR_FAIL_INDEX_V(p_prop, nodes[p_idx].properties.size(), Variant());
 
@@ -1484,6 +1518,7 @@ Variant SceneState::get_node_property_value(int p_idx, int p_prop) const {
 }
 
 NodePath SceneState::get_node_owner_path(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, nodes.size(), NodePath());
 	if (nodes[p_idx].owner < 0 || nodes[p_idx].owner == NO_PARENT_SAVED) {
 		return NodePath(); //root likely
@@ -1496,10 +1531,12 @@ NodePath SceneState::get_node_owner_path(int p_idx) const {
 }
 
 int SceneState::get_connection_count() const {
+	ZoneScopedS(60);
 	return connections.size();
 }
 
 NodePath SceneState::get_connection_source(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, connections.size(), NodePath());
 	if (connections[p_idx].from & FLAG_ID_IS_PATH) {
 		return node_paths[connections[p_idx].from & FLAG_MASK];
@@ -1509,11 +1546,13 @@ NodePath SceneState::get_connection_source(int p_idx) const {
 }
 
 StringName SceneState::get_connection_signal(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, connections.size(), StringName());
 	return names[connections[p_idx].signal];
 }
 
 NodePath SceneState::get_connection_target(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, connections.size(), NodePath());
 	if (connections[p_idx].to & FLAG_ID_IS_PATH) {
 		return node_paths[connections[p_idx].to & FLAG_MASK];
@@ -1523,21 +1562,25 @@ NodePath SceneState::get_connection_target(int p_idx) const {
 }
 
 StringName SceneState::get_connection_method(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, connections.size(), StringName());
 	return names[connections[p_idx].method];
 }
 
 int SceneState::get_connection_flags(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, connections.size(), -1);
 	return connections[p_idx].flags;
 }
 
 int SceneState::get_connection_unbinds(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, connections.size(), -1);
 	return connections[p_idx].unbinds;
 }
 
 Array SceneState::get_connection_binds(int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_idx, connections.size(), Array());
 	Array binds;
 	for (int i = 0; i < connections[p_idx].binds.size(); i++) {
@@ -1547,6 +1590,7 @@ Array SceneState::get_connection_binds(int p_idx) const {
 }
 
 bool SceneState::has_connection(const NodePath &p_node_from, const StringName &p_signal, const NodePath &p_node_to, const StringName &p_method, bool p_no_inheritance) {
+	ZoneScopedS(60);
 	// this method cannot be const because of this
 	Ref<SceneState> ss = this;
 
@@ -1589,27 +1633,32 @@ bool SceneState::has_connection(const NodePath &p_node_from, const StringName &p
 }
 
 Vector<NodePath> SceneState::get_editable_instances() const {
+	ZoneScopedS(60);
 	return editable_instances;
 }
 
 //add
 
 int SceneState::add_name(const StringName &p_name) {
+	ZoneScopedS(60);
 	names.push_back(p_name);
 	return names.size() - 1;
 }
 
 int SceneState::add_value(const Variant &p_value) {
+	ZoneScopedS(60);
 	variants.push_back(p_value);
 	return variants.size() - 1;
 }
 
 int SceneState::add_node_path(const NodePath &p_path) {
+	ZoneScopedS(60);
 	node_paths.push_back(p_path);
 	return (node_paths.size() - 1) | FLAG_ID_IS_PATH;
 }
 
 int SceneState::add_node(int p_parent, int p_owner, int p_type, int p_name, int p_instance, int p_index) {
+	ZoneScopedS(60);
 	NodeData nd;
 	nd.parent = p_parent;
 	nd.owner = p_owner;
@@ -1624,6 +1673,7 @@ int SceneState::add_node(int p_parent, int p_owner, int p_type, int p_name, int 
 }
 
 void SceneState::add_node_property(int p_node, int p_name, int p_value, bool p_deferred_node_path) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_node, nodes.size());
 	ERR_FAIL_INDEX(p_name, names.size());
 	ERR_FAIL_INDEX(p_value, variants.size());
@@ -1638,17 +1688,20 @@ void SceneState::add_node_property(int p_node, int p_name, int p_value, bool p_d
 }
 
 void SceneState::add_node_group(int p_node, int p_group) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_node, nodes.size());
 	ERR_FAIL_INDEX(p_group, names.size());
 	nodes.write[p_node].groups.push_back(p_group);
 }
 
 void SceneState::set_base_scene(int p_idx) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_idx, variants.size());
 	base_scene_idx = p_idx;
 }
 
 void SceneState::add_connection(int p_from, int p_to, int p_signal, int p_method, int p_flags, int p_unbinds, const Vector<int> &p_binds) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_signal, names.size());
 	ERR_FAIL_INDEX(p_method, names.size());
 
@@ -1667,14 +1720,17 @@ void SceneState::add_connection(int p_from, int p_to, int p_signal, int p_method
 }
 
 void SceneState::add_editable_instance(const NodePath &p_path) {
+	ZoneScopedS(60);
 	editable_instances.push_back(p_path);
 }
 
 String SceneState::get_meta_pointer_property(const String &p_property) {
+	ZoneScopedS(60);
 	return META_POINTER_PROPERTY_BASE + p_property;
 }
 
 Vector<String> SceneState::_get_node_groups(int p_idx) const {
+	ZoneScopedS(60);
 	Vector<StringName> groups = get_node_groups(p_idx);
 	Vector<String> ret;
 
@@ -1686,6 +1742,7 @@ Vector<String> SceneState::_get_node_groups(int p_idx) const {
 }
 
 void SceneState::_bind_methods() {
+	ZoneScopedS(60);
 	//unbuild API
 
 	ClassDB::bind_method(D_METHOD("get_node_count"), &SceneState::get_node_count);
@@ -1722,22 +1779,27 @@ SceneState::SceneState() {
 ////////////////
 
 void PackedScene::_set_bundled_scene(const Dictionary &p_scene) {
+	ZoneScopedS(60);
 	state->set_bundled_scene(p_scene);
 }
 
 Dictionary PackedScene::_get_bundled_scene() const {
+	ZoneScopedS(60);
 	return state->get_bundled_scene();
 }
 
 Error PackedScene::pack(Node *p_scene) {
+	ZoneScopedS(60);
 	return state->pack(p_scene);
 }
 
 void PackedScene::clear() {
+	ZoneScopedS(60);
 	state->clear();
 }
 
 bool PackedScene::can_instantiate() const {
+	ZoneScopedS(60);
 	return state->can_instantiate();
 }
 
@@ -1765,6 +1827,7 @@ Node *PackedScene::instantiate(GenEditState p_edit_state) const {
 }
 
 void PackedScene::replace_state(Ref<SceneState> p_by) {
+	ZoneScopedS(60);
 	state = p_by;
 	state->set_path(get_path());
 #ifdef TOOLS_ENABLED
@@ -1773,6 +1836,7 @@ void PackedScene::replace_state(Ref<SceneState> p_by) {
 }
 
 void PackedScene::recreate_state() {
+	ZoneScopedS(60);
 	state = Ref<SceneState>(memnew(SceneState));
 	state->set_path(get_path());
 #ifdef TOOLS_ENABLED
@@ -1781,18 +1845,22 @@ void PackedScene::recreate_state() {
 }
 
 Ref<SceneState> PackedScene::get_state() const {
+	ZoneScopedS(60);
 	return state;
 }
 
 void PackedScene::set_path(const String &p_path, bool p_take_over) {
+	ZoneScopedS(60);
 	state->set_path(p_path);
 	Resource::set_path(p_path, p_take_over);
 }
 
 void PackedScene::reset_state() {
+	ZoneScopedS(60);
 	clear();
 }
 void PackedScene::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("pack", "path"), &PackedScene::pack);
 	ClassDB::bind_method(D_METHOD("instantiate", "edit_state"), &PackedScene::instantiate, DEFVAL(GEN_EDIT_STATE_DISABLED));
 	ClassDB::bind_method(D_METHOD("can_instantiate"), &PackedScene::can_instantiate);
@@ -1809,5 +1877,6 @@ void PackedScene::_bind_methods() {
 }
 
 PackedScene::PackedScene() {
+	ZoneScopedS(60);
 	state = Ref<SceneState>(memnew(SceneState));
 }

@@ -28,19 +28,53 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  decal.cpp                                                            */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "decal.h"
 
 void Decal::set_extents(const Vector3 &p_extents) {
+	ZoneScopedS(60);
 	extents = p_extents;
 	RS::get_singleton()->decal_set_extents(decal, p_extents);
 	update_gizmos();
 }
 
 Vector3 Decal::get_extents() const {
+	ZoneScopedS(60);
 	return extents;
 }
 
 void Decal::set_texture(DecalTexture p_type, const Ref<Texture2D> &p_texture) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_type, TEXTURE_MAX);
 	textures[p_type] = p_texture;
 	RID texture_rid = p_texture.is_valid() ? p_texture->get_rid() : RID();
@@ -49,103 +83,125 @@ void Decal::set_texture(DecalTexture p_type, const Ref<Texture2D> &p_texture) {
 }
 
 Ref<Texture2D> Decal::get_texture(DecalTexture p_type) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_type, TEXTURE_MAX, Ref<Texture2D>());
 	return textures[p_type];
 }
 
 void Decal::set_emission_energy(real_t p_energy) {
+	ZoneScopedS(60);
 	emission_energy = p_energy;
 	RS::get_singleton()->decal_set_emission_energy(decal, emission_energy);
 }
 
 real_t Decal::get_emission_energy() const {
+	ZoneScopedS(60);
 	return emission_energy;
 }
 
 void Decal::set_albedo_mix(real_t p_mix) {
+	ZoneScopedS(60);
 	albedo_mix = p_mix;
 	RS::get_singleton()->decal_set_albedo_mix(decal, albedo_mix);
 }
 
 real_t Decal::get_albedo_mix() const {
+	ZoneScopedS(60);
 	return albedo_mix;
 }
 
 void Decal::set_upper_fade(real_t p_fade) {
+	ZoneScopedS(60);
 	upper_fade = MAX(p_fade, 0.0);
 	RS::get_singleton()->decal_set_fade(decal, upper_fade, lower_fade);
 }
 
 real_t Decal::get_upper_fade() const {
+	ZoneScopedS(60);
 	return upper_fade;
 }
 
 void Decal::set_lower_fade(real_t p_fade) {
+	ZoneScopedS(60);
 	lower_fade = MAX(p_fade, 0.0);
 	RS::get_singleton()->decal_set_fade(decal, upper_fade, lower_fade);
 }
 
 real_t Decal::get_lower_fade() const {
+	ZoneScopedS(60);
 	return lower_fade;
 }
 
 void Decal::set_normal_fade(real_t p_fade) {
+	ZoneScopedS(60);
 	normal_fade = p_fade;
 	RS::get_singleton()->decal_set_normal_fade(decal, normal_fade);
 }
 
 real_t Decal::get_normal_fade() const {
+	ZoneScopedS(60);
 	return normal_fade;
 }
 
 void Decal::set_modulate(Color p_modulate) {
+	ZoneScopedS(60);
 	modulate = p_modulate;
 	RS::get_singleton()->decal_set_modulate(decal, p_modulate);
 }
 
 Color Decal::get_modulate() const {
+	ZoneScopedS(60);
 	return modulate;
 }
 
 void Decal::set_enable_distance_fade(bool p_enable) {
+	ZoneScopedS(60);
 	distance_fade_enabled = p_enable;
 	RS::get_singleton()->decal_set_distance_fade(decal, distance_fade_enabled, distance_fade_begin, distance_fade_length);
 	notify_property_list_changed();
 }
 
 bool Decal::is_distance_fade_enabled() const {
+	ZoneScopedS(60);
 	return distance_fade_enabled;
 }
 
 void Decal::set_distance_fade_begin(real_t p_distance) {
+	ZoneScopedS(60);
 	distance_fade_begin = p_distance;
 	RS::get_singleton()->decal_set_distance_fade(decal, distance_fade_enabled, distance_fade_begin, distance_fade_length);
 }
 
 real_t Decal::get_distance_fade_begin() const {
+	ZoneScopedS(60);
 	return distance_fade_begin;
 }
 
 void Decal::set_distance_fade_length(real_t p_length) {
+	ZoneScopedS(60);
 	distance_fade_length = p_length;
 	RS::get_singleton()->decal_set_distance_fade(decal, distance_fade_enabled, distance_fade_begin, distance_fade_length);
 }
 
 real_t Decal::get_distance_fade_length() const {
+	ZoneScopedS(60);
 	return distance_fade_length;
 }
 
 void Decal::set_cull_mask(uint32_t p_layers) {
+	ZoneScopedS(60);
 	cull_mask = p_layers;
 	RS::get_singleton()->decal_set_cull_mask(decal, cull_mask);
 	update_configuration_warnings();
 }
 
 uint32_t Decal::get_cull_mask() const {
+	ZoneScopedS(60);
 	return cull_mask;
 }
 
 AABB Decal::get_aabb() const {
+	ZoneScopedS(60);
 	AABB aabb;
 	aabb.position = -extents;
 	aabb.size = extents * 2.0;
@@ -153,12 +209,14 @@ AABB Decal::get_aabb() const {
 }
 
 void Decal::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (!distance_fade_enabled && (p_property.name == "distance_fade_begin" || p_property.name == "distance_fade_length")) {
 		p_property.usage = PROPERTY_USAGE_NO_EDITOR;
 	}
 }
 
 PackedStringArray Decal::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (textures[TEXTURE_ALBEDO].is_null() && textures[TEXTURE_NORMAL].is_null() && textures[TEXTURE_ORM].is_null() && textures[TEXTURE_EMISSION].is_null()) {
@@ -177,6 +235,7 @@ PackedStringArray Decal::get_configuration_warnings() const {
 }
 
 void Decal::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_extents", "extents"), &Decal::set_extents);
 	ClassDB::bind_method(D_METHOD("get_extents"), &Decal::get_extents);
 
@@ -249,10 +308,12 @@ void Decal::_bind_methods() {
 }
 
 Decal::Decal() {
+	ZoneScopedS(60);
 	decal = RenderingServer::get_singleton()->decal_create();
 	RS::get_singleton()->instance_set_base(get_instance(), decal);
 }
 
 Decal::~Decal() {
+	ZoneScopedS(60);
 	RS::get_singleton()->free(decal);
 }

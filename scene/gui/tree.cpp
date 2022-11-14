@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  tree.cpp                                                             */
 /*************************************************************************/
@@ -43,6 +44,7 @@
 #include <limits.h>
 
 Size2 TreeItem::Cell::get_icon_size() const {
+	ZoneScopedS(60);
 	if (icon.is_null()) {
 		return Size2();
 	}
@@ -54,6 +56,7 @@ Size2 TreeItem::Cell::get_icon_size() const {
 }
 
 void TreeItem::Cell::draw_icon(const RID &p_where, const Point2 &p_pos, const Size2 &p_size, const Color &p_color) const {
+	ZoneScopedS(60);
 	if (icon.is_null()) {
 		return;
 	}
@@ -68,22 +71,27 @@ void TreeItem::Cell::draw_icon(const RID &p_where, const Point2 &p_pos, const Si
 }
 
 void TreeItem::_changed_notify(int p_cell) {
+	ZoneScopedS(60);
 	tree->item_changed(p_cell, this);
 }
 
 void TreeItem::_changed_notify() {
+	ZoneScopedS(60);
 	tree->item_changed(-1, this);
 }
 
 void TreeItem::_cell_selected(int p_cell) {
+	ZoneScopedS(60);
 	tree->item_selected(p_cell, this);
 }
 
 void TreeItem::_cell_deselected(int p_cell) {
+	ZoneScopedS(60);
 	tree->item_deselected(p_cell, this);
 }
 
 void TreeItem::_change_tree(Tree *p_tree) {
+	ZoneScopedS(60);
 	if (p_tree == tree) {
 		return;
 	}
@@ -139,6 +147,7 @@ void TreeItem::_change_tree(Tree *p_tree) {
 
 /* cell mode */
 void TreeItem::set_cell_mode(int p_column, TreeCellMode p_mode) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 
 	if (cells[p_column].mode == p_mode) {
@@ -162,12 +171,14 @@ void TreeItem::set_cell_mode(int p_column, TreeCellMode p_mode) {
 }
 
 TreeItem::TreeCellMode TreeItem::get_cell_mode(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), TreeItem::CELL_MODE_STRING);
 	return cells[p_column].mode;
 }
 
 /* check mode */
 void TreeItem::set_checked(int p_column, bool p_checked) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 
 	if (cells[p_column].checked == p_checked) {
@@ -182,6 +193,7 @@ void TreeItem::set_checked(int p_column, bool p_checked) {
 }
 
 void TreeItem::set_indeterminate(int p_column, bool p_indeterminate) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 
 	// Prevent uncheck if indeterminate set to false twice
@@ -197,16 +209,19 @@ void TreeItem::set_indeterminate(int p_column, bool p_indeterminate) {
 }
 
 bool TreeItem::is_checked(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), false);
 	return cells[p_column].checked;
 }
 
 bool TreeItem::is_indeterminate(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), false);
 	return cells[p_column].indeterminate;
 }
 
 void TreeItem::propagate_check(int p_column, bool p_emit_signal) {
+	ZoneScopedS(60);
 	bool ch = cells[p_column].checked;
 
 	if (p_emit_signal) {
@@ -217,6 +232,7 @@ void TreeItem::propagate_check(int p_column, bool p_emit_signal) {
 }
 
 void TreeItem::_propagate_check_through_children(int p_column, bool p_checked, bool p_emit_signal) {
+	ZoneScopedS(60);
 	TreeItem *current = get_first_child();
 	while (current) {
 		current->set_checked(p_column, p_checked);
@@ -229,6 +245,7 @@ void TreeItem::_propagate_check_through_children(int p_column, bool p_checked, b
 }
 
 void TreeItem::_propagate_check_through_parents(int p_column, bool p_emit_signal) {
+	ZoneScopedS(60);
 	TreeItem *current = get_parent();
 	if (!current) {
 		return;
@@ -266,6 +283,7 @@ void TreeItem::_propagate_check_through_parents(int p_column, bool p_emit_signal
 }
 
 void TreeItem::set_text(int p_column, String p_text) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 
 	if (cells[p_column].text == p_text) {
@@ -296,11 +314,13 @@ void TreeItem::set_text(int p_column, String p_text) {
 }
 
 String TreeItem::get_text(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), "");
 	return cells[p_column].text;
 }
 
 void TreeItem::set_text_direction(int p_column, Control::TextDirection p_text_direction) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 	ERR_FAIL_COND((int)p_text_direction < -1 || (int)p_text_direction > 3);
 
@@ -315,11 +335,13 @@ void TreeItem::set_text_direction(int p_column, Control::TextDirection p_text_di
 }
 
 Control::TextDirection TreeItem::get_text_direction(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), Control::TEXT_DIRECTION_INHERITED);
 	return cells[p_column].text_direction;
 }
 
 void TreeItem::set_structured_text_bidi_override(int p_column, TextServer::StructuredTextParser p_parser) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 
 	if (cells[p_column].st_parser != p_parser) {
@@ -332,11 +354,13 @@ void TreeItem::set_structured_text_bidi_override(int p_column, TextServer::Struc
 }
 
 TextServer::StructuredTextParser TreeItem::get_structured_text_bidi_override(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), TextServer::STRUCTURED_TEXT_NONE);
 	return cells[p_column].st_parser;
 }
 
 void TreeItem::set_structured_text_bidi_override_options(int p_column, Array p_args) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 
 	if (cells[p_column].st_args == p_args) {
@@ -351,11 +375,13 @@ void TreeItem::set_structured_text_bidi_override_options(int p_column, Array p_a
 }
 
 Array TreeItem::get_structured_text_bidi_override_options(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), Array());
 	return cells[p_column].st_args;
 }
 
 void TreeItem::set_language(int p_column, const String &p_language) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 
 	if (cells[p_column].language != p_language) {
@@ -368,11 +394,13 @@ void TreeItem::set_language(int p_column, const String &p_language) {
 }
 
 String TreeItem::get_language(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), "");
 	return cells[p_column].language;
 }
 
 void TreeItem::set_suffix(int p_column, String p_suffix) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 
 	if (cells[p_column].suffix == p_suffix) {
@@ -386,11 +414,13 @@ void TreeItem::set_suffix(int p_column, String p_suffix) {
 }
 
 String TreeItem::get_suffix(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), "");
 	return cells[p_column].suffix;
 }
 
 void TreeItem::set_icon(int p_column, const Ref<Texture2D> &p_icon) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 
 	if (cells[p_column].icon == p_icon) {
@@ -404,11 +434,13 @@ void TreeItem::set_icon(int p_column, const Ref<Texture2D> &p_icon) {
 }
 
 Ref<Texture2D> TreeItem::get_icon(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), Ref<Texture2D>());
 	return cells[p_column].icon;
 }
 
 void TreeItem::set_icon_region(int p_column, const Rect2 &p_icon_region) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 
 	if (cells[p_column].icon_region == p_icon_region) {
@@ -422,11 +454,13 @@ void TreeItem::set_icon_region(int p_column, const Rect2 &p_icon_region) {
 }
 
 Rect2 TreeItem::get_icon_region(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), Rect2());
 	return cells[p_column].icon_region;
 }
 
 void TreeItem::set_icon_modulate(int p_column, const Color &p_modulate) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 
 	if (cells[p_column].icon_color == p_modulate) {
@@ -438,11 +472,13 @@ void TreeItem::set_icon_modulate(int p_column, const Color &p_modulate) {
 }
 
 Color TreeItem::get_icon_modulate(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), Color());
 	return cells[p_column].icon_color;
 }
 
 void TreeItem::set_icon_max_width(int p_column, int p_max) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 
 	if (cells[p_column].icon_max_w == p_max) {
@@ -456,12 +492,14 @@ void TreeItem::set_icon_max_width(int p_column, int p_max) {
 }
 
 int TreeItem::get_icon_max_width(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), 0);
 	return cells[p_column].icon_max_w;
 }
 
 /* range works for mode number or mode combo */
 void TreeItem::set_range(int p_column, double p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 	if (cells[p_column].step > 0) {
 		p_value = Math::snapped(p_value, cells[p_column].step);
@@ -483,16 +521,19 @@ void TreeItem::set_range(int p_column, double p_value) {
 }
 
 double TreeItem::get_range(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), 0);
 	return cells[p_column].val;
 }
 
 bool TreeItem::is_range_exponential(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), false);
 	return cells[p_column].expr;
 }
 
 void TreeItem::set_range_config(int p_column, double p_min, double p_max, double p_step, bool p_exp) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 
 	if (cells[p_column].min == p_min && cells[p_column].max == p_max && cells[p_column].step == p_step && cells[p_column].expr == p_exp) {
@@ -507,6 +548,7 @@ void TreeItem::set_range_config(int p_column, double p_min, double p_max, double
 }
 
 void TreeItem::get_range_config(int p_column, double &r_min, double &r_max, double &r_step) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 	r_min = cells[p_column].min;
 	r_max = cells[p_column].max;
@@ -514,17 +556,20 @@ void TreeItem::get_range_config(int p_column, double &r_min, double &r_max, doub
 }
 
 void TreeItem::set_metadata(int p_column, const Variant &p_meta) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 	cells.write[p_column].meta = p_meta;
 }
 
 Variant TreeItem::get_metadata(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), Variant());
 
 	return cells[p_column].meta;
 }
 
 void TreeItem::set_custom_draw(int p_column, Object *p_object, const StringName &p_callback) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 	ERR_FAIL_NULL(p_object);
 
@@ -533,6 +578,7 @@ void TreeItem::set_custom_draw(int p_column, Object *p_object, const StringName 
 }
 
 void TreeItem::set_collapsed(bool p_collapsed) {
+	ZoneScopedS(60);
 	if (collapsed == p_collapsed || !tree) {
 		return;
 	}
@@ -560,10 +606,12 @@ void TreeItem::set_collapsed(bool p_collapsed) {
 }
 
 bool TreeItem::is_collapsed() {
+	ZoneScopedS(60);
 	return collapsed;
 }
 
 void TreeItem::set_collapsed_recursive(bool p_collapsed) {
+	ZoneScopedS(60);
 	if (!tree) {
 		return;
 	}
@@ -578,6 +626,7 @@ void TreeItem::set_collapsed_recursive(bool p_collapsed) {
 }
 
 bool TreeItem::_is_any_collapsed(bool p_only_visible) {
+	ZoneScopedS(60);
 	TreeItem *child = get_first_child();
 
 	// Check on children directly first (avoid recursing if possible).
@@ -602,6 +651,7 @@ bool TreeItem::_is_any_collapsed(bool p_only_visible) {
 }
 
 bool TreeItem::is_any_collapsed(bool p_only_visible) {
+	ZoneScopedS(60);
 	if (p_only_visible && !is_visible()) {
 		return false;
 	}
@@ -615,6 +665,7 @@ bool TreeItem::is_any_collapsed(bool p_only_visible) {
 }
 
 void TreeItem::set_visible(bool p_visible) {
+	ZoneScopedS(60);
 	if (visible == p_visible) {
 		return;
 	}
@@ -626,10 +677,12 @@ void TreeItem::set_visible(bool p_visible) {
 }
 
 bool TreeItem::is_visible() {
+	ZoneScopedS(60);
 	return visible;
 }
 
 void TreeItem::uncollapse_tree() {
+	ZoneScopedS(60);
 	TreeItem *t = this;
 	while (t) {
 		t->set_collapsed(false);
@@ -638,6 +691,7 @@ void TreeItem::uncollapse_tree() {
 }
 
 void TreeItem::set_custom_minimum_height(int p_height) {
+	ZoneScopedS(60);
 	if (custom_min_height == p_height) {
 		return;
 	}
@@ -652,12 +706,14 @@ void TreeItem::set_custom_minimum_height(int p_height) {
 }
 
 int TreeItem::get_custom_minimum_height() const {
+	ZoneScopedS(60);
 	return custom_min_height;
 }
 
 /* Item manipulation */
 
 TreeItem *TreeItem::create_child(int p_idx) {
+	ZoneScopedS(60);
 	TreeItem *ti = memnew(TreeItem(tree));
 	if (tree) {
 		ti->cells.resize(tree->columns.size());
@@ -701,14 +757,17 @@ TreeItem *TreeItem::create_child(int p_idx) {
 }
 
 Tree *TreeItem::get_tree() const {
+	ZoneScopedS(60);
 	return tree;
 }
 
 TreeItem *TreeItem::get_next() const {
+	ZoneScopedS(60);
 	return next;
 }
 
 TreeItem *TreeItem::get_prev() {
+	ZoneScopedS(60);
 	if (prev) {
 		return prev;
 	}
@@ -728,14 +787,17 @@ TreeItem *TreeItem::get_prev() {
 }
 
 TreeItem *TreeItem::get_parent() const {
+	ZoneScopedS(60);
 	return parent;
 }
 
 TreeItem *TreeItem::get_first_child() const {
+	ZoneScopedS(60);
 	return first_child;
 }
 
 TreeItem *TreeItem::_get_prev_visible(bool p_wrap) {
+	ZoneScopedS(60);
 	TreeItem *current = this;
 
 	TreeItem *prev_item = current->get_prev();
@@ -772,6 +834,7 @@ TreeItem *TreeItem::_get_prev_visible(bool p_wrap) {
 }
 
 TreeItem *TreeItem::get_prev_visible(bool p_wrap) {
+	ZoneScopedS(60);
 	TreeItem *loop = this;
 	TreeItem *prev_item = this->_get_prev_visible(p_wrap);
 	while (prev_item && !prev_item->is_visible()) {
@@ -786,6 +849,7 @@ TreeItem *TreeItem::get_prev_visible(bool p_wrap) {
 }
 
 TreeItem *TreeItem::_get_next_visible(bool p_wrap) {
+	ZoneScopedS(60);
 	TreeItem *current = this;
 
 	if (!current->collapsed && current->first_child) {
@@ -813,6 +877,7 @@ TreeItem *TreeItem::_get_next_visible(bool p_wrap) {
 }
 
 TreeItem *TreeItem::get_next_visible(bool p_wrap) {
+	ZoneScopedS(60);
 	TreeItem *loop = this;
 	TreeItem *next_item = this->_get_next_visible(p_wrap);
 	while (next_item && !next_item->is_visible()) {
@@ -827,6 +892,7 @@ TreeItem *TreeItem::get_next_visible(bool p_wrap) {
 }
 
 TreeItem *TreeItem::get_child(int p_idx) {
+	ZoneScopedS(60);
 	_create_children_cache();
 
 	if (p_idx < 0) {
@@ -838,6 +904,7 @@ TreeItem *TreeItem::get_child(int p_idx) {
 }
 
 int TreeItem::get_visible_child_count() {
+	ZoneScopedS(60);
 	_create_children_cache();
 	int visible_count = 0;
 	for (int i = 0; i < children_cache.size(); i++) {
@@ -849,11 +916,13 @@ int TreeItem::get_visible_child_count() {
 }
 
 int TreeItem::get_child_count() {
+	ZoneScopedS(60);
 	_create_children_cache();
 	return children_cache.size();
 }
 
 TypedArray<TreeItem> TreeItem::get_children() {
+	ZoneScopedS(60);
 	// Don't need to explicitly create children cache, because get_child_count creates it.
 	int size = get_child_count();
 	TypedArray<TreeItem> arr;
@@ -866,6 +935,7 @@ TypedArray<TreeItem> TreeItem::get_children() {
 }
 
 int TreeItem::get_index() {
+	ZoneScopedS(60);
 	int idx = 0;
 	TreeItem *c = this;
 
@@ -878,6 +948,7 @@ int TreeItem::get_index() {
 
 #ifdef DEV_ENABLED
 void TreeItem::validate_cache() const {
+	ZoneScopedS(60);
 	if (!parent || parent->children_cache.is_empty()) {
 		return;
 	}
@@ -893,6 +964,7 @@ void TreeItem::validate_cache() const {
 #endif
 
 void TreeItem::move_before(TreeItem *p_item) {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_item);
 	ERR_FAIL_COND(is_root);
 	ERR_FAIL_COND(!p_item->parent);
@@ -938,6 +1010,7 @@ void TreeItem::move_before(TreeItem *p_item) {
 }
 
 void TreeItem::move_after(TreeItem *p_item) {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_item);
 	ERR_FAIL_COND(is_root);
 	ERR_FAIL_COND(!p_item->parent);
@@ -981,6 +1054,7 @@ void TreeItem::move_after(TreeItem *p_item) {
 }
 
 void TreeItem::remove_child(TreeItem *p_item) {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_item);
 	ERR_FAIL_COND(p_item->parent != this);
 
@@ -996,21 +1070,25 @@ void TreeItem::remove_child(TreeItem *p_item) {
 }
 
 void TreeItem::set_selectable(int p_column, bool p_selectable) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 	cells.write[p_column].selectable = p_selectable;
 }
 
 bool TreeItem::is_selectable(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), false);
 	return cells[p_column].selectable;
 }
 
 bool TreeItem::is_selected(int p_column) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), false);
 	return cells[p_column].selectable && cells[p_column].selected;
 }
 
 void TreeItem::set_as_cursor(int p_column) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 	if (!tree) {
 		return;
@@ -1027,16 +1105,19 @@ void TreeItem::set_as_cursor(int p_column) {
 }
 
 void TreeItem::select(int p_column) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 	_cell_selected(p_column);
 }
 
 void TreeItem::deselect(int p_column) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 	_cell_deselected(p_column);
 }
 
 void TreeItem::add_button(int p_column, const Ref<Texture2D> &p_button, int p_id, bool p_disabled, const String &p_tooltip) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 	ERR_FAIL_COND(!p_button.is_valid());
 	TreeItem::Cell::Button button;
@@ -1054,29 +1135,34 @@ void TreeItem::add_button(int p_column, const Ref<Texture2D> &p_button, int p_id
 }
 
 int TreeItem::get_button_count(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), -1);
 	return cells[p_column].buttons.size();
 }
 
 Ref<Texture2D> TreeItem::get_button(int p_column, int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), Ref<Texture2D>());
 	ERR_FAIL_INDEX_V(p_idx, cells[p_column].buttons.size(), Ref<Texture2D>());
 	return cells[p_column].buttons[p_idx].texture;
 }
 
 String TreeItem::get_button_tooltip_text(int p_column, int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), String());
 	ERR_FAIL_INDEX_V(p_idx, cells[p_column].buttons.size(), String());
 	return cells[p_column].buttons[p_idx].tooltip;
 }
 
 int TreeItem::get_button_id(int p_column, int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), -1);
 	ERR_FAIL_INDEX_V(p_idx, cells[p_column].buttons.size(), -1);
 	return cells[p_column].buttons[p_idx].id;
 }
 
 void TreeItem::erase_button(int p_column, int p_idx) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 	ERR_FAIL_INDEX(p_idx, cells[p_column].buttons.size());
 	cells.write[p_column].buttons.remove_at(p_idx);
@@ -1084,6 +1170,7 @@ void TreeItem::erase_button(int p_column, int p_idx) {
 }
 
 int TreeItem::get_button_by_id(int p_column, int p_id) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), -1);
 	for (int i = 0; i < cells[p_column].buttons.size(); i++) {
 		if (cells[p_column].buttons[i].id == p_id) {
@@ -1095,6 +1182,7 @@ int TreeItem::get_button_by_id(int p_column, int p_id) const {
 }
 
 void TreeItem::set_button(int p_column, int p_idx, const Ref<Texture2D> &p_button) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_button.is_null());
 	ERR_FAIL_INDEX(p_column, cells.size());
 	ERR_FAIL_INDEX(p_idx, cells[p_column].buttons.size());
@@ -1110,6 +1198,7 @@ void TreeItem::set_button(int p_column, int p_idx, const Ref<Texture2D> &p_butto
 }
 
 void TreeItem::set_button_color(int p_column, int p_idx, const Color &p_color) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 	ERR_FAIL_INDEX(p_idx, cells[p_column].buttons.size());
 
@@ -1122,6 +1211,7 @@ void TreeItem::set_button_color(int p_column, int p_idx, const Color &p_color) {
 }
 
 void TreeItem::set_button_disabled(int p_column, int p_idx, bool p_disabled) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 	ERR_FAIL_INDEX(p_idx, cells[p_column].buttons.size());
 
@@ -1136,6 +1226,7 @@ void TreeItem::set_button_disabled(int p_column, int p_idx, bool p_disabled) {
 }
 
 bool TreeItem::is_button_disabled(int p_column, int p_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), false);
 	ERR_FAIL_INDEX_V(p_idx, cells[p_column].buttons.size(), false);
 
@@ -1143,6 +1234,7 @@ bool TreeItem::is_button_disabled(int p_column, int p_idx) const {
 }
 
 void TreeItem::set_editable(int p_column, bool p_editable) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 
 	if (cells[p_column].editable == p_editable) {
@@ -1156,11 +1248,13 @@ void TreeItem::set_editable(int p_column, bool p_editable) {
 }
 
 bool TreeItem::is_editable(int p_column) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), false);
 	return cells[p_column].editable;
 }
 
 void TreeItem::set_custom_color(int p_column, const Color &p_color) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 
 	if (cells[p_column].custom_color && cells[p_column].color == p_color) {
@@ -1173,6 +1267,7 @@ void TreeItem::set_custom_color(int p_column, const Color &p_color) {
 }
 
 Color TreeItem::get_custom_color(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), Color());
 	if (!cells[p_column].custom_color) {
 		return Color();
@@ -1181,6 +1276,7 @@ Color TreeItem::get_custom_color(int p_column) const {
 }
 
 void TreeItem::clear_custom_color(int p_column) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 	cells.write[p_column].custom_color = false;
 	cells.write[p_column].color = Color();
@@ -1188,6 +1284,7 @@ void TreeItem::clear_custom_color(int p_column) {
 }
 
 void TreeItem::set_custom_font(int p_column, const Ref<Font> &p_font) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 
 	cells.write[p_column].custom_font = p_font;
@@ -1195,11 +1292,13 @@ void TreeItem::set_custom_font(int p_column, const Ref<Font> &p_font) {
 }
 
 Ref<Font> TreeItem::get_custom_font(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), Ref<Font>());
 	return cells[p_column].custom_font;
 }
 
 void TreeItem::set_custom_font_size(int p_column, int p_font_size) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 
 	cells.write[p_column].custom_font_size = p_font_size;
@@ -1207,21 +1306,25 @@ void TreeItem::set_custom_font_size(int p_column, int p_font_size) {
 }
 
 int TreeItem::get_custom_font_size(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), -1);
 	return cells[p_column].custom_font_size;
 }
 
 void TreeItem::set_tooltip_text(int p_column, const String &p_tooltip) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 	cells.write[p_column].tooltip = p_tooltip;
 }
 
 String TreeItem::get_tooltip_text(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), "");
 	return cells[p_column].tooltip;
 }
 
 void TreeItem::set_custom_bg_color(int p_column, const Color &p_color, bool p_bg_outline) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 
 	if (cells[p_column].custom_bg_color && cells[p_column].custom_bg_outline == p_bg_outline && cells[p_column].bg_color == p_color) {
@@ -1235,6 +1338,7 @@ void TreeItem::set_custom_bg_color(int p_column, const Color &p_color, bool p_bg
 }
 
 void TreeItem::clear_custom_bg_color(int p_column) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 	cells.write[p_column].custom_bg_color = false;
 	cells.write[p_column].bg_color = Color();
@@ -1242,6 +1346,7 @@ void TreeItem::clear_custom_bg_color(int p_column) {
 }
 
 Color TreeItem::get_custom_bg_color(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), Color());
 	if (!cells[p_column].custom_bg_color) {
 		return Color();
@@ -1250,6 +1355,7 @@ Color TreeItem::get_custom_bg_color(int p_column) const {
 }
 
 void TreeItem::set_custom_as_button(int p_column, bool p_button) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 
 	cells.write[p_column].custom_button = p_button;
@@ -1257,11 +1363,13 @@ void TreeItem::set_custom_as_button(int p_column, bool p_button) {
 }
 
 bool TreeItem::is_custom_set_as_button(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), false);
 	return cells[p_column].custom_button;
 }
 
 void TreeItem::set_text_alignment(int p_column, HorizontalAlignment p_alignment) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 
 	if (cells[p_column].text_alignment == p_alignment) {
@@ -1275,11 +1383,13 @@ void TreeItem::set_text_alignment(int p_column, HorizontalAlignment p_alignment)
 }
 
 HorizontalAlignment TreeItem::get_text_alignment(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), HORIZONTAL_ALIGNMENT_LEFT);
 	return cells[p_column].text_alignment;
 }
 
 void TreeItem::set_expand_right(int p_column, bool p_enable) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, cells.size());
 
 	if (cells[p_column].expand_right == p_enable) {
@@ -1293,11 +1403,13 @@ void TreeItem::set_expand_right(int p_column, bool p_enable) {
 }
 
 bool TreeItem::get_expand_right(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), false);
 	return cells[p_column].expand_right;
 }
 
 void TreeItem::set_disable_folding(bool p_disable) {
+	ZoneScopedS(60);
 	if (disable_folding == p_disable) {
 		return;
 	}
@@ -1312,10 +1424,12 @@ void TreeItem::set_disable_folding(bool p_disable) {
 }
 
 bool TreeItem::is_folding_disabled() const {
+	ZoneScopedS(60);
 	return disable_folding;
 }
 
 Size2 TreeItem::get_minimum_size(int p_column) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, cells.size(), Size2());
 	Tree *parent_tree = get_tree();
 	ERR_FAIL_COND_V(!parent_tree, Size2());
@@ -1369,6 +1483,7 @@ Size2 TreeItem::get_minimum_size(int p_column) {
 }
 
 void TreeItem::_call_recursive_bind(const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+	ZoneScopedS(60);
 	if (p_argcount < 1) {
 		r_error.error = Callable::CallError::CALL_ERROR_TOO_FEW_ARGUMENTS;
 		r_error.argument = 0;
@@ -1388,6 +1503,7 @@ void TreeItem::_call_recursive_bind(const Variant **p_args, int p_argcount, Call
 }
 
 void recursive_call_aux(TreeItem *p_item, const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+	ZoneScopedS(60);
 	if (!p_item) {
 		return;
 	}
@@ -1400,10 +1516,12 @@ void recursive_call_aux(TreeItem *p_item, const StringName &p_method, const Vari
 }
 
 void TreeItem::call_recursive(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) {
+	ZoneScopedS(60);
 	recursive_call_aux(this, p_method, p_args, p_argcount, r_error);
 }
 
 void TreeItem::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_cell_mode", "column", "mode"), &TreeItem::set_cell_mode);
 	ClassDB::bind_method(D_METHOD("get_cell_mode", "column"), &TreeItem::get_cell_mode);
 
@@ -1560,6 +1678,7 @@ void TreeItem::_bind_methods() {
 }
 
 void TreeItem::clear_children() {
+	ZoneScopedS(60);
 	TreeItem *c = first_child;
 	while (c) {
 		TreeItem *aux = c;
@@ -1572,10 +1691,12 @@ void TreeItem::clear_children() {
 };
 
 TreeItem::TreeItem(Tree *p_tree) {
+	ZoneScopedS(60);
 	tree = p_tree;
 }
 
 TreeItem::~TreeItem() {
+	ZoneScopedS(60);
 	_unlink_from_tree();
 	validate_cache();
 	prev = nullptr;
@@ -1591,6 +1712,7 @@ TreeItem::~TreeItem() {
 /**********************************************/
 
 void Tree::_update_theme_item_cache() {
+	ZoneScopedS(60);
 	Control::_update_theme_item_cache();
 
 	theme_cache.panel_style = get_theme_stylebox(SNAME("panel"));
@@ -1655,6 +1777,7 @@ void Tree::_update_theme_item_cache() {
 }
 
 int Tree::compute_item_height(TreeItem *p_item) const {
+	ZoneScopedS(60);
 	if ((p_item == root && hide_root) || !p_item->is_visible()) {
 		return 0;
 	}
@@ -1716,6 +1839,7 @@ int Tree::compute_item_height(TreeItem *p_item) const {
 }
 
 int Tree::get_item_height(TreeItem *p_item) const {
+	ZoneScopedS(60);
 	if (!p_item->is_visible()) {
 		return 0;
 	}
@@ -1737,6 +1861,7 @@ int Tree::get_item_height(TreeItem *p_item) const {
 }
 
 void Tree::draw_item_rect(TreeItem::Cell &p_cell, const Rect2i &p_rect, const Color &p_color, const Color &p_icon_color, int p_ol_size, const Color &p_ol_color) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(theme_cache.font.is_null());
 
 	Rect2i rect = p_rect;
@@ -1812,6 +1937,7 @@ void Tree::draw_item_rect(TreeItem::Cell &p_cell, const Rect2i &p_rect, const Co
 }
 
 void Tree::update_column(int p_col) {
+	ZoneScopedS(60);
 	columns.write[p_col].text_buf->clear();
 	if (columns[p_col].text_direction == Control::TEXT_DIRECTION_INHERITED) {
 		columns.write[p_col].text_buf->set_direction(is_layout_rtl() ? TextServer::DIRECTION_RTL : TextServer::DIRECTION_LTR);
@@ -1823,6 +1949,7 @@ void Tree::update_column(int p_col) {
 }
 
 void Tree::update_item_cell(TreeItem *p_item, int p_col) {
+	ZoneScopedS(60);
 	String valtext;
 
 	p_item->cells.write[p_col].text_buf->clear();
@@ -1883,6 +2010,7 @@ void Tree::update_item_cell(TreeItem *p_item, int p_col) {
 }
 
 void Tree::update_item_cache(TreeItem *p_item) {
+	ZoneScopedS(60);
 	for (int i = 0; i < p_item->cells.size(); i++) {
 		update_item_cell(p_item, i);
 	}
@@ -1895,6 +2023,7 @@ void Tree::update_item_cache(TreeItem *p_item) {
 }
 
 int Tree::draw_item(const Point2i &p_pos, const Point2 &p_draw_ofs, const Size2 &p_draw_size, TreeItem *p_item) {
+	ZoneScopedS(60);
 	if (p_pos.y - theme_cache.offset.y > (p_draw_size.height)) {
 		return -1; //draw no more!
 	}
@@ -2422,6 +2551,7 @@ int Tree::draw_item(const Point2i &p_pos, const Point2 &p_draw_ofs, const Size2 
 }
 
 int Tree::_count_selected_items(TreeItem *p_from) const {
+	ZoneScopedS(60);
 	int count = 0;
 	for (int i = 0; i < columns.size(); i++) {
 		if (p_from->is_selected(i)) {
@@ -2441,6 +2571,7 @@ int Tree::_count_selected_items(TreeItem *p_from) const {
 }
 
 bool Tree::_is_branch_selected(TreeItem *p_from) const {
+	ZoneScopedS(60);
 	for (int i = 0; i < columns.size(); i++) {
 		if (p_from->is_selected(i)) {
 			return true;
@@ -2459,6 +2590,7 @@ bool Tree::_is_branch_selected(TreeItem *p_from) const {
 }
 
 bool Tree::_is_sibling_branch_selected(TreeItem *p_from) const {
+	ZoneScopedS(60);
 	TreeItem *sibling_item = p_from->get_next();
 	while (sibling_item) {
 		if (_is_branch_selected(sibling_item)) {
@@ -2471,6 +2603,7 @@ bool Tree::_is_sibling_branch_selected(TreeItem *p_from) const {
 }
 
 void Tree::select_single_item(TreeItem *p_selected, TreeItem *p_current, int p_col, TreeItem *p_prev, bool *r_in_range, bool p_force_deselect) {
+	ZoneScopedS(60);
 	TreeItem::Cell &selected_cell = p_selected->cells.write[p_col];
 
 	bool switched = false;
@@ -2554,10 +2687,12 @@ void Tree::select_single_item(TreeItem *p_selected, TreeItem *p_current, int p_c
 }
 
 Rect2 Tree::search_item_rect(TreeItem *p_from, TreeItem *p_item) {
+	ZoneScopedS(60);
 	return Rect2();
 }
 
 void Tree::_range_click_timeout() {
+	ZoneScopedS(60);
 	if (range_item_last && !range_drag_enabled && Input::get_singleton()->is_mouse_button_pressed(MouseButton::LEFT)) {
 		Point2 pos = get_local_mouse_position() - theme_cache.panel_style->get_offset();
 		if (show_column_titles) {
@@ -2610,6 +2745,7 @@ void Tree::_range_click_timeout() {
 }
 
 int Tree::propagate_mouse_event(const Point2i &p_pos, int x_ofs, int y_ofs, int x_limit, bool p_double_click, TreeItem *p_item, MouseButton p_button, const Ref<InputEventWithModifiers> &p_mod) {
+	ZoneScopedS(60);
 	if (p_item && !p_item->is_visible()) {
 		// Skip any processing of invisible items.
 		return 0;
@@ -2960,6 +3096,7 @@ int Tree::propagate_mouse_event(const Point2i &p_pos, int x_ofs, int y_ofs, int 
 }
 
 void Tree::_text_editor_modal_close() {
+	ZoneScopedS(60);
 	if (Input::get_singleton()->is_key_pressed(Key::ESCAPE) ||
 			Input::get_singleton()->is_key_pressed(Key::KP_ENTER) ||
 			Input::get_singleton()->is_key_pressed(Key::ENTER)) {
@@ -2974,6 +3111,7 @@ void Tree::_text_editor_modal_close() {
 }
 
 void Tree::_text_editor_submit(String p_text) {
+	ZoneScopedS(60);
 	popup_editor->hide();
 
 	if (!popup_edited_item) {
@@ -3012,6 +3150,7 @@ void Tree::_text_editor_submit(String p_text) {
 }
 
 void Tree::value_editor_changed(double p_value) {
+	ZoneScopedS(60);
 	if (updating_value_editor) {
 		return;
 	}
@@ -3029,6 +3168,7 @@ void Tree::value_editor_changed(double p_value) {
 }
 
 void Tree::popup_select(int p_option) {
+	ZoneScopedS(60);
 	if (!popup_edited_item) {
 		return;
 	}
@@ -3044,6 +3184,7 @@ void Tree::popup_select(int p_option) {
 }
 
 void Tree::_go_left() {
+	ZoneScopedS(60);
 	if (selected_col == 0) {
 		if (selected_item->get_first_child() != nullptr && !selected_item->is_collapsed()) {
 			selected_item->set_collapsed(true);
@@ -3072,6 +3213,7 @@ void Tree::_go_left() {
 }
 
 void Tree::_go_right() {
+	ZoneScopedS(60);
 	if (selected_col == (columns.size() - 1)) {
 		if (selected_item->get_first_child() != nullptr && selected_item->is_collapsed()) {
 			selected_item->set_collapsed(false);
@@ -3093,6 +3235,7 @@ void Tree::_go_right() {
 }
 
 void Tree::_go_up() {
+	ZoneScopedS(60);
 	TreeItem *prev = nullptr;
 	if (!selected_item) {
 		prev = get_last_item();
@@ -3133,6 +3276,7 @@ void Tree::_go_up() {
 }
 
 void Tree::_go_down() {
+	ZoneScopedS(60);
 	TreeItem *next = nullptr;
 	if (!selected_item) {
 		if (root) {
@@ -3177,6 +3321,7 @@ void Tree::_go_down() {
 }
 
 bool Tree::_scroll(bool p_horizontal, float p_pages) {
+	ZoneScopedS(60);
 	ScrollBar *scroll = p_horizontal ? (ScrollBar *)h_scroll : (ScrollBar *)v_scroll;
 
 	double prev_value = scroll->get_value();
@@ -3186,6 +3331,7 @@ bool Tree::_scroll(bool p_horizontal, float p_pages) {
 }
 
 void Tree::gui_input(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_event.is_null());
 
 	Ref<InputEventKey> k = p_event;
@@ -3738,6 +3884,7 @@ void Tree::gui_input(const Ref<InputEvent> &p_event) {
 }
 
 bool Tree::edit_selected() {
+	ZoneScopedS(60);
 	TreeItem *s = get_selected();
 	ERR_FAIL_COND_V_MSG(!s, false, "No item selected.");
 	ensure_cursor_is_visible();
@@ -3827,10 +3974,12 @@ bool Tree::edit_selected() {
 }
 
 bool Tree::is_editing() {
+	ZoneScopedS(60);
 	return popup_editor->is_visible();
 }
 
 Size2 Tree::get_internal_min_size() const {
+	ZoneScopedS(60);
 	Size2i size = theme_cache.panel_style->get_offset();
 	if (root) {
 		size.height += get_item_height(root);
@@ -3843,6 +3992,7 @@ Size2 Tree::get_internal_min_size() const {
 }
 
 void Tree::update_scrollbars() {
+	ZoneScopedS(60);
 	Size2 size = get_size();
 	int tbh;
 	if (show_column_titles) {
@@ -3896,6 +4046,7 @@ void Tree::update_scrollbars() {
 }
 
 int Tree::_get_title_button_height() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(theme_cache.font.is_null() || theme_cache.title_button.is_null(), 0);
 	int h = 0;
 	if (show_column_titles) {
@@ -3907,6 +4058,7 @@ int Tree::_get_title_button_height() const {
 }
 
 void Tree::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_FOCUS_ENTER: {
 			if (get_viewport()) {
@@ -4085,6 +4237,7 @@ void Tree::_notification(int p_what) {
 }
 
 void Tree::_update_all() {
+	ZoneScopedS(60);
 	for (int i = 0; i < columns.size(); i++) {
 		update_column(i);
 	}
@@ -4094,6 +4247,7 @@ void Tree::_update_all() {
 }
 
 Size2 Tree::get_minimum_size() const {
+	ZoneScopedS(60);
 	if (h_scroll_enabled && v_scroll_enabled) {
 		return Size2();
 	} else {
@@ -4108,6 +4262,7 @@ Size2 Tree::get_minimum_size() const {
 }
 
 TreeItem *Tree::create_item(TreeItem *p_parent, int p_idx) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(blocked > 0, nullptr);
 
 	TreeItem *ti = nullptr;
@@ -4133,10 +4288,12 @@ TreeItem *Tree::create_item(TreeItem *p_parent, int p_idx) {
 }
 
 TreeItem *Tree::get_root() const {
+	ZoneScopedS(60);
 	return root;
 }
 
 TreeItem *Tree::get_last_item() const {
+	ZoneScopedS(60);
 	TreeItem *last = root;
 
 	while (last) {
@@ -4153,6 +4310,7 @@ TreeItem *Tree::get_last_item() const {
 }
 
 void Tree::item_edited(int p_column, TreeItem *p_item, MouseButton p_custom_mouse_index) {
+	ZoneScopedS(60);
 	edited_item = p_item;
 	edited_col = p_column;
 	if (p_item != nullptr && p_column >= 0 && p_column < p_item->cells.size()) {
@@ -4165,6 +4323,7 @@ void Tree::item_edited(int p_column, TreeItem *p_item, MouseButton p_custom_mous
 }
 
 void Tree::item_changed(int p_column, TreeItem *p_item) {
+	ZoneScopedS(60);
 	if (p_item != nullptr && p_column >= 0 && p_column < p_item->cells.size()) {
 		p_item->cells.write[p_column].dirty = true;
 	}
@@ -4172,6 +4331,7 @@ void Tree::item_changed(int p_column, TreeItem *p_item) {
 }
 
 void Tree::item_selected(int p_column, TreeItem *p_item) {
+	ZoneScopedS(60);
 	if (select_mode == SELECT_MULTI) {
 		if (!p_item->cells[p_column].selectable) {
 			return;
@@ -4191,6 +4351,7 @@ void Tree::item_selected(int p_column, TreeItem *p_item) {
 }
 
 void Tree::item_deselected(int p_column, TreeItem *p_item) {
+	ZoneScopedS(60);
 	if (selected_item == p_item) {
 		selected_item = nullptr;
 
@@ -4206,14 +4367,17 @@ void Tree::item_deselected(int p_column, TreeItem *p_item) {
 }
 
 void Tree::set_select_mode(SelectMode p_mode) {
+	ZoneScopedS(60);
 	select_mode = p_mode;
 }
 
 Tree::SelectMode Tree::get_select_mode() const {
+	ZoneScopedS(60);
 	return select_mode;
 }
 
 void Tree::deselect_all() {
+	ZoneScopedS(60);
 	TreeItem *item = get_next_selected(get_root());
 	while (item) {
 		item->deselect(selected_col);
@@ -4229,10 +4393,12 @@ void Tree::deselect_all() {
 }
 
 bool Tree::is_anything_selected() {
+	ZoneScopedS(60);
 	return (selected_item != nullptr);
 }
 
 void Tree::clear() {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(blocked > 0);
 
 	if (pressing_for_editor) {
@@ -4258,6 +4424,7 @@ void Tree::clear() {
 };
 
 void Tree::set_hide_root(bool p_enabled) {
+	ZoneScopedS(60);
 	if (hide_root == p_enabled) {
 		return;
 	}
@@ -4267,10 +4434,12 @@ void Tree::set_hide_root(bool p_enabled) {
 }
 
 bool Tree::is_root_hidden() const {
+	ZoneScopedS(60);
 	return hide_root;
 }
 
 void Tree::set_column_custom_minimum_width(int p_column, int p_min_width) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, columns.size());
 
 	if (columns[p_column].custom_min_width == p_min_width) {
@@ -4285,6 +4454,7 @@ void Tree::set_column_custom_minimum_width(int p_column, int p_min_width) {
 }
 
 void Tree::set_column_expand(int p_column, bool p_expand) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, columns.size());
 
 	if (columns[p_column].expand == p_expand) {
@@ -4296,6 +4466,7 @@ void Tree::set_column_expand(int p_column, bool p_expand) {
 }
 
 void Tree::set_column_expand_ratio(int p_column, int p_ratio) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, columns.size());
 
 	if (columns[p_column].expand_ratio == p_ratio) {
@@ -4307,6 +4478,7 @@ void Tree::set_column_expand_ratio(int p_column, int p_ratio) {
 }
 
 void Tree::set_column_clip_content(int p_column, bool p_fit) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, columns.size());
 
 	if (columns[p_column].clip_content == p_fit) {
@@ -4318,39 +4490,47 @@ void Tree::set_column_clip_content(int p_column, bool p_fit) {
 }
 
 bool Tree::is_column_expanding(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, columns.size(), false);
 
 	return columns[p_column].expand;
 }
 int Tree::get_column_expand_ratio(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, columns.size(), 1);
 
 	return columns[p_column].expand_ratio;
 }
 
 bool Tree::is_column_clipping_content(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, columns.size(), false);
 
 	return columns[p_column].clip_content;
 }
 
 TreeItem *Tree::get_selected() const {
+	ZoneScopedS(60);
 	return selected_item;
 }
 
 int Tree::get_selected_column() const {
+	ZoneScopedS(60);
 	return selected_col;
 }
 
 TreeItem *Tree::get_edited() const {
+	ZoneScopedS(60);
 	return edited_item;
 }
 
 int Tree::get_edited_column() const {
+	ZoneScopedS(60);
 	return edited_col;
 }
 
 TreeItem *Tree::get_next_selected(TreeItem *p_item) {
+	ZoneScopedS(60);
 	if (!root) {
 		return nullptr;
 	}
@@ -4387,6 +4567,7 @@ TreeItem *Tree::get_next_selected(TreeItem *p_item) {
 }
 
 int Tree::get_column_minimum_width(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, columns.size(), -1);
 
 	// Use the custom minimum width.
@@ -4432,6 +4613,7 @@ int Tree::get_column_minimum_width(int p_column) const {
 }
 
 int Tree::get_column_width(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, columns.size(), -1);
 
 	int column_width = get_column_minimum_width(p_column);
@@ -4467,6 +4649,7 @@ int Tree::get_column_width(int p_column) const {
 }
 
 void Tree::propagate_set_columns(TreeItem *p_item) {
+	ZoneScopedS(60);
 	p_item->cells.resize(columns.size());
 
 	TreeItem *c = p_item->get_first_child();
@@ -4477,6 +4660,7 @@ void Tree::propagate_set_columns(TreeItem *p_item) {
 }
 
 void Tree::set_columns(int p_columns) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_columns < 1);
 	ERR_FAIL_COND(blocked > 0);
 	columns.resize(p_columns);
@@ -4491,18 +4675,22 @@ void Tree::set_columns(int p_columns) {
 }
 
 int Tree::get_columns() const {
+	ZoneScopedS(60);
 	return columns.size();
 }
 
 void Tree::_scroll_moved(float) {
+	ZoneScopedS(60);
 	queue_redraw();
 }
 
 Rect2 Tree::get_custom_popup_rect() const {
+	ZoneScopedS(60);
 	return custom_popup_rect;
 }
 
 int Tree::get_item_offset(TreeItem *p_item) const {
+	ZoneScopedS(60);
 	TreeItem *it = root;
 	int ofs = _get_title_button_height();
 	if (!it) {
@@ -4540,6 +4728,7 @@ int Tree::get_item_offset(TreeItem *p_item) const {
 }
 
 void Tree::ensure_cursor_is_visible() {
+	ZoneScopedS(60);
 	if (!is_inside_tree()) {
 		return;
 	}
@@ -4586,10 +4775,12 @@ void Tree::ensure_cursor_is_visible() {
 }
 
 int Tree::get_pressed_button() const {
+	ZoneScopedS(60);
 	return pressed_button;
 }
 
 Rect2 Tree::get_item_rect(TreeItem *p_item, int p_column, int p_button) const {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL_V(p_item, Rect2());
 	ERR_FAIL_COND_V(p_item->tree != this, Rect2());
 	if (p_column != -1) {
@@ -4635,6 +4826,7 @@ Rect2 Tree::get_item_rect(TreeItem *p_item, int p_column, int p_button) const {
 }
 
 void Tree::set_column_titles_visible(bool p_show) {
+	ZoneScopedS(60);
 	if (show_column_titles == p_show) {
 		return;
 	}
@@ -4644,10 +4836,12 @@ void Tree::set_column_titles_visible(bool p_show) {
 }
 
 bool Tree::are_column_titles_visible() const {
+	ZoneScopedS(60);
 	return show_column_titles;
 }
 
 void Tree::set_column_title(int p_column, const String &p_title) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, columns.size());
 
 	if (columns[p_column].title == p_title) {
@@ -4660,11 +4854,13 @@ void Tree::set_column_title(int p_column, const String &p_title) {
 }
 
 String Tree::get_column_title(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, columns.size(), "");
 	return columns[p_column].title;
 }
 
 void Tree::set_column_title_direction(int p_column, Control::TextDirection p_text_direction) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, columns.size());
 	ERR_FAIL_COND((int)p_text_direction < -1 || (int)p_text_direction > 3);
 	if (columns[p_column].text_direction != p_text_direction) {
@@ -4675,11 +4871,13 @@ void Tree::set_column_title_direction(int p_column, Control::TextDirection p_tex
 }
 
 Control::TextDirection Tree::get_column_title_direction(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, columns.size(), TEXT_DIRECTION_INHERITED);
 	return columns[p_column].text_direction;
 }
 
 void Tree::set_column_title_language(int p_column, const String &p_language) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_column, columns.size());
 	if (columns[p_column].language != p_language) {
 		columns.write[p_column].language = p_language;
@@ -4689,11 +4887,13 @@ void Tree::set_column_title_language(int p_column, const String &p_language) {
 }
 
 String Tree::get_column_title_language(int p_column) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_column, columns.size(), "");
 	return columns[p_column].language;
 }
 
 Point2 Tree::get_scroll() const {
+	ZoneScopedS(60);
 	Point2 ofs;
 	if (h_scroll->is_visible_in_tree()) {
 		ofs.x = h_scroll->get_value();
@@ -4705,6 +4905,7 @@ Point2 Tree::get_scroll() const {
 }
 
 void Tree::scroll_to_item(TreeItem *p_item, bool p_center_on_item) {
+	ZoneScopedS(60);
 	ERR_FAIL_NULL(p_item);
 	if (!is_visible_in_tree() || !p_item->is_visible()) {
 		return; // Hack to work around crash in get_item_rect() if Tree is not in tree.
@@ -4732,6 +4933,7 @@ void Tree::scroll_to_item(TreeItem *p_item, bool p_center_on_item) {
 }
 
 void Tree::set_h_scroll_enabled(bool p_enable) {
+	ZoneScopedS(60);
 	if (h_scroll_enabled == p_enable) {
 		return;
 	}
@@ -4741,10 +4943,12 @@ void Tree::set_h_scroll_enabled(bool p_enable) {
 }
 
 bool Tree::is_h_scroll_enabled() const {
+	ZoneScopedS(60);
 	return h_scroll_enabled;
 }
 
 void Tree::set_v_scroll_enabled(bool p_enable) {
+	ZoneScopedS(60);
 	if (v_scroll_enabled == p_enable) {
 		return;
 	}
@@ -4754,10 +4958,12 @@ void Tree::set_v_scroll_enabled(bool p_enable) {
 }
 
 bool Tree::is_v_scroll_enabled() const {
+	ZoneScopedS(60);
 	return v_scroll_enabled;
 }
 
 TreeItem *Tree::_search_item_text(TreeItem *p_at, const String &p_find, int *r_col, bool p_selectable, bool p_backwards) {
+	ZoneScopedS(60);
 	TreeItem *from = p_at;
 	TreeItem *loop = nullptr; // Safe-guard against infinite loop.
 
@@ -4792,6 +4998,7 @@ TreeItem *Tree::_search_item_text(TreeItem *p_at, const String &p_find, int *r_c
 }
 
 TreeItem *Tree::search_item_text(const String &p_find, int *r_col, bool p_selectable) {
+	ZoneScopedS(60);
 	TreeItem *from = get_selected();
 
 	if (!from) {
@@ -4805,6 +5012,7 @@ TreeItem *Tree::search_item_text(const String &p_find, int *r_col, bool p_select
 }
 
 TreeItem *Tree::get_item_with_text(const String &p_find) const {
+	ZoneScopedS(60);
 	for (TreeItem *current = root; current; current = current->get_next_visible()) {
 		for (int i = 0; i < columns.size(); i++) {
 			if (current->get_text(i) == p_find) {
@@ -4816,6 +5024,7 @@ TreeItem *Tree::get_item_with_text(const String &p_find) const {
 }
 
 void Tree::_do_incr_search(const String &p_add) {
+	ZoneScopedS(60);
 	uint64_t time = OS::get_singleton()->get_ticks_usec() / 1000; // convert to msec
 	uint64_t diff = time - last_keypress;
 	if (diff > uint64_t(GLOBAL_GET("gui/timers/incremental_search_max_interval_msec"))) {
@@ -4836,6 +5045,7 @@ void Tree::_do_incr_search(const String &p_add) {
 }
 
 TreeItem *Tree::_find_item_at_pos(TreeItem *p_item, const Point2 &p_pos, int &r_column, int &h, int &section) const {
+	ZoneScopedS(60);
 	Point2 pos = p_pos;
 
 	if ((root != p_item || !hide_root) && p_item->is_visible()) {
@@ -4891,6 +5101,7 @@ TreeItem *Tree::_find_item_at_pos(TreeItem *p_item, const Point2 &p_pos, int &r_
 }
 
 int Tree::get_column_at_position(const Point2 &p_pos) const {
+	ZoneScopedS(60);
 	if (root) {
 		Point2 pos = p_pos;
 		if (is_layout_rtl()) {
@@ -4921,6 +5132,7 @@ int Tree::get_column_at_position(const Point2 &p_pos) const {
 }
 
 int Tree::get_drop_section_at_position(const Point2 &p_pos) const {
+	ZoneScopedS(60);
 	if (root) {
 		Point2 pos = p_pos;
 		if (is_layout_rtl()) {
@@ -4951,6 +5163,7 @@ int Tree::get_drop_section_at_position(const Point2 &p_pos) const {
 }
 
 TreeItem *Tree::get_item_at_position(const Point2 &p_pos) const {
+	ZoneScopedS(60);
 	if (root) {
 		Point2 pos = p_pos;
 		if (is_layout_rtl()) {
@@ -4981,6 +5194,7 @@ TreeItem *Tree::get_item_at_position(const Point2 &p_pos) const {
 }
 
 int Tree::get_button_id_at_position(const Point2 &p_pos) const {
+	ZoneScopedS(60);
 	if (root) {
 		Point2 pos = p_pos;
 		pos -= theme_cache.panel_style->get_offset();
@@ -5022,6 +5236,7 @@ int Tree::get_button_id_at_position(const Point2 &p_pos) const {
 }
 
 String Tree::get_tooltip(const Point2 &p_pos) const {
+	ZoneScopedS(60);
 	if (root) {
 		Point2 pos = p_pos;
 		pos -= theme_cache.panel_style->get_offset();
@@ -5073,10 +5288,12 @@ String Tree::get_tooltip(const Point2 &p_pos) const {
 }
 
 void Tree::set_cursor_can_exit_tree(bool p_enable) {
+	ZoneScopedS(60);
 	cursor_can_exit_tree = p_enable;
 }
 
 void Tree::set_hide_folding(bool p_hide) {
+	ZoneScopedS(60);
 	if (hide_folding == p_hide) {
 		return;
 	}
@@ -5086,18 +5303,22 @@ void Tree::set_hide_folding(bool p_hide) {
 }
 
 bool Tree::is_folding_hidden() const {
+	ZoneScopedS(60);
 	return hide_folding;
 }
 
 void Tree::set_enable_recursive_folding(bool p_enable) {
+	ZoneScopedS(60);
 	enable_recursive_folding = p_enable;
 }
 
 bool Tree::is_recursive_folding_enabled() const {
+	ZoneScopedS(60);
 	return enable_recursive_folding;
 }
 
 void Tree::set_drop_mode_flags(int p_flags) {
+	ZoneScopedS(60);
 	if (drop_mode_flags == p_flags) {
 		return;
 	}
@@ -5110,34 +5331,42 @@ void Tree::set_drop_mode_flags(int p_flags) {
 }
 
 int Tree::get_drop_mode_flags() const {
+	ZoneScopedS(60);
 	return drop_mode_flags;
 }
 
 void Tree::set_edit_checkbox_cell_only_when_checkbox_is_pressed(bool p_enable) {
+	ZoneScopedS(60);
 	force_edit_checkbox_only_on_checkbox = p_enable;
 }
 
 bool Tree::get_edit_checkbox_cell_only_when_checkbox_is_pressed() const {
+	ZoneScopedS(60);
 	return force_edit_checkbox_only_on_checkbox;
 }
 
 void Tree::set_allow_rmb_select(bool p_allow) {
+	ZoneScopedS(60);
 	allow_rmb_select = p_allow;
 }
 
 bool Tree::get_allow_rmb_select() const {
+	ZoneScopedS(60);
 	return allow_rmb_select;
 }
 
 void Tree::set_allow_reselect(bool p_allow) {
+	ZoneScopedS(60);
 	allow_reselect = p_allow;
 }
 
 bool Tree::get_allow_reselect() const {
+	ZoneScopedS(60);
 	return allow_reselect;
 }
 
 void Tree::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("clear"), &Tree::clear);
 	ClassDB::bind_method(D_METHOD("create_item", "parent", "idx"), &Tree::create_item, DEFVAL(Variant()), DEFVAL(-1));
 
@@ -5251,6 +5480,7 @@ void Tree::_bind_methods() {
 }
 
 Tree::Tree() {
+	ZoneScopedS(60);
 	columns.resize(1);
 
 	set_focus_mode(FOCUS_ALL);
@@ -5301,6 +5531,7 @@ Tree::Tree() {
 }
 
 Tree::~Tree() {
+	ZoneScopedS(60);
 	if (root) {
 		memdelete(root);
 	}

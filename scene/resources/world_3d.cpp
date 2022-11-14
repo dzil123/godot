@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  world_3d.cpp                                                         */
 /*************************************************************************/
@@ -51,18 +52,22 @@ void World3D::_remove_camera(Camera3D *p_camera) {
 }
 
 RID World3D::get_space() const {
+	ZoneScopedS(60);
 	return space;
 }
 
 RID World3D::get_navigation_map() const {
+	ZoneScopedS(60);
 	return navigation_map;
 }
 
 RID World3D::get_scenario() const {
+	ZoneScopedS(60);
 	return scenario;
 }
 
 void World3D::set_environment(const Ref<Environment> &p_environment) {
+	ZoneScopedS(60);
 	if (environment == p_environment) {
 		return;
 	}
@@ -78,10 +83,12 @@ void World3D::set_environment(const Ref<Environment> &p_environment) {
 }
 
 Ref<Environment> World3D::get_environment() const {
+	ZoneScopedS(60);
 	return environment;
 }
 
 void World3D::set_fallback_environment(const Ref<Environment> &p_environment) {
+	ZoneScopedS(60);
 	if (fallback_environment == p_environment) {
 		return;
 	}
@@ -97,10 +104,12 @@ void World3D::set_fallback_environment(const Ref<Environment> &p_environment) {
 }
 
 Ref<Environment> World3D::get_fallback_environment() const {
+	ZoneScopedS(60);
 	return fallback_environment;
 }
 
 void World3D::set_camera_attributes(const Ref<CameraAttributes> &p_camera_attributes) {
+	ZoneScopedS(60);
 	camera_attributes = p_camera_attributes;
 	if (camera_attributes.is_valid()) {
 		RS::get_singleton()->scenario_set_camera_attributes(scenario, camera_attributes->get_rid());
@@ -110,14 +119,17 @@ void World3D::set_camera_attributes(const Ref<CameraAttributes> &p_camera_attrib
 }
 
 Ref<CameraAttributes> World3D::get_camera_attributes() const {
+	ZoneScopedS(60);
 	return camera_attributes;
 }
 
 PhysicsDirectSpaceState3D *World3D::get_direct_space_state() {
+	ZoneScopedS(60);
 	return PhysicsServer3D::get_singleton()->space_get_direct_state(space);
 }
 
 void World3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_space"), &World3D::get_space);
 	ClassDB::bind_method(D_METHOD("get_navigation_map"), &World3D::get_navigation_map);
 	ClassDB::bind_method(D_METHOD("get_scenario"), &World3D::get_scenario);
@@ -138,6 +150,7 @@ void World3D::_bind_methods() {
 }
 
 World3D::World3D() {
+	ZoneScopedS(60);
 	space = PhysicsServer3D::get_singleton()->space_create();
 	scenario = RenderingServer::get_singleton()->scenario_create();
 
@@ -157,6 +170,7 @@ World3D::World3D() {
 }
 
 World3D::~World3D() {
+	ZoneScopedS(60);
 	PhysicsServer3D::get_singleton()->free(space);
 	RenderingServer::get_singleton()->free(scenario);
 	NavigationServer3D::get_singleton()->free(navigation_map);

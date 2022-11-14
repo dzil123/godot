@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  importer_mesh.cpp                                                    */
 /*************************************************************************/
@@ -37,6 +38,7 @@
 #include <cstdint>
 
 void ImporterMesh::Surface::split_normals(const LocalVector<int> &p_indices, const LocalVector<Vector3> &p_normals) {
+	ZoneScopedS(60);
 	_split_normals(arrays, p_indices, p_normals);
 
 	for (BlendShape &blend_shape : blend_shape_data) {
@@ -45,6 +47,7 @@ void ImporterMesh::Surface::split_normals(const LocalVector<int> &p_indices, con
 }
 
 void ImporterMesh::Surface::_split_normals(Array &r_arrays, const LocalVector<int> &p_indices, const LocalVector<Vector3> &p_normals) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(r_arrays.size() != RS::ARRAY_MAX);
 
 	const PackedVector3Array &vertices = r_arrays[RS::ARRAY_VERTEX];
@@ -133,28 +136,34 @@ void ImporterMesh::Surface::_split_normals(Array &r_arrays, const LocalVector<in
 }
 
 void ImporterMesh::add_blend_shape(const String &p_name) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(surfaces.size() > 0);
 	blend_shapes.push_back(p_name);
 }
 
 int ImporterMesh::get_blend_shape_count() const {
+	ZoneScopedS(60);
 	return blend_shapes.size();
 }
 
 String ImporterMesh::get_blend_shape_name(int p_blend_shape) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_blend_shape, blend_shapes.size(), String());
 	return blend_shapes[p_blend_shape];
 }
 
 void ImporterMesh::set_blend_shape_mode(Mesh::BlendShapeMode p_blend_shape_mode) {
+	ZoneScopedS(60);
 	blend_shape_mode = p_blend_shape_mode;
 }
 
 Mesh::BlendShapeMode ImporterMesh::get_blend_shape_mode() const {
+	ZoneScopedS(60);
 	return blend_shape_mode;
 }
 
 void ImporterMesh::add_surface(Mesh::PrimitiveType p_primitive, const Array &p_arrays, const TypedArray<Array> &p_blend_shapes, const Dictionary &p_lods, const Ref<Material> &p_material, const String &p_name, const uint32_t p_flags) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_blend_shapes.size() != blend_shapes.size());
 	ERR_FAIL_COND(p_arrays.size() != Mesh::ARRAY_MAX);
 	Surface s;
@@ -195,37 +204,45 @@ void ImporterMesh::add_surface(Mesh::PrimitiveType p_primitive, const Array &p_a
 }
 
 int ImporterMesh::get_surface_count() const {
+	ZoneScopedS(60);
 	return surfaces.size();
 }
 
 Mesh::PrimitiveType ImporterMesh::get_surface_primitive_type(int p_surface) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_surface, surfaces.size(), Mesh::PRIMITIVE_MAX);
 	return surfaces[p_surface].primitive;
 }
 Array ImporterMesh::get_surface_arrays(int p_surface) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_surface, surfaces.size(), Array());
 	return surfaces[p_surface].arrays;
 }
 String ImporterMesh::get_surface_name(int p_surface) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_surface, surfaces.size(), String());
 	return surfaces[p_surface].name;
 }
 void ImporterMesh::set_surface_name(int p_surface, const String &p_name) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_surface, surfaces.size());
 	surfaces.write[p_surface].name = p_name;
 	mesh.unref();
 }
 
 Array ImporterMesh::get_surface_blend_shape_arrays(int p_surface, int p_blend_shape) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_surface, surfaces.size(), Array());
 	ERR_FAIL_INDEX_V(p_blend_shape, surfaces[p_surface].blend_shape_data.size(), Array());
 	return surfaces[p_surface].blend_shape_data[p_blend_shape].arrays;
 }
 int ImporterMesh::get_surface_lod_count(int p_surface) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_surface, surfaces.size(), 0);
 	return surfaces[p_surface].lods.size();
 }
 Vector<int> ImporterMesh::get_surface_lod_indices(int p_surface, int p_lod) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_surface, surfaces.size(), Vector<int>());
 	ERR_FAIL_INDEX_V(p_lod, surfaces[p_surface].lods.size(), Vector<int>());
 
@@ -233,22 +250,26 @@ Vector<int> ImporterMesh::get_surface_lod_indices(int p_surface, int p_lod) cons
 }
 
 float ImporterMesh::get_surface_lod_size(int p_surface, int p_lod) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_surface, surfaces.size(), 0);
 	ERR_FAIL_INDEX_V(p_lod, surfaces[p_surface].lods.size(), 0);
 	return surfaces[p_surface].lods[p_lod].distance;
 }
 
 uint32_t ImporterMesh::get_surface_format(int p_surface) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_surface, surfaces.size(), 0);
 	return surfaces[p_surface].flags;
 }
 
 Ref<Material> ImporterMesh::get_surface_material(int p_surface) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_surface, surfaces.size(), Ref<Material>());
 	return surfaces[p_surface].material;
 }
 
 void ImporterMesh::set_surface_material(int p_surface, const Ref<Material> &p_material) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_surface, surfaces.size());
 	surfaces.write[p_surface].material = p_material;
 	mesh.unref();
@@ -268,6 +289,7 @@ void ImporterMesh::set_surface_material(int p_surface, const Ref<Material> &p_ma
 	write_array[vert_idx] = transformed_vert;
 
 void ImporterMesh::generate_lods(float p_normal_merge_angle, float p_normal_split_angle, Array p_bone_transform_array) {
+	ZoneScopedS(60);
 	if (!SurfaceTool::simplify_scale_func) {
 		return;
 	}
@@ -656,10 +678,12 @@ void ImporterMesh::generate_lods(float p_normal_merge_angle, float p_normal_spli
 }
 
 bool ImporterMesh::has_mesh() const {
+	ZoneScopedS(60);
 	return mesh.is_valid();
 }
 
 Ref<ArrayMesh> ImporterMesh::get_mesh(const Ref<ArrayMesh> &p_base) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(surfaces.size() == 0, Ref<ArrayMesh>());
 
 	if (mesh.is_null()) {
@@ -712,12 +736,14 @@ Ref<ArrayMesh> ImporterMesh::get_mesh(const Ref<ArrayMesh> &p_base) {
 }
 
 void ImporterMesh::clear() {
+	ZoneScopedS(60);
 	surfaces.clear();
 	blend_shapes.clear();
 	mesh.unref();
 }
 
 void ImporterMesh::create_shadow_mesh() {
+	ZoneScopedS(60);
 	if (shadow_mesh.is_valid()) {
 		shadow_mesh.unref();
 	}
@@ -811,10 +837,12 @@ void ImporterMesh::create_shadow_mesh() {
 }
 
 Ref<ImporterMesh> ImporterMesh::get_shadow_mesh() const {
+	ZoneScopedS(60);
 	return shadow_mesh;
 }
 
 void ImporterMesh::_set_data(const Dictionary &p_data) {
+	ZoneScopedS(60);
 	clear();
 	if (p_data.has("blend_shape_names")) {
 		blend_shapes = p_data["blend_shape_names"];
@@ -853,6 +881,7 @@ void ImporterMesh::_set_data(const Dictionary &p_data) {
 	}
 }
 Dictionary ImporterMesh::_get_data() const {
+	ZoneScopedS(60);
 	Dictionary data;
 	if (blend_shapes.size()) {
 		data["blend_shape_names"] = blend_shapes;
@@ -896,6 +925,7 @@ Dictionary ImporterMesh::_get_data() const {
 }
 
 Vector<Face3> ImporterMesh::get_faces() const {
+	ZoneScopedS(60);
 	Vector<Face3> faces;
 	for (int i = 0; i < surfaces.size(); i++) {
 		if (surfaces[i].primitive == Mesh::PRIMITIVE_TRIANGLES) {
@@ -925,6 +955,7 @@ Vector<Face3> ImporterMesh::get_faces() const {
 }
 
 Vector<Ref<Shape3D>> ImporterMesh::convex_decompose(const Mesh::ConvexDecompositionSettings &p_settings) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!Mesh::convex_decomposition_function, Vector<Ref<Shape3D>>());
 
 	const Vector<Face3> faces = get_faces();
@@ -972,6 +1003,7 @@ Vector<Ref<Shape3D>> ImporterMesh::convex_decompose(const Mesh::ConvexDecomposit
 }
 
 Ref<Shape3D> ImporterMesh::create_trimesh_shape() const {
+	ZoneScopedS(60);
 	Vector<Face3> faces = get_faces();
 	if (faces.size() == 0) {
 		return Ref<Shape3D>();
@@ -993,6 +1025,7 @@ Ref<Shape3D> ImporterMesh::create_trimesh_shape() const {
 }
 
 Ref<NavigationMesh> ImporterMesh::create_navigation_mesh() {
+	ZoneScopedS(60);
 	Vector<Face3> faces = get_faces();
 	if (faces.size() == 0) {
 		return Ref<NavigationMesh>();
@@ -1048,6 +1081,7 @@ struct EditorSceneFormatImporterMeshLightmapSurface {
 };
 
 Error ImporterMesh::lightmap_unwrap_cached(const Transform3D &p_base_transform, float p_texel_size, const Vector<uint8_t> &p_src_cache, Vector<uint8_t> &r_dst_cache) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!array_mesh_lightmap_unwrap_callback, ERR_UNCONFIGURED);
 	ERR_FAIL_COND_V_MSG(blend_shapes.size() != 0, ERR_UNAVAILABLE, "Can't unwrap mesh with blend shapes.");
 
@@ -1252,14 +1286,17 @@ Error ImporterMesh::lightmap_unwrap_cached(const Transform3D &p_base_transform, 
 }
 
 void ImporterMesh::set_lightmap_size_hint(const Size2i &p_size) {
+	ZoneScopedS(60);
 	lightmap_size_hint = p_size;
 }
 
 Size2i ImporterMesh::get_lightmap_size_hint() const {
+	ZoneScopedS(60);
 	return lightmap_size_hint;
 }
 
 void ImporterMesh::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("add_blend_shape", "name"), &ImporterMesh::add_blend_shape);
 	ClassDB::bind_method(D_METHOD("get_blend_shape_count"), &ImporterMesh::get_blend_shape_count);
 	ClassDB::bind_method(D_METHOD("get_blend_shape_name", "blend_shape_idx"), &ImporterMesh::get_blend_shape_name);

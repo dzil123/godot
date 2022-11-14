@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  panel_container.cpp                                                  */
 /*************************************************************************/
@@ -31,6 +32,7 @@
 #include "panel_container.h"
 
 Size2 PanelContainer::get_minimum_size() const {
+	ZoneScopedS(60);
 	Size2 ms;
 	for (int i = 0; i < get_child_count(); i++) {
 		Control *c = Object::cast_to<Control>(get_child(i));
@@ -53,6 +55,7 @@ Size2 PanelContainer::get_minimum_size() const {
 }
 
 Vector<int> PanelContainer::get_allowed_size_flags_horizontal() const {
+	ZoneScopedS(60);
 	Vector<int> flags;
 	flags.append(SIZE_FILL);
 	flags.append(SIZE_SHRINK_BEGIN);
@@ -62,6 +65,7 @@ Vector<int> PanelContainer::get_allowed_size_flags_horizontal() const {
 }
 
 Vector<int> PanelContainer::get_allowed_size_flags_vertical() const {
+	ZoneScopedS(60);
 	Vector<int> flags;
 	flags.append(SIZE_FILL);
 	flags.append(SIZE_SHRINK_BEGIN);
@@ -71,12 +75,14 @@ Vector<int> PanelContainer::get_allowed_size_flags_vertical() const {
 }
 
 void PanelContainer::_update_theme_item_cache() {
+	ZoneScopedS(60);
 	Container::_update_theme_item_cache();
 
 	theme_cache.panel_style = get_theme_stylebox(SNAME("panel"));
 }
 
 void PanelContainer::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
 			RID ci = get_canvas_item();
@@ -107,6 +113,7 @@ void PanelContainer::_notification(int p_what) {
 }
 
 PanelContainer::PanelContainer() {
+	ZoneScopedS(60);
 	// Has visible stylebox, so stop by default.
 	set_mouse_filter(MOUSE_FILTER_STOP);
 }

@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  bone_map.cpp                                                         */
 /*************************************************************************/
@@ -31,6 +32,7 @@
 #include "bone_map.h"
 
 bool BoneMap::_set(const StringName &p_path, const Variant &p_value) {
+	ZoneScopedS(60);
 	String path = p_path;
 	if (path.begins_with("bone_map/")) {
 		String which = path.get_slicec('/', 1);
@@ -41,6 +43,7 @@ bool BoneMap::_set(const StringName &p_path, const Variant &p_value) {
 }
 
 bool BoneMap::_get(const StringName &p_path, Variant &r_ret) const {
+	ZoneScopedS(60);
 	String path = p_path;
 	if (path.begins_with("bone_map/")) {
 		String which = path.get_slicec('/', 1);
@@ -51,6 +54,7 @@ bool BoneMap::_get(const StringName &p_path, Variant &r_ret) const {
 }
 
 void BoneMap::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	HashMap<StringName, StringName>::ConstIterator E = bone_map.begin();
 	while (E) {
 		p_list->push_back(PropertyInfo(Variant::STRING_NAME, "bone_map/" + E->key, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR));
@@ -59,10 +63,12 @@ void BoneMap::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 Ref<SkeletonProfile> BoneMap::get_profile() const {
+	ZoneScopedS(60);
 	return profile;
 }
 
 void BoneMap::set_profile(const Ref<SkeletonProfile> &p_profile) {
+	ZoneScopedS(60);
 	bool is_changed = profile != p_profile;
 	if (is_changed) {
 		if (!profile.is_null() && profile->is_connected("profile_updated", callable_mp(this, &BoneMap::_update_profile))) {
@@ -78,21 +84,25 @@ void BoneMap::set_profile(const Ref<SkeletonProfile> &p_profile) {
 }
 
 StringName BoneMap::get_skeleton_bone_name(StringName p_profile_bone_name) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!bone_map.has(p_profile_bone_name), StringName());
 	return bone_map.get(p_profile_bone_name);
 }
 
 void BoneMap::_set_skeleton_bone_name(StringName p_profile_bone_name, const StringName p_skeleton_bone_name) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!bone_map.has(p_profile_bone_name));
 	bone_map.insert(p_profile_bone_name, p_skeleton_bone_name);
 }
 
 void BoneMap::set_skeleton_bone_name(StringName p_profile_bone_name, const StringName p_skeleton_bone_name) {
+	ZoneScopedS(60);
 	_set_skeleton_bone_name(p_profile_bone_name, p_skeleton_bone_name);
 	emit_signal("bone_map_updated");
 }
 
 StringName BoneMap::find_profile_bone_name(StringName p_skeleton_bone_name) const {
+	ZoneScopedS(60);
 	StringName profile_bone_name = StringName();
 	HashMap<StringName, StringName>::ConstIterator E = bone_map.begin();
 	while (E) {
@@ -106,6 +116,7 @@ StringName BoneMap::find_profile_bone_name(StringName p_skeleton_bone_name) cons
 }
 
 int BoneMap::get_skeleton_bone_name_count(const StringName p_skeleton_bone_name) const {
+	ZoneScopedS(60);
 	int count = 0;
 	HashMap<StringName, StringName>::ConstIterator E = bone_map.begin();
 	while (E) {
@@ -118,11 +129,13 @@ int BoneMap::get_skeleton_bone_name_count(const StringName p_skeleton_bone_name)
 }
 
 void BoneMap::_update_profile() {
+	ZoneScopedS(60);
 	_validate_bone_map();
 	emit_signal("profile_updated");
 }
 
 void BoneMap::_validate_bone_map() {
+	ZoneScopedS(60);
 	Ref<SkeletonProfile> current_profile = get_profile();
 	if (current_profile.is_valid()) {
 		// Insert missing profile bones into bone map.
@@ -156,6 +169,7 @@ void BoneMap::_validate_bone_map() {
 }
 
 void BoneMap::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_profile"), &BoneMap::get_profile);
 	ClassDB::bind_method(D_METHOD("set_profile", "profile"), &BoneMap::set_profile);
 
@@ -172,12 +186,14 @@ void BoneMap::_bind_methods() {
 }
 
 void BoneMap::_validate_property(PropertyInfo &property) const {
+	ZoneScopedS(60);
 	if (property.name == "bonemap" || property.name == "profile") {
 		property.usage = PROPERTY_USAGE_NO_EDITOR;
 	}
 }
 
 BoneMap::BoneMap() {
+	ZoneScopedS(60);
 	_validate_bone_map();
 }
 

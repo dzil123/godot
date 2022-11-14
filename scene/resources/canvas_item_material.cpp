@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  canvas_item_material.cpp                                             */
 /*************************************************************************/
@@ -38,6 +39,7 @@ HashMap<CanvasItemMaterial::MaterialKey, CanvasItemMaterial::ShaderData, CanvasI
 CanvasItemMaterial::ShaderNames *CanvasItemMaterial::shader_names = nullptr;
 
 void CanvasItemMaterial::init_shaders() {
+	ZoneScopedS(60);
 	dirty_materials = memnew(SelfList<CanvasItemMaterial>::List);
 
 	shader_names = memnew(ShaderNames);
@@ -48,12 +50,14 @@ void CanvasItemMaterial::init_shaders() {
 }
 
 void CanvasItemMaterial::finish_shaders() {
+	ZoneScopedS(60);
 	memdelete(dirty_materials);
 	memdelete(shader_names);
 	dirty_materials = nullptr;
 }
 
 void CanvasItemMaterial::_update_shader() {
+	ZoneScopedS(60);
 	dirty_materials->remove(&element);
 
 	MaterialKey mk = _compute_key();
@@ -151,6 +155,7 @@ void CanvasItemMaterial::_update_shader() {
 }
 
 void CanvasItemMaterial::flush_changes() {
+	ZoneScopedS(60);
 	MutexLock lock(material_mutex);
 
 	while (dirty_materials->first()) {
@@ -159,6 +164,7 @@ void CanvasItemMaterial::flush_changes() {
 }
 
 void CanvasItemMaterial::_queue_shader_change() {
+	ZoneScopedS(60);
 	MutexLock lock(material_mutex);
 
 	if (is_initialized && !element.in_list()) {
@@ -167,82 +173,99 @@ void CanvasItemMaterial::_queue_shader_change() {
 }
 
 bool CanvasItemMaterial::_is_shader_dirty() const {
+	ZoneScopedS(60);
 	MutexLock lock(material_mutex);
 
 	return element.in_list();
 }
 
 void CanvasItemMaterial::set_blend_mode(BlendMode p_blend_mode) {
+	ZoneScopedS(60);
 	blend_mode = p_blend_mode;
 	_queue_shader_change();
 }
 
 CanvasItemMaterial::BlendMode CanvasItemMaterial::get_blend_mode() const {
+	ZoneScopedS(60);
 	return blend_mode;
 }
 
 void CanvasItemMaterial::set_light_mode(LightMode p_light_mode) {
+	ZoneScopedS(60);
 	light_mode = p_light_mode;
 	_queue_shader_change();
 }
 
 CanvasItemMaterial::LightMode CanvasItemMaterial::get_light_mode() const {
+	ZoneScopedS(60);
 	return light_mode;
 }
 
 void CanvasItemMaterial::set_particles_animation(bool p_particles_anim) {
+	ZoneScopedS(60);
 	particles_animation = p_particles_anim;
 	_queue_shader_change();
 	notify_property_list_changed();
 }
 
 bool CanvasItemMaterial::get_particles_animation() const {
+	ZoneScopedS(60);
 	return particles_animation;
 }
 
 void CanvasItemMaterial::set_particles_anim_h_frames(int p_frames) {
+	ZoneScopedS(60);
 	particles_anim_h_frames = p_frames;
 	RS::get_singleton()->material_set_param(_get_material(), shader_names->particles_anim_h_frames, p_frames);
 }
 
 int CanvasItemMaterial::get_particles_anim_h_frames() const {
+	ZoneScopedS(60);
 	return particles_anim_h_frames;
 }
 
 void CanvasItemMaterial::set_particles_anim_v_frames(int p_frames) {
+	ZoneScopedS(60);
 	particles_anim_v_frames = p_frames;
 	RS::get_singleton()->material_set_param(_get_material(), shader_names->particles_anim_v_frames, p_frames);
 }
 
 int CanvasItemMaterial::get_particles_anim_v_frames() const {
+	ZoneScopedS(60);
 	return particles_anim_v_frames;
 }
 
 void CanvasItemMaterial::set_particles_anim_loop(bool p_loop) {
+	ZoneScopedS(60);
 	particles_anim_loop = p_loop;
 	RS::get_singleton()->material_set_param(_get_material(), shader_names->particles_anim_loop, particles_anim_loop);
 }
 
 bool CanvasItemMaterial::get_particles_anim_loop() const {
+	ZoneScopedS(60);
 	return particles_anim_loop;
 }
 
 void CanvasItemMaterial::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (p_property.name.begins_with("particles_anim_") && !particles_animation) {
 		p_property.usage = PROPERTY_USAGE_NONE;
 	}
 }
 
 RID CanvasItemMaterial::get_shader_rid() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!shader_map.has(current_key), RID());
 	return shader_map[current_key].shader;
 }
 
 Shader::Mode CanvasItemMaterial::get_shader_mode() const {
+	ZoneScopedS(60);
 	return Shader::MODE_CANVAS_ITEM;
 }
 
 void CanvasItemMaterial::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_blend_mode", "blend_mode"), &CanvasItemMaterial::set_blend_mode);
 	ClassDB::bind_method(D_METHOD("get_blend_mode"), &CanvasItemMaterial::get_blend_mode);
 
@@ -292,6 +315,7 @@ CanvasItemMaterial::CanvasItemMaterial() :
 }
 
 CanvasItemMaterial::~CanvasItemMaterial() {
+	ZoneScopedS(60);
 	MutexLock lock(material_mutex);
 
 	if (shader_map.has(current_key)) {

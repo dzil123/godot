@@ -28,10 +28,42 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  node_2d.cpp                                                          */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "node_2d.h"
 
 #ifdef TOOLS_ENABLED
 Dictionary Node2D::_edit_get_state() const {
+	ZoneScopedS(60);
 	Dictionary state;
 	state["position"] = get_position();
 	state["rotation"] = get_rotation();
@@ -42,6 +74,7 @@ Dictionary Node2D::_edit_get_state() const {
 }
 
 void Node2D::_edit_set_state(const Dictionary &p_state) {
+	ZoneScopedS(60);
 	position = p_state["position"];
 	rotation = p_state["rotation"];
 	scale = p_state["scale"];
@@ -51,35 +84,43 @@ void Node2D::_edit_set_state(const Dictionary &p_state) {
 }
 
 void Node2D::_edit_set_position(const Point2 &p_position) {
+	ZoneScopedS(60);
 	set_position(p_position);
 }
 
 Point2 Node2D::_edit_get_position() const {
+	ZoneScopedS(60);
 	return position;
 }
 
 void Node2D::_edit_set_scale(const Size2 &p_scale) {
+	ZoneScopedS(60);
 	set_scale(p_scale);
 }
 
 Size2 Node2D::_edit_get_scale() const {
+	ZoneScopedS(60);
 	return scale;
 }
 
 void Node2D::_edit_set_rotation(real_t p_rotation) {
+	ZoneScopedS(60);
 	rotation = p_rotation;
 	_update_transform();
 }
 
 real_t Node2D::_edit_get_rotation() const {
+	ZoneScopedS(60);
 	return rotation;
 }
 
 bool Node2D::_edit_use_rotation() const {
+	ZoneScopedS(60);
 	return true;
 }
 
 void Node2D::_edit_set_rect(const Rect2 &p_edit_rect) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!_edit_use_rect());
 
 	Rect2 r = _edit_get_rect();
@@ -111,6 +152,7 @@ void Node2D::_edit_set_rect(const Rect2 &p_edit_rect) {
 #endif
 
 void Node2D::_update_xform_values() {
+	ZoneScopedS(60);
 	position = transform.columns[2];
 	rotation = transform.get_rotation();
 	scale = transform.get_scale();
@@ -119,6 +161,7 @@ void Node2D::_update_xform_values() {
 }
 
 void Node2D::_update_transform() {
+	ZoneScopedS(60);
 	transform.set_rotation_scale_and_skew(rotation, scale, skew);
 	transform.columns[2] = position;
 
@@ -132,6 +175,7 @@ void Node2D::_update_transform() {
 }
 
 void Node2D::set_position(const Point2 &p_pos) {
+	ZoneScopedS(60);
 	if (_xform_dirty) {
 		const_cast<Node2D *>(this)->_update_xform_values();
 	}
@@ -140,6 +184,7 @@ void Node2D::set_position(const Point2 &p_pos) {
 }
 
 void Node2D::set_rotation(real_t p_radians) {
+	ZoneScopedS(60);
 	if (_xform_dirty) {
 		const_cast<Node2D *>(this)->_update_xform_values();
 	}
@@ -148,6 +193,7 @@ void Node2D::set_rotation(real_t p_radians) {
 }
 
 void Node2D::set_skew(real_t p_radians) {
+	ZoneScopedS(60);
 	if (_xform_dirty) {
 		const_cast<Node2D *>(this)->_update_xform_values();
 	}
@@ -156,6 +202,7 @@ void Node2D::set_skew(real_t p_radians) {
 }
 
 void Node2D::set_scale(const Size2 &p_scale) {
+	ZoneScopedS(60);
 	if (_xform_dirty) {
 		const_cast<Node2D *>(this)->_update_xform_values();
 	}
@@ -171,6 +218,7 @@ void Node2D::set_scale(const Size2 &p_scale) {
 }
 
 Point2 Node2D::get_position() const {
+	ZoneScopedS(60);
 	if (_xform_dirty) {
 		const_cast<Node2D *>(this)->_update_xform_values();
 	}
@@ -178,6 +226,7 @@ Point2 Node2D::get_position() const {
 }
 
 real_t Node2D::get_rotation() const {
+	ZoneScopedS(60);
 	if (_xform_dirty) {
 		const_cast<Node2D *>(this)->_update_xform_values();
 	}
@@ -186,6 +235,7 @@ real_t Node2D::get_rotation() const {
 }
 
 real_t Node2D::get_skew() const {
+	ZoneScopedS(60);
 	if (_xform_dirty) {
 		const_cast<Node2D *>(this)->_update_xform_values();
 	}
@@ -194,6 +244,7 @@ real_t Node2D::get_skew() const {
 }
 
 Size2 Node2D::get_scale() const {
+	ZoneScopedS(60);
 	if (_xform_dirty) {
 		const_cast<Node2D *>(this)->_update_xform_values();
 	}
@@ -202,26 +253,32 @@ Size2 Node2D::get_scale() const {
 }
 
 Transform2D Node2D::get_transform() const {
+	ZoneScopedS(60);
 	return transform;
 }
 
 void Node2D::rotate(real_t p_radians) {
+	ZoneScopedS(60);
 	set_rotation(get_rotation() + p_radians);
 }
 
 void Node2D::translate(const Vector2 &p_amount) {
+	ZoneScopedS(60);
 	set_position(get_position() + p_amount);
 }
 
 void Node2D::global_translate(const Vector2 &p_amount) {
+	ZoneScopedS(60);
 	set_global_position(get_global_position() + p_amount);
 }
 
 void Node2D::apply_scale(const Size2 &p_amount) {
+	ZoneScopedS(60);
 	set_scale(get_scale() * p_amount);
 }
 
 void Node2D::move_x(real_t p_delta, bool p_scaled) {
+	ZoneScopedS(60);
 	Transform2D t = get_transform();
 	Vector2 m = t[0];
 	if (!p_scaled) {
@@ -231,6 +288,7 @@ void Node2D::move_x(real_t p_delta, bool p_scaled) {
 }
 
 void Node2D::move_y(real_t p_delta, bool p_scaled) {
+	ZoneScopedS(60);
 	Transform2D t = get_transform();
 	Vector2 m = t[1];
 	if (!p_scaled) {
@@ -240,10 +298,12 @@ void Node2D::move_y(real_t p_delta, bool p_scaled) {
 }
 
 Point2 Node2D::get_global_position() const {
+	ZoneScopedS(60);
 	return get_global_transform().get_origin();
 }
 
 void Node2D::set_global_position(const Point2 &p_pos) {
+	ZoneScopedS(60);
 	CanvasItem *parent = get_parent_item();
 	if (parent) {
 		Transform2D inv = parent->get_global_transform().affine_inverse();
@@ -254,14 +314,17 @@ void Node2D::set_global_position(const Point2 &p_pos) {
 }
 
 real_t Node2D::get_global_rotation() const {
+	ZoneScopedS(60);
 	return get_global_transform().get_rotation();
 }
 
 real_t Node2D::get_global_skew() const {
+	ZoneScopedS(60);
 	return get_global_transform().get_skew();
 }
 
 void Node2D::set_global_rotation(const real_t p_radians) {
+	ZoneScopedS(60);
 	CanvasItem *parent = get_parent_item();
 	if (parent) {
 		Transform2D parent_global_transform = parent->get_global_transform();
@@ -275,6 +338,7 @@ void Node2D::set_global_rotation(const real_t p_radians) {
 }
 
 void Node2D::set_global_skew(const real_t p_radians) {
+	ZoneScopedS(60);
 	CanvasItem *parent = get_parent_item();
 	if (parent) {
 		Transform2D parent_global_transform = parent->get_global_transform();
@@ -288,10 +352,12 @@ void Node2D::set_global_skew(const real_t p_radians) {
 }
 
 Size2 Node2D::get_global_scale() const {
+	ZoneScopedS(60);
 	return get_global_transform().get_scale();
 }
 
 void Node2D::set_global_scale(const Size2 &p_scale) {
+	ZoneScopedS(60);
 	CanvasItem *parent = get_parent_item();
 	if (parent) {
 		Transform2D parent_global_transform = parent->get_global_transform();
@@ -305,6 +371,7 @@ void Node2D::set_global_scale(const Size2 &p_scale) {
 }
 
 void Node2D::set_transform(const Transform2D &p_transform) {
+	ZoneScopedS(60);
 	transform = p_transform;
 	_xform_dirty = true;
 
@@ -318,6 +385,7 @@ void Node2D::set_transform(const Transform2D &p_transform) {
 }
 
 void Node2D::set_global_transform(const Transform2D &p_transform) {
+	ZoneScopedS(60);
 	CanvasItem *parent = get_parent_item();
 	if (parent) {
 		set_transform(parent->get_global_transform().affine_inverse() * p_transform);
@@ -327,6 +395,7 @@ void Node2D::set_global_transform(const Transform2D &p_transform) {
 }
 
 void Node2D::set_z_index(int p_z) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_z < RS::CANVAS_ITEM_Z_MIN);
 	ERR_FAIL_COND(p_z > RS::CANVAS_ITEM_Z_MAX);
 	z_index = p_z;
@@ -334,6 +403,7 @@ void Node2D::set_z_index(int p_z) {
 }
 
 void Node2D::set_z_as_relative(bool p_enabled) {
+	ZoneScopedS(60);
 	if (z_relative == p_enabled) {
 		return;
 	}
@@ -342,14 +412,17 @@ void Node2D::set_z_as_relative(bool p_enabled) {
 }
 
 bool Node2D::is_z_relative() const {
+	ZoneScopedS(60);
 	return z_relative;
 }
 
 int Node2D::get_z_index() const {
+	ZoneScopedS(60);
 	return z_index;
 }
 
 Transform2D Node2D::get_relative_transform_to_parent(const Node *p_parent) const {
+	ZoneScopedS(60);
 	if (p_parent == this) {
 		return Transform2D();
 	}
@@ -365,31 +438,38 @@ Transform2D Node2D::get_relative_transform_to_parent(const Node *p_parent) const
 }
 
 void Node2D::look_at(const Vector2 &p_pos) {
+	ZoneScopedS(60);
 	rotate(get_angle_to(p_pos));
 }
 
 real_t Node2D::get_angle_to(const Vector2 &p_pos) const {
+	ZoneScopedS(60);
 	return (to_local(p_pos) * get_scale()).angle();
 }
 
 Point2 Node2D::to_local(Point2 p_global) const {
+	ZoneScopedS(60);
 	return get_global_transform().affine_inverse().xform(p_global);
 }
 
 Point2 Node2D::to_global(Point2 p_local) const {
+	ZoneScopedS(60);
 	return get_global_transform().xform(p_local);
 }
 
 void Node2D::set_y_sort_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	y_sort_enabled = p_enabled;
 	RS::get_singleton()->canvas_item_set_sort_children_by_y(get_canvas_item(), y_sort_enabled);
 }
 
 bool Node2D::is_y_sort_enabled() const {
+	ZoneScopedS(60);
 	return y_sort_enabled;
 }
 
 void Node2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_position", "position"), &Node2D::set_position);
 	ClassDB::bind_method(D_METHOD("set_rotation", "radians"), &Node2D::set_rotation);
 	ClassDB::bind_method(D_METHOD("set_skew", "radians"), &Node2D::set_skew);

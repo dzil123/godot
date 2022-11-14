@@ -28,9 +28,41 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  path_3d.cpp                                                          */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "path_3d.h"
 
 Path3D::Path3D() {
+	ZoneScopedS(60);
 	SceneTree *st = SceneTree::get_singleton();
 	if (st && st->is_debugging_paths_hint()) {
 		debug_instance = RS::get_singleton()->instance_create();
@@ -40,6 +72,7 @@ Path3D::Path3D() {
 }
 
 Path3D::~Path3D() {
+	ZoneScopedS(60);
 	if (debug_instance.is_valid()) {
 		RS::get_singleton()->free(debug_instance);
 	}
@@ -49,6 +82,7 @@ Path3D::~Path3D() {
 }
 
 void Path3D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			SceneTree *st = SceneTree::get_singleton();
@@ -73,6 +107,7 @@ void Path3D::_notification(int p_what) {
 }
 
 void Path3D::_update_debug_mesh() {
+	ZoneScopedS(60);
 	SceneTree *st = SceneTree::get_singleton();
 	if (!(st && st->is_debugging_paths_hint())) {
 		return;
@@ -117,6 +152,7 @@ void Path3D::_update_debug_mesh() {
 }
 
 void Path3D::_curve_changed() {
+	ZoneScopedS(60);
 	if (is_inside_tree() && Engine::get_singleton()->is_editor_hint()) {
 		update_gizmos();
 	}
@@ -141,6 +177,7 @@ void Path3D::_curve_changed() {
 }
 
 void Path3D::set_curve(const Ref<Curve3D> &p_curve) {
+	ZoneScopedS(60);
 	if (curve.is_valid()) {
 		curve->disconnect("changed", callable_mp(this, &Path3D::_curve_changed));
 	}
@@ -154,10 +191,12 @@ void Path3D::set_curve(const Ref<Curve3D> &p_curve) {
 }
 
 Ref<Curve3D> Path3D::get_curve() const {
+	ZoneScopedS(60);
 	return curve;
 }
 
 void Path3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_curve", "curve"), &Path3D::set_curve);
 	ClassDB::bind_method(D_METHOD("get_curve"), &Path3D::get_curve);
 
@@ -169,6 +208,7 @@ void Path3D::_bind_methods() {
 //////////////
 
 void PathFollow3D::_update_transform(bool p_update_xyz_rot) {
+	ZoneScopedS(60);
 	if (!path) {
 		return;
 	}
@@ -305,6 +345,7 @@ void PathFollow3D::_update_transform(bool p_update_xyz_rot) {
 }
 
 void PathFollow3D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			Node *parent = get_parent();
@@ -323,14 +364,17 @@ void PathFollow3D::_notification(int p_what) {
 }
 
 void PathFollow3D::set_cubic_interpolation(bool p_enable) {
+	ZoneScopedS(60);
 	cubic = p_enable;
 }
 
 bool PathFollow3D::get_cubic_interpolation() const {
+	ZoneScopedS(60);
 	return cubic;
 }
 
 void PathFollow3D::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (p_property.name == "offset") {
 		real_t max = 10000;
 		if (path && path->get_curve().is_valid()) {
@@ -342,6 +386,7 @@ void PathFollow3D::_validate_property(PropertyInfo &p_property) const {
 }
 
 PackedStringArray PathFollow3D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (is_visible_in_tree() && is_inside_tree()) {
@@ -359,6 +404,7 @@ PackedStringArray PathFollow3D::get_configuration_warnings() const {
 }
 
 void PathFollow3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_progress", "progress"), &PathFollow3D::set_progress);
 	ClassDB::bind_method(D_METHOD("get_progress"), &PathFollow3D::get_progress);
 
@@ -396,6 +442,7 @@ void PathFollow3D::_bind_methods() {
 }
 
 void PathFollow3D::set_progress(real_t p_progress) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!isfinite(p_progress));
 	prev_offset = progress;
 	progress = p_progress;
@@ -419,6 +466,7 @@ void PathFollow3D::set_progress(real_t p_progress) {
 }
 
 void PathFollow3D::set_h_offset(real_t p_h_offset) {
+	ZoneScopedS(60);
 	h_offset = p_h_offset;
 	if (path) {
 		_update_transform();
@@ -426,10 +474,12 @@ void PathFollow3D::set_h_offset(real_t p_h_offset) {
 }
 
 real_t PathFollow3D::get_h_offset() const {
+	ZoneScopedS(60);
 	return h_offset;
 }
 
 void PathFollow3D::set_v_offset(real_t p_v_offset) {
+	ZoneScopedS(60);
 	v_offset = p_v_offset;
 	if (path) {
 		_update_transform();
@@ -437,20 +487,24 @@ void PathFollow3D::set_v_offset(real_t p_v_offset) {
 }
 
 real_t PathFollow3D::get_v_offset() const {
+	ZoneScopedS(60);
 	return v_offset;
 }
 
 real_t PathFollow3D::get_progress() const {
+	ZoneScopedS(60);
 	return progress;
 }
 
 void PathFollow3D::set_progress_ratio(real_t p_ratio) {
+	ZoneScopedS(60);
 	if (path && path->get_curve().is_valid() && path->get_curve()->get_baked_length()) {
 		set_progress(p_ratio * path->get_curve()->get_baked_length());
 	}
 }
 
 real_t PathFollow3D::get_progress_ratio() const {
+	ZoneScopedS(60);
 	if (path && path->get_curve().is_valid() && path->get_curve()->get_baked_length()) {
 		return get_progress() / path->get_curve()->get_baked_length();
 	} else {
@@ -459,6 +513,7 @@ real_t PathFollow3D::get_progress_ratio() const {
 }
 
 void PathFollow3D::set_rotation_mode(RotationMode p_rotation_mode) {
+	ZoneScopedS(60);
 	rotation_mode = p_rotation_mode;
 
 	update_configuration_warnings();
@@ -466,13 +521,16 @@ void PathFollow3D::set_rotation_mode(RotationMode p_rotation_mode) {
 }
 
 PathFollow3D::RotationMode PathFollow3D::get_rotation_mode() const {
+	ZoneScopedS(60);
 	return rotation_mode;
 }
 
 void PathFollow3D::set_loop(bool p_loop) {
+	ZoneScopedS(60);
 	loop = p_loop;
 }
 
 bool PathFollow3D::has_loop() const {
+	ZoneScopedS(60);
 	return loop;
 }

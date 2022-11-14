@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  polygon_path_finder.cpp                                              */
 /*************************************************************************/
@@ -28,10 +29,11 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "polygon_path_finder.h"
 #include "core/math/geometry_2d.h"
+#include "polygon_path_finder.h"
 
 bool PolygonPathFinder::_is_point_inside(const Vector2 &p_point) const {
+	ZoneScopedS(60);
 	int crosses = 0;
 
 	for (const Edge &E : edges) {
@@ -49,6 +51,7 @@ bool PolygonPathFinder::_is_point_inside(const Vector2 &p_point) const {
 }
 
 void PolygonPathFinder::setup(const Vector<Vector2> &p_points, const Vector<int> &p_connections) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_connections.size() & 1);
 
 	points.clear();
@@ -129,6 +132,7 @@ void PolygonPathFinder::setup(const Vector<Vector2> &p_points, const Vector<int>
 }
 
 Vector<Vector2> PolygonPathFinder::find_path(const Vector2 &p_from, const Vector2 &p_to) {
+	ZoneScopedS(60);
 	Vector<Vector2> path;
 
 	Vector2 from = p_from;
@@ -389,6 +393,7 @@ Vector<Vector2> PolygonPathFinder::find_path(const Vector2 &p_from, const Vector
 }
 
 void PolygonPathFinder::_set_data(const Dictionary &p_data) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!p_data.has("points"));
 	ERR_FAIL_COND(!p_data.has("connections"));
 	ERR_FAIL_COND(!p_data.has("segments"));
@@ -438,6 +443,7 @@ void PolygonPathFinder::_set_data(const Dictionary &p_data) {
 }
 
 Dictionary PolygonPathFinder::_get_data() const {
+	ZoneScopedS(60);
 	Dictionary d;
 	Vector<Vector2> p;
 	Vector<int> ind;
@@ -485,10 +491,12 @@ Dictionary PolygonPathFinder::_get_data() const {
 }
 
 bool PolygonPathFinder::is_point_inside(const Vector2 &p_point) const {
+	ZoneScopedS(60);
 	return _is_point_inside(p_point);
 }
 
 Vector2 PolygonPathFinder::get_closest_point(const Vector2 &p_point) const {
+	ZoneScopedS(60);
 	float closest_dist = 1e20f;
 	Vector2 closest_point;
 
@@ -514,6 +522,7 @@ Vector2 PolygonPathFinder::get_closest_point(const Vector2 &p_point) const {
 }
 
 Vector<Vector2> PolygonPathFinder::get_intersections(const Vector2 &p_from, const Vector2 &p_to) const {
+	ZoneScopedS(60);
 	Vector<Vector2> inters;
 
 	for (const Edge &E : edges) {
@@ -530,20 +539,24 @@ Vector<Vector2> PolygonPathFinder::get_intersections(const Vector2 &p_from, cons
 }
 
 Rect2 PolygonPathFinder::get_bounds() const {
+	ZoneScopedS(60);
 	return bounds;
 }
 
 void PolygonPathFinder::set_point_penalty(int p_point, float p_penalty) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_point, points.size() - 2);
 	points.write[p_point].penalty = p_penalty;
 }
 
 float PolygonPathFinder::get_point_penalty(int p_point) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_point, points.size() - 2, 0);
 	return points[p_point].penalty;
 }
 
 void PolygonPathFinder::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("setup", "points", "connections"), &PolygonPathFinder::setup);
 	ClassDB::bind_method(D_METHOD("find_path", "from", "to"), &PolygonPathFinder::find_path);
 	ClassDB::bind_method(D_METHOD("get_intersections", "from", "to"), &PolygonPathFinder::get_intersections);

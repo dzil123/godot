@@ -28,9 +28,41 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  bone_attachment_3d.cpp                                               */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "bone_attachment_3d.h"
 
 void BoneAttachment3D::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (p_property.name == "bone_name") {
 		// Because it is a constant function, we cannot use the _get_skeleton_3d function.
 		const Skeleton3D *parent = nullptr;
@@ -61,6 +93,7 @@ void BoneAttachment3D::_validate_property(PropertyInfo &p_property) const {
 }
 
 bool BoneAttachment3D::_set(const StringName &p_path, const Variant &p_value) {
+	ZoneScopedS(60);
 	if (p_path == SNAME("override_pose")) {
 		set_override_pose(p_value);
 	} else if (p_path == SNAME("override_mode")) {
@@ -75,6 +108,7 @@ bool BoneAttachment3D::_set(const StringName &p_path, const Variant &p_value) {
 }
 
 bool BoneAttachment3D::_get(const StringName &p_path, Variant &r_ret) const {
+	ZoneScopedS(60);
 	if (p_path == SNAME("override_pose")) {
 		r_ret = get_override_pose();
 	} else if (p_path == SNAME("override_mode")) {
@@ -89,6 +123,7 @@ bool BoneAttachment3D::_get(const StringName &p_path, Variant &r_ret) const {
 }
 
 void BoneAttachment3D::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	p_list->push_back(PropertyInfo(Variant::BOOL, "override_pose", PROPERTY_HINT_NONE, ""));
 	if (override_pose) {
 		p_list->push_back(PropertyInfo(Variant::INT, "override_mode", PROPERTY_HINT_ENUM, "Global Pose Override,Local Pose Override,Custom Pose"));
@@ -101,6 +136,7 @@ void BoneAttachment3D::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 PackedStringArray BoneAttachment3D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node3D::get_configuration_warnings();
 
 	if (use_external_skeleton) {
@@ -122,6 +158,7 @@ PackedStringArray BoneAttachment3D::get_configuration_warnings() const {
 }
 
 void BoneAttachment3D::_update_external_skeleton_cache() {
+	ZoneScopedS(60);
 	external_skeleton_node_cache = ObjectID();
 	if (has_node(external_skeleton_node)) {
 		Node *node = get_node(external_skeleton_node);
@@ -154,6 +191,7 @@ void BoneAttachment3D::_update_external_skeleton_cache() {
 }
 
 void BoneAttachment3D::_check_bind() {
+	ZoneScopedS(60);
 	Skeleton3D *sk = _get_skeleton3d();
 
 	if (sk && !bound) {
@@ -169,6 +207,7 @@ void BoneAttachment3D::_check_bind() {
 }
 
 Skeleton3D *BoneAttachment3D::_get_skeleton3d() {
+	ZoneScopedS(60);
 	if (use_external_skeleton) {
 		if (external_skeleton_node_cache.is_valid()) {
 			return Object::cast_to<Skeleton3D>(ObjectDB::get_instance(external_skeleton_node_cache));
@@ -185,6 +224,7 @@ Skeleton3D *BoneAttachment3D::_get_skeleton3d() {
 }
 
 void BoneAttachment3D::_check_unbind() {
+	ZoneScopedS(60);
 	if (bound) {
 		Skeleton3D *sk = _get_skeleton3d();
 
@@ -196,6 +236,7 @@ void BoneAttachment3D::_check_unbind() {
 }
 
 void BoneAttachment3D::_transform_changed() {
+	ZoneScopedS(60);
 	if (!is_inside_tree()) {
 		return;
 	}
@@ -220,6 +261,7 @@ void BoneAttachment3D::_transform_changed() {
 }
 
 void BoneAttachment3D::set_bone_name(const String &p_name) {
+	ZoneScopedS(60);
 	bone_name = p_name;
 	Skeleton3D *sk = _get_skeleton3d();
 	if (sk) {
@@ -228,10 +270,12 @@ void BoneAttachment3D::set_bone_name(const String &p_name) {
 }
 
 String BoneAttachment3D::get_bone_name() const {
+	ZoneScopedS(60);
 	return bone_name;
 }
 
 void BoneAttachment3D::set_bone_idx(const int &p_idx) {
+	ZoneScopedS(60);
 	if (is_inside_tree()) {
 		_check_unbind();
 	}
@@ -256,10 +300,12 @@ void BoneAttachment3D::set_bone_idx(const int &p_idx) {
 }
 
 int BoneAttachment3D::get_bone_idx() const {
+	ZoneScopedS(60);
 	return bone_idx;
 }
 
 void BoneAttachment3D::set_override_pose(bool p_override) {
+	ZoneScopedS(60);
 	override_pose = p_override;
 	set_notify_local_transform(override_pose);
 	set_process_internal(override_pose);
@@ -279,10 +325,12 @@ void BoneAttachment3D::set_override_pose(bool p_override) {
 }
 
 bool BoneAttachment3D::get_override_pose() const {
+	ZoneScopedS(60);
 	return override_pose;
 }
 
 void BoneAttachment3D::set_override_mode(int p_mode) {
+	ZoneScopedS(60);
 	if (override_pose) {
 		Skeleton3D *sk = _get_skeleton3d();
 		if (sk) {
@@ -300,10 +348,12 @@ void BoneAttachment3D::set_override_mode(int p_mode) {
 }
 
 int BoneAttachment3D::get_override_mode() const {
+	ZoneScopedS(60);
 	return override_mode;
 }
 
 void BoneAttachment3D::set_use_external_skeleton(bool p_use_external) {
+	ZoneScopedS(60);
 	use_external_skeleton = p_use_external;
 
 	if (use_external_skeleton) {
@@ -317,20 +367,24 @@ void BoneAttachment3D::set_use_external_skeleton(bool p_use_external) {
 }
 
 bool BoneAttachment3D::get_use_external_skeleton() const {
+	ZoneScopedS(60);
 	return use_external_skeleton;
 }
 
 void BoneAttachment3D::set_external_skeleton(NodePath p_path) {
+	ZoneScopedS(60);
 	external_skeleton_node = p_path;
 	_update_external_skeleton_cache();
 	notify_property_list_changed();
 }
 
 NodePath BoneAttachment3D::get_external_skeleton() const {
+	ZoneScopedS(60);
 	return external_skeleton_node;
 }
 
 void BoneAttachment3D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			if (use_external_skeleton) {
@@ -356,6 +410,7 @@ void BoneAttachment3D::_notification(int p_what) {
 }
 
 void BoneAttachment3D::on_bone_pose_update(int p_bone_index) {
+	ZoneScopedS(60);
 	if (bone_idx == p_bone_index) {
 		Skeleton3D *sk = _get_skeleton3d();
 		if (sk) {
@@ -376,6 +431,7 @@ void BoneAttachment3D::on_bone_pose_update(int p_bone_index) {
 }
 #ifdef TOOLS_ENABLED
 void BoneAttachment3D::_notify_skeleton_bones_renamed(Node *p_base_scene, Skeleton3D *p_skeleton, Ref<BoneMap> p_bone_map) {
+	ZoneScopedS(60);
 	const Skeleton3D *parent = nullptr;
 	if (use_external_skeleton) {
 		if (external_skeleton_node_cache.is_valid()) {
@@ -397,6 +453,7 @@ BoneAttachment3D::BoneAttachment3D() {
 }
 
 void BoneAttachment3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_bone_name", "bone_name"), &BoneAttachment3D::set_bone_name);
 	ClassDB::bind_method(D_METHOD("get_bone_name"), &BoneAttachment3D::get_bone_name);
 

@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  link_button.cpp                                                      */
 /*************************************************************************/
@@ -33,6 +34,7 @@
 #include "core/string/translation.h"
 
 void LinkButton::_shape() {
+	ZoneScopedS(60);
 	Ref<Font> font = theme_cache.font;
 	int font_size = theme_cache.font_size;
 
@@ -47,6 +49,7 @@ void LinkButton::_shape() {
 }
 
 void LinkButton::set_text(const String &p_text) {
+	ZoneScopedS(60);
 	if (text == p_text) {
 		return;
 	}
@@ -58,10 +61,12 @@ void LinkButton::set_text(const String &p_text) {
 }
 
 String LinkButton::get_text() const {
+	ZoneScopedS(60);
 	return text;
 }
 
 void LinkButton::set_structured_text_bidi_override(TextServer::StructuredTextParser p_parser) {
+	ZoneScopedS(60);
 	if (st_parser != p_parser) {
 		st_parser = p_parser;
 		_shape();
@@ -70,20 +75,24 @@ void LinkButton::set_structured_text_bidi_override(TextServer::StructuredTextPar
 }
 
 TextServer::StructuredTextParser LinkButton::get_structured_text_bidi_override() const {
+	ZoneScopedS(60);
 	return st_parser;
 }
 
 void LinkButton::set_structured_text_bidi_override_options(Array p_args) {
+	ZoneScopedS(60);
 	st_args = p_args;
 	_shape();
 	queue_redraw();
 }
 
 Array LinkButton::get_structured_text_bidi_override_options() const {
+	ZoneScopedS(60);
 	return st_args;
 }
 
 void LinkButton::set_text_direction(Control::TextDirection p_text_direction) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND((int)p_text_direction < -1 || (int)p_text_direction > 3);
 	if (text_direction != p_text_direction) {
 		text_direction = p_text_direction;
@@ -93,10 +102,12 @@ void LinkButton::set_text_direction(Control::TextDirection p_text_direction) {
 }
 
 Control::TextDirection LinkButton::get_text_direction() const {
+	ZoneScopedS(60);
 	return text_direction;
 }
 
 void LinkButton::set_language(const String &p_language) {
+	ZoneScopedS(60);
 	if (language != p_language) {
 		language = p_language;
 		_shape();
@@ -105,10 +116,12 @@ void LinkButton::set_language(const String &p_language) {
 }
 
 String LinkButton::get_language() const {
+	ZoneScopedS(60);
 	return language;
 }
 
 void LinkButton::set_underline_mode(UnderlineMode p_underline_mode) {
+	ZoneScopedS(60);
 	if (underline_mode == p_underline_mode) {
 		return;
 	}
@@ -118,14 +131,17 @@ void LinkButton::set_underline_mode(UnderlineMode p_underline_mode) {
 }
 
 LinkButton::UnderlineMode LinkButton::get_underline_mode() const {
+	ZoneScopedS(60);
 	return underline_mode;
 }
 
 Size2 LinkButton::get_minimum_size() const {
+	ZoneScopedS(60);
 	return text_buf->get_size();
 }
 
 void LinkButton::_update_theme_item_cache() {
+	ZoneScopedS(60);
 	BaseButton::_update_theme_item_cache();
 
 	theme_cache.focus = get_theme_stylebox(SNAME("focus"));
@@ -146,6 +162,7 @@ void LinkButton::_update_theme_item_cache() {
 }
 
 void LinkButton::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_TRANSLATION_CHANGED: {
 			xl_text = atr(text);
@@ -239,6 +256,7 @@ void LinkButton::_notification(int p_what) {
 }
 
 void LinkButton::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_text", "text"), &LinkButton::set_text);
 	ClassDB::bind_method(D_METHOD("get_text"), &LinkButton::get_text);
 	ClassDB::bind_method(D_METHOD("set_text_direction", "direction"), &LinkButton::set_text_direction);
@@ -267,6 +285,7 @@ void LinkButton::_bind_methods() {
 }
 
 LinkButton::LinkButton(const String &p_text) {
+	ZoneScopedS(60);
 	text_buf.instantiate();
 	set_focus_mode(FOCUS_NONE);
 	set_default_cursor_shape(CURSOR_POINTING_HAND);

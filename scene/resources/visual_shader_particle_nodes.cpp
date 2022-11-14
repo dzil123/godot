@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  visual_shader_particle_nodes.cpp                                     */
 /*************************************************************************/
@@ -35,10 +36,12 @@
 // VisualShaderNodeParticleEmitter
 
 int VisualShaderNodeParticleEmitter::get_output_port_count() const {
+	ZoneScopedS(60);
 	return 1;
 }
 
 VisualShaderNodeParticleEmitter::PortType VisualShaderNodeParticleEmitter::get_output_port_type(int p_port) const {
+	ZoneScopedS(60);
 	if (mode_2d) {
 		return PORT_TYPE_VECTOR_2D;
 	}
@@ -46,6 +49,7 @@ VisualShaderNodeParticleEmitter::PortType VisualShaderNodeParticleEmitter::get_o
 }
 
 String VisualShaderNodeParticleEmitter::get_output_port_name(int p_port) const {
+	ZoneScopedS(60);
 	if (p_port == 0) {
 		return "position";
 	}
@@ -53,10 +57,12 @@ String VisualShaderNodeParticleEmitter::get_output_port_name(int p_port) const {
 }
 
 bool VisualShaderNodeParticleEmitter::has_output_port_preview(int p_port) const {
+	ZoneScopedS(60);
 	return false;
 }
 
 void VisualShaderNodeParticleEmitter::set_mode_2d(bool p_enabled) {
+	ZoneScopedS(60);
 	if (mode_2d == p_enabled) {
 		return;
 	}
@@ -65,26 +71,31 @@ void VisualShaderNodeParticleEmitter::set_mode_2d(bool p_enabled) {
 }
 
 bool VisualShaderNodeParticleEmitter::is_mode_2d() const {
+	ZoneScopedS(60);
 	return mode_2d;
 }
 
 Vector<StringName> VisualShaderNodeParticleEmitter::get_editable_properties() const {
+	ZoneScopedS(60);
 	Vector<StringName> props;
 	props.push_back("mode_2d");
 	return props;
 }
 
 HashMap<StringName, String> VisualShaderNodeParticleEmitter::get_editable_properties_names() const {
+	ZoneScopedS(60);
 	HashMap<StringName, String> names;
 	names.insert("mode_2d", RTR("2D Mode"));
 	return names;
 }
 
 bool VisualShaderNodeParticleEmitter::is_show_prop_names() const {
+	ZoneScopedS(60);
 	return true;
 }
 
 void VisualShaderNodeParticleEmitter::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_mode_2d", "enabled"), &VisualShaderNodeParticleEmitter::set_mode_2d);
 	ClassDB::bind_method(D_METHOD("is_mode_2d"), &VisualShaderNodeParticleEmitter::is_mode_2d);
 
@@ -97,18 +108,22 @@ VisualShaderNodeParticleEmitter::VisualShaderNodeParticleEmitter() {
 // VisualShaderNodeParticleSphereEmitter
 
 String VisualShaderNodeParticleSphereEmitter::get_caption() const {
+	ZoneScopedS(60);
 	return "SphereEmitter";
 }
 
 int VisualShaderNodeParticleSphereEmitter::get_input_port_count() const {
+	ZoneScopedS(60);
 	return 2;
 }
 
 VisualShaderNodeParticleSphereEmitter::PortType VisualShaderNodeParticleSphereEmitter::get_input_port_type(int p_port) const {
+	ZoneScopedS(60);
 	return PORT_TYPE_SCALAR;
 }
 
 String VisualShaderNodeParticleSphereEmitter::get_input_port_name(int p_port) const {
+	ZoneScopedS(60);
 	if (p_port == 0) {
 		return "radius";
 	} else if (p_port == 1) {
@@ -118,6 +133,7 @@ String VisualShaderNodeParticleSphereEmitter::get_input_port_name(int p_port) co
 }
 
 String VisualShaderNodeParticleSphereEmitter::generate_global_per_node(Shader::Mode p_mode, int p_id) const {
+	ZoneScopedS(60);
 	String code;
 
 	code += "vec2 __get_random_point_in_circle(inout uint seed, float radius, float inner_radius) {\n";
@@ -132,6 +148,7 @@ String VisualShaderNodeParticleSphereEmitter::generate_global_per_node(Shader::M
 }
 
 String VisualShaderNodeParticleSphereEmitter::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
+	ZoneScopedS(60);
 	String code;
 
 	if (mode_2d) {
@@ -144,6 +161,7 @@ String VisualShaderNodeParticleSphereEmitter::generate_code(Shader::Mode p_mode,
 }
 
 VisualShaderNodeParticleSphereEmitter::VisualShaderNodeParticleSphereEmitter() {
+	ZoneScopedS(60);
 	set_input_port_default_value(0, 10.0);
 	set_input_port_default_value(1, 0.0);
 }
@@ -151,14 +169,17 @@ VisualShaderNodeParticleSphereEmitter::VisualShaderNodeParticleSphereEmitter() {
 // VisualShaderNodeParticleBoxEmitter
 
 String VisualShaderNodeParticleBoxEmitter::get_caption() const {
+	ZoneScopedS(60);
 	return "BoxEmitter";
 }
 
 int VisualShaderNodeParticleBoxEmitter::get_input_port_count() const {
+	ZoneScopedS(60);
 	return 1;
 }
 
 VisualShaderNodeParticleBoxEmitter::PortType VisualShaderNodeParticleBoxEmitter::get_input_port_type(int p_port) const {
+	ZoneScopedS(60);
 	if (p_port == 0) {
 		if (mode_2d) {
 			return PORT_TYPE_VECTOR_2D;
@@ -169,6 +190,7 @@ VisualShaderNodeParticleBoxEmitter::PortType VisualShaderNodeParticleBoxEmitter:
 }
 
 void VisualShaderNodeParticleBoxEmitter::set_mode_2d(bool p_enabled) {
+	ZoneScopedS(60);
 	if (mode_2d == p_enabled) {
 		return;
 	}
@@ -182,6 +204,7 @@ void VisualShaderNodeParticleBoxEmitter::set_mode_2d(bool p_enabled) {
 }
 
 String VisualShaderNodeParticleBoxEmitter::get_input_port_name(int p_port) const {
+	ZoneScopedS(60);
 	if (p_port == 0) {
 		return "extents";
 	}
@@ -189,6 +212,7 @@ String VisualShaderNodeParticleBoxEmitter::get_input_port_name(int p_port) const
 }
 
 String VisualShaderNodeParticleBoxEmitter::generate_global_per_node(Shader::Mode p_mode, int p_id) const {
+	ZoneScopedS(60);
 	String code;
 
 	code += "vec2 __get_random_point_in_box2d(inout uint seed, vec2 extents) {\n";
@@ -205,6 +229,7 @@ String VisualShaderNodeParticleBoxEmitter::generate_global_per_node(Shader::Mode
 }
 
 String VisualShaderNodeParticleBoxEmitter::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
+	ZoneScopedS(60);
 	String code;
 	if (mode_2d) {
 		code += "	" + p_output_vars[0] + " = __get_random_point_in_box2d(__seed, " + (p_input_vars[0].is_empty() ? (String)get_input_port_default_value(0) : p_input_vars[0]) + ");\n";
@@ -215,24 +240,29 @@ String VisualShaderNodeParticleBoxEmitter::generate_code(Shader::Mode p_mode, Vi
 }
 
 VisualShaderNodeParticleBoxEmitter::VisualShaderNodeParticleBoxEmitter() {
+	ZoneScopedS(60);
 	set_input_port_default_value(0, Vector3(1.0, 1.0, 1.0));
 }
 
 // VisualShaderNodeParticleRingEmitter
 
 String VisualShaderNodeParticleRingEmitter::get_caption() const {
+	ZoneScopedS(60);
 	return "RingEmitter";
 }
 
 int VisualShaderNodeParticleRingEmitter::get_input_port_count() const {
+	ZoneScopedS(60);
 	return 3;
 }
 
 VisualShaderNodeParticleRingEmitter::PortType VisualShaderNodeParticleRingEmitter::get_input_port_type(int p_port) const {
+	ZoneScopedS(60);
 	return PORT_TYPE_SCALAR;
 }
 
 String VisualShaderNodeParticleRingEmitter::get_input_port_name(int p_port) const {
+	ZoneScopedS(60);
 	if (p_port == 0) {
 		return "radius";
 	} else if (p_port == 1) {
@@ -244,6 +274,7 @@ String VisualShaderNodeParticleRingEmitter::get_input_port_name(int p_port) cons
 }
 
 String VisualShaderNodeParticleRingEmitter::generate_global_per_node(Shader::Mode p_mode, int p_id) const {
+	ZoneScopedS(60);
 	String code;
 
 	code += "vec2 __get_random_point_on_ring2d(inout uint seed, float radius, float inner_radius) {\n";
@@ -262,6 +293,7 @@ String VisualShaderNodeParticleRingEmitter::generate_global_per_node(Shader::Mod
 }
 
 String VisualShaderNodeParticleRingEmitter::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
+	ZoneScopedS(60);
 	String code;
 
 	if (mode_2d) {
@@ -274,6 +306,7 @@ String VisualShaderNodeParticleRingEmitter::generate_code(Shader::Mode p_mode, V
 }
 
 VisualShaderNodeParticleRingEmitter::VisualShaderNodeParticleRingEmitter() {
+	ZoneScopedS(60);
 	set_input_port_default_value(0, 10.0);
 	set_input_port_default_value(1, 0.0);
 	set_input_port_default_value(2, 0.0);
@@ -282,14 +315,17 @@ VisualShaderNodeParticleRingEmitter::VisualShaderNodeParticleRingEmitter() {
 // VisualShaderNodeParticleMeshEmitter
 
 String VisualShaderNodeParticleMeshEmitter::get_caption() const {
+	ZoneScopedS(60);
 	return "MeshEmitter";
 }
 
 int VisualShaderNodeParticleMeshEmitter::get_output_port_count() const {
+	ZoneScopedS(60);
 	return 6;
 }
 
 VisualShaderNodeParticleBoxEmitter::PortType VisualShaderNodeParticleMeshEmitter::get_output_port_type(int p_port) const {
+	ZoneScopedS(60);
 	switch (p_port) {
 		case 0: // position
 			if (mode_2d) {
@@ -314,6 +350,7 @@ VisualShaderNodeParticleBoxEmitter::PortType VisualShaderNodeParticleMeshEmitter
 }
 
 String VisualShaderNodeParticleMeshEmitter::get_output_port_name(int p_port) const {
+	ZoneScopedS(60);
 	switch (p_port) {
 		case 0:
 			return "position";
@@ -332,18 +369,22 @@ String VisualShaderNodeParticleMeshEmitter::get_output_port_name(int p_port) con
 }
 
 int VisualShaderNodeParticleMeshEmitter::get_input_port_count() const {
+	ZoneScopedS(60);
 	return 0;
 }
 
 VisualShaderNodeParticleBoxEmitter::PortType VisualShaderNodeParticleMeshEmitter::get_input_port_type(int p_port) const {
+	ZoneScopedS(60);
 	return PORT_TYPE_SCALAR;
 }
 
 String VisualShaderNodeParticleMeshEmitter::get_input_port_name(int p_port) const {
+	ZoneScopedS(60);
 	return String();
 }
 
 String VisualShaderNodeParticleMeshEmitter::generate_global(Shader::Mode p_mode, VisualShader::Type p_type, int p_id) const {
+	ZoneScopedS(60);
 	String code;
 
 	if (is_output_port_connected(0)) { // position
@@ -370,6 +411,7 @@ String VisualShaderNodeParticleMeshEmitter::generate_global(Shader::Mode p_mode,
 }
 
 String VisualShaderNodeParticleMeshEmitter::_generate_code(VisualShader::Type p_type, int p_id, const String *p_output_vars, int p_index, const String &p_texture_name, PortType p_port_type) const {
+	ZoneScopedS(60);
 	String code;
 	if (is_output_port_connected(p_index)) {
 		switch (p_port_type) {
@@ -391,6 +433,7 @@ String VisualShaderNodeParticleMeshEmitter::_generate_code(VisualShader::Type p_
 }
 
 String VisualShaderNodeParticleMeshEmitter::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
+	ZoneScopedS(60);
 	String code;
 	code += "	__scalar_ibuff = int(__rand_from_seed(__seed) * 65535.0) % " + itos(position_texture->get_width()) + ";\n";
 
@@ -415,6 +458,7 @@ String VisualShaderNodeParticleMeshEmitter::generate_code(Shader::Mode p_mode, V
 }
 
 Vector<VisualShader::DefaultTextureParam> VisualShaderNodeParticleMeshEmitter::get_default_texture_parameters(VisualShader::Type p_type, int p_id) const {
+	ZoneScopedS(60);
 	Vector<VisualShader::DefaultTextureParam> ret;
 
 	if (is_output_port_connected(0)) {
@@ -456,6 +500,7 @@ Vector<VisualShader::DefaultTextureParam> VisualShaderNodeParticleMeshEmitter::g
 }
 
 void VisualShaderNodeParticleMeshEmitter::_update_texture(const Vector<Vector2> &p_array, Ref<ImageTexture> &r_texture) {
+	ZoneScopedS(60);
 	Ref<Image> image;
 	image.instantiate();
 
@@ -477,6 +522,7 @@ void VisualShaderNodeParticleMeshEmitter::_update_texture(const Vector<Vector2> 
 }
 
 void VisualShaderNodeParticleMeshEmitter::_update_texture(const Vector<Vector3> &p_array, Ref<ImageTexture> &r_texture) {
+	ZoneScopedS(60);
 	Ref<Image> image;
 	image.instantiate();
 
@@ -498,6 +544,7 @@ void VisualShaderNodeParticleMeshEmitter::_update_texture(const Vector<Vector3> 
 }
 
 void VisualShaderNodeParticleMeshEmitter::_update_texture(const Vector<Color> &p_array, Ref<ImageTexture> &r_texture) {
+	ZoneScopedS(60);
 	Ref<Image> image;
 	image.instantiate();
 
@@ -518,6 +565,7 @@ void VisualShaderNodeParticleMeshEmitter::_update_texture(const Vector<Color> &p
 }
 
 void VisualShaderNodeParticleMeshEmitter::_update_textures() {
+	ZoneScopedS(60);
 	if (!mesh.is_valid()) {
 		return;
 	}
@@ -630,6 +678,7 @@ void VisualShaderNodeParticleMeshEmitter::_update_textures() {
 }
 
 void VisualShaderNodeParticleMeshEmitter::set_mesh(Ref<Mesh> p_mesh) {
+	ZoneScopedS(60);
 	if (mesh == p_mesh) {
 		return;
 	}
@@ -656,10 +705,12 @@ void VisualShaderNodeParticleMeshEmitter::set_mesh(Ref<Mesh> p_mesh) {
 }
 
 Ref<Mesh> VisualShaderNodeParticleMeshEmitter::get_mesh() const {
+	ZoneScopedS(60);
 	return mesh;
 }
 
 void VisualShaderNodeParticleMeshEmitter::set_use_all_surfaces(bool p_enabled) {
+	ZoneScopedS(60);
 	if (use_all_surfaces == p_enabled) {
 		return;
 	}
@@ -668,10 +719,12 @@ void VisualShaderNodeParticleMeshEmitter::set_use_all_surfaces(bool p_enabled) {
 }
 
 bool VisualShaderNodeParticleMeshEmitter::is_use_all_surfaces() const {
+	ZoneScopedS(60);
 	return use_all_surfaces;
 }
 
 void VisualShaderNodeParticleMeshEmitter::set_surface_index(int p_surface_index) {
+	ZoneScopedS(60);
 	if (mesh.is_valid()) {
 		if (mesh->get_surface_count() > 0) {
 			p_surface_index = CLAMP(p_surface_index, 0, mesh->get_surface_count() - 1);
@@ -689,10 +742,12 @@ void VisualShaderNodeParticleMeshEmitter::set_surface_index(int p_surface_index)
 }
 
 int VisualShaderNodeParticleMeshEmitter::get_surface_index() const {
+	ZoneScopedS(60);
 	return surface_index;
 }
 
 Vector<StringName> VisualShaderNodeParticleMeshEmitter::get_editable_properties() const {
+	ZoneScopedS(60);
 	Vector<StringName> props = VisualShaderNodeParticleEmitter::get_editable_properties();
 
 	props.push_back("mesh");
@@ -705,6 +760,7 @@ Vector<StringName> VisualShaderNodeParticleMeshEmitter::get_editable_properties(
 }
 
 HashMap<StringName, String> VisualShaderNodeParticleMeshEmitter::get_editable_properties_names() const {
+	ZoneScopedS(60);
 	HashMap<StringName, String> names = VisualShaderNodeParticleEmitter::get_editable_properties_names();
 
 	names.insert("mesh", RTR("Mesh"));
@@ -717,6 +773,7 @@ HashMap<StringName, String> VisualShaderNodeParticleMeshEmitter::get_editable_pr
 }
 
 void VisualShaderNodeParticleMeshEmitter::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_mesh", "mesh"), &VisualShaderNodeParticleMeshEmitter::set_mesh);
 	ClassDB::bind_method(D_METHOD("get_mesh"), &VisualShaderNodeParticleMeshEmitter::get_mesh);
 	ClassDB::bind_method(D_METHOD("set_use_all_surfaces", "enabled"), &VisualShaderNodeParticleMeshEmitter::set_use_all_surfaces);
@@ -730,6 +787,7 @@ void VisualShaderNodeParticleMeshEmitter::_bind_methods() {
 }
 
 VisualShaderNodeParticleMeshEmitter::VisualShaderNodeParticleMeshEmitter() {
+	ZoneScopedS(60);
 	connect(CoreStringNames::get_singleton()->changed, callable_mp(this, &VisualShaderNodeParticleMeshEmitter::_update_textures));
 
 	position_texture.instantiate();
@@ -742,6 +800,7 @@ VisualShaderNodeParticleMeshEmitter::VisualShaderNodeParticleMeshEmitter() {
 // VisualShaderNodeParticleMultiplyByAxisAngle
 
 void VisualShaderNodeParticleMultiplyByAxisAngle::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_degrees_mode", "enabled"), &VisualShaderNodeParticleMultiplyByAxisAngle::set_degrees_mode);
 	ClassDB::bind_method(D_METHOD("is_degrees_mode"), &VisualShaderNodeParticleMultiplyByAxisAngle::is_degrees_mode);
 
@@ -749,14 +808,17 @@ void VisualShaderNodeParticleMultiplyByAxisAngle::_bind_methods() {
 }
 
 String VisualShaderNodeParticleMultiplyByAxisAngle::get_caption() const {
+	ZoneScopedS(60);
 	return "MultiplyByAxisAngle";
 }
 
 int VisualShaderNodeParticleMultiplyByAxisAngle::get_input_port_count() const {
+	ZoneScopedS(60);
 	return 3;
 }
 
 VisualShaderNodeParticleMultiplyByAxisAngle::PortType VisualShaderNodeParticleMultiplyByAxisAngle::get_input_port_type(int p_port) const {
+	ZoneScopedS(60);
 	if (p_port == 0 || p_port == 1) { // position, rotation_axis
 		return PORT_TYPE_VECTOR_3D;
 	}
@@ -764,6 +826,7 @@ VisualShaderNodeParticleMultiplyByAxisAngle::PortType VisualShaderNodeParticleMu
 }
 
 String VisualShaderNodeParticleMultiplyByAxisAngle::get_input_port_name(int p_port) const {
+	ZoneScopedS(60);
 	if (p_port == 0) {
 		return "position";
 	}
@@ -781,22 +844,27 @@ String VisualShaderNodeParticleMultiplyByAxisAngle::get_input_port_name(int p_po
 }
 
 bool VisualShaderNodeParticleMultiplyByAxisAngle::is_show_prop_names() const {
+	ZoneScopedS(60);
 	return true;
 }
 
 int VisualShaderNodeParticleMultiplyByAxisAngle::get_output_port_count() const {
+	ZoneScopedS(60);
 	return 1;
 }
 
 VisualShaderNodeParticleMultiplyByAxisAngle::PortType VisualShaderNodeParticleMultiplyByAxisAngle::get_output_port_type(int p_port) const {
+	ZoneScopedS(60);
 	return PORT_TYPE_VECTOR_3D;
 }
 
 String VisualShaderNodeParticleMultiplyByAxisAngle::get_output_port_name(int p_port) const {
+	ZoneScopedS(60);
 	return "position";
 }
 
 String VisualShaderNodeParticleMultiplyByAxisAngle::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
+	ZoneScopedS(60);
 	String code;
 	if (degrees_mode) {
 		code += "	" + p_output_vars[0] + " = __build_rotation_mat3(" + (p_input_vars[1].is_empty() ? ("vec3" + (String)get_input_port_default_value(1)) : p_input_vars[1]) + ", radians(" + (p_input_vars[2].is_empty() ? (String)get_input_port_default_value(2) : p_input_vars[2]) + ")) * " + (p_input_vars[0].is_empty() ? "vec3(0.0)" : p_input_vars[0]) + ";\n";
@@ -807,25 +875,30 @@ String VisualShaderNodeParticleMultiplyByAxisAngle::generate_code(Shader::Mode p
 }
 
 void VisualShaderNodeParticleMultiplyByAxisAngle::set_degrees_mode(bool p_enabled) {
+	ZoneScopedS(60);
 	degrees_mode = p_enabled;
 	emit_changed();
 }
 
 bool VisualShaderNodeParticleMultiplyByAxisAngle::is_degrees_mode() const {
+	ZoneScopedS(60);
 	return degrees_mode;
 }
 
 Vector<StringName> VisualShaderNodeParticleMultiplyByAxisAngle::get_editable_properties() const {
+	ZoneScopedS(60);
 	Vector<StringName> props;
 	props.push_back("degrees_mode");
 	return props;
 }
 
 bool VisualShaderNodeParticleMultiplyByAxisAngle::has_output_port_preview(int p_port) const {
+	ZoneScopedS(60);
 	return false;
 }
 
 VisualShaderNodeParticleMultiplyByAxisAngle::VisualShaderNodeParticleMultiplyByAxisAngle() {
+	ZoneScopedS(60);
 	set_input_port_default_value(1, Vector3(1, 0, 0));
 	set_input_port_default_value(2, 0.0);
 }
@@ -833,14 +906,17 @@ VisualShaderNodeParticleMultiplyByAxisAngle::VisualShaderNodeParticleMultiplyByA
 // VisualShaderNodeParticleConeVelocity
 
 String VisualShaderNodeParticleConeVelocity::get_caption() const {
+	ZoneScopedS(60);
 	return "ConeVelocity";
 }
 
 int VisualShaderNodeParticleConeVelocity::get_input_port_count() const {
+	ZoneScopedS(60);
 	return 2;
 }
 
 VisualShaderNodeParticleConeVelocity::PortType VisualShaderNodeParticleConeVelocity::get_input_port_type(int p_port) const {
+	ZoneScopedS(60);
 	if (p_port == 0) {
 		return PORT_TYPE_VECTOR_3D;
 	} else if (p_port == 1) {
@@ -850,6 +926,7 @@ VisualShaderNodeParticleConeVelocity::PortType VisualShaderNodeParticleConeVeloc
 }
 
 String VisualShaderNodeParticleConeVelocity::get_input_port_name(int p_port) const {
+	ZoneScopedS(60);
 	if (p_port == 0) {
 		return "direction";
 	} else if (p_port == 1) {
@@ -859,14 +936,17 @@ String VisualShaderNodeParticleConeVelocity::get_input_port_name(int p_port) con
 }
 
 int VisualShaderNodeParticleConeVelocity::get_output_port_count() const {
+	ZoneScopedS(60);
 	return 1;
 }
 
 VisualShaderNodeParticleConeVelocity::PortType VisualShaderNodeParticleConeVelocity::get_output_port_type(int p_port) const {
+	ZoneScopedS(60);
 	return PORT_TYPE_VECTOR_3D;
 }
 
 String VisualShaderNodeParticleConeVelocity::get_output_port_name(int p_port) const {
+	ZoneScopedS(60);
 	if (p_port == 0) {
 		return "velocity";
 	}
@@ -874,10 +954,12 @@ String VisualShaderNodeParticleConeVelocity::get_output_port_name(int p_port) co
 }
 
 bool VisualShaderNodeParticleConeVelocity::has_output_port_preview(int p_port) const {
+	ZoneScopedS(60);
 	return false;
 }
 
 String VisualShaderNodeParticleConeVelocity::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
+	ZoneScopedS(60);
 	String code;
 	code += "	__radians = radians(" + (p_input_vars[1].is_empty() ? (String)get_input_port_default_value(1) : p_input_vars[1]) + ");\n";
 	code += "	__scalar_buff1 = __rand_from_seed_m1_p1(__seed) * __radians;\n";
@@ -893,6 +975,7 @@ String VisualShaderNodeParticleConeVelocity::generate_code(Shader::Mode p_mode, 
 }
 
 VisualShaderNodeParticleConeVelocity::VisualShaderNodeParticleConeVelocity() {
+	ZoneScopedS(60);
 	set_input_port_default_value(0, Vector3(1, 0, 0));
 	set_input_port_default_value(1, 45.0);
 }
@@ -900,6 +983,7 @@ VisualShaderNodeParticleConeVelocity::VisualShaderNodeParticleConeVelocity() {
 // VisualShaderNodeParticleRandomness
 
 void VisualShaderNodeParticleRandomness::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_op_type", "type"), &VisualShaderNodeParticleRandomness::set_op_type);
 	ClassDB::bind_method(D_METHOD("get_op_type"), &VisualShaderNodeParticleRandomness::get_op_type);
 
@@ -912,20 +996,24 @@ void VisualShaderNodeParticleRandomness::_bind_methods() {
 }
 
 Vector<StringName> VisualShaderNodeParticleRandomness::get_editable_properties() const {
+	ZoneScopedS(60);
 	Vector<StringName> props;
 	props.push_back("op_type");
 	return props;
 }
 
 String VisualShaderNodeParticleRandomness::get_caption() const {
+	ZoneScopedS(60);
 	return "ParticleRandomness";
 }
 
 int VisualShaderNodeParticleRandomness::get_output_port_count() const {
+	ZoneScopedS(60);
 	return 1;
 }
 
 VisualShaderNodeParticleRandomness::PortType VisualShaderNodeParticleRandomness::get_output_port_type(int p_port) const {
+	ZoneScopedS(60);
 	switch (op_type) {
 		case OP_TYPE_VECTOR_2D:
 			return PORT_TYPE_VECTOR_2D;
@@ -938,14 +1026,17 @@ VisualShaderNodeParticleRandomness::PortType VisualShaderNodeParticleRandomness:
 }
 
 String VisualShaderNodeParticleRandomness::get_output_port_name(int p_port) const {
+	ZoneScopedS(60);
 	return "random";
 }
 
 int VisualShaderNodeParticleRandomness::get_input_port_count() const {
+	ZoneScopedS(60);
 	return 2;
 }
 
 VisualShaderNodeParticleRandomness::PortType VisualShaderNodeParticleRandomness::get_input_port_type(int p_port) const {
+	ZoneScopedS(60);
 	switch (op_type) {
 		case OP_TYPE_VECTOR_2D:
 			return PORT_TYPE_VECTOR_2D;
@@ -958,6 +1049,7 @@ VisualShaderNodeParticleRandomness::PortType VisualShaderNodeParticleRandomness:
 }
 
 String VisualShaderNodeParticleRandomness::get_input_port_name(int p_port) const {
+	ZoneScopedS(60);
 	if (p_port == 0) {
 		return "min";
 	} else if (p_port == 1) {
@@ -967,6 +1059,7 @@ String VisualShaderNodeParticleRandomness::get_input_port_name(int p_port) const
 }
 
 String VisualShaderNodeParticleRandomness::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
+	ZoneScopedS(60);
 	String code;
 	switch (op_type) {
 		case OP_TYPE_SCALAR: {
@@ -985,6 +1078,7 @@ String VisualShaderNodeParticleRandomness::generate_code(Shader::Mode p_mode, Vi
 }
 
 void VisualShaderNodeParticleRandomness::set_op_type(OpType p_op_type) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(int(p_op_type), int(OP_TYPE_MAX));
 	if (op_type == p_op_type) {
 		return;
@@ -1010,14 +1104,17 @@ void VisualShaderNodeParticleRandomness::set_op_type(OpType p_op_type) {
 }
 
 VisualShaderNodeParticleRandomness::OpType VisualShaderNodeParticleRandomness::get_op_type() const {
+	ZoneScopedS(60);
 	return op_type;
 }
 
 bool VisualShaderNodeParticleRandomness::has_output_port_preview(int p_port) const {
+	ZoneScopedS(60);
 	return false;
 }
 
 VisualShaderNodeParticleRandomness::VisualShaderNodeParticleRandomness() {
+	ZoneScopedS(60);
 	set_input_port_default_value(0, -1.0);
 	set_input_port_default_value(1, 1.0);
 }
@@ -1025,6 +1122,7 @@ VisualShaderNodeParticleRandomness::VisualShaderNodeParticleRandomness() {
 // VisualShaderNodeParticleAccelerator
 
 void VisualShaderNodeParticleAccelerator::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_mode", "mode"), &VisualShaderNodeParticleAccelerator::set_mode);
 	ClassDB::bind_method(D_METHOD("get_mode"), &VisualShaderNodeParticleAccelerator::get_mode);
 
@@ -1037,32 +1135,39 @@ void VisualShaderNodeParticleAccelerator::_bind_methods() {
 }
 
 Vector<StringName> VisualShaderNodeParticleAccelerator::get_editable_properties() const {
+	ZoneScopedS(60);
 	Vector<StringName> props;
 	props.push_back("mode");
 	return props;
 }
 
 String VisualShaderNodeParticleAccelerator::get_caption() const {
+	ZoneScopedS(60);
 	return "ParticleAccelerator";
 }
 
 int VisualShaderNodeParticleAccelerator::get_output_port_count() const {
+	ZoneScopedS(60);
 	return 1;
 }
 
 VisualShaderNodeParticleAccelerator::PortType VisualShaderNodeParticleAccelerator::get_output_port_type(int p_port) const {
+	ZoneScopedS(60);
 	return PORT_TYPE_VECTOR_3D;
 }
 
 String VisualShaderNodeParticleAccelerator::get_output_port_name(int p_port) const {
+	ZoneScopedS(60);
 	return String();
 }
 
 int VisualShaderNodeParticleAccelerator::get_input_port_count() const {
+	ZoneScopedS(60);
 	return 3;
 }
 
 VisualShaderNodeParticleAccelerator::PortType VisualShaderNodeParticleAccelerator::get_input_port_type(int p_port) const {
+	ZoneScopedS(60);
 	if (p_port == 0) {
 		return PORT_TYPE_VECTOR_3D;
 	} else if (p_port == 1) {
@@ -1074,6 +1179,7 @@ VisualShaderNodeParticleAccelerator::PortType VisualShaderNodeParticleAccelerato
 }
 
 String VisualShaderNodeParticleAccelerator::get_input_port_name(int p_port) const {
+	ZoneScopedS(60);
 	if (p_port == 0) {
 		return "amount";
 	} else if (p_port == 1) {
@@ -1085,6 +1191,7 @@ String VisualShaderNodeParticleAccelerator::get_input_port_name(int p_port) cons
 }
 
 String VisualShaderNodeParticleAccelerator::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
+	ZoneScopedS(60);
 	String code;
 	switch (mode) {
 		case MODE_LINEAR:
@@ -1105,6 +1212,7 @@ String VisualShaderNodeParticleAccelerator::generate_code(Shader::Mode p_mode, V
 }
 
 void VisualShaderNodeParticleAccelerator::set_mode(Mode p_mode) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(int(p_mode), int(MODE_MAX));
 	if (mode == p_mode) {
 		return;
@@ -1114,14 +1222,17 @@ void VisualShaderNodeParticleAccelerator::set_mode(Mode p_mode) {
 }
 
 VisualShaderNodeParticleAccelerator::Mode VisualShaderNodeParticleAccelerator::get_mode() const {
+	ZoneScopedS(60);
 	return mode;
 }
 
 bool VisualShaderNodeParticleAccelerator::has_output_port_preview(int p_port) const {
+	ZoneScopedS(60);
 	return false;
 }
 
 VisualShaderNodeParticleAccelerator::VisualShaderNodeParticleAccelerator() {
+	ZoneScopedS(60);
 	set_input_port_default_value(0, Vector3(1, 1, 1));
 	set_input_port_default_value(1, 0.0);
 	set_input_port_default_value(2, Vector3(0, -9.8, 0));
@@ -1130,6 +1241,7 @@ VisualShaderNodeParticleAccelerator::VisualShaderNodeParticleAccelerator() {
 // VisualShaderNodeParticleOutput
 
 String VisualShaderNodeParticleOutput::get_caption() const {
+	ZoneScopedS(60);
 	switch (shader_type) {
 		case VisualShader::TYPE_START:
 			return "StartOutput";
@@ -1148,6 +1260,7 @@ String VisualShaderNodeParticleOutput::get_caption() const {
 }
 
 int VisualShaderNodeParticleOutput::get_input_port_count() const {
+	ZoneScopedS(60);
 	switch (shader_type) {
 		case VisualShader::TYPE_START:
 			return 8;
@@ -1165,6 +1278,7 @@ int VisualShaderNodeParticleOutput::get_input_port_count() const {
 }
 
 VisualShaderNodeParticleOutput::PortType VisualShaderNodeParticleOutput::get_input_port_type(int p_port) const {
+	ZoneScopedS(60);
 	switch (p_port) {
 		case 0:
 			if (shader_type == VisualShader::TYPE_START_CUSTOM || shader_type == VisualShader::TYPE_PROCESS_CUSTOM) {
@@ -1214,6 +1328,7 @@ VisualShaderNodeParticleOutput::PortType VisualShaderNodeParticleOutput::get_inp
 }
 
 String VisualShaderNodeParticleOutput::get_input_port_name(int p_port) const {
+	ZoneScopedS(60);
 	String port_name;
 	switch (p_port) {
 		case 0:
@@ -1290,6 +1405,7 @@ String VisualShaderNodeParticleOutput::get_input_port_name(int p_port) const {
 }
 
 bool VisualShaderNodeParticleOutput::is_port_separator(int p_index) const {
+	ZoneScopedS(60);
 	if (shader_type == VisualShader::TYPE_START || shader_type == VisualShader::TYPE_PROCESS) {
 		String port_name = get_input_port_name(p_index);
 		return bool(port_name == "Scale");
@@ -1302,6 +1418,7 @@ bool VisualShaderNodeParticleOutput::is_port_separator(int p_index) const {
 }
 
 String VisualShaderNodeParticleOutput::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
+	ZoneScopedS(60);
 	String code;
 	String tab = "	";
 
@@ -1401,12 +1518,14 @@ VisualShaderNodeParticleOutput::VisualShaderNodeParticleOutput() {
 // EmitParticle
 
 Vector<StringName> VisualShaderNodeParticleEmit::get_editable_properties() const {
+	ZoneScopedS(60);
 	Vector<StringName> props;
 	props.push_back("flags");
 	return props;
 }
 
 void VisualShaderNodeParticleEmit::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_flags", "flags"), &VisualShaderNodeParticleEmit::set_flags);
 	ClassDB::bind_method(D_METHOD("get_flags"), &VisualShaderNodeParticleEmit::get_flags);
 
@@ -1420,14 +1539,17 @@ void VisualShaderNodeParticleEmit::_bind_methods() {
 }
 
 String VisualShaderNodeParticleEmit::get_caption() const {
+	ZoneScopedS(60);
 	return "EmitParticle";
 }
 
 int VisualShaderNodeParticleEmit::get_input_port_count() const {
+	ZoneScopedS(60);
 	return 7;
 }
 
 VisualShaderNodeParticleEmit::PortType VisualShaderNodeParticleEmit::get_input_port_type(int p_port) const {
+	ZoneScopedS(60);
 	switch (p_port) {
 		case 0:
 			return PORT_TYPE_BOOLEAN;
@@ -1448,6 +1570,7 @@ VisualShaderNodeParticleEmit::PortType VisualShaderNodeParticleEmit::get_input_p
 }
 
 String VisualShaderNodeParticleEmit::get_input_port_name(int p_port) const {
+	ZoneScopedS(60);
 	switch (p_port) {
 		case 0:
 			return "condition";
@@ -1468,40 +1591,49 @@ String VisualShaderNodeParticleEmit::get_input_port_name(int p_port) const {
 }
 
 int VisualShaderNodeParticleEmit::get_output_port_count() const {
+	ZoneScopedS(60);
 	return 0;
 }
 
 VisualShaderNodeParticleEmit::PortType VisualShaderNodeParticleEmit::get_output_port_type(int p_port) const {
+	ZoneScopedS(60);
 	return PORT_TYPE_SCALAR;
 }
 
 String VisualShaderNodeParticleEmit::get_output_port_name(int p_port) const {
+	ZoneScopedS(60);
 	return String();
 }
 
 void VisualShaderNodeParticleEmit::add_flag(EmitFlags p_flag) {
+	ZoneScopedS(60);
 	flags |= p_flag;
 	emit_changed();
 }
 
 bool VisualShaderNodeParticleEmit::has_flag(EmitFlags p_flag) const {
+	ZoneScopedS(60);
 	return flags & p_flag;
 }
 
 void VisualShaderNodeParticleEmit::set_flags(EmitFlags p_flags) {
+	ZoneScopedS(60);
 	flags = (int)p_flags;
 	emit_changed();
 }
 
 VisualShaderNodeParticleEmit::EmitFlags VisualShaderNodeParticleEmit::get_flags() const {
+	ZoneScopedS(60);
 	return EmitFlags(flags);
 }
 
 bool VisualShaderNodeParticleEmit::is_show_prop_names() const {
+	ZoneScopedS(60);
 	return true;
 }
 
 bool VisualShaderNodeParticleEmit::is_generate_input_var(int p_port) const {
+	ZoneScopedS(60);
 	if (p_port == 0) {
 		if (!is_input_port_connected(0)) {
 			return false;
@@ -1511,6 +1643,7 @@ bool VisualShaderNodeParticleEmit::is_generate_input_var(int p_port) const {
 }
 
 bool VisualShaderNodeParticleEmit::is_input_port_default(int p_port, Shader::Mode p_mode) const {
+	ZoneScopedS(60);
 	switch (p_port) {
 		case 1:
 			return true;
@@ -1529,6 +1662,7 @@ bool VisualShaderNodeParticleEmit::is_input_port_default(int p_port, Shader::Mod
 }
 
 String VisualShaderNodeParticleEmit::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
+	ZoneScopedS(60);
 	String code;
 	String tab;
 	bool default_condition = false;
@@ -1631,5 +1765,6 @@ String VisualShaderNodeParticleEmit::generate_code(Shader::Mode p_mode, VisualSh
 }
 
 VisualShaderNodeParticleEmit::VisualShaderNodeParticleEmit() {
+	ZoneScopedS(60);
 	set_input_port_default_value(0, true);
 }

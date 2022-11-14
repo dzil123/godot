@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  menu_button.cpp                                                      */
 /*************************************************************************/
@@ -34,6 +35,7 @@
 #include "scene/main/window.h"
 
 void MenuButton::shortcut_input(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_event.is_null());
 
 	if (disable_shortcuts) {
@@ -49,6 +51,7 @@ void MenuButton::shortcut_input(const Ref<InputEvent> &p_event) {
 }
 
 void MenuButton::_popup_visibility_changed(bool p_visible) {
+	ZoneScopedS(60);
 	set_pressed(p_visible);
 
 	if (!p_visible) {
@@ -79,6 +82,7 @@ void MenuButton::_popup_visibility_changed(bool p_visible) {
 }
 
 void MenuButton::pressed() {
+	ZoneScopedS(60);
 	if (popup->is_visible()) {
 		popup->hide();
 		return;
@@ -88,10 +92,12 @@ void MenuButton::pressed() {
 }
 
 PopupMenu *MenuButton::get_popup() const {
+	ZoneScopedS(60);
 	return popup;
 }
 
 void MenuButton::show_popup() {
+	ZoneScopedS(60);
 	if (!get_viewport()) {
 		return;
 	}
@@ -122,14 +128,17 @@ void MenuButton::show_popup() {
 }
 
 void MenuButton::set_switch_on_hover(bool p_enabled) {
+	ZoneScopedS(60);
 	switch_on_hover = p_enabled;
 }
 
 bool MenuButton::is_switch_on_hover() {
+	ZoneScopedS(60);
 	return switch_on_hover;
 }
 
 void MenuButton::set_item_count(int p_count) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_count < 0);
 
 	if (popup->get_item_count() == p_count) {
@@ -141,10 +150,12 @@ void MenuButton::set_item_count(int p_count) {
 }
 
 int MenuButton::get_item_count() const {
+	ZoneScopedS(60);
 	return popup->get_item_count();
 }
 
 void MenuButton::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_LAYOUT_DIRECTION_CHANGED: {
 			popup->set_layout_direction((Window::LayoutDirection)get_layout_direction());
@@ -173,6 +184,7 @@ void MenuButton::_notification(int p_what) {
 }
 
 bool MenuButton::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	Vector<String> components = String(p_name).split("/", true, 2);
 	if (components.size() >= 2 && components[0] == "popup") {
 		bool valid;
@@ -183,6 +195,7 @@ bool MenuButton::_set(const StringName &p_name, const Variant &p_value) {
 }
 
 bool MenuButton::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	Vector<String> components = String(p_name).split("/", true, 2);
 	if (components.size() >= 2 && components[0] == "popup") {
 		bool valid;
@@ -193,6 +206,7 @@ bool MenuButton::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void MenuButton::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	for (int i = 0; i < popup->get_item_count(); i++) {
 		p_list->push_back(PropertyInfo(Variant::STRING, vformat("popup/item_%d/text", i)));
 
@@ -222,6 +236,7 @@ void MenuButton::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 void MenuButton::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_popup"), &MenuButton::get_popup);
 	ClassDB::bind_method(D_METHOD("show_popup"), &MenuButton::show_popup);
 	ClassDB::bind_method(D_METHOD("set_switch_on_hover", "enable"), &MenuButton::set_switch_on_hover);
@@ -238,6 +253,7 @@ void MenuButton::_bind_methods() {
 }
 
 void MenuButton::set_disable_shortcuts(bool p_disabled) {
+	ZoneScopedS(60);
 	disable_shortcuts = p_disabled;
 }
 

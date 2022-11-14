@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  animation.cpp                                                        */
 /*************************************************************************/
@@ -35,6 +36,7 @@
 #include "scene/scene_string_names.h"
 
 bool Animation::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	String prop_name = p_name;
 
 	if (p_name == SNAME("_compression")) {
@@ -431,6 +433,7 @@ bool Animation::_set(const StringName &p_name, const Variant &p_value) {
 }
 
 bool Animation::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	String prop_name = p_name;
 
 	if (p_name == SNAME("_compression")) {
@@ -819,6 +822,7 @@ bool Animation::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void Animation::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	if (compression.enabled) {
 		p_list->push_back(PropertyInfo(Variant::DICTIONARY, "_compression", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL));
 	}
@@ -838,10 +842,12 @@ void Animation::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 void Animation::reset_state() {
+	ZoneScopedS(60);
 	clear();
 }
 
 int Animation::add_track(TrackType p_type, int p_at_pos) {
+	ZoneScopedS(60);
 	if (p_at_pos < 0 || p_at_pos >= tracks.size()) {
 		p_at_pos = tracks.size();
 	}
@@ -893,6 +899,7 @@ int Animation::add_track(TrackType p_type, int p_at_pos) {
 }
 
 void Animation::remove_track(int p_track) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_track, tracks.size());
 	Track *t = tracks[p_track];
 
@@ -955,15 +962,18 @@ void Animation::remove_track(int p_track) {
 }
 
 int Animation::get_track_count() const {
+	ZoneScopedS(60);
 	return tracks.size();
 }
 
 Animation::TrackType Animation::track_get_type(int p_track) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), TYPE_VALUE);
 	return tracks[p_track]->type;
 }
 
 void Animation::track_set_path(int p_track, const NodePath &p_path) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_track, tracks.size());
 	tracks[p_track]->path = p_path;
 	emit_changed();
@@ -971,11 +981,13 @@ void Animation::track_set_path(int p_track, const NodePath &p_path) {
 }
 
 NodePath Animation::track_get_path(int p_track) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), NodePath());
 	return tracks[p_track]->path;
 }
 
 int Animation::find_track(const NodePath &p_path, const TrackType p_type) const {
+	ZoneScopedS(60);
 	for (int i = 0; i < tracks.size(); i++) {
 		if (tracks[i]->path == p_path && tracks[i]->type == p_type) {
 			return i;
@@ -985,29 +997,34 @@ int Animation::find_track(const NodePath &p_path, const TrackType p_type) const 
 };
 
 void Animation::track_set_interpolation_type(int p_track, InterpolationType p_interp) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_track, tracks.size());
 	tracks[p_track]->interpolation = p_interp;
 	emit_changed();
 }
 
 Animation::InterpolationType Animation::track_get_interpolation_type(int p_track) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), INTERPOLATION_NEAREST);
 	return tracks[p_track]->interpolation;
 }
 
 void Animation::track_set_interpolation_loop_wrap(int p_track, bool p_enable) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_track, tracks.size());
 	tracks[p_track]->loop_wrap = p_enable;
 	emit_changed();
 }
 
 bool Animation::track_get_interpolation_loop_wrap(int p_track) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), INTERPOLATION_NEAREST);
 	return tracks[p_track]->loop_wrap;
 }
 
 template <class T, class V>
 int Animation::_insert(double p_time, T &p_keys, const V &p_value) {
+	ZoneScopedS(60);
 	int idx = p_keys.size();
 
 	while (true) {
@@ -1032,12 +1049,14 @@ int Animation::_insert(double p_time, T &p_keys, const V &p_value) {
 
 template <class T>
 void Animation::_clear(T &p_keys) {
+	ZoneScopedS(60);
 	p_keys.clear();
 }
 
 ////
 
 int Animation::position_track_insert_key(int p_track, double p_time, const Vector3 &p_position) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), -1);
 	Track *t = tracks[p_track];
 	ERR_FAIL_COND_V(t->type != TYPE_POSITION_3D, -1);
@@ -1056,6 +1075,7 @@ int Animation::position_track_insert_key(int p_track, double p_time, const Vecto
 }
 
 Error Animation::position_track_get_key(int p_track, int p_key, Vector3 *r_position) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), ERR_INVALID_PARAMETER);
 	Track *t = tracks[p_track];
 
@@ -1082,6 +1102,7 @@ Error Animation::position_track_get_key(int p_track, int p_key, Vector3 *r_posit
 }
 
 Error Animation::position_track_interpolate(int p_track, double p_time, Vector3 *r_interpolation) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), ERR_INVALID_PARAMETER);
 	Track *t = tracks[p_track];
 	ERR_FAIL_COND_V(t->type != TYPE_POSITION_3D, ERR_INVALID_PARAMETER);
@@ -1110,6 +1131,7 @@ Error Animation::position_track_interpolate(int p_track, double p_time, Vector3 
 ////
 
 int Animation::rotation_track_insert_key(int p_track, double p_time, const Quaternion &p_rotation) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), -1);
 	Track *t = tracks[p_track];
 	ERR_FAIL_COND_V(t->type != TYPE_ROTATION_3D, -1);
@@ -1128,6 +1150,7 @@ int Animation::rotation_track_insert_key(int p_track, double p_time, const Quate
 }
 
 Error Animation::rotation_track_get_key(int p_track, int p_key, Quaternion *r_rotation) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), ERR_INVALID_PARAMETER);
 	Track *t = tracks[p_track];
 
@@ -1154,6 +1177,7 @@ Error Animation::rotation_track_get_key(int p_track, int p_key, Quaternion *r_ro
 }
 
 Error Animation::rotation_track_interpolate(int p_track, double p_time, Quaternion *r_interpolation) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), ERR_INVALID_PARAMETER);
 	Track *t = tracks[p_track];
 	ERR_FAIL_COND_V(t->type != TYPE_ROTATION_3D, ERR_INVALID_PARAMETER);
@@ -1182,6 +1206,7 @@ Error Animation::rotation_track_interpolate(int p_track, double p_time, Quaterni
 ////
 
 int Animation::scale_track_insert_key(int p_track, double p_time, const Vector3 &p_scale) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), -1);
 	Track *t = tracks[p_track];
 	ERR_FAIL_COND_V(t->type != TYPE_SCALE_3D, -1);
@@ -1200,6 +1225,7 @@ int Animation::scale_track_insert_key(int p_track, double p_time, const Vector3 
 }
 
 Error Animation::scale_track_get_key(int p_track, int p_key, Vector3 *r_scale) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), ERR_INVALID_PARAMETER);
 	Track *t = tracks[p_track];
 
@@ -1226,6 +1252,7 @@ Error Animation::scale_track_get_key(int p_track, int p_key, Vector3 *r_scale) c
 }
 
 Error Animation::scale_track_interpolate(int p_track, double p_time, Vector3 *r_interpolation) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), ERR_INVALID_PARAMETER);
 	Track *t = tracks[p_track];
 	ERR_FAIL_COND_V(t->type != TYPE_SCALE_3D, ERR_INVALID_PARAMETER);
@@ -1252,6 +1279,7 @@ Error Animation::scale_track_interpolate(int p_track, double p_time, Vector3 *r_
 }
 
 int Animation::blend_shape_track_insert_key(int p_track, double p_time, float p_blend_shape) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), -1);
 	Track *t = tracks[p_track];
 	ERR_FAIL_COND_V(t->type != TYPE_BLEND_SHAPE, -1);
@@ -1270,6 +1298,7 @@ int Animation::blend_shape_track_insert_key(int p_track, double p_time, float p_
 }
 
 Error Animation::blend_shape_track_get_key(int p_track, int p_key, float *r_blend_shape) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), ERR_INVALID_PARAMETER);
 	Track *t = tracks[p_track];
 
@@ -1296,6 +1325,7 @@ Error Animation::blend_shape_track_get_key(int p_track, int p_key, float *r_blen
 }
 
 Error Animation::blend_shape_track_interpolate(int p_track, double p_time, float *r_interpolation) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), ERR_INVALID_PARAMETER);
 	Track *t = tracks[p_track];
 	ERR_FAIL_COND_V(t->type != TYPE_BLEND_SHAPE, ERR_INVALID_PARAMETER);
@@ -1322,12 +1352,14 @@ Error Animation::blend_shape_track_interpolate(int p_track, double p_time, float
 }
 
 void Animation::track_remove_key_at_time(int p_track, double p_time) {
+	ZoneScopedS(60);
 	int idx = track_find_key(p_track, p_time, true);
 	ERR_FAIL_COND(idx < 0);
 	track_remove_key(p_track, idx);
 }
 
 void Animation::track_remove_key(int p_track, int p_idx) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_track, tracks.size());
 	Track *t = tracks[p_track];
 
@@ -1404,6 +1436,7 @@ void Animation::track_remove_key(int p_track, int p_idx) {
 }
 
 int Animation::track_find_key(int p_track, double p_time, bool p_exact) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), -1);
 	Track *t = tracks[p_track];
 
@@ -1582,6 +1615,7 @@ int Animation::track_find_key(int p_track, double p_time, bool p_exact) const {
 }
 
 int Animation::track_insert_key(int p_track, double p_time, const Variant &p_key, real_t p_transition) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), -1);
 	Track *t = tracks[p_track];
 
@@ -1699,6 +1733,7 @@ int Animation::track_insert_key(int p_track, double p_time, const Variant &p_key
 }
 
 int Animation::track_get_key_count(int p_track) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), -1);
 	Track *t = tracks[p_track];
 
@@ -1758,6 +1793,7 @@ int Animation::track_get_key_count(int p_track) const {
 }
 
 Variant Animation::track_get_key_value(int p_track, int p_key_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), Variant());
 	Track *t = tracks[p_track];
 
@@ -1835,6 +1871,7 @@ Variant Animation::track_get_key_value(int p_track, int p_key_idx) const {
 }
 
 double Animation::track_get_key_time(int p_track, int p_key_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), -1);
 	Track *t = tracks[p_track];
 
@@ -1923,6 +1960,7 @@ double Animation::track_get_key_time(int p_track, int p_key_idx) const {
 }
 
 void Animation::track_set_key_time(int p_track, int p_key_idx, double p_time) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_track, tracks.size());
 	Track *t = tracks[p_track];
 
@@ -2018,6 +2056,7 @@ void Animation::track_set_key_time(int p_track, int p_key_idx, double p_time) {
 }
 
 real_t Animation::track_get_key_transition(int p_track, int p_key_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), -1);
 	Track *t = tracks[p_track];
 
@@ -2081,6 +2120,7 @@ real_t Animation::track_get_key_transition(int p_track, int p_key_idx) const {
 }
 
 bool Animation::track_is_compressed(int p_track) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), false);
 	Track *t = tracks[p_track];
 
@@ -2108,6 +2148,7 @@ bool Animation::track_is_compressed(int p_track) const {
 }
 
 void Animation::track_set_key_value(int p_track, int p_key_idx, const Variant &p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_track, tracks.size());
 	Track *t = tracks[p_track];
 
@@ -2210,6 +2251,7 @@ void Animation::track_set_key_value(int p_track, int p_key_idx, const Variant &p
 }
 
 void Animation::track_set_key_transition(int p_track, int p_key_idx, real_t p_transition) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_track, tracks.size());
 	Track *t = tracks[p_track];
 
@@ -2262,6 +2304,7 @@ void Animation::track_set_key_transition(int p_track, int p_key_idx, real_t p_tr
 
 template <class K>
 int Animation::_find(const Vector<K> &p_keys, double p_time, bool p_backward) const {
+	ZoneScopedS(60);
 	int len = p_keys.size();
 	if (len == 0) {
 		return -2;
@@ -2307,22 +2350,27 @@ int Animation::_find(const Vector<K> &p_keys, double p_time, bool p_backward) co
 // Linear interpolation for anytype.
 
 Vector3 Animation::_interpolate(const Vector3 &p_a, const Vector3 &p_b, real_t p_c) const {
+	ZoneScopedS(60);
 	return p_a.lerp(p_b, p_c);
 }
 
 Quaternion Animation::_interpolate(const Quaternion &p_a, const Quaternion &p_b, real_t p_c) const {
+	ZoneScopedS(60);
 	return p_a.slerp(p_b, p_c);
 }
 
 Variant Animation::_interpolate(const Variant &p_a, const Variant &p_b, real_t p_c) const {
+	ZoneScopedS(60);
 	return interpolate_variant(p_a, p_b, p_c);
 }
 
 real_t Animation::_interpolate(const real_t &p_a, const real_t &p_b, real_t p_c) const {
+	ZoneScopedS(60);
 	return Math::lerp(p_a, p_b, p_c);
 }
 
 Variant Animation::_interpolate_angle(const Variant &p_a, const Variant &p_b, real_t p_c) const {
+	ZoneScopedS(60);
 	Variant::Type type_a = p_a.get_type();
 	Variant::Type type_b = p_b.get_type();
 	uint32_t vformat = 1 << type_a;
@@ -2338,14 +2386,17 @@ Variant Animation::_interpolate_angle(const Variant &p_a, const Variant &p_b, re
 // Cubic interpolation for anytype.
 
 Vector3 Animation::_cubic_interpolate_in_time(const Vector3 &p_pre_a, const Vector3 &p_a, const Vector3 &p_b, const Vector3 &p_post_b, real_t p_c, real_t p_pre_a_t, real_t p_b_t, real_t p_post_b_t) const {
+	ZoneScopedS(60);
 	return p_a.cubic_interpolate_in_time(p_b, p_pre_a, p_post_b, p_c, p_b_t, p_pre_a_t, p_post_b_t);
 }
 
 Quaternion Animation::_cubic_interpolate_in_time(const Quaternion &p_pre_a, const Quaternion &p_a, const Quaternion &p_b, const Quaternion &p_post_b, real_t p_c, real_t p_pre_a_t, real_t p_b_t, real_t p_post_b_t) const {
+	ZoneScopedS(60);
 	return p_a.spherical_cubic_interpolate_in_time(p_b, p_pre_a, p_post_b, p_c, p_b_t, p_pre_a_t, p_post_b_t);
 }
 
 Variant Animation::_cubic_interpolate_in_time(const Variant &p_pre_a, const Variant &p_a, const Variant &p_b, const Variant &p_post_b, real_t p_c, real_t p_pre_a_t, real_t p_b_t, real_t p_post_b_t) const {
+	ZoneScopedS(60);
 	Variant::Type type_a = p_a.get_type();
 	Variant::Type type_b = p_b.get_type();
 	Variant::Type type_pa = p_pre_a.get_type();
@@ -2422,10 +2473,12 @@ Variant Animation::_cubic_interpolate_in_time(const Variant &p_pre_a, const Vari
 }
 
 real_t Animation::_cubic_interpolate_in_time(const real_t &p_pre_a, const real_t &p_a, const real_t &p_b, const real_t &p_post_b, real_t p_c, real_t p_pre_a_t, real_t p_b_t, real_t p_post_b_t) const {
+	ZoneScopedS(60);
 	return Math::cubic_interpolate_in_time(p_a, p_b, p_pre_a, p_post_b, p_c, p_b_t, p_pre_a_t, p_post_b_t);
 }
 
 Variant Animation::_cubic_interpolate_angle_in_time(const Variant &p_pre_a, const Variant &p_a, const Variant &p_b, const Variant &p_post_b, real_t p_c, real_t p_pre_a_t, real_t p_b_t, real_t p_post_b_t) const {
+	ZoneScopedS(60);
 	Variant::Type type_a = p_a.get_type();
 	Variant::Type type_b = p_b.get_type();
 	Variant::Type type_pa = p_pre_a.get_type();
@@ -2446,6 +2499,7 @@ Variant Animation::_cubic_interpolate_angle_in_time(const Variant &p_pre_a, cons
 
 template <class T>
 T Animation::_interpolate(const Vector<TKey<T>> &p_keys, double p_time, InterpolationType p_interp, bool p_loop_wrap, bool *p_ok, bool p_backward) const {
+	ZoneScopedS(60);
 	int len = _find(p_keys, length) + 1; // try to find last key (there may be more past the end)
 
 	if (len <= 0) {
@@ -2696,6 +2750,7 @@ T Animation::_interpolate(const Vector<TKey<T>> &p_keys, double p_time, Interpol
 }
 
 Variant Animation::value_track_interpolate(int p_track, double p_time) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), 0);
 	Track *t = tracks[p_track];
 	ERR_FAIL_COND_V(t->type != TYPE_VALUE, Variant());
@@ -2713,6 +2768,7 @@ Variant Animation::value_track_interpolate(int p_track, double p_time) const {
 }
 
 void Animation::_value_track_get_key_indices_in_range(const ValueTrack *vt, double from_time, double to_time, List<int> *p_indices) const {
+	ZoneScopedS(60);
 	if (from_time != length && to_time == length) {
 		to_time = length + CMP_EPSILON; //include a little more if at the end
 	}
@@ -2750,6 +2806,7 @@ void Animation::_value_track_get_key_indices_in_range(const ValueTrack *vt, doub
 }
 
 void Animation::value_track_get_key_indices(int p_track, double p_time, double p_delta, List<int> *p_indices, int p_pingponged) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_track, tracks.size());
 	Track *t = tracks[p_track];
 	ERR_FAIL_COND(t->type != TYPE_VALUE);
@@ -2813,6 +2870,7 @@ void Animation::value_track_get_key_indices(int p_track, double p_time, double p
 }
 
 void Animation::value_track_set_update_mode(int p_track, UpdateMode p_mode) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_track, tracks.size());
 	Track *t = tracks[p_track];
 	ERR_FAIL_COND(t->type != TYPE_VALUE);
@@ -2824,6 +2882,7 @@ void Animation::value_track_set_update_mode(int p_track, UpdateMode p_mode) {
 }
 
 Animation::UpdateMode Animation::value_track_get_update_mode(int p_track) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), UPDATE_CONTINUOUS);
 	Track *t = tracks[p_track];
 	ERR_FAIL_COND_V(t->type != TYPE_VALUE, UPDATE_CONTINUOUS);
@@ -2834,6 +2893,7 @@ Animation::UpdateMode Animation::value_track_get_update_mode(int p_track) const 
 
 template <class T>
 void Animation::_track_get_key_indices_in_range(const Vector<T> &p_array, double from_time, double to_time, List<int> *p_indices) const {
+	ZoneScopedS(60);
 	if (from_time != length && to_time == length) {
 		to_time = length + CMP_EPSILON; //include a little more if at the end
 	}
@@ -2867,6 +2927,7 @@ void Animation::_track_get_key_indices_in_range(const Vector<T> &p_array, double
 }
 
 void Animation::track_get_key_indices_in_range(int p_track, double p_time, double p_delta, List<int> *p_indices, int p_pingponged) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_track, tracks.size());
 	const Track *t = tracks[p_track];
 
@@ -3185,6 +3246,7 @@ void Animation::track_get_key_indices_in_range(int p_track, double p_time, doubl
 }
 
 void Animation::_method_track_get_key_indices_in_range(const MethodTrack *mt, double from_time, double to_time, List<int> *p_indices) const {
+	ZoneScopedS(60);
 	if (from_time != length && to_time == length) {
 		to_time = length + CMP_EPSILON; //include a little more if at the end
 	}
@@ -3218,6 +3280,7 @@ void Animation::_method_track_get_key_indices_in_range(const MethodTrack *mt, do
 }
 
 void Animation::method_track_get_key_indices(int p_track, double p_time, double p_delta, List<int> *p_indices, int p_pingponged) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_track, tracks.size());
 	Track *t = tracks[p_track];
 	ERR_FAIL_COND(t->type != TYPE_METHOD);
@@ -3289,6 +3352,7 @@ void Animation::method_track_get_key_indices(int p_track, double p_time, double 
 }
 
 Vector<Variant> Animation::method_track_get_params(int p_track, int p_key_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), Vector<Variant>());
 	Track *t = tracks[p_track];
 	ERR_FAIL_COND_V(t->type != TYPE_METHOD, Vector<Variant>());
@@ -3303,6 +3367,7 @@ Vector<Variant> Animation::method_track_get_params(int p_track, int p_key_idx) c
 }
 
 StringName Animation::method_track_get_name(int p_track, int p_key_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), StringName());
 	Track *t = tracks[p_track];
 	ERR_FAIL_COND_V(t->type != TYPE_METHOD, StringName());
@@ -3315,6 +3380,7 @@ StringName Animation::method_track_get_name(int p_track, int p_key_idx) const {
 }
 
 int Animation::bezier_track_insert_key(int p_track, double p_time, real_t p_value, const Vector2 &p_in_handle, const Vector2 &p_out_handle) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), -1);
 	Track *t = tracks[p_track];
 	ERR_FAIL_COND_V(t->type != TYPE_BEZIER, -1);
@@ -3341,6 +3407,7 @@ int Animation::bezier_track_insert_key(int p_track, double p_time, real_t p_valu
 }
 
 void Animation::bezier_track_set_key_value(int p_track, int p_index, real_t p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_track, tracks.size());
 	Track *t = tracks[p_track];
 	ERR_FAIL_COND(t->type != TYPE_BEZIER);
@@ -3355,6 +3422,7 @@ void Animation::bezier_track_set_key_value(int p_track, int p_index, real_t p_va
 }
 
 void Animation::bezier_track_set_key_in_handle(int p_track, int p_index, const Vector2 &p_handle, real_t p_balanced_value_time_ratio) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_track, tracks.size());
 	Track *t = tracks[p_track];
 	ERR_FAIL_COND(t->type != TYPE_BEZIER);
@@ -3390,6 +3458,7 @@ void Animation::bezier_track_set_key_in_handle(int p_track, int p_index, const V
 }
 
 void Animation::bezier_track_set_key_out_handle(int p_track, int p_index, const Vector2 &p_handle, real_t p_balanced_value_time_ratio) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_track, tracks.size());
 	Track *t = tracks[p_track];
 	ERR_FAIL_COND(t->type != TYPE_BEZIER);
@@ -3425,6 +3494,7 @@ void Animation::bezier_track_set_key_out_handle(int p_track, int p_index, const 
 }
 
 real_t Animation::bezier_track_get_key_value(int p_track, int p_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), 0);
 	Track *t = tracks[p_track];
 	ERR_FAIL_COND_V(t->type != TYPE_BEZIER, 0);
@@ -3437,6 +3507,7 @@ real_t Animation::bezier_track_get_key_value(int p_track, int p_index) const {
 }
 
 Vector2 Animation::bezier_track_get_key_in_handle(int p_track, int p_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), Vector2());
 	Track *t = tracks[p_track];
 	ERR_FAIL_COND_V(t->type != TYPE_BEZIER, Vector2());
@@ -3449,6 +3520,7 @@ Vector2 Animation::bezier_track_get_key_in_handle(int p_track, int p_index) cons
 }
 
 Vector2 Animation::bezier_track_get_key_out_handle(int p_track, int p_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), Vector2());
 	Track *t = tracks[p_track];
 	ERR_FAIL_COND_V(t->type != TYPE_BEZIER, Vector2());
@@ -3462,6 +3534,7 @@ Vector2 Animation::bezier_track_get_key_out_handle(int p_track, int p_index) con
 
 #ifdef TOOLS_ENABLED
 void Animation::bezier_track_set_key_handle_mode(int p_track, int p_index, HandleMode p_mode, HandleSetMode p_set_mode) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_track, tracks.size());
 	Track *t = tracks[p_track];
 	ERR_FAIL_COND(t->type != TYPE_BEZIER);
@@ -3551,6 +3624,7 @@ void Animation::bezier_track_set_key_handle_mode(int p_track, int p_index, Handl
 }
 
 Animation::HandleMode Animation::bezier_track_get_key_handle_mode(int p_track, int p_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), HANDLE_MODE_FREE);
 	Track *t = tracks[p_track];
 	ERR_FAIL_COND_V(t->type != TYPE_BEZIER, HANDLE_MODE_FREE);
@@ -3564,6 +3638,7 @@ Animation::HandleMode Animation::bezier_track_get_key_handle_mode(int p_track, i
 #endif // TOOLS_ENABLED
 
 real_t Animation::bezier_track_interpolate(int p_track, double p_time) const {
+	ZoneScopedS(60);
 	//this uses a different interpolation scheme
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), 0);
 	Track *track = tracks[p_track];
@@ -3629,6 +3704,7 @@ real_t Animation::bezier_track_interpolate(int p_track, double p_time) const {
 }
 
 int Animation::audio_track_insert_key(int p_track, double p_time, const Ref<Resource> &p_stream, real_t p_start_offset, real_t p_end_offset) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), -1);
 	Track *t = tracks[p_track];
 	ERR_FAIL_COND_V(t->type != TYPE_AUDIO, -1);
@@ -3655,6 +3731,7 @@ int Animation::audio_track_insert_key(int p_track, double p_time, const Ref<Reso
 }
 
 void Animation::audio_track_set_key_stream(int p_track, int p_key, const Ref<Resource> &p_stream) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_track, tracks.size());
 	Track *t = tracks[p_track];
 	ERR_FAIL_COND(t->type != TYPE_AUDIO);
@@ -3669,6 +3746,7 @@ void Animation::audio_track_set_key_stream(int p_track, int p_key, const Ref<Res
 }
 
 void Animation::audio_track_set_key_start_offset(int p_track, int p_key, real_t p_offset) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_track, tracks.size());
 	Track *t = tracks[p_track];
 	ERR_FAIL_COND(t->type != TYPE_AUDIO);
@@ -3687,6 +3765,7 @@ void Animation::audio_track_set_key_start_offset(int p_track, int p_key, real_t 
 }
 
 void Animation::audio_track_set_key_end_offset(int p_track, int p_key, real_t p_offset) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_track, tracks.size());
 	Track *t = tracks[p_track];
 	ERR_FAIL_COND(t->type != TYPE_AUDIO);
@@ -3705,6 +3784,7 @@ void Animation::audio_track_set_key_end_offset(int p_track, int p_key, real_t p_
 }
 
 Ref<Resource> Animation::audio_track_get_key_stream(int p_track, int p_key) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), Ref<Resource>());
 	const Track *t = tracks[p_track];
 	ERR_FAIL_COND_V(t->type != TYPE_AUDIO, Ref<Resource>());
@@ -3717,6 +3797,7 @@ Ref<Resource> Animation::audio_track_get_key_stream(int p_track, int p_key) cons
 }
 
 real_t Animation::audio_track_get_key_start_offset(int p_track, int p_key) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), 0);
 	const Track *t = tracks[p_track];
 	ERR_FAIL_COND_V(t->type != TYPE_AUDIO, 0);
@@ -3729,6 +3810,7 @@ real_t Animation::audio_track_get_key_start_offset(int p_track, int p_key) const
 }
 
 real_t Animation::audio_track_get_key_end_offset(int p_track, int p_key) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), 0);
 	const Track *t = tracks[p_track];
 	ERR_FAIL_COND_V(t->type != TYPE_AUDIO, 0);
@@ -3743,6 +3825,7 @@ real_t Animation::audio_track_get_key_end_offset(int p_track, int p_key) const {
 //
 
 int Animation::animation_track_insert_key(int p_track, double p_time, const StringName &p_animation) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), -1);
 	Track *t = tracks[p_track];
 	ERR_FAIL_COND_V(t->type != TYPE_ANIMATION, -1);
@@ -3761,6 +3844,7 @@ int Animation::animation_track_insert_key(int p_track, double p_time, const Stri
 }
 
 void Animation::animation_track_set_key_animation(int p_track, int p_key, const StringName &p_animation) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_track, tracks.size());
 	Track *t = tracks[p_track];
 	ERR_FAIL_COND(t->type != TYPE_ANIMATION);
@@ -3775,6 +3859,7 @@ void Animation::animation_track_set_key_animation(int p_track, int p_key, const 
 }
 
 StringName Animation::animation_track_get_key_animation(int p_track, int p_key) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), StringName());
 	const Track *t = tracks[p_track];
 	ERR_FAIL_COND_V(t->type != TYPE_ANIMATION, StringName());
@@ -3787,6 +3872,7 @@ StringName Animation::animation_track_get_key_animation(int p_track, int p_key) 
 }
 
 void Animation::set_length(real_t p_length) {
+	ZoneScopedS(60);
 	if (p_length < ANIM_MIN_LENGTH) {
 		p_length = ANIM_MIN_LENGTH;
 	}
@@ -3795,40 +3881,48 @@ void Animation::set_length(real_t p_length) {
 }
 
 real_t Animation::get_length() const {
+	ZoneScopedS(60);
 	return length;
 }
 
 void Animation::set_loop_mode(Animation::LoopMode p_loop_mode) {
+	ZoneScopedS(60);
 	loop_mode = p_loop_mode;
 	emit_changed();
 }
 
 Animation::LoopMode Animation::get_loop_mode() const {
+	ZoneScopedS(60);
 	return loop_mode;
 }
 
 void Animation::track_set_imported(int p_track, bool p_imported) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_track, tracks.size());
 	tracks[p_track]->imported = p_imported;
 }
 
 bool Animation::track_is_imported(int p_track) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), false);
 	return tracks[p_track]->imported;
 }
 
 void Animation::track_set_enabled(int p_track, bool p_enabled) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_track, tracks.size());
 	tracks[p_track]->enabled = p_enabled;
 	emit_changed();
 }
 
 bool Animation::track_is_enabled(int p_track) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_track, tracks.size(), false);
 	return tracks[p_track]->enabled;
 }
 
 void Animation::track_move_up(int p_track) {
+	ZoneScopedS(60);
 	if (p_track >= 0 && p_track < (tracks.size() - 1)) {
 		SWAP(tracks.write[p_track], tracks.write[p_track + 1]);
 	}
@@ -3838,6 +3932,7 @@ void Animation::track_move_up(int p_track) {
 }
 
 void Animation::track_move_down(int p_track) {
+	ZoneScopedS(60);
 	if (p_track > 0 && p_track < tracks.size()) {
 		SWAP(tracks.write[p_track], tracks.write[p_track - 1]);
 	}
@@ -3847,6 +3942,7 @@ void Animation::track_move_down(int p_track) {
 }
 
 void Animation::track_move_to(int p_track, int p_to_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_track, tracks.size());
 	ERR_FAIL_INDEX(p_to_index, tracks.size() + 1);
 	if (p_track == p_to_index || p_track == p_to_index - 1) {
@@ -3863,6 +3959,7 @@ void Animation::track_move_to(int p_track, int p_to_index) {
 }
 
 void Animation::track_swap(int p_track, int p_with_track) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_track, tracks.size());
 	ERR_FAIL_INDEX(p_with_track, tracks.size());
 	if (p_track == p_with_track) {
@@ -3875,15 +3972,18 @@ void Animation::track_swap(int p_track, int p_with_track) {
 }
 
 void Animation::set_step(real_t p_step) {
+	ZoneScopedS(60);
 	step = p_step;
 	emit_changed();
 }
 
 real_t Animation::get_step() const {
+	ZoneScopedS(60);
 	return step;
 }
 
 void Animation::copy_track(int p_track, Ref<Animation> p_to_animation) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_to_animation.is_null());
 	ERR_FAIL_INDEX(p_track, get_track_count());
 	int dst_track = p_to_animation->get_track_count();
@@ -3904,6 +4004,7 @@ void Animation::copy_track(int p_track, Ref<Animation> p_to_animation) {
 }
 
 void Animation::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("add_track", "type", "at_position"), &Animation::add_track, DEFVAL(-1));
 	ClassDB::bind_method(D_METHOD("remove_track", "track_idx"), &Animation::remove_track);
 	ClassDB::bind_method(D_METHOD("get_track_count"), &Animation::get_track_count);
@@ -4030,6 +4131,7 @@ void Animation::_bind_methods() {
 }
 
 void Animation::clear() {
+	ZoneScopedS(60);
 	for (int i = 0; i < tracks.size(); i++) {
 		memdelete(tracks[i]);
 	}
@@ -4045,6 +4147,7 @@ void Animation::clear() {
 }
 
 bool Animation::_float_track_optimize_key(const TKey<float> t0, const TKey<float> t1, const TKey<float> t2, real_t p_allowed_velocity_err, real_t p_allowed_precision_error) {
+	ZoneScopedS(60);
 	// Remove overlapping keys.
 	if (Math::is_equal_approx(t0.time, t1.time) || Math::is_equal_approx(t1.time, t2.time)) {
 		return true;
@@ -4073,6 +4176,7 @@ bool Animation::_float_track_optimize_key(const TKey<float> t0, const TKey<float
 }
 
 bool Animation::_vector2_track_optimize_key(const TKey<Vector2> t0, const TKey<Vector2> t1, const TKey<Vector2> t2, real_t p_allowed_velocity_err, real_t p_allowed_angular_error, real_t p_allowed_precision_error) {
+	ZoneScopedS(60);
 	// Remove overlapping keys.
 	if (Math::is_equal_approx(t0.time, t1.time) || Math::is_equal_approx(t1.time, t2.time)) {
 		return true;
@@ -4104,6 +4208,7 @@ bool Animation::_vector2_track_optimize_key(const TKey<Vector2> t0, const TKey<V
 }
 
 bool Animation::_vector3_track_optimize_key(const TKey<Vector3> t0, const TKey<Vector3> t1, const TKey<Vector3> t2, real_t p_allowed_velocity_err, real_t p_allowed_angular_error, real_t p_allowed_precision_error) {
+	ZoneScopedS(60);
 	// Remove overlapping keys.
 	if (Math::is_equal_approx(t0.time, t1.time) || Math::is_equal_approx(t1.time, t2.time)) {
 		return true;
@@ -4135,6 +4240,7 @@ bool Animation::_vector3_track_optimize_key(const TKey<Vector3> t0, const TKey<V
 }
 
 bool Animation::_quaternion_track_optimize_key(const TKey<Quaternion> t0, const TKey<Quaternion> t1, const TKey<Quaternion> t2, real_t p_allowed_velocity_err, real_t p_allowed_angular_error, real_t p_allowed_precision_error) {
+	ZoneScopedS(60);
 	// Remove overlapping keys.
 	if (Math::is_equal_approx(t0.time, t1.time) || Math::is_equal_approx(t1.time, t2.time)) {
 		return true;
@@ -4169,6 +4275,7 @@ bool Animation::_quaternion_track_optimize_key(const TKey<Quaternion> t0, const 
 }
 
 void Animation::_position_track_optimize(int p_idx, real_t p_allowed_velocity_err, real_t p_allowed_angular_err, real_t p_allowed_precision_error) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_idx, tracks.size());
 	ERR_FAIL_COND(tracks[p_idx]->type != TYPE_POSITION_3D);
 	PositionTrack *tt = static_cast<PositionTrack *>(tracks[p_idx]);
@@ -4195,6 +4302,7 @@ void Animation::_position_track_optimize(int p_idx, real_t p_allowed_velocity_er
 }
 
 void Animation::_rotation_track_optimize(int p_idx, real_t p_allowed_velocity_err, real_t p_allowed_angular_err, real_t p_allowed_precision_error) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_idx, tracks.size());
 	ERR_FAIL_COND(tracks[p_idx]->type != TYPE_ROTATION_3D);
 	RotationTrack *rt = static_cast<RotationTrack *>(tracks[p_idx]);
@@ -4221,6 +4329,7 @@ void Animation::_rotation_track_optimize(int p_idx, real_t p_allowed_velocity_er
 }
 
 void Animation::_scale_track_optimize(int p_idx, real_t p_allowed_velocity_err, real_t p_allowed_angular_err, real_t p_allowed_precision_error) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_idx, tracks.size());
 	ERR_FAIL_COND(tracks[p_idx]->type != TYPE_SCALE_3D);
 	ScaleTrack *st = static_cast<ScaleTrack *>(tracks[p_idx]);
@@ -4247,6 +4356,7 @@ void Animation::_scale_track_optimize(int p_idx, real_t p_allowed_velocity_err, 
 }
 
 void Animation::_blend_shape_track_optimize(int p_idx, real_t p_allowed_velocity_err, real_t p_allowed_precision_error) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_idx, tracks.size());
 	ERR_FAIL_COND(tracks[p_idx]->type != TYPE_BLEND_SHAPE);
 	BlendShapeTrack *bst = static_cast<BlendShapeTrack *>(tracks[p_idx]);
@@ -4273,6 +4383,7 @@ void Animation::_blend_shape_track_optimize(int p_idx, real_t p_allowed_velocity
 }
 
 void Animation::_value_track_optimize(int p_idx, real_t p_allowed_velocity_err, real_t p_allowed_angular_err, real_t p_allowed_precision_error) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_idx, tracks.size());
 	ERR_FAIL_COND(tracks[p_idx]->type != TYPE_VALUE);
 	ValueTrack *vt = static_cast<ValueTrack *>(tracks[p_idx]);
@@ -4392,6 +4503,7 @@ void Animation::_value_track_optimize(int p_idx, real_t p_allowed_velocity_err, 
 }
 
 void Animation::optimize(real_t p_allowed_velocity_err, real_t p_allowed_angular_err, int p_precision) {
+	ZoneScopedS(60);
 	real_t precision = Math::pow(0.1, p_precision);
 	for (int i = 0; i < tracks.size(); i++) {
 		if (track_is_compressed(i)) {
@@ -4671,6 +4783,7 @@ struct AnimationCompressionTimeState {
 };
 
 Vector3i Animation::_compress_key(uint32_t p_track, const AABB &p_bounds, int32_t p_key, float p_time) {
+	ZoneScopedS(60);
 	Vector3i values;
 	TrackType tt = track_get_type(p_track);
 	switch (tt) {
@@ -4760,6 +4873,7 @@ struct AnimationCompressionBufferBitsRead {
 };
 
 void Animation::compress(uint32_t p_page_size, uint32_t p_fps, float p_split_tolerance) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(compression.enabled, "This animation is already compressed");
 
 	p_split_tolerance = CLAMP(p_split_tolerance, 1.1, 8.0);
@@ -5146,6 +5260,7 @@ void Animation::compress(uint32_t p_page_size, uint32_t p_fps, float p_split_tol
 }
 
 bool Animation::_rotation_interpolate_compressed(uint32_t p_compressed_track, double p_time, Quaternion &r_ret) const {
+	ZoneScopedS(60);
 	Vector3i current;
 	Vector3i next;
 	double time_current;
@@ -5170,6 +5285,7 @@ bool Animation::_rotation_interpolate_compressed(uint32_t p_compressed_track, do
 }
 
 bool Animation::_pos_scale_interpolate_compressed(uint32_t p_compressed_track, double p_time, Vector3 &r_ret) const {
+	ZoneScopedS(60);
 	Vector3i current;
 	Vector3i next;
 	double time_current;
@@ -5193,6 +5309,7 @@ bool Animation::_pos_scale_interpolate_compressed(uint32_t p_compressed_track, d
 	return true;
 }
 bool Animation::_blend_shape_interpolate_compressed(uint32_t p_compressed_track, double p_time, float &r_ret) const {
+	ZoneScopedS(60);
 	Vector3i current;
 	Vector3i next;
 	double time_current;
@@ -5218,6 +5335,7 @@ bool Animation::_blend_shape_interpolate_compressed(uint32_t p_compressed_track,
 
 template <uint32_t COMPONENTS>
 bool Animation::_fetch_compressed(uint32_t p_compressed_track, double p_time, Vector3i &r_current_value, double &r_current_time, Vector3i &r_next_value, double &r_next_time, uint32_t *key_index) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!compression.enabled, false);
 	ERR_FAIL_UNSIGNED_INDEX_V(p_compressed_track, compression.bounds.size(), false);
 	p_time = CLAMP(p_time, 0, length);
@@ -5364,6 +5482,7 @@ bool Animation::_fetch_compressed(uint32_t p_compressed_track, double p_time, Ve
 
 template <uint32_t COMPONENTS>
 void Animation::_get_compressed_key_indices_in_range(uint32_t p_compressed_track, double p_time, double p_delta, List<int> *r_indices) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!compression.enabled);
 	ERR_FAIL_UNSIGNED_INDEX(p_compressed_track, compression.bounds.size());
 
@@ -5445,6 +5564,7 @@ void Animation::_get_compressed_key_indices_in_range(uint32_t p_compressed_track
 }
 
 int Animation::_get_compressed_key_count(uint32_t p_compressed_track) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!compression.enabled, -1);
 	ERR_FAIL_UNSIGNED_INDEX_V(p_compressed_track, compression.bounds.size(), -1);
 
@@ -5466,21 +5586,25 @@ int Animation::_get_compressed_key_count(uint32_t p_compressed_track) const {
 }
 
 Quaternion Animation::_uncompress_quaternion(const Vector3i &p_value) const {
+	ZoneScopedS(60);
 	Vector3 axis = Vector3::octahedron_decode(Vector2(float(p_value.x) / 65535.0, float(p_value.y) / 65535.0));
 	float angle = (float(p_value.z) / 65535.0) * 2.0 * Math_PI;
 	return Quaternion(axis, angle);
 }
 Vector3 Animation::_uncompress_pos_scale(uint32_t p_compressed_track, const Vector3i &p_value) const {
+	ZoneScopedS(60);
 	Vector3 pos_norm(float(p_value.x) / 65535.0, float(p_value.y) / 65535.0, float(p_value.z) / 65535.0);
 	return compression.bounds[p_compressed_track].position + pos_norm * compression.bounds[p_compressed_track].size;
 }
 float Animation::_uncompress_blend_shape(const Vector3i &p_value) const {
+	ZoneScopedS(60);
 	float bsn = float(p_value.x) / 65535.0;
 	return (bsn * 2.0 - 1.0) * float(Compression::BLEND_SHAPE_RANGE);
 }
 
 template <uint32_t COMPONENTS>
 bool Animation::_fetch_compressed_by_index(uint32_t p_compressed_track, int p_index, Vector3i &r_value, double &r_time) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!compression.enabled, false);
 	ERR_FAIL_UNSIGNED_INDEX_V(p_compressed_track, compression.bounds.size(), false);
 
@@ -5553,6 +5677,7 @@ bool Animation::_fetch_compressed_by_index(uint32_t p_compressed_track, int p_in
 
 // Helper math functions for Variant.
 Variant Animation::add_variant(const Variant &a, const Variant &b) {
+	ZoneScopedS(60);
 	if (a.get_type() != b.get_type()) {
 		return a;
 	}
@@ -5600,6 +5725,7 @@ Variant Animation::add_variant(const Variant &a, const Variant &b) {
 }
 
 Variant Animation::subtract_variant(const Variant &a, const Variant &b) {
+	ZoneScopedS(60);
 	if (a.get_type() != b.get_type()) {
 		return a;
 	}
@@ -5647,6 +5773,7 @@ Variant Animation::subtract_variant(const Variant &a, const Variant &b) {
 }
 
 Variant Animation::blend_variant(const Variant &a, const Variant &b, float c) {
+	ZoneScopedS(60);
 	if (a.get_type() != b.get_type()) {
 		if (a.is_num() && b.is_num()) {
 			real_t va = a;
@@ -5732,6 +5859,7 @@ Variant Animation::blend_variant(const Variant &a, const Variant &b, float c) {
 }
 
 Variant Animation::interpolate_variant(const Variant &a, const Variant &b, float c) {
+	ZoneScopedS(60);
 	if (a.get_type() != b.get_type()) {
 		if (a.is_num() && b.is_num()) {
 			real_t va = a;
@@ -6014,6 +6142,7 @@ Variant Animation::interpolate_variant(const Variant &a, const Variant &b, float
 Animation::Animation() {}
 
 Animation::~Animation() {
+	ZoneScopedS(60);
 	for (int i = 0; i < tracks.size(); i++) {
 		memdelete(tracks[i]);
 	}

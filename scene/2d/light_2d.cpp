@@ -28,14 +28,47 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  light_2d.cpp                                                         */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "light_2d.h"
 
 void Light2D::owner_changed_notify() {
+	ZoneScopedS(60);
 	// For cases where owner changes _after_ entering tree (as example, editor editing).
 	_update_light_visibility();
 }
 
 void Light2D::_update_light_visibility() {
+	ZoneScopedS(60);
 	if (!is_inside_tree()) {
 		return;
 	}
@@ -60,115 +93,140 @@ void Light2D::_update_light_visibility() {
 }
 
 void Light2D::set_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	enabled = p_enabled;
 	_update_light_visibility();
 }
 
 bool Light2D::is_enabled() const {
+	ZoneScopedS(60);
 	return enabled;
 }
 
 void Light2D::set_editor_only(bool p_editor_only) {
+	ZoneScopedS(60);
 	editor_only = p_editor_only;
 	_update_light_visibility();
 }
 
 bool Light2D::is_editor_only() const {
+	ZoneScopedS(60);
 	return editor_only;
 }
 
 void Light2D::set_color(const Color &p_color) {
+	ZoneScopedS(60);
 	color = p_color;
 	RS::get_singleton()->canvas_light_set_color(canvas_light, color);
 }
 
 Color Light2D::get_color() const {
+	ZoneScopedS(60);
 	return color;
 }
 
 void Light2D::set_height(real_t p_height) {
+	ZoneScopedS(60);
 	height = p_height;
 	RS::get_singleton()->canvas_light_set_height(canvas_light, height);
 }
 
 real_t Light2D::get_height() const {
+	ZoneScopedS(60);
 	return height;
 }
 
 void Light2D::set_energy(real_t p_energy) {
+	ZoneScopedS(60);
 	energy = p_energy;
 	RS::get_singleton()->canvas_light_set_energy(canvas_light, energy);
 }
 
 real_t Light2D::get_energy() const {
+	ZoneScopedS(60);
 	return energy;
 }
 
 void Light2D::set_z_range_min(int p_min_z) {
+	ZoneScopedS(60);
 	z_min = p_min_z;
 	RS::get_singleton()->canvas_light_set_z_range(canvas_light, z_min, z_max);
 }
 
 int Light2D::get_z_range_min() const {
+	ZoneScopedS(60);
 	return z_min;
 }
 
 void Light2D::set_z_range_max(int p_max_z) {
+	ZoneScopedS(60);
 	z_max = p_max_z;
 	RS::get_singleton()->canvas_light_set_z_range(canvas_light, z_min, z_max);
 }
 
 int Light2D::get_z_range_max() const {
+	ZoneScopedS(60);
 	return z_max;
 }
 
 void Light2D::set_layer_range_min(int p_min_layer) {
+	ZoneScopedS(60);
 	layer_min = p_min_layer;
 	RS::get_singleton()->canvas_light_set_layer_range(canvas_light, layer_min, layer_max);
 }
 
 int Light2D::get_layer_range_min() const {
+	ZoneScopedS(60);
 	return layer_min;
 }
 
 void Light2D::set_layer_range_max(int p_max_layer) {
+	ZoneScopedS(60);
 	layer_max = p_max_layer;
 	RS::get_singleton()->canvas_light_set_layer_range(canvas_light, layer_min, layer_max);
 }
 
 int Light2D::get_layer_range_max() const {
+	ZoneScopedS(60);
 	return layer_max;
 }
 
 void Light2D::set_item_cull_mask(int p_mask) {
+	ZoneScopedS(60);
 	item_mask = p_mask;
 	RS::get_singleton()->canvas_light_set_item_cull_mask(canvas_light, item_mask);
 }
 
 int Light2D::get_item_cull_mask() const {
+	ZoneScopedS(60);
 	return item_mask;
 }
 
 void Light2D::set_item_shadow_cull_mask(int p_mask) {
+	ZoneScopedS(60);
 	item_shadow_mask = p_mask;
 	RS::get_singleton()->canvas_light_set_item_shadow_cull_mask(canvas_light, item_shadow_mask);
 }
 
 int Light2D::get_item_shadow_cull_mask() const {
+	ZoneScopedS(60);
 	return item_shadow_mask;
 }
 
 void Light2D::set_shadow_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	shadow = p_enabled;
 	RS::get_singleton()->canvas_light_set_shadow_enabled(canvas_light, shadow);
 	notify_property_list_changed();
 }
 
 bool Light2D::is_shadow_enabled() const {
+	ZoneScopedS(60);
 	return shadow;
 }
 
 void Light2D::set_shadow_filter(ShadowFilter p_filter) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_filter, SHADOW_FILTER_MAX);
 	shadow_filter = p_filter;
 	RS::get_singleton()->canvas_light_set_shadow_filter(canvas_light, RS::CanvasLightShadowFilter(p_filter));
@@ -176,28 +234,34 @@ void Light2D::set_shadow_filter(ShadowFilter p_filter) {
 }
 
 Light2D::ShadowFilter Light2D::get_shadow_filter() const {
+	ZoneScopedS(60);
 	return shadow_filter;
 }
 
 void Light2D::set_shadow_color(const Color &p_shadow_color) {
+	ZoneScopedS(60);
 	shadow_color = p_shadow_color;
 	RS::get_singleton()->canvas_light_set_shadow_color(canvas_light, shadow_color);
 }
 
 Color Light2D::get_shadow_color() const {
+	ZoneScopedS(60);
 	return shadow_color;
 }
 
 void Light2D::set_blend_mode(BlendMode p_mode) {
+	ZoneScopedS(60);
 	blend_mode = p_mode;
 	RS::get_singleton()->canvas_light_set_blend_mode(_get_light(), RS::CanvasLightBlendMode(p_mode));
 }
 
 Light2D::BlendMode Light2D::get_blend_mode() const {
+	ZoneScopedS(60);
 	return blend_mode;
 }
 
 void Light2D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			RS::get_singleton()->canvas_light_attach_to_canvas(canvas_light, get_canvas());
@@ -220,15 +284,18 @@ void Light2D::_notification(int p_what) {
 }
 
 void Light2D::set_shadow_smooth(real_t p_amount) {
+	ZoneScopedS(60);
 	shadow_smooth = p_amount;
 	RS::get_singleton()->canvas_light_set_shadow_smooth(canvas_light, shadow_smooth);
 }
 
 real_t Light2D::get_shadow_smooth() const {
+	ZoneScopedS(60);
 	return shadow_smooth;
 }
 
 void Light2D::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (!shadow && (p_property.name == "shadow_color" || p_property.name == "shadow_filter" || p_property.name == "shadow_filter_smooth" || p_property.name == "shadow_item_cull_mask")) {
 		p_property.usage = PROPERTY_USAGE_NO_EDITOR;
 	}
@@ -239,6 +306,7 @@ void Light2D::_validate_property(PropertyInfo &p_property) const {
 }
 
 void Light2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_enabled", "enabled"), &Light2D::set_enabled);
 	ClassDB::bind_method(D_METHOD("is_enabled"), &Light2D::is_enabled);
 
@@ -316,11 +384,13 @@ void Light2D::_bind_methods() {
 }
 
 Light2D::Light2D() {
+	ZoneScopedS(60);
 	canvas_light = RenderingServer::get_singleton()->canvas_light_create();
 	set_notify_transform(true);
 }
 
 Light2D::~Light2D() {
+	ZoneScopedS(60);
 	RenderingServer::get_singleton()->free(canvas_light);
 }
 
@@ -329,30 +399,36 @@ Light2D::~Light2D() {
 #ifdef TOOLS_ENABLED
 
 Dictionary PointLight2D::_edit_get_state() const {
+	ZoneScopedS(60);
 	Dictionary state = Node2D::_edit_get_state();
 	state["offset"] = get_texture_offset();
 	return state;
 }
 
 void PointLight2D::_edit_set_state(const Dictionary &p_state) {
+	ZoneScopedS(60);
 	Node2D::_edit_set_state(p_state);
 	set_texture_offset(p_state["offset"]);
 }
 
 void PointLight2D::_edit_set_pivot(const Point2 &p_pivot) {
+	ZoneScopedS(60);
 	set_position(get_transform().xform(p_pivot));
 	set_texture_offset(get_texture_offset() - p_pivot);
 }
 
 Point2 PointLight2D::_edit_get_pivot() const {
+	ZoneScopedS(60);
 	return Vector2();
 }
 
 bool PointLight2D::_edit_use_pivot() const {
+	ZoneScopedS(60);
 	return true;
 }
 
 Rect2 PointLight2D::_edit_get_rect() const {
+	ZoneScopedS(60);
 	if (texture.is_null()) {
 		return Rect2();
 	}
@@ -362,11 +438,13 @@ Rect2 PointLight2D::_edit_get_rect() const {
 }
 
 bool PointLight2D::_edit_use_rect() const {
+	ZoneScopedS(60);
 	return !texture.is_null();
 }
 #endif
 
 Rect2 PointLight2D::get_anchorable_rect() const {
+	ZoneScopedS(60);
 	if (texture.is_null()) {
 		return Rect2();
 	}
@@ -376,6 +454,7 @@ Rect2 PointLight2D::get_anchorable_rect() const {
 }
 
 void PointLight2D::set_texture(const Ref<Texture2D> &p_texture) {
+	ZoneScopedS(60);
 	texture = p_texture;
 	if (texture.is_valid()) {
 		RS::get_singleton()->canvas_light_set_texture(_get_light(), texture->get_rid());
@@ -387,20 +466,24 @@ void PointLight2D::set_texture(const Ref<Texture2D> &p_texture) {
 }
 
 Ref<Texture2D> PointLight2D::get_texture() const {
+	ZoneScopedS(60);
 	return texture;
 }
 
 void PointLight2D::set_texture_offset(const Vector2 &p_offset) {
+	ZoneScopedS(60);
 	texture_offset = p_offset;
 	RS::get_singleton()->canvas_light_set_texture_offset(_get_light(), texture_offset);
 	item_rect_changed();
 }
 
 Vector2 PointLight2D::get_texture_offset() const {
+	ZoneScopedS(60);
 	return texture_offset;
 }
 
 PackedStringArray PointLight2D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (!texture.is_valid()) {
@@ -411,6 +494,7 @@ PackedStringArray PointLight2D::get_configuration_warnings() const {
 }
 
 void PointLight2D::set_texture_scale(real_t p_scale) {
+	ZoneScopedS(60);
 	_scale = p_scale;
 	// Avoid having 0 scale values, can lead to errors in physics and rendering.
 	if (_scale == 0) {
@@ -421,10 +505,12 @@ void PointLight2D::set_texture_scale(real_t p_scale) {
 }
 
 real_t PointLight2D::get_texture_scale() const {
+	ZoneScopedS(60);
 	return _scale;
 }
 
 void PointLight2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_texture", "texture"), &PointLight2D::set_texture);
 	ClassDB::bind_method(D_METHOD("get_texture"), &PointLight2D::get_texture);
 
@@ -441,21 +527,25 @@ void PointLight2D::_bind_methods() {
 }
 
 PointLight2D::PointLight2D() {
+	ZoneScopedS(60);
 	RS::get_singleton()->canvas_light_set_mode(_get_light(), RS::CANVAS_LIGHT_MODE_POINT);
 }
 
 //////////
 
 void DirectionalLight2D::set_max_distance(real_t p_distance) {
+	ZoneScopedS(60);
 	max_distance = p_distance;
 	RS::get_singleton()->canvas_light_set_directional_distance(_get_light(), max_distance);
 }
 
 real_t DirectionalLight2D::get_max_distance() const {
+	ZoneScopedS(60);
 	return max_distance;
 }
 
 void DirectionalLight2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_max_distance", "pixels"), &DirectionalLight2D::set_max_distance);
 	ClassDB::bind_method(D_METHOD("get_max_distance"), &DirectionalLight2D::get_max_distance);
 
@@ -464,6 +554,7 @@ void DirectionalLight2D::_bind_methods() {
 }
 
 DirectionalLight2D::DirectionalLight2D() {
+	ZoneScopedS(60);
 	RS::get_singleton()->canvas_light_set_mode(_get_light(), RS::CANVAS_LIGHT_MODE_DIRECTIONAL);
 	set_max_distance(max_distance); // Update RenderingServer.
 }

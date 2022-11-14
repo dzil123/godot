@@ -28,11 +28,43 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  skeleton_ik_3d.cpp                                                   */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "skeleton_ik_3d.h"
 
 #ifndef _3D_DISABLED
 
 FabrikInverseKinematic::ChainItem *FabrikInverseKinematic::ChainItem::find_child(const BoneId p_bone_id) {
+	ZoneScopedS(60);
 	for (int i = children.size() - 1; 0 <= i; --i) {
 		if (p_bone_id == children[i].bone) {
 			return &children.write[i];
@@ -42,6 +74,7 @@ FabrikInverseKinematic::ChainItem *FabrikInverseKinematic::ChainItem::find_child
 }
 
 FabrikInverseKinematic::ChainItem *FabrikInverseKinematic::ChainItem::add_child(const BoneId p_bone_id) {
+	ZoneScopedS(60);
 	const int infant_child_id = children.size();
 	children.resize(infant_child_id + 1);
 	children.write[infant_child_id].bone = p_bone_id;
@@ -51,6 +84,7 @@ FabrikInverseKinematic::ChainItem *FabrikInverseKinematic::ChainItem::add_child(
 
 /// Build a chain that starts from the root to tip
 bool FabrikInverseKinematic::build_chain(Task *p_task, bool p_force_simple_chain) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(-1 == p_task->root_bone, false);
 
 	Chain &chain(p_task->chain);
@@ -126,6 +160,7 @@ bool FabrikInverseKinematic::build_chain(Task *p_task, bool p_force_simple_chain
 }
 
 void FabrikInverseKinematic::solve_simple(Task *p_task, bool p_solve_magnet, Vector3 p_origin_pos) {
+	ZoneScopedS(60);
 	real_t distance_to_goal(1e4);
 	real_t previous_distance_to_goal(0);
 	int can_solve(p_task->max_iterations);
@@ -141,6 +176,7 @@ void FabrikInverseKinematic::solve_simple(Task *p_task, bool p_solve_magnet, Vec
 }
 
 void FabrikInverseKinematic::solve_simple_backwards(const Chain &r_chain, bool p_solve_magnet) {
+	ZoneScopedS(60);
 	if (p_solve_magnet && !r_chain.middle_chain_item) {
 		return;
 	}
@@ -173,6 +209,7 @@ void FabrikInverseKinematic::solve_simple_backwards(const Chain &r_chain, bool p
 }
 
 void FabrikInverseKinematic::solve_simple_forwards(Chain &r_chain, bool p_solve_magnet, Vector3 p_origin_pos) {
+	ZoneScopedS(60);
 	if (p_solve_magnet && !r_chain.middle_chain_item) {
 		return;
 	}
@@ -209,6 +246,7 @@ void FabrikInverseKinematic::solve_simple_forwards(Chain &r_chain, bool p_solve_
 }
 
 FabrikInverseKinematic::Task *FabrikInverseKinematic::create_simple_task(Skeleton3D *p_sk, BoneId root_bone, BoneId tip_bone, const Transform3D &goal_transform) {
+	ZoneScopedS(60);
 	FabrikInverseKinematic::EndEffector ee;
 	ee.tip_bone = tip_bone;
 
@@ -227,16 +265,19 @@ FabrikInverseKinematic::Task *FabrikInverseKinematic::create_simple_task(Skeleto
 }
 
 void FabrikInverseKinematic::free_task(Task *p_task) {
+	ZoneScopedS(60);
 	if (p_task) {
 		memdelete(p_task);
 	}
 }
 
 void FabrikInverseKinematic::set_goal(Task *p_task, const Transform3D &p_goal) {
+	ZoneScopedS(60);
 	p_task->goal_global_transform = p_goal;
 }
 
 void FabrikInverseKinematic::make_goal(Task *p_task, const Transform3D &p_inverse_transf, real_t blending_delta) {
+	ZoneScopedS(60);
 	if (blending_delta >= 0.99f) {
 		// Update the end_effector (local transform) without blending
 		p_task->end_effectors.write[0].goal_transform = p_inverse_transf * p_task->goal_global_transform;
@@ -250,6 +291,7 @@ void FabrikInverseKinematic::make_goal(Task *p_task, const Transform3D &p_invers
 }
 
 void FabrikInverseKinematic::solve(Task *p_task, real_t blending_delta, bool override_tip_basis, bool p_use_magnet, const Vector3 &p_magnet_position) {
+	ZoneScopedS(60);
 	if (blending_delta <= 0.01f) {
 		// Before skipping, make sure we undo the global pose overrides
 		ChainItem *ci(&p_task->chain.chain_root);
@@ -316,6 +358,7 @@ void FabrikInverseKinematic::solve(Task *p_task, real_t blending_delta, bool ove
 }
 
 void FabrikInverseKinematic::_update_chain(const Skeleton3D *p_sk, ChainItem *p_chain_item) {
+	ZoneScopedS(60);
 	if (!p_chain_item) {
 		return;
 	}
@@ -330,6 +373,7 @@ void FabrikInverseKinematic::_update_chain(const Skeleton3D *p_sk, ChainItem *p_
 }
 
 void SkeletonIK3D::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (p_property.name == "root_bone" || p_property.name == "tip_bone") {
 		if (skeleton) {
 			String names("--,");
@@ -350,6 +394,7 @@ void SkeletonIK3D::_validate_property(PropertyInfo &p_property) const {
 }
 
 void SkeletonIK3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_root_bone", "root_bone"), &SkeletonIK3D::set_root_bone);
 	ClassDB::bind_method(D_METHOD("get_root_bone"), &SkeletonIK3D::get_root_bone);
 
@@ -399,6 +444,7 @@ void SkeletonIK3D::_bind_methods() {
 }
 
 void SkeletonIK3D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			skeleton = Object::cast_to<Skeleton3D>(get_parent());
@@ -423,92 +469,113 @@ SkeletonIK3D::SkeletonIK3D() {
 }
 
 SkeletonIK3D::~SkeletonIK3D() {
+	ZoneScopedS(60);
 	FabrikInverseKinematic::free_task(task);
 	task = nullptr;
 }
 
 void SkeletonIK3D::set_root_bone(const StringName &p_root_bone) {
+	ZoneScopedS(60);
 	root_bone = p_root_bone;
 	reload_chain();
 }
 
 StringName SkeletonIK3D::get_root_bone() const {
+	ZoneScopedS(60);
 	return root_bone;
 }
 
 void SkeletonIK3D::set_tip_bone(const StringName &p_tip_bone) {
+	ZoneScopedS(60);
 	tip_bone = p_tip_bone;
 	reload_chain();
 }
 
 StringName SkeletonIK3D::get_tip_bone() const {
+	ZoneScopedS(60);
 	return tip_bone;
 }
 
 void SkeletonIK3D::set_interpolation(real_t p_interpolation) {
+	ZoneScopedS(60);
 	interpolation = p_interpolation;
 }
 
 real_t SkeletonIK3D::get_interpolation() const {
+	ZoneScopedS(60);
 	return interpolation;
 }
 
 void SkeletonIK3D::set_target_transform(const Transform3D &p_target) {
+	ZoneScopedS(60);
 	target = p_target;
 	reload_goal();
 }
 
 const Transform3D &SkeletonIK3D::get_target_transform() const {
+	ZoneScopedS(60);
 	return target;
 }
 
 void SkeletonIK3D::set_target_node(const NodePath &p_node) {
+	ZoneScopedS(60);
 	target_node_path_override = p_node;
 	target_node_override = nullptr;
 	reload_goal();
 }
 
 NodePath SkeletonIK3D::get_target_node() {
+	ZoneScopedS(60);
 	return target_node_path_override;
 }
 
 void SkeletonIK3D::set_override_tip_basis(bool p_override) {
+	ZoneScopedS(60);
 	override_tip_basis = p_override;
 }
 
 bool SkeletonIK3D::is_override_tip_basis() const {
+	ZoneScopedS(60);
 	return override_tip_basis;
 }
 
 void SkeletonIK3D::set_use_magnet(bool p_use) {
+	ZoneScopedS(60);
 	use_magnet = p_use;
 }
 
 bool SkeletonIK3D::is_using_magnet() const {
+	ZoneScopedS(60);
 	return use_magnet;
 }
 
 void SkeletonIK3D::set_magnet_position(const Vector3 &p_local_position) {
+	ZoneScopedS(60);
 	magnet_position = p_local_position;
 }
 
 const Vector3 &SkeletonIK3D::get_magnet_position() const {
+	ZoneScopedS(60);
 	return magnet_position;
 }
 
 void SkeletonIK3D::set_min_distance(real_t p_min_distance) {
+	ZoneScopedS(60);
 	min_distance = p_min_distance;
 }
 
 void SkeletonIK3D::set_max_iterations(int p_iterations) {
+	ZoneScopedS(60);
 	max_iterations = p_iterations;
 }
 
 bool SkeletonIK3D::is_running() {
+	ZoneScopedS(60);
 	return is_processing_internal();
 }
 
 void SkeletonIK3D::start(bool p_one_time) {
+	ZoneScopedS(60);
 	if (p_one_time) {
 		set_process_internal(false);
 
@@ -523,6 +590,7 @@ void SkeletonIK3D::start(bool p_one_time) {
 }
 
 void SkeletonIK3D::stop() {
+	ZoneScopedS(60);
 	set_process_internal(false);
 	if (skeleton) {
 		skeleton->clear_bones_global_pose_override();
@@ -530,6 +598,7 @@ void SkeletonIK3D::stop() {
 }
 
 Transform3D SkeletonIK3D::_get_target_transform() {
+	ZoneScopedS(60);
 	if (!target_node_override && !target_node_path_override.is_empty()) {
 		target_node_override = Object::cast_to<Node3D>(get_node(target_node_path_override));
 	}
@@ -542,6 +611,7 @@ Transform3D SkeletonIK3D::_get_target_transform() {
 }
 
 void SkeletonIK3D::reload_chain() {
+	ZoneScopedS(60);
 	FabrikInverseKinematic::free_task(task);
 	task = nullptr;
 
@@ -557,6 +627,7 @@ void SkeletonIK3D::reload_chain() {
 }
 
 void SkeletonIK3D::reload_goal() {
+	ZoneScopedS(60);
 	if (!task) {
 		return;
 	}
@@ -565,6 +636,7 @@ void SkeletonIK3D::reload_goal() {
 }
 
 void SkeletonIK3D::_solve_chain() {
+	ZoneScopedS(60);
 	if (!task) {
 		return;
 	}

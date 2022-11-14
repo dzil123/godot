@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  check_button.cpp                                                     */
 /*************************************************************************/
@@ -34,6 +35,7 @@
 #include "servers/rendering_server.h"
 
 Size2 CheckButton::get_icon_size() const {
+	ZoneScopedS(60);
 	Ref<Texture2D> on_tex;
 	Ref<Texture2D> off_tex;
 
@@ -67,6 +69,7 @@ Size2 CheckButton::get_icon_size() const {
 }
 
 Size2 CheckButton::get_minimum_size() const {
+	ZoneScopedS(60);
 	Size2 minsize = Button::get_minimum_size();
 	Size2 tex_size = get_icon_size();
 	minsize.width += tex_size.width;
@@ -79,6 +82,7 @@ Size2 CheckButton::get_minimum_size() const {
 }
 
 void CheckButton::_update_theme_item_cache() {
+	ZoneScopedS(60);
 	Button::_update_theme_item_cache();
 
 	theme_cache.h_separation = get_theme_constant(SNAME("h_separation"));
@@ -96,6 +100,7 @@ void CheckButton::_update_theme_item_cache() {
 }
 
 void CheckButton::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_THEME_CHANGED:
 		case NOTIFICATION_LAYOUT_DIRECTION_CHANGED:

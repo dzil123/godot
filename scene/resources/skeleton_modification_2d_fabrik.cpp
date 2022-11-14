@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  skeleton_modification_2d_fabrik.cpp                                  */
 /*************************************************************************/
@@ -28,14 +29,15 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "skeleton_modification_2d_fabrik.h"
 #include "scene/2d/skeleton_2d.h"
+#include "skeleton_modification_2d_fabrik.h"
 
 #ifdef TOOLS_ENABLED
 #include "editor/editor_settings.h"
 #endif // TOOLS_ENABLED
 
 bool SkeletonModification2DFABRIK::_set(const StringName &p_path, const Variant &p_value) {
+	ZoneScopedS(60);
 	String path = p_path;
 
 	if (path.begins_with("joint_data/")) {
@@ -58,6 +60,7 @@ bool SkeletonModification2DFABRIK::_set(const StringName &p_path, const Variant 
 }
 
 bool SkeletonModification2DFABRIK::_get(const StringName &p_path, Variant &r_ret) const {
+	ZoneScopedS(60);
 	String path = p_path;
 
 	if (path.begins_with("joint_data/")) {
@@ -80,6 +83,7 @@ bool SkeletonModification2DFABRIK::_get(const StringName &p_path, Variant &r_ret
 }
 
 void SkeletonModification2DFABRIK::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	for (int i = 0; i < fabrik_data_chain.size(); i++) {
 		String base_string = "joint_data/" + itos(i) + "/";
 
@@ -96,6 +100,7 @@ void SkeletonModification2DFABRIK::_get_property_list(List<PropertyInfo> *p_list
 }
 
 void SkeletonModification2DFABRIK::_execute(float p_delta) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!stack || !is_setup || stack->skeleton == nullptr,
 			"Modification is not setup and therefore cannot execute!");
 	if (!enabled) {
@@ -210,6 +215,7 @@ void SkeletonModification2DFABRIK::_execute(float p_delta) {
 }
 
 void SkeletonModification2DFABRIK::chain_backwards() {
+	ZoneScopedS(60);
 	int final_joint_index = fabrik_data_chain.size() - 1;
 	Bone2D *final_bone2d_node = Object::cast_to<Bone2D>(ObjectDB::get_instance(fabrik_data_chain[final_joint_index].bone2d_node_cache));
 	Transform2D final_bone2d_trans = fabrik_transform_chain[final_joint_index];
@@ -257,6 +263,7 @@ void SkeletonModification2DFABRIK::chain_backwards() {
 }
 
 void SkeletonModification2DFABRIK::chain_forwards() {
+	ZoneScopedS(60);
 	Transform2D origin_bone2d_trans = fabrik_transform_chain[0];
 	origin_bone2d_trans.set_origin(origin_global_pose.get_origin());
 	// Save the position
@@ -278,6 +285,7 @@ void SkeletonModification2DFABRIK::chain_forwards() {
 }
 
 void SkeletonModification2DFABRIK::_setup_modification(SkeletonModificationStack2D *p_stack) {
+	ZoneScopedS(60);
 	stack = p_stack;
 
 	if (stack != nullptr) {
@@ -287,6 +295,7 @@ void SkeletonModification2DFABRIK::_setup_modification(SkeletonModificationStack
 }
 
 void SkeletonModification2DFABRIK::update_target_cache() {
+	ZoneScopedS(60);
 	if (!is_setup || !stack) {
 		ERR_PRINT_ONCE("Cannot update target cache: modification is not properly setup!");
 		return;
@@ -308,6 +317,7 @@ void SkeletonModification2DFABRIK::update_target_cache() {
 }
 
 void SkeletonModification2DFABRIK::fabrik_joint_update_bone2d_cache(int p_joint_idx) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_MSG(p_joint_idx, fabrik_data_chain.size(), "Cannot update bone2d cache: joint index out of range!");
 	if (!is_setup || !stack) {
 		ERR_PRINT_ONCE("Cannot update FABRIK Bone2D cache: modification is not properly setup!");
@@ -337,24 +347,29 @@ void SkeletonModification2DFABRIK::fabrik_joint_update_bone2d_cache(int p_joint_
 }
 
 void SkeletonModification2DFABRIK::set_target_node(const NodePath &p_target_node) {
+	ZoneScopedS(60);
 	target_node = p_target_node;
 	update_target_cache();
 }
 
 NodePath SkeletonModification2DFABRIK::get_target_node() const {
+	ZoneScopedS(60);
 	return target_node;
 }
 
 void SkeletonModification2DFABRIK::set_fabrik_data_chain_length(int p_length) {
+	ZoneScopedS(60);
 	fabrik_data_chain.resize(p_length);
 	notify_property_list_changed();
 }
 
 int SkeletonModification2DFABRIK::get_fabrik_data_chain_length() {
+	ZoneScopedS(60);
 	return fabrik_data_chain.size();
 }
 
 void SkeletonModification2DFABRIK::set_fabrik_joint_bone2d_node(int p_joint_idx, const NodePath &p_target_node) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_MSG(p_joint_idx, fabrik_data_chain.size(), "FABRIK joint out of range!");
 	fabrik_data_chain.write[p_joint_idx].bone2d_node = p_target_node;
 	fabrik_joint_update_bone2d_cache(p_joint_idx);
@@ -363,11 +378,13 @@ void SkeletonModification2DFABRIK::set_fabrik_joint_bone2d_node(int p_joint_idx,
 }
 
 NodePath SkeletonModification2DFABRIK::get_fabrik_joint_bone2d_node(int p_joint_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V_MSG(p_joint_idx, fabrik_data_chain.size(), NodePath(), "FABRIK joint out of range!");
 	return fabrik_data_chain[p_joint_idx].bone2d_node;
 }
 
 void SkeletonModification2DFABRIK::set_fabrik_joint_bone_index(int p_joint_idx, int p_bone_idx) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_MSG(p_joint_idx, fabrik_data_chain.size(), "FABRIK joint out of range!");
 	ERR_FAIL_COND_MSG(p_bone_idx < 0, "Bone index is out of range: The index is too low!");
 
@@ -390,31 +407,37 @@ void SkeletonModification2DFABRIK::set_fabrik_joint_bone_index(int p_joint_idx, 
 }
 
 int SkeletonModification2DFABRIK::get_fabrik_joint_bone_index(int p_joint_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V_MSG(p_joint_idx, fabrik_data_chain.size(), -1, "FABRIK joint out of range!");
 	return fabrik_data_chain[p_joint_idx].bone_idx;
 }
 
 void SkeletonModification2DFABRIK::set_fabrik_joint_magnet_position(int p_joint_idx, Vector2 p_magnet_position) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_MSG(p_joint_idx, fabrik_data_chain.size(), "FABRIK joint out of range!");
 	fabrik_data_chain.write[p_joint_idx].magnet_position = p_magnet_position;
 }
 
 Vector2 SkeletonModification2DFABRIK::get_fabrik_joint_magnet_position(int p_joint_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V_MSG(p_joint_idx, fabrik_data_chain.size(), Vector2(), "FABRIK joint out of range!");
 	return fabrik_data_chain[p_joint_idx].magnet_position;
 }
 
 void SkeletonModification2DFABRIK::set_fabrik_joint_use_target_rotation(int p_joint_idx, bool p_use_target_rotation) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_MSG(p_joint_idx, fabrik_data_chain.size(), "FABRIK joint out of range!");
 	fabrik_data_chain.write[p_joint_idx].use_target_rotation = p_use_target_rotation;
 }
 
 bool SkeletonModification2DFABRIK::get_fabrik_joint_use_target_rotation(int p_joint_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V_MSG(p_joint_idx, fabrik_data_chain.size(), false, "FABRIK joint out of range!");
 	return fabrik_data_chain[p_joint_idx].use_target_rotation;
 }
 
 void SkeletonModification2DFABRIK::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_target_node", "target_nodepath"), &SkeletonModification2DFABRIK::set_target_node);
 	ClassDB::bind_method(D_METHOD("get_target_node"), &SkeletonModification2DFABRIK::get_target_node);
 
@@ -435,6 +458,7 @@ void SkeletonModification2DFABRIK::_bind_methods() {
 }
 
 SkeletonModification2DFABRIK::SkeletonModification2DFABRIK() {
+	ZoneScopedS(60);
 	stack = nullptr;
 	is_setup = false;
 	enabled = true;

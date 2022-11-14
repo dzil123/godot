@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  skeleton_modification_2d_twoboneik.cpp                               */
 /*************************************************************************/
@@ -28,14 +29,15 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#include "skeleton_modification_2d_twoboneik.h"
 #include "scene/2d/skeleton_2d.h"
+#include "skeleton_modification_2d_twoboneik.h"
 
 #ifdef TOOLS_ENABLED
 #include "editor/editor_settings.h"
 #endif // TOOLS_ENABLED
 
 bool SkeletonModification2DTwoBoneIK::_set(const StringName &p_path, const Variant &p_value) {
+	ZoneScopedS(60);
 	String path = p_path;
 
 	if (path == "joint_one_bone_idx") {
@@ -60,6 +62,7 @@ bool SkeletonModification2DTwoBoneIK::_set(const StringName &p_path, const Varia
 }
 
 bool SkeletonModification2DTwoBoneIK::_get(const StringName &p_path, Variant &r_ret) const {
+	ZoneScopedS(60);
 	String path = p_path;
 
 	if (path == "joint_one_bone_idx") {
@@ -84,6 +87,7 @@ bool SkeletonModification2DTwoBoneIK::_get(const StringName &p_path, Variant &r_
 }
 
 void SkeletonModification2DTwoBoneIK::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	p_list->push_back(PropertyInfo(Variant::INT, "joint_one_bone_idx", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT));
 	p_list->push_back(PropertyInfo(Variant::NODE_PATH, "joint_one_bone2d_node", PROPERTY_HINT_NODE_PATH_VALID_TYPES, "Bone2D", PROPERTY_USAGE_DEFAULT));
 
@@ -99,6 +103,7 @@ void SkeletonModification2DTwoBoneIK::_get_property_list(List<PropertyInfo> *p_l
 }
 
 void SkeletonModification2DTwoBoneIK::_execute(float p_delta) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!stack || !is_setup || stack->skeleton == nullptr,
 			"Modification is not setup and therefore cannot execute!");
 	if (!enabled) {
@@ -186,6 +191,7 @@ void SkeletonModification2DTwoBoneIK::_execute(float p_delta) {
 }
 
 void SkeletonModification2DTwoBoneIK::_setup_modification(SkeletonModificationStack2D *p_stack) {
+	ZoneScopedS(60);
 	stack = p_stack;
 
 	if (stack) {
@@ -197,6 +203,7 @@ void SkeletonModification2DTwoBoneIK::_setup_modification(SkeletonModificationSt
 }
 
 void SkeletonModification2DTwoBoneIK::_draw_editor_gizmo() {
+	ZoneScopedS(60);
 	if (!enabled || !is_setup) {
 		return;
 	}
@@ -245,6 +252,7 @@ void SkeletonModification2DTwoBoneIK::_draw_editor_gizmo() {
 }
 
 void SkeletonModification2DTwoBoneIK::update_target_cache() {
+	ZoneScopedS(60);
 	if (!is_setup || !stack) {
 		ERR_PRINT_ONCE("Cannot update target cache: modification is not properly setup!");
 		return;
@@ -266,6 +274,7 @@ void SkeletonModification2DTwoBoneIK::update_target_cache() {
 }
 
 void SkeletonModification2DTwoBoneIK::update_joint_one_bone2d_cache() {
+	ZoneScopedS(60);
 	if (!is_setup || !stack) {
 		ERR_PRINT_ONCE("Cannot update joint one Bone2D cache: modification is not properly setup!");
 		return;
@@ -294,6 +303,7 @@ void SkeletonModification2DTwoBoneIK::update_joint_one_bone2d_cache() {
 }
 
 void SkeletonModification2DTwoBoneIK::update_joint_two_bone2d_cache() {
+	ZoneScopedS(60);
 	if (!is_setup || !stack) {
 		ERR_PRINT_ONCE("Cannot update joint two Bone2D cache: modification is not properly setup!");
 		return;
@@ -322,39 +332,47 @@ void SkeletonModification2DTwoBoneIK::update_joint_two_bone2d_cache() {
 }
 
 void SkeletonModification2DTwoBoneIK::set_target_node(const NodePath &p_target_node) {
+	ZoneScopedS(60);
 	target_node = p_target_node;
 	update_target_cache();
 }
 
 NodePath SkeletonModification2DTwoBoneIK::get_target_node() const {
+	ZoneScopedS(60);
 	return target_node;
 }
 
 void SkeletonModification2DTwoBoneIK::set_joint_one_bone2d_node(const NodePath &p_target_node) {
+	ZoneScopedS(60);
 	joint_one_bone2d_node = p_target_node;
 	update_joint_one_bone2d_cache();
 	notify_property_list_changed();
 }
 
 void SkeletonModification2DTwoBoneIK::set_target_minimum_distance(float p_distance) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_distance < 0, "Target minimum distance cannot be less than zero!");
 	target_minimum_distance = p_distance;
 }
 
 float SkeletonModification2DTwoBoneIK::get_target_minimum_distance() const {
+	ZoneScopedS(60);
 	return target_minimum_distance;
 }
 
 void SkeletonModification2DTwoBoneIK::set_target_maximum_distance(float p_distance) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_distance < 0, "Target maximum distance cannot be less than zero!");
 	target_maximum_distance = p_distance;
 }
 
 float SkeletonModification2DTwoBoneIK::get_target_maximum_distance() const {
+	ZoneScopedS(60);
 	return target_maximum_distance;
 }
 
 void SkeletonModification2DTwoBoneIK::set_flip_bend_direction(bool p_flip_direction) {
+	ZoneScopedS(60);
 	flip_bend_direction = p_flip_direction;
 
 #ifdef TOOLS_ENABLED
@@ -365,24 +383,29 @@ void SkeletonModification2DTwoBoneIK::set_flip_bend_direction(bool p_flip_direct
 }
 
 bool SkeletonModification2DTwoBoneIK::get_flip_bend_direction() const {
+	ZoneScopedS(60);
 	return flip_bend_direction;
 }
 
 NodePath SkeletonModification2DTwoBoneIK::get_joint_one_bone2d_node() const {
+	ZoneScopedS(60);
 	return joint_one_bone2d_node;
 }
 
 void SkeletonModification2DTwoBoneIK::set_joint_two_bone2d_node(const NodePath &p_target_node) {
+	ZoneScopedS(60);
 	joint_two_bone2d_node = p_target_node;
 	update_joint_two_bone2d_cache();
 	notify_property_list_changed();
 }
 
 NodePath SkeletonModification2DTwoBoneIK::get_joint_two_bone2d_node() const {
+	ZoneScopedS(60);
 	return joint_two_bone2d_node;
 }
 
 void SkeletonModification2DTwoBoneIK::set_joint_one_bone_idx(int p_bone_idx) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_bone_idx < 0, "Bone index is out of range: The index is too low!");
 
 	if (is_setup) {
@@ -404,10 +427,12 @@ void SkeletonModification2DTwoBoneIK::set_joint_one_bone_idx(int p_bone_idx) {
 }
 
 int SkeletonModification2DTwoBoneIK::get_joint_one_bone_idx() const {
+	ZoneScopedS(60);
 	return joint_one_bone_idx;
 }
 
 void SkeletonModification2DTwoBoneIK::set_joint_two_bone_idx(int p_bone_idx) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_bone_idx < 0, "Bone index is out of range: The index is too low!");
 
 	if (is_setup) {
@@ -429,20 +454,24 @@ void SkeletonModification2DTwoBoneIK::set_joint_two_bone_idx(int p_bone_idx) {
 }
 
 int SkeletonModification2DTwoBoneIK::get_joint_two_bone_idx() const {
+	ZoneScopedS(60);
 	return joint_two_bone_idx;
 }
 
 #ifdef TOOLS_ENABLED
 void SkeletonModification2DTwoBoneIK::set_editor_draw_min_max(bool p_draw) {
+	ZoneScopedS(60);
 	editor_draw_min_max = p_draw;
 }
 
 bool SkeletonModification2DTwoBoneIK::get_editor_draw_min_max() const {
+	ZoneScopedS(60);
 	return editor_draw_min_max;
 }
 #endif // TOOLS_ENABLED
 
 void SkeletonModification2DTwoBoneIK::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_target_node", "target_nodepath"), &SkeletonModification2DTwoBoneIK::set_target_node);
 	ClassDB::bind_method(D_METHOD("get_target_node"), &SkeletonModification2DTwoBoneIK::get_target_node);
 
@@ -471,6 +500,7 @@ void SkeletonModification2DTwoBoneIK::_bind_methods() {
 }
 
 SkeletonModification2DTwoBoneIK::SkeletonModification2DTwoBoneIK() {
+	ZoneScopedS(60);
 	stack = nullptr;
 	is_setup = false;
 	enabled = true;

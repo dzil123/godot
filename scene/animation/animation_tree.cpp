@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  animation_tree.cpp                                                   */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "animation_tree.h"
 
 #include "animation_blend_tree.h"
@@ -37,6 +68,7 @@
 #include "servers/audio/audio_stream.h"
 
 void AnimationNode::get_parameter_list(List<PropertyInfo> *r_list) const {
+	ZoneScopedS(60);
 	Array parameters;
 
 	if (GDVIRTUAL_CALL(_get_parameter_list, parameters)) {
@@ -49,12 +81,14 @@ void AnimationNode::get_parameter_list(List<PropertyInfo> *r_list) const {
 }
 
 Variant AnimationNode::get_parameter_default_value(const StringName &p_parameter) const {
+	ZoneScopedS(60);
 	Variant ret;
 	GDVIRTUAL_CALL(_get_parameter_default_value, p_parameter, ret);
 	return ret;
 }
 
 void AnimationNode::set_parameter(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!state);
 	ERR_FAIL_COND(!state->tree->property_parent_map.has(base_path));
 	ERR_FAIL_COND(!state->tree->property_parent_map[base_path].has(p_name));
@@ -64,6 +98,7 @@ void AnimationNode::set_parameter(const StringName &p_name, const Variant &p_val
 }
 
 Variant AnimationNode::get_parameter(const StringName &p_name) const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!state, Variant());
 	ERR_FAIL_COND_V(!state->tree->property_parent_map.has(base_path), Variant());
 	ERR_FAIL_COND_V(!state->tree->property_parent_map[base_path].has(p_name), Variant());
@@ -73,6 +108,7 @@ Variant AnimationNode::get_parameter(const StringName &p_name) const {
 }
 
 void AnimationNode::get_child_nodes(List<ChildNode> *r_child_nodes) {
+	ZoneScopedS(60);
 	Dictionary cn;
 	if (GDVIRTUAL_CALL(_get_child_nodes, cn)) {
 		List<Variant> keys;
@@ -87,6 +123,7 @@ void AnimationNode::get_child_nodes(List<ChildNode> *r_child_nodes) {
 }
 
 void AnimationNode::blend_animation(const StringName &p_animation, double p_time, double p_delta, bool p_seeked, bool p_seek_root, real_t p_blend, int p_pingponged) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!state);
 	ERR_FAIL_COND(!state->player->has_animation(p_animation));
 
@@ -119,6 +156,7 @@ void AnimationNode::blend_animation(const StringName &p_animation, double p_time
 }
 
 double AnimationNode::_pre_process(const StringName &p_base_path, AnimationNode *p_parent, State *p_state, double p_time, bool p_seek, bool p_seek_root, const Vector<StringName> &p_connections) {
+	ZoneScopedS(60);
 	base_path = p_base_path;
 	parent = p_parent;
 	connections = p_connections;
@@ -135,11 +173,13 @@ double AnimationNode::_pre_process(const StringName &p_base_path, AnimationNode 
 }
 
 AnimationTree *AnimationNode::get_animation_tree() const {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!state, nullptr);
 	return state->tree;
 }
 
 void AnimationNode::make_invalid(const String &p_reason) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(!state);
 	state->valid = false;
 	if (!state->invalid_reasons.is_empty()) {
@@ -149,6 +189,7 @@ void AnimationNode::make_invalid(const String &p_reason) {
 }
 
 double AnimationNode::blend_input(int p_input, double p_time, bool p_seek, bool p_seek_root, real_t p_blend, FilterAction p_filter, bool p_sync) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_input, inputs.size(), 0);
 	ERR_FAIL_COND_V(!state, 0);
 
@@ -179,10 +220,12 @@ double AnimationNode::blend_input(int p_input, double p_time, bool p_seek, bool 
 }
 
 double AnimationNode::blend_node(const StringName &p_sub_path, Ref<AnimationNode> p_node, double p_time, bool p_seek, bool p_seek_root, real_t p_blend, FilterAction p_filter, bool p_sync) {
+	ZoneScopedS(60);
 	return _blend_node(p_sub_path, Vector<StringName>(), this, p_node, p_time, p_seek, p_seek_root, p_blend, p_filter, p_sync);
 }
 
 double AnimationNode::_blend_node(const StringName &p_subpath, const Vector<StringName> &p_connections, AnimationNode *p_new_parent, Ref<AnimationNode> p_node, double p_time, bool p_seek, bool p_seek_root, real_t p_blend, FilterAction p_filter, bool p_sync, real_t *r_max) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!p_node.is_valid(), 0);
 	ERR_FAIL_COND_V(!state, 0);
 
@@ -301,21 +344,25 @@ double AnimationNode::_blend_node(const StringName &p_subpath, const Vector<Stri
 }
 
 int AnimationNode::get_input_count() const {
+	ZoneScopedS(60);
 	return inputs.size();
 }
 
 String AnimationNode::get_input_name(int p_input) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_input, inputs.size(), String());
 	return inputs[p_input].name;
 }
 
 String AnimationNode::get_caption() const {
+	ZoneScopedS(60);
 	String ret = "Node";
 	GDVIRTUAL_CALL(_get_caption, ret);
 	return ret;
 }
 
 void AnimationNode::add_input(const String &p_name) {
+	ZoneScopedS(60);
 	//root nodes can't add inputs
 	ERR_FAIL_COND(Object::cast_to<AnimationRootNode>(this) != nullptr);
 	Input input;
@@ -326,6 +373,7 @@ void AnimationNode::add_input(const String &p_name) {
 }
 
 void AnimationNode::set_input_name(int p_input, const String &p_name) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_input, inputs.size());
 	ERR_FAIL_COND(p_name.contains(".") || p_name.contains("/"));
 	inputs.write[p_input].name = p_name;
@@ -333,18 +381,21 @@ void AnimationNode::set_input_name(int p_input, const String &p_name) {
 }
 
 void AnimationNode::remove_input(int p_index) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_index, inputs.size());
 	inputs.remove_at(p_index);
 	emit_changed();
 }
 
 double AnimationNode::process(double p_time, bool p_seek, bool p_seek_root) {
+	ZoneScopedS(60);
 	double ret = 0;
 	GDVIRTUAL_CALL(_process, p_time, p_seek, p_seek_root, ret);
 	return ret;
 }
 
 void AnimationNode::set_filter_path(const NodePath &p_path, bool p_enable) {
+	ZoneScopedS(60);
 	if (p_enable) {
 		filter[p_path] = true;
 	} else {
@@ -353,24 +404,29 @@ void AnimationNode::set_filter_path(const NodePath &p_path, bool p_enable) {
 }
 
 void AnimationNode::set_filter_enabled(bool p_enable) {
+	ZoneScopedS(60);
 	filter_enabled = p_enable;
 }
 
 bool AnimationNode::is_filter_enabled() const {
+	ZoneScopedS(60);
 	return filter_enabled;
 }
 
 bool AnimationNode::is_path_filtered(const NodePath &p_path) const {
+	ZoneScopedS(60);
 	return filter.has(p_path);
 }
 
 bool AnimationNode::has_filter() const {
+	ZoneScopedS(60);
 	bool ret = false;
 	GDVIRTUAL_CALL(_has_filter, ret);
 	return ret;
 }
 
 Array AnimationNode::_get_filters() const {
+	ZoneScopedS(60);
 	Array paths;
 
 	for (const KeyValue<NodePath, bool> &E : filter) {
@@ -382,6 +438,7 @@ Array AnimationNode::_get_filters() const {
 }
 
 void AnimationNode::_set_filters(const Array &p_filters) {
+	ZoneScopedS(60);
 	filter.clear();
 	for (int i = 0; i < p_filters.size(); i++) {
 		set_filter_path(p_filters[i], true);
@@ -389,18 +446,21 @@ void AnimationNode::_set_filters(const Array &p_filters) {
 }
 
 void AnimationNode::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (!has_filter() && (p_property.name == "filter_enabled" || p_property.name == "filters")) {
 		p_property.usage = PROPERTY_USAGE_NONE;
 	}
 }
 
 Ref<AnimationNode> AnimationNode::get_child_by_name(const StringName &p_name) {
+	ZoneScopedS(60);
 	Ref<AnimationNode> ret;
 	GDVIRTUAL_CALL(_get_child_by_name, p_name, ret);
 	return ret;
 }
 
 void AnimationNode::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("get_input_count"), &AnimationNode::get_input_count);
 	ClassDB::bind_method(D_METHOD("get_input_name", "input"), &AnimationNode::get_input_name);
 
@@ -450,6 +510,7 @@ AnimationNode::AnimationNode() {
 ////////////////////
 
 void AnimationTree::set_tree_root(const Ref<AnimationNode> &p_root) {
+	ZoneScopedS(60);
 	if (root.is_valid()) {
 		root->disconnect("tree_changed", callable_mp(this, &AnimationTree::_tree_changed));
 	}
@@ -466,10 +527,12 @@ void AnimationTree::set_tree_root(const Ref<AnimationNode> &p_root) {
 }
 
 Ref<AnimationNode> AnimationTree::get_tree_root() const {
+	ZoneScopedS(60);
 	return root;
 }
 
 void AnimationTree::set_active(bool p_active) {
+	ZoneScopedS(60);
 	if (active == p_active) {
 		return;
 	}
@@ -495,10 +558,12 @@ void AnimationTree::set_active(bool p_active) {
 }
 
 bool AnimationTree::is_active() const {
+	ZoneScopedS(60);
 	return active;
 }
 
 void AnimationTree::set_process_callback(AnimationProcessCallback p_mode) {
+	ZoneScopedS(60);
 	if (process_callback == p_mode) {
 		return;
 	}
@@ -516,14 +581,17 @@ void AnimationTree::set_process_callback(AnimationProcessCallback p_mode) {
 }
 
 AnimationTree::AnimationProcessCallback AnimationTree::get_process_callback() const {
+	ZoneScopedS(60);
 	return process_callback;
 }
 
 void AnimationTree::_node_removed(Node *p_node) {
+	ZoneScopedS(60);
 	cache_valid = false;
 }
 
 bool AnimationTree::_update_caches(AnimationPlayer *player) {
+	ZoneScopedS(60);
 	setup_pass++;
 
 	if (!player->has_node(player->get_root())) {
@@ -835,11 +903,13 @@ bool AnimationTree::_update_caches(AnimationPlayer *player) {
 }
 
 void AnimationTree::_animation_player_changed() {
+	ZoneScopedS(60);
 	emit_signal(SNAME("animation_player_changed"));
 	_clear_caches();
 }
 
 void AnimationTree::_clear_caches() {
+	ZoneScopedS(60);
 	for (KeyValue<NodePath, TrackCache *> &K : track_cache) {
 		memdelete(K.value);
 	}
@@ -850,6 +920,7 @@ void AnimationTree::_clear_caches() {
 }
 
 static void _call_object(Object *p_object, const StringName &p_method, const Vector<Variant> &p_params, bool p_deferred) {
+	ZoneScopedS(60);
 	// Separate function to use alloca() more efficiently
 	const Variant **argptrs = (const Variant **)alloca(sizeof(const Variant **) * p_params.size());
 	const Variant *args = p_params.ptr();
@@ -865,6 +936,7 @@ static void _call_object(Object *p_object, const StringName &p_method, const Vec
 	}
 }
 void AnimationTree::_process_graph(double p_delta) {
+	ZoneScopedS(60);
 	_update_properties(); //if properties need updating, update them
 
 	//check all tracks, see if they need modification
@@ -1712,6 +1784,7 @@ void AnimationTree::_process_graph(double p_delta) {
 }
 
 Variant AnimationTree::_post_process_key_value(const Ref<Animation> &p_anim, int p_track, Variant p_value, const Object *p_object, int p_object_idx) {
+	ZoneScopedS(60);
 	switch (p_anim->track_get_type(p_track)) {
 #ifndef _3D_DISABLED
 		case Animation::TYPE_POSITION_3D: {
@@ -1729,10 +1802,12 @@ Variant AnimationTree::_post_process_key_value(const Ref<Animation> &p_anim, int
 }
 
 void AnimationTree::advance(double p_time) {
+	ZoneScopedS(60);
 	_process_graph(p_time);
 }
 
 void AnimationTree::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			_setup_animation_player();
@@ -1769,6 +1844,7 @@ void AnimationTree::_notification(int p_what) {
 }
 
 void AnimationTree::_setup_animation_player() {
+	ZoneScopedS(60);
 	if (!is_inside_tree()) {
 		return;
 	}
@@ -1803,36 +1879,44 @@ void AnimationTree::_setup_animation_player() {
 }
 
 void AnimationTree::set_animation_player(const NodePath &p_player) {
+	ZoneScopedS(60);
 	animation_player = p_player;
 	_setup_animation_player();
 	update_configuration_warnings();
 }
 
 NodePath AnimationTree::get_animation_player() const {
+	ZoneScopedS(60);
 	return animation_player;
 }
 
 void AnimationTree::set_advance_expression_base_node(const NodePath &p_advance_expression_base_node) {
+	ZoneScopedS(60);
 	advance_expression_base_node = p_advance_expression_base_node;
 }
 
 NodePath AnimationTree::get_advance_expression_base_node() const {
+	ZoneScopedS(60);
 	return advance_expression_base_node;
 }
 
 bool AnimationTree::is_state_invalid() const {
+	ZoneScopedS(60);
 	return !state.valid;
 }
 
 String AnimationTree::get_invalid_state_reason() const {
+	ZoneScopedS(60);
 	return state.invalid_reasons;
 }
 
 uint64_t AnimationTree::get_last_process_pass() const {
+	ZoneScopedS(60);
 	return process_pass;
 }
 
 PackedStringArray AnimationTree::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (!root.is_valid()) {
@@ -1855,18 +1939,22 @@ PackedStringArray AnimationTree::get_configuration_warnings() const {
 }
 
 void AnimationTree::set_root_motion_track(const NodePath &p_track) {
+	ZoneScopedS(60);
 	root_motion_track = p_track;
 }
 
 NodePath AnimationTree::get_root_motion_track() const {
+	ZoneScopedS(60);
 	return root_motion_track;
 }
 
 Transform3D AnimationTree::get_root_motion_transform() const {
+	ZoneScopedS(60);
 	return root_motion_transform;
 }
 
 void AnimationTree::_tree_changed() {
+	ZoneScopedS(60);
 	if (properties_dirty) {
 		return;
 	}
@@ -1876,6 +1964,7 @@ void AnimationTree::_tree_changed() {
 }
 
 void AnimationTree::_update_properties_for_node(const String &p_base_path, Ref<AnimationNode> node) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(node.is_null());
 	if (!property_parent_map.has(p_base_path)) {
 		property_parent_map[p_base_path] = HashMap<StringName, StringName>();
@@ -1917,6 +2006,7 @@ void AnimationTree::_update_properties_for_node(const String &p_base_path, Ref<A
 }
 
 void AnimationTree::_update_properties() {
+	ZoneScopedS(60);
 	if (!properties_dirty) {
 		return;
 	}
@@ -1936,6 +2026,7 @@ void AnimationTree::_update_properties() {
 }
 
 bool AnimationTree::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	if (properties_dirty) {
 		_update_properties();
 	}
@@ -1949,6 +2040,7 @@ bool AnimationTree::_set(const StringName &p_name, const Variant &p_value) {
 }
 
 bool AnimationTree::_get(const StringName &p_name, Variant &r_ret) const {
+	ZoneScopedS(60);
 	if (properties_dirty) {
 		const_cast<AnimationTree *>(this)->_update_properties();
 	}
@@ -1962,6 +2054,7 @@ bool AnimationTree::_get(const StringName &p_name, Variant &r_ret) const {
 }
 
 void AnimationTree::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	if (properties_dirty) {
 		const_cast<AnimationTree *>(this)->_update_properties();
 	}
@@ -1972,6 +2065,7 @@ void AnimationTree::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 void AnimationTree::rename_parameter(const String &p_base, const String &p_new_base) {
+	ZoneScopedS(60);
 	//rename values first
 	for (const PropertyInfo &E : properties) {
 		if (E.name.begins_with(p_base)) {
@@ -1986,6 +2080,7 @@ void AnimationTree::rename_parameter(const String &p_base, const String &p_new_b
 }
 
 real_t AnimationTree::get_connection_activity(const StringName &p_path, int p_connection) const {
+	ZoneScopedS(60);
 	if (!input_activity_map_get.has(p_path)) {
 		return 0;
 	}
@@ -2003,6 +2098,7 @@ real_t AnimationTree::get_connection_activity(const StringName &p_path, int p_co
 }
 
 void AnimationTree::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_active", "active"), &AnimationTree::set_active);
 	ClassDB::bind_method(D_METHOD("is_active"), &AnimationTree::is_active);
 

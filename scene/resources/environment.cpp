@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  environment.cpp                                                      */
 /*************************************************************************/
@@ -36,12 +37,14 @@
 #include "texture.h"
 
 RID Environment::get_rid() const {
+	ZoneScopedS(60);
 	return environment;
 }
 
 // Background
 
 void Environment::set_background(BGMode p_bg) {
+	ZoneScopedS(60);
 	bg_mode = p_bg;
 	RS::get_singleton()->environment_set_background(environment, RS::EnvironmentBG(p_bg));
 	notify_property_list_changed();
@@ -51,10 +54,12 @@ void Environment::set_background(BGMode p_bg) {
 }
 
 Environment::BGMode Environment::get_background() const {
+	ZoneScopedS(60);
 	return bg_mode;
 }
 
 void Environment::set_sky(const Ref<Sky> &p_sky) {
+	ZoneScopedS(60);
 	bg_sky = p_sky;
 	RID sb_rid;
 	if (bg_sky.is_valid()) {
@@ -64,55 +69,67 @@ void Environment::set_sky(const Ref<Sky> &p_sky) {
 }
 
 Ref<Sky> Environment::get_sky() const {
+	ZoneScopedS(60);
 	return bg_sky;
 }
 
 void Environment::set_sky_custom_fov(float p_scale) {
+	ZoneScopedS(60);
 	bg_sky_custom_fov = p_scale;
 	RS::get_singleton()->environment_set_sky_custom_fov(environment, p_scale);
 }
 
 float Environment::get_sky_custom_fov() const {
+	ZoneScopedS(60);
 	return bg_sky_custom_fov;
 }
 
 void Environment::set_sky_rotation(const Vector3 &p_rotation) {
+	ZoneScopedS(60);
 	bg_sky_rotation = p_rotation;
 	RS::get_singleton()->environment_set_sky_orientation(environment, Basis::from_euler(p_rotation));
 }
 
 Vector3 Environment::get_sky_rotation() const {
+	ZoneScopedS(60);
 	return bg_sky_rotation;
 }
 
 void Environment::set_bg_color(const Color &p_color) {
+	ZoneScopedS(60);
 	bg_color = p_color;
 	RS::get_singleton()->environment_set_bg_color(environment, p_color);
 }
 
 Color Environment::get_bg_color() const {
+	ZoneScopedS(60);
 	return bg_color;
 }
 
 void Environment::set_bg_energy_multiplier(float p_multiplier) {
+	ZoneScopedS(60);
 	bg_energy_multiplier = p_multiplier;
 	_update_bg_energy();
 }
 
 float Environment::get_bg_energy_multiplier() const {
+	ZoneScopedS(60);
 	return bg_energy_multiplier;
 }
 
 void Environment::set_bg_intensity(float p_exposure_value) {
+	ZoneScopedS(60);
 	bg_intensity = p_exposure_value;
 	_update_bg_energy();
 }
 
 float Environment::get_bg_intensity() const {
+	ZoneScopedS(60);
 	return bg_intensity;
 }
 
 void Environment::_update_bg_energy() {
+	ZoneScopedS(60);
 	if (GLOBAL_GET("rendering/lights_and_shadows/use_physical_light_units")) {
 		RS::get_singleton()->environment_set_bg_energy(environment, bg_energy_multiplier, bg_intensity);
 	} else {
@@ -121,15 +138,18 @@ void Environment::_update_bg_energy() {
 }
 
 void Environment::set_canvas_max_layer(int p_max_layer) {
+	ZoneScopedS(60);
 	bg_canvas_max_layer = p_max_layer;
 	RS::get_singleton()->environment_set_canvas_max_layer(environment, p_max_layer);
 }
 
 int Environment::get_canvas_max_layer() const {
+	ZoneScopedS(60);
 	return bg_canvas_max_layer;
 }
 
 void Environment::set_camera_feed_id(int p_id) {
+	ZoneScopedS(60);
 	bg_camera_feed_id = p_id;
 // FIXME: Disabled during Vulkan refactoring, should be ported.
 #if 0
@@ -138,40 +158,48 @@ void Environment::set_camera_feed_id(int p_id) {
 }
 
 int Environment::get_camera_feed_id() const {
+	ZoneScopedS(60);
 	return bg_camera_feed_id;
 }
 
 // Ambient light
 
 void Environment::set_ambient_light_color(const Color &p_color) {
+	ZoneScopedS(60);
 	ambient_color = p_color;
 	_update_ambient_light();
 }
 
 Color Environment::get_ambient_light_color() const {
+	ZoneScopedS(60);
 	return ambient_color;
 }
 
 void Environment::set_ambient_source(AmbientSource p_source) {
+	ZoneScopedS(60);
 	ambient_source = p_source;
 	_update_ambient_light();
 	notify_property_list_changed();
 }
 
 Environment::AmbientSource Environment::get_ambient_source() const {
+	ZoneScopedS(60);
 	return ambient_source;
 }
 
 void Environment::set_ambient_light_energy(float p_energy) {
+	ZoneScopedS(60);
 	ambient_energy = p_energy;
 	_update_ambient_light();
 }
 
 float Environment::get_ambient_light_energy() const {
+	ZoneScopedS(60);
 	return ambient_energy;
 }
 
 void Environment::set_ambient_light_sky_contribution(float p_ratio) {
+	ZoneScopedS(60);
 	// Sky contribution values outside the [0.0; 1.0] range don't make sense and
 	// can result in negative colors.
 	ambient_sky_contribution = CLAMP(p_ratio, 0.0, 1.0);
@@ -179,20 +207,24 @@ void Environment::set_ambient_light_sky_contribution(float p_ratio) {
 }
 
 float Environment::get_ambient_light_sky_contribution() const {
+	ZoneScopedS(60);
 	return ambient_sky_contribution;
 }
 
 void Environment::set_reflection_source(ReflectionSource p_source) {
+	ZoneScopedS(60);
 	reflection_source = p_source;
 	_update_ambient_light();
 	notify_property_list_changed();
 }
 
 Environment::ReflectionSource Environment::get_reflection_source() const {
+	ZoneScopedS(60);
 	return reflection_source;
 }
 
 void Environment::_update_ambient_light() {
+	ZoneScopedS(60);
 	RS::get_singleton()->environment_set_ambient_light(
 			environment,
 			ambient_color,
@@ -204,34 +236,41 @@ void Environment::_update_ambient_light() {
 // Tonemap
 
 void Environment::set_tonemapper(ToneMapper p_tone_mapper) {
+	ZoneScopedS(60);
 	tone_mapper = p_tone_mapper;
 	_update_tonemap();
 	notify_property_list_changed();
 }
 
 Environment::ToneMapper Environment::get_tonemapper() const {
+	ZoneScopedS(60);
 	return tone_mapper;
 }
 
 void Environment::set_tonemap_exposure(float p_exposure) {
+	ZoneScopedS(60);
 	tonemap_exposure = p_exposure;
 	_update_tonemap();
 }
 
 float Environment::get_tonemap_exposure() const {
+	ZoneScopedS(60);
 	return tonemap_exposure;
 }
 
 void Environment::set_tonemap_white(float p_white) {
+	ZoneScopedS(60);
 	tonemap_white = p_white;
 	_update_tonemap();
 }
 
 float Environment::get_tonemap_white() const {
+	ZoneScopedS(60);
 	return tonemap_white;
 }
 
 void Environment::_update_tonemap() {
+	ZoneScopedS(60);
 	RS::get_singleton()->environment_set_tonemap(
 			environment,
 			RS::EnvironmentToneMapper(tone_mapper),
@@ -242,52 +281,63 @@ void Environment::_update_tonemap() {
 // SSR
 
 void Environment::set_ssr_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	ssr_enabled = p_enabled;
 	_update_ssr();
 	notify_property_list_changed();
 }
 
 bool Environment::is_ssr_enabled() const {
+	ZoneScopedS(60);
 	return ssr_enabled;
 }
 
 void Environment::set_ssr_max_steps(int p_steps) {
+	ZoneScopedS(60);
 	ssr_max_steps = p_steps;
 	_update_ssr();
 }
 
 int Environment::get_ssr_max_steps() const {
+	ZoneScopedS(60);
 	return ssr_max_steps;
 }
 
 void Environment::set_ssr_fade_in(float p_fade_in) {
+	ZoneScopedS(60);
 	ssr_fade_in = MAX(p_fade_in, 0.0f);
 	_update_ssr();
 }
 
 float Environment::get_ssr_fade_in() const {
+	ZoneScopedS(60);
 	return ssr_fade_in;
 }
 
 void Environment::set_ssr_fade_out(float p_fade_out) {
+	ZoneScopedS(60);
 	ssr_fade_out = MAX(p_fade_out, 0.0f);
 	_update_ssr();
 }
 
 float Environment::get_ssr_fade_out() const {
+	ZoneScopedS(60);
 	return ssr_fade_out;
 }
 
 void Environment::set_ssr_depth_tolerance(float p_depth_tolerance) {
+	ZoneScopedS(60);
 	ssr_depth_tolerance = p_depth_tolerance;
 	_update_ssr();
 }
 
 float Environment::get_ssr_depth_tolerance() const {
+	ZoneScopedS(60);
 	return ssr_depth_tolerance;
 }
 
 void Environment::_update_ssr() {
+	ZoneScopedS(60);
 	RS::get_singleton()->environment_set_ssr(
 			environment,
 			ssr_enabled,
@@ -300,88 +350,107 @@ void Environment::_update_ssr() {
 // SSAO
 
 void Environment::set_ssao_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	ssao_enabled = p_enabled;
 	_update_ssao();
 	notify_property_list_changed();
 }
 
 bool Environment::is_ssao_enabled() const {
+	ZoneScopedS(60);
 	return ssao_enabled;
 }
 
 void Environment::set_ssao_radius(float p_radius) {
+	ZoneScopedS(60);
 	ssao_radius = p_radius;
 	_update_ssao();
 }
 
 float Environment::get_ssao_radius() const {
+	ZoneScopedS(60);
 	return ssao_radius;
 }
 
 void Environment::set_ssao_intensity(float p_intensity) {
+	ZoneScopedS(60);
 	ssao_intensity = p_intensity;
 	_update_ssao();
 }
 
 float Environment::get_ssao_intensity() const {
+	ZoneScopedS(60);
 	return ssao_intensity;
 }
 
 void Environment::set_ssao_power(float p_power) {
+	ZoneScopedS(60);
 	ssao_power = p_power;
 	_update_ssao();
 }
 
 float Environment::get_ssao_power() const {
+	ZoneScopedS(60);
 	return ssao_power;
 }
 
 void Environment::set_ssao_detail(float p_detail) {
+	ZoneScopedS(60);
 	ssao_detail = p_detail;
 	_update_ssao();
 }
 
 float Environment::get_ssao_detail() const {
+	ZoneScopedS(60);
 	return ssao_detail;
 }
 
 void Environment::set_ssao_horizon(float p_horizon) {
+	ZoneScopedS(60);
 	ssao_horizon = p_horizon;
 	_update_ssao();
 }
 
 float Environment::get_ssao_horizon() const {
+	ZoneScopedS(60);
 	return ssao_horizon;
 }
 
 void Environment::set_ssao_sharpness(float p_sharpness) {
+	ZoneScopedS(60);
 	ssao_sharpness = p_sharpness;
 	_update_ssao();
 }
 
 float Environment::get_ssao_sharpness() const {
+	ZoneScopedS(60);
 	return ssao_sharpness;
 }
 
 void Environment::set_ssao_direct_light_affect(float p_direct_light_affect) {
+	ZoneScopedS(60);
 	ssao_direct_light_affect = p_direct_light_affect;
 	_update_ssao();
 }
 
 float Environment::get_ssao_direct_light_affect() const {
+	ZoneScopedS(60);
 	return ssao_direct_light_affect;
 }
 
 void Environment::set_ssao_ao_channel_affect(float p_ao_channel_affect) {
+	ZoneScopedS(60);
 	ssao_ao_channel_affect = p_ao_channel_affect;
 	_update_ssao();
 }
 
 float Environment::get_ssao_ao_channel_affect() const {
+	ZoneScopedS(60);
 	return ssao_ao_channel_affect;
 }
 
 void Environment::_update_ssao() {
+	ZoneScopedS(60);
 	RS::get_singleton()->environment_set_ssao(
 			environment,
 			ssao_enabled,
@@ -398,52 +467,63 @@ void Environment::_update_ssao() {
 // SSIL
 
 void Environment::set_ssil_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	ssil_enabled = p_enabled;
 	_update_ssil();
 	notify_property_list_changed();
 }
 
 bool Environment::is_ssil_enabled() const {
+	ZoneScopedS(60);
 	return ssil_enabled;
 }
 
 void Environment::set_ssil_radius(float p_radius) {
+	ZoneScopedS(60);
 	ssil_radius = p_radius;
 	_update_ssil();
 }
 
 float Environment::get_ssil_radius() const {
+	ZoneScopedS(60);
 	return ssil_radius;
 }
 
 void Environment::set_ssil_intensity(float p_intensity) {
+	ZoneScopedS(60);
 	ssil_intensity = p_intensity;
 	_update_ssil();
 }
 
 float Environment::get_ssil_intensity() const {
+	ZoneScopedS(60);
 	return ssil_intensity;
 }
 
 void Environment::set_ssil_sharpness(float p_sharpness) {
+	ZoneScopedS(60);
 	ssil_sharpness = p_sharpness;
 	_update_ssil();
 }
 
 float Environment::get_ssil_sharpness() const {
+	ZoneScopedS(60);
 	return ssil_sharpness;
 }
 
 void Environment::set_ssil_normal_rejection(float p_normal_rejection) {
+	ZoneScopedS(60);
 	ssil_normal_rejection = p_normal_rejection;
 	_update_ssil();
 }
 
 float Environment::get_ssil_normal_rejection() const {
+	ZoneScopedS(60);
 	return ssil_normal_rejection;
 }
 
 void Environment::_update_ssil() {
+	ZoneScopedS(60);
 	RS::get_singleton()->environment_set_ssil(
 			environment,
 			ssil_enabled,
@@ -456,35 +536,42 @@ void Environment::_update_ssil() {
 // SDFGI
 
 void Environment::set_sdfgi_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	sdfgi_enabled = p_enabled;
 	_update_sdfgi();
 	notify_property_list_changed();
 }
 
 bool Environment::is_sdfgi_enabled() const {
+	ZoneScopedS(60);
 	return sdfgi_enabled;
 }
 
 void Environment::set_sdfgi_cascades(int p_cascades) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_cascades < 1 || p_cascades > 8, "Invalid number of SDFGI cascades (must be between 1 and 8).");
 	sdfgi_cascades = p_cascades;
 	_update_sdfgi();
 }
 
 int Environment::get_sdfgi_cascades() const {
+	ZoneScopedS(60);
 	return sdfgi_cascades;
 }
 
 void Environment::set_sdfgi_min_cell_size(float p_size) {
+	ZoneScopedS(60);
 	sdfgi_min_cell_size = p_size;
 	_update_sdfgi();
 }
 
 float Environment::get_sdfgi_min_cell_size() const {
+	ZoneScopedS(60);
 	return sdfgi_min_cell_size;
 }
 
 void Environment::set_sdfgi_max_distance(float p_distance) {
+	ZoneScopedS(60);
 	p_distance /= 64.0;
 	for (int i = 0; i < sdfgi_cascades; i++) {
 		p_distance *= 0.5; //halve for each cascade
@@ -494,6 +581,7 @@ void Environment::set_sdfgi_max_distance(float p_distance) {
 }
 
 float Environment::get_sdfgi_max_distance() const {
+	ZoneScopedS(60);
 	float md = sdfgi_min_cell_size;
 	md *= 64.0;
 	for (int i = 0; i < sdfgi_cascades; i++) {
@@ -503,77 +591,94 @@ float Environment::get_sdfgi_max_distance() const {
 }
 
 void Environment::set_sdfgi_cascade0_distance(float p_distance) {
+	ZoneScopedS(60);
 	sdfgi_min_cell_size = p_distance / 64.0;
 	_update_sdfgi();
 }
 
 float Environment::get_sdfgi_cascade0_distance() const {
+	ZoneScopedS(60);
 	return sdfgi_min_cell_size * 64.0;
 }
 
 void Environment::set_sdfgi_y_scale(SDFGIYScale p_y_scale) {
+	ZoneScopedS(60);
 	sdfgi_y_scale = p_y_scale;
 	_update_sdfgi();
 }
 
 Environment::SDFGIYScale Environment::get_sdfgi_y_scale() const {
+	ZoneScopedS(60);
 	return sdfgi_y_scale;
 }
 
 void Environment::set_sdfgi_use_occlusion(bool p_enabled) {
+	ZoneScopedS(60);
 	sdfgi_use_occlusion = p_enabled;
 	_update_sdfgi();
 }
 
 bool Environment::is_sdfgi_using_occlusion() const {
+	ZoneScopedS(60);
 	return sdfgi_use_occlusion;
 }
 
 void Environment::set_sdfgi_bounce_feedback(float p_amount) {
+	ZoneScopedS(60);
 	sdfgi_bounce_feedback = p_amount;
 	_update_sdfgi();
 }
 float Environment::get_sdfgi_bounce_feedback() const {
+	ZoneScopedS(60);
 	return sdfgi_bounce_feedback;
 }
 
 void Environment::set_sdfgi_read_sky_light(bool p_enabled) {
+	ZoneScopedS(60);
 	sdfgi_read_sky_light = p_enabled;
 	_update_sdfgi();
 }
 
 bool Environment::is_sdfgi_reading_sky_light() const {
+	ZoneScopedS(60);
 	return sdfgi_read_sky_light;
 }
 
 void Environment::set_sdfgi_energy(float p_energy) {
+	ZoneScopedS(60);
 	sdfgi_energy = p_energy;
 	_update_sdfgi();
 }
 
 float Environment::get_sdfgi_energy() const {
+	ZoneScopedS(60);
 	return sdfgi_energy;
 }
 
 void Environment::set_sdfgi_normal_bias(float p_bias) {
+	ZoneScopedS(60);
 	sdfgi_normal_bias = p_bias;
 	_update_sdfgi();
 }
 
 float Environment::get_sdfgi_normal_bias() const {
+	ZoneScopedS(60);
 	return sdfgi_normal_bias;
 }
 
 void Environment::set_sdfgi_probe_bias(float p_bias) {
+	ZoneScopedS(60);
 	sdfgi_probe_bias = p_bias;
 	_update_sdfgi();
 }
 
 float Environment::get_sdfgi_probe_bias() const {
+	ZoneScopedS(60);
 	return sdfgi_probe_bias;
 }
 
 void Environment::_update_sdfgi() {
+	ZoneScopedS(60);
 	RS::get_singleton()->environment_set_sdfgi(
 			environment,
 			sdfgi_enabled,
@@ -591,16 +696,19 @@ void Environment::_update_sdfgi() {
 // Glow
 
 void Environment::set_glow_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	glow_enabled = p_enabled;
 	_update_glow();
 	notify_property_list_changed();
 }
 
 bool Environment::is_glow_enabled() const {
+	ZoneScopedS(60);
 	return glow_enabled;
 }
 
 void Environment::set_glow_level(int p_level, float p_intensity) {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX(p_level, RS::MAX_GLOW_LEVELS);
 
 	glow_levels.write[p_level] = p_intensity;
@@ -609,113 +717,137 @@ void Environment::set_glow_level(int p_level, float p_intensity) {
 }
 
 float Environment::get_glow_level(int p_level) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_level, RS::MAX_GLOW_LEVELS, 0.0);
 
 	return glow_levels[p_level];
 }
 
 void Environment::set_glow_normalized(bool p_normalized) {
+	ZoneScopedS(60);
 	glow_normalize_levels = p_normalized;
 
 	_update_glow();
 }
 
 bool Environment::is_glow_normalized() const {
+	ZoneScopedS(60);
 	return glow_normalize_levels;
 }
 
 void Environment::set_glow_intensity(float p_intensity) {
+	ZoneScopedS(60);
 	glow_intensity = p_intensity;
 	_update_glow();
 }
 
 float Environment::get_glow_intensity() const {
+	ZoneScopedS(60);
 	return glow_intensity;
 }
 
 void Environment::set_glow_strength(float p_strength) {
+	ZoneScopedS(60);
 	glow_strength = p_strength;
 	_update_glow();
 }
 
 float Environment::get_glow_strength() const {
+	ZoneScopedS(60);
 	return glow_strength;
 }
 
 void Environment::set_glow_mix(float p_mix) {
+	ZoneScopedS(60);
 	glow_mix = p_mix;
 	_update_glow();
 }
 
 float Environment::get_glow_mix() const {
+	ZoneScopedS(60);
 	return glow_mix;
 }
 
 void Environment::set_glow_bloom(float p_threshold) {
+	ZoneScopedS(60);
 	glow_bloom = p_threshold;
 	_update_glow();
 }
 
 float Environment::get_glow_bloom() const {
+	ZoneScopedS(60);
 	return glow_bloom;
 }
 
 void Environment::set_glow_blend_mode(GlowBlendMode p_mode) {
+	ZoneScopedS(60);
 	glow_blend_mode = p_mode;
 	_update_glow();
 	notify_property_list_changed();
 }
 
 Environment::GlowBlendMode Environment::get_glow_blend_mode() const {
+	ZoneScopedS(60);
 	return glow_blend_mode;
 }
 
 void Environment::set_glow_hdr_bleed_threshold(float p_threshold) {
+	ZoneScopedS(60);
 	glow_hdr_bleed_threshold = p_threshold;
 	_update_glow();
 }
 
 float Environment::get_glow_hdr_bleed_threshold() const {
+	ZoneScopedS(60);
 	return glow_hdr_bleed_threshold;
 }
 
 void Environment::set_glow_hdr_bleed_scale(float p_scale) {
+	ZoneScopedS(60);
 	glow_hdr_bleed_scale = p_scale;
 	_update_glow();
 }
 
 float Environment::get_glow_hdr_bleed_scale() const {
+	ZoneScopedS(60);
 	return glow_hdr_bleed_scale;
 }
 
 void Environment::set_glow_hdr_luminance_cap(float p_amount) {
+	ZoneScopedS(60);
 	glow_hdr_luminance_cap = p_amount;
 	_update_glow();
 }
 
 float Environment::get_glow_hdr_luminance_cap() const {
+	ZoneScopedS(60);
 	return glow_hdr_luminance_cap;
 }
 
 void Environment::set_glow_map_strength(float p_strength) {
+	ZoneScopedS(60);
 	glow_map_strength = p_strength;
 	_update_glow();
 }
 
 float Environment::get_glow_map_strength() const {
+	ZoneScopedS(60);
 	return glow_map_strength;
 }
 
 void Environment::set_glow_map(Ref<Texture> p_glow_map) {
+	ZoneScopedS(60);
 	glow_map = p_glow_map;
 	_update_glow();
 }
 
 Ref<Texture> Environment::get_glow_map() const {
+	ZoneScopedS(60);
 	return glow_map;
 }
 
 void Environment::_update_glow() {
+	ZoneScopedS(60);
 	Vector<float> normalized_levels;
 	if (glow_normalize_levels) {
 		normalized_levels.resize(7);
@@ -758,76 +890,95 @@ void Environment::_update_glow() {
 // Fog
 
 void Environment::set_fog_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	fog_enabled = p_enabled;
 	_update_fog();
 	notify_property_list_changed();
 }
 
 bool Environment::is_fog_enabled() const {
+	ZoneScopedS(60);
 	return fog_enabled;
 }
 
 void Environment::set_fog_light_color(const Color &p_light_color) {
+	ZoneScopedS(60);
 	fog_light_color = p_light_color;
 	_update_fog();
 }
 Color Environment::get_fog_light_color() const {
+	ZoneScopedS(60);
 	return fog_light_color;
 }
 void Environment::set_fog_light_energy(float p_amount) {
+	ZoneScopedS(60);
 	fog_light_energy = p_amount;
 	_update_fog();
 }
 float Environment::get_fog_light_energy() const {
+	ZoneScopedS(60);
 	return fog_light_energy;
 }
 void Environment::set_fog_sun_scatter(float p_amount) {
+	ZoneScopedS(60);
 	fog_sun_scatter = p_amount;
 	_update_fog();
 }
 float Environment::get_fog_sun_scatter() const {
+	ZoneScopedS(60);
 	return fog_sun_scatter;
 }
 void Environment::set_fog_density(float p_amount) {
+	ZoneScopedS(60);
 	fog_density = p_amount;
 	_update_fog();
 }
 float Environment::get_fog_density() const {
+	ZoneScopedS(60);
 	return fog_density;
 }
 void Environment::set_fog_height(float p_amount) {
+	ZoneScopedS(60);
 	fog_height = p_amount;
 	_update_fog();
 }
 float Environment::get_fog_height() const {
+	ZoneScopedS(60);
 	return fog_height;
 }
 void Environment::set_fog_height_density(float p_amount) {
+	ZoneScopedS(60);
 	fog_height_density = p_amount;
 	_update_fog();
 }
 float Environment::get_fog_height_density() const {
+	ZoneScopedS(60);
 	return fog_height_density;
 }
 
 void Environment::set_fog_aerial_perspective(float p_aerial_perspective) {
+	ZoneScopedS(60);
 	fog_aerial_perspective = p_aerial_perspective;
 	_update_fog();
 }
 float Environment::get_fog_aerial_perspective() const {
+	ZoneScopedS(60);
 	return fog_aerial_perspective;
 }
 
 void Environment::set_fog_sky_affect(float p_sky_affect) {
+	ZoneScopedS(60);
 	fog_sky_affect = p_sky_affect;
 	_update_fog();
 }
 
 float Environment::get_fog_sky_affect() const {
+	ZoneScopedS(60);
 	return fog_sky_affect;
 }
 
 void Environment::_update_fog() {
+	ZoneScopedS(60);
 	RS::get_singleton()->environment_set_fog(
 			environment,
 			fog_enabled,
@@ -844,6 +995,7 @@ void Environment::_update_fog() {
 // Volumetric Fog
 
 void Environment::_update_volumetric_fog() {
+	ZoneScopedS(60);
 	RS::get_singleton()->environment_set_volumetric_fog(
 			environment,
 			volumetric_fog_enabled,
@@ -862,145 +1014,180 @@ void Environment::_update_volumetric_fog() {
 }
 
 void Environment::set_volumetric_fog_enabled(bool p_enable) {
+	ZoneScopedS(60);
 	volumetric_fog_enabled = p_enable;
 	_update_volumetric_fog();
 	notify_property_list_changed();
 }
 
 bool Environment::is_volumetric_fog_enabled() const {
+	ZoneScopedS(60);
 	return volumetric_fog_enabled;
 }
 void Environment::set_volumetric_fog_density(float p_density) {
+	ZoneScopedS(60);
 	volumetric_fog_density = p_density;
 	_update_volumetric_fog();
 }
 float Environment::get_volumetric_fog_density() const {
+	ZoneScopedS(60);
 	return volumetric_fog_density;
 }
 void Environment::set_volumetric_fog_albedo(Color p_color) {
+	ZoneScopedS(60);
 	volumetric_fog_albedo = p_color;
 	_update_volumetric_fog();
 }
 Color Environment::get_volumetric_fog_albedo() const {
+	ZoneScopedS(60);
 	return volumetric_fog_albedo;
 }
 void Environment::set_volumetric_fog_emission(Color p_color) {
+	ZoneScopedS(60);
 	volumetric_fog_emission = p_color;
 	_update_volumetric_fog();
 }
 Color Environment::get_volumetric_fog_emission() const {
+	ZoneScopedS(60);
 	return volumetric_fog_emission;
 }
 void Environment::set_volumetric_fog_emission_energy(float p_begin) {
+	ZoneScopedS(60);
 	volumetric_fog_emission_energy = p_begin;
 	_update_volumetric_fog();
 }
 float Environment::get_volumetric_fog_emission_energy() const {
+	ZoneScopedS(60);
 	return volumetric_fog_emission_energy;
 }
 void Environment::set_volumetric_fog_anisotropy(float p_anisotropy) {
+	ZoneScopedS(60);
 	volumetric_fog_anisotropy = p_anisotropy;
 	_update_volumetric_fog();
 }
 float Environment::get_volumetric_fog_anisotropy() const {
+	ZoneScopedS(60);
 	return volumetric_fog_anisotropy;
 }
 void Environment::set_volumetric_fog_length(float p_length) {
+	ZoneScopedS(60);
 	volumetric_fog_length = p_length;
 	_update_volumetric_fog();
 }
 float Environment::get_volumetric_fog_length() const {
+	ZoneScopedS(60);
 	return volumetric_fog_length;
 }
 void Environment::set_volumetric_fog_detail_spread(float p_detail_spread) {
+	ZoneScopedS(60);
 	p_detail_spread = CLAMP(p_detail_spread, 0.5, 6.0);
 	volumetric_fog_detail_spread = p_detail_spread;
 	_update_volumetric_fog();
 }
 float Environment::get_volumetric_fog_detail_spread() const {
+	ZoneScopedS(60);
 	return volumetric_fog_detail_spread;
 }
 
 void Environment::set_volumetric_fog_gi_inject(float p_gi_inject) {
+	ZoneScopedS(60);
 	volumetric_fog_gi_inject = p_gi_inject;
 	_update_volumetric_fog();
 }
 float Environment::get_volumetric_fog_gi_inject() const {
+	ZoneScopedS(60);
 	return volumetric_fog_gi_inject;
 }
 void Environment::set_volumetric_fog_ambient_inject(float p_ambient_inject) {
+	ZoneScopedS(60);
 	volumetric_fog_ambient_inject = p_ambient_inject;
 	_update_volumetric_fog();
 }
 float Environment::get_volumetric_fog_ambient_inject() const {
+	ZoneScopedS(60);
 	return volumetric_fog_ambient_inject;
 }
 
 void Environment::set_volumetric_fog_sky_affect(float p_sky_affect) {
+	ZoneScopedS(60);
 	volumetric_fog_sky_affect = p_sky_affect;
 	_update_volumetric_fog();
 }
 
 float Environment::get_volumetric_fog_sky_affect() const {
+	ZoneScopedS(60);
 	return volumetric_fog_sky_affect;
 }
 
 void Environment::set_volumetric_fog_temporal_reprojection_enabled(bool p_enable) {
+	ZoneScopedS(60);
 	volumetric_fog_temporal_reproject = p_enable;
 	_update_volumetric_fog();
 }
 bool Environment::is_volumetric_fog_temporal_reprojection_enabled() const {
+	ZoneScopedS(60);
 	return volumetric_fog_temporal_reproject;
 }
 void Environment::set_volumetric_fog_temporal_reprojection_amount(float p_amount) {
+	ZoneScopedS(60);
 	volumetric_fog_temporal_reproject_amount = p_amount;
 	_update_volumetric_fog();
 }
 
 float Environment::get_volumetric_fog_temporal_reprojection_amount() const {
+	ZoneScopedS(60);
 	return volumetric_fog_temporal_reproject_amount;
 }
 
 // Adjustment
 
 void Environment::set_adjustment_enabled(bool p_enabled) {
+	ZoneScopedS(60);
 	adjustment_enabled = p_enabled;
 	_update_adjustment();
 	notify_property_list_changed();
 }
 
 bool Environment::is_adjustment_enabled() const {
+	ZoneScopedS(60);
 	return adjustment_enabled;
 }
 
 void Environment::set_adjustment_brightness(float p_brightness) {
+	ZoneScopedS(60);
 	adjustment_brightness = p_brightness;
 	_update_adjustment();
 }
 
 float Environment::get_adjustment_brightness() const {
+	ZoneScopedS(60);
 	return adjustment_brightness;
 }
 
 void Environment::set_adjustment_contrast(float p_contrast) {
+	ZoneScopedS(60);
 	adjustment_contrast = p_contrast;
 	_update_adjustment();
 }
 
 float Environment::get_adjustment_contrast() const {
+	ZoneScopedS(60);
 	return adjustment_contrast;
 }
 
 void Environment::set_adjustment_saturation(float p_saturation) {
+	ZoneScopedS(60);
 	adjustment_saturation = p_saturation;
 	_update_adjustment();
 }
 
 float Environment::get_adjustment_saturation() const {
+	ZoneScopedS(60);
 	return adjustment_saturation;
 }
 
 void Environment::set_adjustment_color_correction(Ref<Texture> p_color_correction) {
+	ZoneScopedS(60);
 	adjustment_color_correction = p_color_correction;
 	Ref<GradientTexture1D> grad_tex = p_color_correction;
 	if (grad_tex.is_valid()) {
@@ -1018,10 +1205,12 @@ void Environment::set_adjustment_color_correction(Ref<Texture> p_color_correctio
 }
 
 Ref<Texture> Environment::get_adjustment_color_correction() const {
+	ZoneScopedS(60);
 	return adjustment_color_correction;
 }
 
 void Environment::_update_adjustment() {
+	ZoneScopedS(60);
 	RID color_correction = adjustment_color_correction.is_valid() ? adjustment_color_correction->get_rid() : RID();
 
 	RS::get_singleton()->environment_set_adjustment(
@@ -1037,6 +1226,7 @@ void Environment::_update_adjustment() {
 // Private methods, constructor and destructor
 
 void Environment::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (p_property.name == "sky" || p_property.name == "sky_custom_fov" || p_property.name == "sky_rotation" || p_property.name == "ambient_light_sky_contribution") {
 		if (bg_mode != BG_SKY && ambient_source != AMBIENT_SOURCE_SKY && reflection_source != REFLECTION_SOURCE_SKY) {
 			p_property.usage = PROPERTY_USAGE_NO_EDITOR;
@@ -1134,6 +1324,7 @@ void Environment::_validate_property(PropertyInfo &p_property) const {
 #ifndef DISABLE_DEPRECATED
 // Kept for compatibility from 3.x to 4.0.
 bool Environment::_set(const StringName &p_name, const Variant &p_value) {
+	ZoneScopedS(60);
 	if (p_name == "background_sky") {
 		set_sky(p_value);
 		return true;
@@ -1151,6 +1342,7 @@ bool Environment::_set(const StringName &p_name, const Variant &p_value) {
 #endif
 
 void Environment::_bind_methods() {
+	ZoneScopedS(60);
 	// Background
 
 	ClassDB::bind_method(D_METHOD("set_background", "mode"), &Environment::set_background);
@@ -1522,6 +1714,7 @@ void Environment::_bind_methods() {
 }
 
 Environment::Environment() {
+	ZoneScopedS(60);
 	environment = RS::get_singleton()->environment_create();
 
 	set_camera_feed_id(bg_camera_feed_id);
@@ -1550,5 +1743,6 @@ Environment::Environment() {
 }
 
 Environment::~Environment() {
+	ZoneScopedS(60);
 	RS::get_singleton()->free(environment);
 }

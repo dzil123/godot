@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  skeleton_profile.cpp                                                 */
 /*************************************************************************/
@@ -31,6 +32,7 @@
 #include "skeleton_profile.h"
 
 bool SkeletonProfile::_set(const StringName &p_path, const Variant &p_value) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(is_read_only, false);
 	String path = p_path;
 
@@ -77,6 +79,7 @@ bool SkeletonProfile::_set(const StringName &p_path, const Variant &p_value) {
 }
 
 bool SkeletonProfile::_get(const StringName &p_path, Variant &r_ret) const {
+	ZoneScopedS(60);
 	String path = p_path;
 
 	if (path.begins_with("groups/")) {
@@ -122,6 +125,7 @@ bool SkeletonProfile::_get(const StringName &p_path, Variant &r_ret) const {
 }
 
 void SkeletonProfile::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (is_read_only) {
 		if (p_property.name == ("group_size") || p_property.name == ("bone_size") || p_property.name == ("root_bone") || p_property.name == ("scale_base_bone")) {
 			p_property.usage = PROPERTY_USAGE_NO_EDITOR;
@@ -146,6 +150,7 @@ void SkeletonProfile::_validate_property(PropertyInfo &p_property) const {
 }
 
 void SkeletonProfile::_get_property_list(List<PropertyInfo> *p_list) const {
+	ZoneScopedS(60);
 	if (is_read_only) {
 		return;
 	}
@@ -177,10 +182,12 @@ void SkeletonProfile::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 StringName SkeletonProfile::get_root_bone() {
+	ZoneScopedS(60);
 	return root_bone;
 }
 
 void SkeletonProfile::set_root_bone(StringName p_bone_name) {
+	ZoneScopedS(60);
 	if (is_read_only) {
 		return;
 	}
@@ -188,10 +195,12 @@ void SkeletonProfile::set_root_bone(StringName p_bone_name) {
 }
 
 StringName SkeletonProfile::get_scale_base_bone() {
+	ZoneScopedS(60);
 	return scale_base_bone;
 }
 
 void SkeletonProfile::set_scale_base_bone(StringName p_bone_name) {
+	ZoneScopedS(60);
 	if (is_read_only) {
 		return;
 	}
@@ -199,10 +208,12 @@ void SkeletonProfile::set_scale_base_bone(StringName p_bone_name) {
 }
 
 int SkeletonProfile::get_group_size() {
+	ZoneScopedS(60);
 	return groups.size();
 }
 
 void SkeletonProfile::set_group_size(int p_size) {
+	ZoneScopedS(60);
 	if (is_read_only) {
 		return;
 	}
@@ -213,11 +224,13 @@ void SkeletonProfile::set_group_size(int p_size) {
 }
 
 StringName SkeletonProfile::get_group_name(int p_group_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_group_idx, groups.size(), StringName());
 	return groups[p_group_idx].group_name;
 }
 
 void SkeletonProfile::set_group_name(int p_group_idx, const StringName p_group_name) {
+	ZoneScopedS(60);
 	if (is_read_only) {
 		return;
 	}
@@ -227,11 +240,13 @@ void SkeletonProfile::set_group_name(int p_group_idx, const StringName p_group_n
 }
 
 Ref<Texture2D> SkeletonProfile::get_texture(int p_group_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_group_idx, groups.size(), Ref<Texture2D>());
 	return groups[p_group_idx].texture;
 }
 
 void SkeletonProfile::set_texture(int p_group_idx, const Ref<Texture2D> &p_texture) {
+	ZoneScopedS(60);
 	if (is_read_only) {
 		return;
 	}
@@ -241,10 +256,12 @@ void SkeletonProfile::set_texture(int p_group_idx, const Ref<Texture2D> &p_textu
 }
 
 int SkeletonProfile::get_bone_size() {
+	ZoneScopedS(60);
 	return bones.size();
 }
 
 void SkeletonProfile::set_bone_size(int p_size) {
+	ZoneScopedS(60);
 	if (is_read_only) {
 		return;
 	}
@@ -255,6 +272,7 @@ void SkeletonProfile::set_bone_size(int p_size) {
 }
 
 int SkeletonProfile::find_bone(StringName p_bone_name) const {
+	ZoneScopedS(60);
 	if (p_bone_name == StringName()) {
 		return -1;
 	}
@@ -267,11 +285,13 @@ int SkeletonProfile::find_bone(StringName p_bone_name) const {
 }
 
 StringName SkeletonProfile::get_bone_name(int p_bone_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_bone_idx, bones.size(), StringName());
 	return bones[p_bone_idx].bone_name;
 }
 
 void SkeletonProfile::set_bone_name(int p_bone_idx, const StringName p_bone_name) {
+	ZoneScopedS(60);
 	if (is_read_only) {
 		return;
 	}
@@ -281,11 +301,13 @@ void SkeletonProfile::set_bone_name(int p_bone_idx, const StringName p_bone_name
 }
 
 StringName SkeletonProfile::get_bone_parent(int p_bone_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_bone_idx, bones.size(), StringName());
 	return bones[p_bone_idx].bone_parent;
 }
 
 void SkeletonProfile::set_bone_parent(int p_bone_idx, const StringName p_bone_parent) {
+	ZoneScopedS(60);
 	if (is_read_only) {
 		return;
 	}
@@ -295,11 +317,13 @@ void SkeletonProfile::set_bone_parent(int p_bone_idx, const StringName p_bone_pa
 }
 
 SkeletonProfile::TailDirection SkeletonProfile::get_tail_direction(int p_bone_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_bone_idx, bones.size(), TAIL_DIRECTION_AVERAGE_CHILDREN);
 	return bones[p_bone_idx].tail_direction;
 }
 
 void SkeletonProfile::set_tail_direction(int p_bone_idx, const TailDirection p_tail_direction) {
+	ZoneScopedS(60);
 	if (is_read_only) {
 		return;
 	}
@@ -310,11 +334,13 @@ void SkeletonProfile::set_tail_direction(int p_bone_idx, const TailDirection p_t
 }
 
 StringName SkeletonProfile::get_bone_tail(int p_bone_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_bone_idx, bones.size(), StringName());
 	return bones[p_bone_idx].bone_tail;
 }
 
 void SkeletonProfile::set_bone_tail(int p_bone_idx, const StringName p_bone_tail) {
+	ZoneScopedS(60);
 	if (is_read_only) {
 		return;
 	}
@@ -324,11 +350,13 @@ void SkeletonProfile::set_bone_tail(int p_bone_idx, const StringName p_bone_tail
 }
 
 Transform3D SkeletonProfile::get_reference_pose(int p_bone_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_bone_idx, bones.size(), Transform3D());
 	return bones[p_bone_idx].reference_pose;
 }
 
 void SkeletonProfile::set_reference_pose(int p_bone_idx, const Transform3D p_reference_pose) {
+	ZoneScopedS(60);
 	if (is_read_only) {
 		return;
 	}
@@ -338,11 +366,13 @@ void SkeletonProfile::set_reference_pose(int p_bone_idx, const Transform3D p_ref
 }
 
 Vector2 SkeletonProfile::get_handle_offset(int p_bone_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_bone_idx, bones.size(), Vector2());
 	return bones[p_bone_idx].handle_offset;
 }
 
 void SkeletonProfile::set_handle_offset(int p_bone_idx, const Vector2 p_handle_offset) {
+	ZoneScopedS(60);
 	if (is_read_only) {
 		return;
 	}
@@ -352,11 +382,13 @@ void SkeletonProfile::set_handle_offset(int p_bone_idx, const Vector2 p_handle_o
 }
 
 StringName SkeletonProfile::get_group(int p_bone_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_bone_idx, bones.size(), StringName());
 	return bones[p_bone_idx].group;
 }
 
 void SkeletonProfile::set_group(int p_bone_idx, const StringName p_group) {
+	ZoneScopedS(60);
 	if (is_read_only) {
 		return;
 	}
@@ -366,11 +398,13 @@ void SkeletonProfile::set_group(int p_bone_idx, const StringName p_group) {
 }
 
 bool SkeletonProfile::is_require(int p_bone_idx) const {
+	ZoneScopedS(60);
 	ERR_FAIL_INDEX_V(p_bone_idx, bones.size(), false);
 	return bones[p_bone_idx].require;
 }
 
 void SkeletonProfile::set_require(int p_bone_idx, const bool p_require) {
+	ZoneScopedS(60);
 	if (is_read_only) {
 		return;
 	}
@@ -380,6 +414,7 @@ void SkeletonProfile::set_require(int p_bone_idx, const bool p_require) {
 }
 
 bool SkeletonProfile::has_bone(StringName p_bone_name) {
+	ZoneScopedS(60);
 	bool is_found = false;
 	for (int i = 0; i < bones.size(); i++) {
 		if (bones[i].bone_name == p_bone_name) {
@@ -391,6 +426,7 @@ bool SkeletonProfile::has_bone(StringName p_bone_name) {
 }
 
 void SkeletonProfile::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_root_bone", "bone_name"), &SkeletonProfile::set_root_bone);
 	ClassDB::bind_method(D_METHOD("get_root_bone"), &SkeletonProfile::get_root_bone);
 
@@ -452,6 +488,7 @@ SkeletonProfile::~SkeletonProfile() {
 }
 
 SkeletonProfileHumanoid::SkeletonProfileHumanoid() {
+	ZoneScopedS(60);
 	is_read_only = true;
 
 	root_bone = "Root";

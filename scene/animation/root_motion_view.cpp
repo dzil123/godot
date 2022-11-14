@@ -28,56 +28,98 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  root_motion_view.cpp                                                 */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "root_motion_view.h"
 
 #include "scene/animation/animation_tree.h"
 #include "scene/resources/material.h"
 
 void RootMotionView::set_animation_path(const NodePath &p_path) {
+	ZoneScopedS(60);
 	path = p_path;
 	first = true;
 }
 
 NodePath RootMotionView::get_animation_path() const {
+	ZoneScopedS(60);
 	return path;
 }
 
 void RootMotionView::set_color(const Color &p_color) {
+	ZoneScopedS(60);
 	color = p_color;
 	first = true;
 }
 
 Color RootMotionView::get_color() const {
+	ZoneScopedS(60);
 	return color;
 }
 
 void RootMotionView::set_cell_size(float p_size) {
+	ZoneScopedS(60);
 	cell_size = p_size;
 	first = true;
 }
 
 float RootMotionView::get_cell_size() const {
+	ZoneScopedS(60);
 	return cell_size;
 }
 
 void RootMotionView::set_radius(float p_radius) {
+	ZoneScopedS(60);
 	radius = p_radius;
 	first = true;
 }
 
 float RootMotionView::get_radius() const {
+	ZoneScopedS(60);
 	return radius;
 }
 
 void RootMotionView::set_zero_y(bool p_zero_y) {
+	ZoneScopedS(60);
 	zero_y = p_zero_y;
 }
 
 bool RootMotionView::get_zero_y() const {
+	ZoneScopedS(60);
 	return zero_y;
 }
 
 void RootMotionView::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_TREE: {
 			immediate_material = StandardMaterial3D::get_material_for_2d(false, true, false, false, false);
@@ -162,10 +204,12 @@ void RootMotionView::_notification(int p_what) {
 }
 
 AABB RootMotionView::get_aabb() const {
+	ZoneScopedS(60);
 	return AABB(Vector3(-radius, 0, -radius), Vector3(radius * 2, 0.001, radius * 2));
 }
 
 void RootMotionView::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_animation_path", "path"), &RootMotionView::set_animation_path);
 	ClassDB::bind_method(D_METHOD("get_animation_path"), &RootMotionView::get_animation_path);
 
@@ -189,6 +233,7 @@ void RootMotionView::_bind_methods() {
 }
 
 RootMotionView::RootMotionView() {
+	ZoneScopedS(60);
 	if (Engine::get_singleton()->is_editor_hint()) {
 		set_process_internal(true);
 	}
@@ -197,5 +242,6 @@ RootMotionView::RootMotionView() {
 }
 
 RootMotionView::~RootMotionView() {
+	ZoneScopedS(60);
 	set_base(RID());
 }

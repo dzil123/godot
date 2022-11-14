@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  convex_polygon_shape_2d.cpp                                          */
 /*************************************************************************/
@@ -35,10 +36,12 @@
 #include "servers/rendering_server.h"
 
 bool ConvexPolygonShape2D::_edit_is_selected_on_click(const Point2 &p_point, double p_tolerance) const {
+	ZoneScopedS(60);
 	return Geometry2D::is_point_in_polygon(p_point, points);
 }
 
 void ConvexPolygonShape2D::_update_shape() {
+	ZoneScopedS(60);
 	Vector<Vector2> final_points = points;
 	if (Geometry2D::is_polygon_clockwise(final_points)) { //needs to be counter clockwise
 		final_points.reverse();
@@ -48,22 +51,26 @@ void ConvexPolygonShape2D::_update_shape() {
 }
 
 void ConvexPolygonShape2D::set_point_cloud(const Vector<Vector2> &p_points) {
+	ZoneScopedS(60);
 	Vector<Point2> hull = Geometry2D::convex_hull(p_points);
 	ERR_FAIL_COND(hull.size() < 3);
 	set_points(hull);
 }
 
 void ConvexPolygonShape2D::set_points(const Vector<Vector2> &p_points) {
+	ZoneScopedS(60);
 	points = p_points;
 
 	_update_shape();
 }
 
 Vector<Vector2> ConvexPolygonShape2D::get_points() const {
+	ZoneScopedS(60);
 	return points;
 }
 
 void ConvexPolygonShape2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_point_cloud", "point_cloud"), &ConvexPolygonShape2D::set_point_cloud);
 	ClassDB::bind_method(D_METHOD("set_points", "points"), &ConvexPolygonShape2D::set_points);
 	ClassDB::bind_method(D_METHOD("get_points"), &ConvexPolygonShape2D::get_points);
@@ -72,6 +79,7 @@ void ConvexPolygonShape2D::_bind_methods() {
 }
 
 void ConvexPolygonShape2D::draw(const RID &p_to_rid, const Color &p_color) {
+	ZoneScopedS(60);
 	if (points.size() < 3) {
 		return;
 	}
@@ -87,6 +95,7 @@ void ConvexPolygonShape2D::draw(const RID &p_to_rid, const Color &p_color) {
 }
 
 Rect2 ConvexPolygonShape2D::get_rect() const {
+	ZoneScopedS(60);
 	Rect2 rect;
 	for (int i = 0; i < points.size(); i++) {
 		if (i == 0) {
@@ -100,6 +109,7 @@ Rect2 ConvexPolygonShape2D::get_rect() const {
 }
 
 real_t ConvexPolygonShape2D::get_enclosing_radius() const {
+	ZoneScopedS(60);
 	real_t r = 0.0;
 	for (int i(0); i < get_points().size(); i++) {
 		r = MAX(get_points()[i].length_squared(), r);

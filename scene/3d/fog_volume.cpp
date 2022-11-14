@@ -28,12 +28,44 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  fog_volume.cpp                                                       */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "fog_volume.h"
 #include "scene/resources/environment.h"
 
 ///////////////////////////
 
 void FogVolume::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_extents", "extents"), &FogVolume::set_extents);
 	ClassDB::bind_method(D_METHOD("get_extents"), &FogVolume::get_extents);
 	ClassDB::bind_method(D_METHOD("set_shape", "shape"), &FogVolume::set_shape);
@@ -47,6 +79,7 @@ void FogVolume::_bind_methods() {
 }
 
 void FogVolume::_validate_property(PropertyInfo &p_property) const {
+	ZoneScopedS(60);
 	if (p_property.name == "extents" && shape == RS::FOG_VOLUME_SHAPE_WORLD) {
 		p_property.usage = PROPERTY_USAGE_NONE;
 		return;
@@ -54,6 +87,7 @@ void FogVolume::_validate_property(PropertyInfo &p_property) const {
 }
 
 void FogVolume::set_extents(const Vector3 &p_extents) {
+	ZoneScopedS(60);
 	extents = p_extents;
 	extents.x = MAX(0.0, extents.x);
 	extents.y = MAX(0.0, extents.y);
@@ -63,10 +97,12 @@ void FogVolume::set_extents(const Vector3 &p_extents) {
 }
 
 Vector3 FogVolume::get_extents() const {
+	ZoneScopedS(60);
 	return extents;
 }
 
 void FogVolume::set_shape(RS::FogVolumeShape p_type) {
+	ZoneScopedS(60);
 	shape = p_type;
 	RS::get_singleton()->fog_volume_set_shape(_get_volume(), shape);
 	RS::get_singleton()->instance_set_ignore_culling(get_instance(), shape == RS::FOG_VOLUME_SHAPE_WORLD);
@@ -75,10 +111,12 @@ void FogVolume::set_shape(RS::FogVolumeShape p_type) {
 }
 
 RS::FogVolumeShape FogVolume::get_shape() const {
+	ZoneScopedS(60);
 	return shape;
 }
 
 void FogVolume::set_material(const Ref<Material> &p_material) {
+	ZoneScopedS(60);
 	material = p_material;
 	RID material_rid;
 	if (material.is_valid()) {
@@ -89,10 +127,12 @@ void FogVolume::set_material(const Ref<Material> &p_material) {
 }
 
 Ref<Material> FogVolume::get_material() const {
+	ZoneScopedS(60);
 	return material;
 }
 
 AABB FogVolume::get_aabb() const {
+	ZoneScopedS(60);
 	if (shape != RS::FOG_VOLUME_SHAPE_WORLD) {
 		return AABB(-extents, extents * 2);
 	}
@@ -100,6 +140,7 @@ AABB FogVolume::get_aabb() const {
 }
 
 PackedStringArray FogVolume::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	Ref<Environment> environment = get_viewport()->find_world_3d()->get_environment();
@@ -112,11 +153,13 @@ PackedStringArray FogVolume::get_configuration_warnings() const {
 }
 
 FogVolume::FogVolume() {
+	ZoneScopedS(60);
 	volume = RS::get_singleton()->fog_volume_create();
 	RS::get_singleton()->fog_volume_set_shape(volume, RS::FOG_VOLUME_SHAPE_BOX);
 	set_base(volume);
 }
 
 FogVolume::~FogVolume() {
+	ZoneScopedS(60);
 	RS::get_singleton()->free(volume);
 }

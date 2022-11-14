@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  segment_shape_2d.cpp                                                 */
 /*************************************************************************/
@@ -35,12 +36,14 @@
 #include "servers/rendering_server.h"
 
 bool SegmentShape2D::_edit_is_selected_on_click(const Point2 &p_point, double p_tolerance) const {
+	ZoneScopedS(60);
 	Vector2 l[2] = { a, b };
 	Vector2 closest = Geometry2D::get_closest_point_to_segment(p_point, l);
 	return p_point.distance_to(closest) < p_tolerance;
 }
 
 void SegmentShape2D::_update_shape() {
+	ZoneScopedS(60);
 	Rect2 r;
 	r.position = a;
 	r.size = b;
@@ -49,28 +52,34 @@ void SegmentShape2D::_update_shape() {
 }
 
 void SegmentShape2D::set_a(const Vector2 &p_a) {
+	ZoneScopedS(60);
 	a = p_a;
 	_update_shape();
 }
 
 Vector2 SegmentShape2D::get_a() const {
+	ZoneScopedS(60);
 	return a;
 }
 
 void SegmentShape2D::set_b(const Vector2 &p_b) {
+	ZoneScopedS(60);
 	b = p_b;
 	_update_shape();
 }
 
 Vector2 SegmentShape2D::get_b() const {
+	ZoneScopedS(60);
 	return b;
 }
 
 void SegmentShape2D::draw(const RID &p_to_rid, const Color &p_color) {
+	ZoneScopedS(60);
 	RenderingServer::get_singleton()->canvas_item_add_line(p_to_rid, a, b, p_color, 3);
 }
 
 Rect2 SegmentShape2D::get_rect() const {
+	ZoneScopedS(60);
 	Rect2 rect;
 	rect.position = a;
 	rect.expand_to(b);
@@ -78,10 +87,12 @@ Rect2 SegmentShape2D::get_rect() const {
 }
 
 real_t SegmentShape2D::get_enclosing_radius() const {
+	ZoneScopedS(60);
 	return (a + b).length();
 }
 
 void SegmentShape2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_a", "a"), &SegmentShape2D::set_a);
 	ClassDB::bind_method(D_METHOD("get_a"), &SegmentShape2D::get_a);
 

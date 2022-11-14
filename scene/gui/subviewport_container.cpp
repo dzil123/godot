@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  subviewport_container.cpp                                            */
 /*************************************************************************/
@@ -34,6 +35,7 @@
 #include "scene/main/viewport.h"
 
 Size2 SubViewportContainer::get_minimum_size() const {
+	ZoneScopedS(60);
 	if (stretch) {
 		return Size2();
 	}
@@ -53,6 +55,7 @@ Size2 SubViewportContainer::get_minimum_size() const {
 }
 
 void SubViewportContainer::set_stretch(bool p_enable) {
+	ZoneScopedS(60);
 	if (stretch == p_enable) {
 		return;
 	}
@@ -64,10 +67,12 @@ void SubViewportContainer::set_stretch(bool p_enable) {
 }
 
 bool SubViewportContainer::is_stretch_enabled() const {
+	ZoneScopedS(60);
 	return stretch;
 }
 
 void SubViewportContainer::set_stretch_shrink(int p_shrink) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_shrink < 1);
 	if (shrink == p_shrink) {
 		return;
@@ -92,18 +97,22 @@ void SubViewportContainer::set_stretch_shrink(int p_shrink) {
 }
 
 int SubViewportContainer::get_stretch_shrink() const {
+	ZoneScopedS(60);
 	return shrink;
 }
 
 Vector<int> SubViewportContainer::get_allowed_size_flags_horizontal() const {
+	ZoneScopedS(60);
 	return Vector<int>();
 }
 
 Vector<int> SubViewportContainer::get_allowed_size_flags_vertical() const {
+	ZoneScopedS(60);
 	return Vector<int>();
 }
 
 void SubViewportContainer::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_RESIZED: {
 			if (!stretch) {
@@ -164,6 +173,7 @@ void SubViewportContainer::_notification(int p_what) {
 }
 
 void SubViewportContainer::_notify_viewports(int p_notification) {
+	ZoneScopedS(60);
 	for (int i = 0; i < get_child_count(); i++) {
 		SubViewport *c = Object::cast_to<SubViewport>(get_child(i));
 		if (!c) {
@@ -174,6 +184,7 @@ void SubViewportContainer::_notify_viewports(int p_notification) {
 }
 
 void SubViewportContainer::input(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_event.is_null());
 
 	if (Engine::get_singleton()->is_editor_hint()) {
@@ -201,6 +212,7 @@ void SubViewportContainer::input(const Ref<InputEvent> &p_event) {
 }
 
 void SubViewportContainer::unhandled_input(const Ref<InputEvent> &p_event) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND(p_event.is_null());
 
 	if (Engine::get_singleton()->is_editor_hint()) {
@@ -228,6 +240,7 @@ void SubViewportContainer::unhandled_input(const Ref<InputEvent> &p_event) {
 }
 
 PackedStringArray SubViewportContainer::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	bool has_viewport = false;
@@ -245,6 +258,7 @@ PackedStringArray SubViewportContainer::get_configuration_warnings() const {
 }
 
 void SubViewportContainer::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_stretch", "enable"), &SubViewportContainer::set_stretch);
 	ClassDB::bind_method(D_METHOD("is_stretch_enabled"), &SubViewportContainer::is_stretch_enabled);
 
@@ -256,6 +270,7 @@ void SubViewportContainer::_bind_methods() {
 }
 
 SubViewportContainer::SubViewportContainer() {
+	ZoneScopedS(60);
 	set_process_input(true);
 	set_process_unhandled_input(true);
 }

@@ -1,3 +1,4 @@
+#include "modules/tracy/include.h"
 /*************************************************************************/
 /*  sprite_frames.cpp                                                    */
 /*************************************************************************/
@@ -33,6 +34,7 @@
 #include "scene/scene_string_names.h"
 
 void SpriteFrames::add_frame(const StringName &p_anim, const Ref<Texture2D> &p_frame, int p_at_pos) {
+	ZoneScopedS(60);
 	HashMap<StringName, Anim>::Iterator E = animations.find(p_anim);
 	ERR_FAIL_COND_MSG(!E, "Animation '" + String(p_anim) + "' doesn't exist.");
 
@@ -46,6 +48,7 @@ void SpriteFrames::add_frame(const StringName &p_anim, const Ref<Texture2D> &p_f
 }
 
 int SpriteFrames::get_frame_count(const StringName &p_anim) const {
+	ZoneScopedS(60);
 	HashMap<StringName, Anim>::ConstIterator E = animations.find(p_anim);
 	ERR_FAIL_COND_V_MSG(!E, 0, "Animation '" + String(p_anim) + "' doesn't exist.");
 
@@ -53,6 +56,7 @@ int SpriteFrames::get_frame_count(const StringName &p_anim) const {
 }
 
 void SpriteFrames::remove_frame(const StringName &p_anim, int p_idx) {
+	ZoneScopedS(60);
 	HashMap<StringName, Anim>::Iterator E = animations.find(p_anim);
 	ERR_FAIL_COND_MSG(!E, "Animation '" + String(p_anim) + "' doesn't exist.");
 
@@ -61,6 +65,7 @@ void SpriteFrames::remove_frame(const StringName &p_anim, int p_idx) {
 }
 
 void SpriteFrames::clear(const StringName &p_anim) {
+	ZoneScopedS(60);
 	HashMap<StringName, Anim>::Iterator E = animations.find(p_anim);
 	ERR_FAIL_COND_MSG(!E, "Animation '" + String(p_anim) + "' doesn't exist.");
 
@@ -69,25 +74,30 @@ void SpriteFrames::clear(const StringName &p_anim) {
 }
 
 void SpriteFrames::clear_all() {
+	ZoneScopedS(60);
 	animations.clear();
 	add_animation("default");
 }
 
 void SpriteFrames::add_animation(const StringName &p_anim) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(animations.has(p_anim), "SpriteFrames already has animation '" + p_anim + "'.");
 
 	animations[p_anim] = Anim();
 }
 
 bool SpriteFrames::has_animation(const StringName &p_anim) const {
+	ZoneScopedS(60);
 	return animations.has(p_anim);
 }
 
 void SpriteFrames::remove_animation(const StringName &p_anim) {
+	ZoneScopedS(60);
 	animations.erase(p_anim);
 }
 
 void SpriteFrames::rename_animation(const StringName &p_prev, const StringName &p_next) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(!animations.has(p_prev), "SpriteFrames doesn't have animation '" + String(p_prev) + "'.");
 	ERR_FAIL_COND_MSG(animations.has(p_next), "Animation '" + String(p_next) + "' already exists.");
 
@@ -97,12 +107,14 @@ void SpriteFrames::rename_animation(const StringName &p_prev, const StringName &
 }
 
 void SpriteFrames::get_animation_list(List<StringName> *r_animations) const {
+	ZoneScopedS(60);
 	for (const KeyValue<StringName, Anim> &E : animations) {
 		r_animations->push_back(E.key);
 	}
 }
 
 Vector<String> SpriteFrames::get_animation_names() const {
+	ZoneScopedS(60);
 	Vector<String> names;
 	for (const KeyValue<StringName, Anim> &E : animations) {
 		names.push_back(E.key);
@@ -112,6 +124,7 @@ Vector<String> SpriteFrames::get_animation_names() const {
 }
 
 void SpriteFrames::set_animation_speed(const StringName &p_anim, double p_fps) {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_MSG(p_fps < 0, "Animation speed cannot be negative (" + itos(p_fps) + ").");
 	HashMap<StringName, Anim>::Iterator E = animations.find(p_anim);
 	ERR_FAIL_COND_MSG(!E, "Animation '" + String(p_anim) + "' doesn't exist.");
@@ -119,24 +132,28 @@ void SpriteFrames::set_animation_speed(const StringName &p_anim, double p_fps) {
 }
 
 double SpriteFrames::get_animation_speed(const StringName &p_anim) const {
+	ZoneScopedS(60);
 	HashMap<StringName, Anim>::ConstIterator E = animations.find(p_anim);
 	ERR_FAIL_COND_V_MSG(!E, 0, "Animation '" + String(p_anim) + "' doesn't exist.");
 	return E->value.speed;
 }
 
 void SpriteFrames::set_animation_loop(const StringName &p_anim, bool p_loop) {
+	ZoneScopedS(60);
 	HashMap<StringName, Anim>::Iterator E = animations.find(p_anim);
 	ERR_FAIL_COND_MSG(!E, "Animation '" + String(p_anim) + "' doesn't exist.");
 	E->value.loop = p_loop;
 }
 
 bool SpriteFrames::get_animation_loop(const StringName &p_anim) const {
+	ZoneScopedS(60);
 	HashMap<StringName, Anim>::ConstIterator E = animations.find(p_anim);
 	ERR_FAIL_COND_V_MSG(!E, false, "Animation '" + String(p_anim) + "' doesn't exist.");
 	return E->value.loop;
 }
 
 Array SpriteFrames::_get_animations() const {
+	ZoneScopedS(60);
 	Array anims;
 
 	List<StringName> sorted_names;
@@ -161,6 +178,7 @@ Array SpriteFrames::_get_animations() const {
 }
 
 void SpriteFrames::_set_animations(const Array &p_animations) {
+	ZoneScopedS(60);
 	animations.clear();
 	for (int i = 0; i < p_animations.size(); i++) {
 		Dictionary d = p_animations[i];
@@ -184,6 +202,7 @@ void SpriteFrames::_set_animations(const Array &p_animations) {
 }
 
 void SpriteFrames::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("add_animation", "anim"), &SpriteFrames::add_animation);
 	ClassDB::bind_method(D_METHOD("has_animation", "anim"), &SpriteFrames::has_animation);
 	ClassDB::bind_method(D_METHOD("remove_animation", "anim"), &SpriteFrames::remove_animation);
@@ -214,5 +233,6 @@ void SpriteFrames::_bind_methods() {
 }
 
 SpriteFrames::SpriteFrames() {
+	ZoneScopedS(60);
 	add_animation(SceneStringNames::get_singleton()->_default);
 }

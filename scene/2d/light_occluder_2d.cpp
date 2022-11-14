@@ -28,6 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  light_occluder_2d.cpp                                                */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "light_occluder_2d.h"
 
 #include "core/config/engine.h"
@@ -37,6 +68,7 @@
 
 #ifdef TOOLS_ENABLED
 Rect2 OccluderPolygon2D::_edit_get_rect() const {
+	ZoneScopedS(60);
 	if (rect_cache_dirty) {
 		if (closed) {
 			const Vector2 *r = polygon.ptr();
@@ -68,6 +100,7 @@ Rect2 OccluderPolygon2D::_edit_get_rect() const {
 }
 
 bool OccluderPolygon2D::_edit_is_selected_on_click(const Point2 &p_point, double p_tolerance) const {
+	ZoneScopedS(60);
 	if (closed) {
 		return Geometry2D::is_point_in_polygon(p_point, Variant(polygon));
 	} else {
@@ -86,6 +119,7 @@ bool OccluderPolygon2D::_edit_is_selected_on_click(const Point2 &p_point, double
 #endif
 
 void OccluderPolygon2D::set_polygon(const Vector<Vector2> &p_polygon) {
+	ZoneScopedS(60);
 	polygon = p_polygon;
 	rect_cache_dirty = true;
 	RS::get_singleton()->canvas_occluder_polygon_set_shape(occ_polygon, p_polygon, closed);
@@ -93,10 +127,12 @@ void OccluderPolygon2D::set_polygon(const Vector<Vector2> &p_polygon) {
 }
 
 Vector<Vector2> OccluderPolygon2D::get_polygon() const {
+	ZoneScopedS(60);
 	return polygon;
 }
 
 void OccluderPolygon2D::set_closed(bool p_closed) {
+	ZoneScopedS(60);
 	if (closed == p_closed) {
 		return;
 	}
@@ -108,23 +144,28 @@ void OccluderPolygon2D::set_closed(bool p_closed) {
 }
 
 bool OccluderPolygon2D::is_closed() const {
+	ZoneScopedS(60);
 	return closed;
 }
 
 void OccluderPolygon2D::set_cull_mode(CullMode p_mode) {
+	ZoneScopedS(60);
 	cull = p_mode;
 	RS::get_singleton()->canvas_occluder_polygon_set_cull_mode(occ_polygon, RS::CanvasOccluderPolygonCullMode(p_mode));
 }
 
 OccluderPolygon2D::CullMode OccluderPolygon2D::get_cull_mode() const {
+	ZoneScopedS(60);
 	return cull;
 }
 
 RID OccluderPolygon2D::get_rid() const {
+	ZoneScopedS(60);
 	return occ_polygon;
 }
 
 void OccluderPolygon2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_closed", "closed"), &OccluderPolygon2D::set_closed);
 	ClassDB::bind_method(D_METHOD("is_closed"), &OccluderPolygon2D::is_closed);
 
@@ -144,10 +185,12 @@ void OccluderPolygon2D::_bind_methods() {
 }
 
 OccluderPolygon2D::OccluderPolygon2D() {
+	ZoneScopedS(60);
 	occ_polygon = RS::get_singleton()->canvas_occluder_polygon_create();
 }
 
 OccluderPolygon2D::~OccluderPolygon2D() {
+	ZoneScopedS(60);
 	RS::get_singleton()->free(occ_polygon);
 }
 
@@ -158,6 +201,7 @@ void LightOccluder2D::_poly_changed() {
 }
 
 void LightOccluder2D::_notification(int p_what) {
+	ZoneScopedS(60);
 	switch (p_what) {
 		case NOTIFICATION_ENTER_CANVAS: {
 			RS::get_singleton()->canvas_light_occluder_attach_to_canvas(occluder, get_canvas());
@@ -203,10 +247,12 @@ void LightOccluder2D::_notification(int p_what) {
 
 #ifdef TOOLS_ENABLED
 Rect2 LightOccluder2D::_edit_get_rect() const {
+	ZoneScopedS(60);
 	return occluder_polygon.is_valid() ? occluder_polygon->_edit_get_rect() : Rect2();
 }
 
 bool LightOccluder2D::_edit_is_selected_on_click(const Point2 &p_point, double p_tolerance) const {
+	ZoneScopedS(60);
 	return occluder_polygon.is_valid() ? occluder_polygon->_edit_is_selected_on_click(p_point, p_tolerance) : false;
 }
 #endif
@@ -234,19 +280,23 @@ void LightOccluder2D::set_occluder_polygon(const Ref<OccluderPolygon2D> &p_polyg
 }
 
 Ref<OccluderPolygon2D> LightOccluder2D::get_occluder_polygon() const {
+	ZoneScopedS(60);
 	return occluder_polygon;
 }
 
 void LightOccluder2D::set_occluder_light_mask(int p_mask) {
+	ZoneScopedS(60);
 	mask = p_mask;
 	RS::get_singleton()->canvas_light_occluder_set_light_mask(occluder, p_mask);
 }
 
 int LightOccluder2D::get_occluder_light_mask() const {
+	ZoneScopedS(60);
 	return mask;
 }
 
 PackedStringArray LightOccluder2D::get_configuration_warnings() const {
+	ZoneScopedS(60);
 	PackedStringArray warnings = Node::get_configuration_warnings();
 
 	if (!occluder_polygon.is_valid()) {
@@ -261,14 +311,17 @@ PackedStringArray LightOccluder2D::get_configuration_warnings() const {
 }
 
 void LightOccluder2D::set_as_sdf_collision(bool p_enable) {
+	ZoneScopedS(60);
 	sdf_collision = p_enable;
 	RS::get_singleton()->canvas_light_occluder_set_as_sdf_collision(occluder, sdf_collision);
 }
 bool LightOccluder2D::is_set_as_sdf_collision() const {
+	ZoneScopedS(60);
 	return sdf_collision;
 }
 
 void LightOccluder2D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_occluder_polygon", "polygon"), &LightOccluder2D::set_occluder_polygon);
 	ClassDB::bind_method(D_METHOD("get_occluder_polygon"), &LightOccluder2D::get_occluder_polygon);
 
@@ -284,6 +337,7 @@ void LightOccluder2D::_bind_methods() {
 }
 
 LightOccluder2D::LightOccluder2D() {
+	ZoneScopedS(60);
 	occluder = RS::get_singleton()->canvas_light_occluder_create();
 
 	set_notify_transform(true);
@@ -291,5 +345,6 @@ LightOccluder2D::LightOccluder2D() {
 }
 
 LightOccluder2D::~LightOccluder2D() {
+	ZoneScopedS(60);
 	RS::get_singleton()->free(occluder);
 }

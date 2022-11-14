@@ -28,17 +28,51 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
+#include "modules/tracy/include.h"
+/*************************************************************************/
+/*  velocity_tracker_3d.cpp                                              */
+/*************************************************************************/
+/*                       This file is part of:                           */
+/*                           GODOT ENGINE                                */
+/*                      https://godotengine.org                          */
+/*************************************************************************/
+/* Copyright (c) 2007-2022 Juan Linietsky, Ariel Manzur.                 */
+/* Copyright (c) 2014-2022 Godot Engine contributors (cf. AUTHORS.md).   */
+/*                                                                       */
+/* Permission is hereby granted, free of charge, to any person obtaining */
+/* a copy of this software and associated documentation files (the       */
+/* "Software"), to deal in the Software without restriction, including   */
+/* without limitation the rights to use, copy, modify, merge, publish,   */
+/* distribute, sublicense, and/or sell copies of the Software, and to    */
+/* permit persons to whom the Software is furnished to do so, subject to */
+/* the following conditions:                                             */
+/*                                                                       */
+/* The above copyright notice and this permission notice shall be        */
+/* included in all copies or substantial portions of the Software.       */
+/*                                                                       */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,       */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF    */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.*/
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY  */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,  */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE     */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
+/*************************************************************************/
+
 #include "velocity_tracker_3d.h"
 
 void VelocityTracker3D::set_track_physics_step(bool p_track_physics_step) {
+	ZoneScopedS(60);
 	physics_step = p_track_physics_step;
 }
 
 bool VelocityTracker3D::is_tracking_physics_step() const {
+	ZoneScopedS(60);
 	return physics_step;
 }
 
 void VelocityTracker3D::update_position(const Vector3 &p_position) {
+	ZoneScopedS(60);
 	PositionHistory ph;
 	ph.position = p_position;
 	if (physics_step) {
@@ -58,6 +92,7 @@ void VelocityTracker3D::update_position(const Vector3 &p_position) {
 }
 
 Vector3 VelocityTracker3D::get_tracked_linear_velocity() const {
+	ZoneScopedS(60);
 	Vector3 linear_velocity;
 
 	double max_time = 1 / 5.0; //maximum time to interpolate a velocity
@@ -103,6 +138,7 @@ Vector3 VelocityTracker3D::get_tracked_linear_velocity() const {
 }
 
 void VelocityTracker3D::reset(const Vector3 &p_new_pos) {
+	ZoneScopedS(60);
 	PositionHistory ph;
 	ph.position = p_new_pos;
 	if (physics_step) {
@@ -116,6 +152,7 @@ void VelocityTracker3D::reset(const Vector3 &p_new_pos) {
 }
 
 void VelocityTracker3D::_bind_methods() {
+	ZoneScopedS(60);
 	ClassDB::bind_method(D_METHOD("set_track_physics_step", "enable"), &VelocityTracker3D::set_track_physics_step);
 	ClassDB::bind_method(D_METHOD("is_tracking_physics_step"), &VelocityTracker3D::is_tracking_physics_step);
 	ClassDB::bind_method(D_METHOD("update_position", "position"), &VelocityTracker3D::update_position);
@@ -126,5 +163,6 @@ void VelocityTracker3D::_bind_methods() {
 }
 
 VelocityTracker3D::VelocityTracker3D() {
+	ZoneScopedS(60);
 	position_history.resize(4); // should be configurable
 }
