@@ -102,6 +102,8 @@
 
 #include "modules/modules_enabled.gen.h" // For mono.
 
+#include "modules/tracy/include.h"
+
 /* Static members */
 
 // Singletons
@@ -633,6 +635,7 @@ int Main::test_entrypoint(int argc, char *argv[], bool &tests_need_run) {
  */
 
 Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_phase) {
+	ZoneScoped;
 	OS::get_singleton()->initialize();
 
 	engine = memnew(Engine);
@@ -1926,6 +1929,7 @@ error:
 }
 
 Error Main::setup2(Thread::ID p_main_tid_override) {
+	ZoneScoped;
 	engine->startup_benchmark_begin_measure("servers");
 
 	tsman = memnew(TextServerManager);
@@ -2394,6 +2398,7 @@ String Main::get_rendering_driver_name() {
 static MainTimerSync main_timer_sync;
 
 bool Main::start() {
+	ZoneScopedS(60);
 	ERR_FAIL_COND_V(!_start_success, false);
 
 	bool hasicon = false;
@@ -2501,6 +2506,7 @@ bool Main::start() {
 
 #ifdef TOOLS_ENABLED
 	if (!doc_tool_path.is_empty()) {
+		ZoneNamedN(doc_tool_path_empty, "!doc_tool_path.is_empty()", true);
 		// Needed to instance editor-only classes for their default values
 		Engine::get_singleton()->set_editor_hint(true);
 
@@ -2778,6 +2784,7 @@ bool Main::start() {
 #ifdef TOOLS_ENABLED
 		EditorNode *editor_node = nullptr;
 		if (editor) {
+			ZoneNamedN(startup_benchmark_begin_measure_editor, "startup_benchmark_begin_measure(editor)", true);
 			Engine::get_singleton()->startup_benchmark_begin_measure("editor");
 			editor_node = memnew(EditorNode);
 			sml->get_root()->add_child(editor_node);
@@ -3074,6 +3081,7 @@ static uint64_t physics_process_max = 0;
 static uint64_t process_max = 0;
 
 bool Main::iteration() {
+	ZoneScoped;
 	//for now do not error on this
 	//ERR_FAIL_COND_V(iterating, false);
 
@@ -3272,6 +3280,7 @@ void Main::force_redraw() {
  * The order matters as some of those steps are linked with each other.
  */
 void Main::cleanup(bool p_force) {
+	ZoneScoped;
 	if (!p_force) {
 		ERR_FAIL_COND(!_start_success);
 	}

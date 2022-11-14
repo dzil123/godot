@@ -47,6 +47,7 @@
 #include "core/string/translation.h"
 #include "core/version.h"
 #include "main/main.h"
+#include "modules/tracy/include.h"
 #include "scene/3d/importer_mesh_instance_3d.h"
 #include "scene/gui/center_container.h"
 #include "scene/gui/color_picker.h"
@@ -4503,6 +4504,7 @@ void EditorNode::_editor_file_dialog_unregister(EditorFileDialog *p_dialog) {
 Vector<EditorNodeInitCallback> EditorNode::_init_callbacks;
 
 void EditorNode::_begin_first_scan() {
+	ZoneScopedS(60);
 	Engine::get_singleton()->startup_benchmark_begin_measure("editor_scan_and_import");
 	EditorFileSystem::get_singleton()->scan();
 }
