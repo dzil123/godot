@@ -21,17 +21,18 @@ else:
 
 env_tracy.disable_warnings()
 
-env_tracy.Append(CPPDEFINES=["TRACY_ENABLE"])
-env_modules.Append(CPPDEFINES=["TRACY_ENABLE"])
-env.Append(CPPDEFINES=["TRACY_ENABLE"])
 
-env_tracy.Append(CPPFLAGS=["-fno-omit-frame-pointer"])
-env_modules.Append(CPPFLAGS=["-fno-omit-frame-pointer"])
-env.Append(CPPFLAGS=["-fno-omit-frame-pointer"])
+def env_append(**kwargs):
+    env_tracy.Append(**kwargs)
+    env_modules.Append(**kwargs)
+    env.Append(**kwargs)
 
-env_tracy.Append(LINKFLAGS=["-rdynamic"])
-env_modules.Append(LINKFLAGS=["-rdynamic"])
-env.Append(LINKFLAGS=["-rdynamic"])
+
+env_append(
+    CPPDEFINES=["TRACY_ENABLE"],
+    CPPFLAGS=["-fno-omit-frame-pointer"],
+    LINKFLAGS=["-rdynamic"],
+)
 
 env_tracy.add_source_files(env.modules_sources, tracy_sources)
 env_tracy.add_source_files(env.modules_sources, "*.cpp")
