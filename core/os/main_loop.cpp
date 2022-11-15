@@ -31,6 +31,7 @@
 #include "main_loop.h"
 
 #include "core/object/script_language.h"
+#include "modules/tracy/include.h"
 
 void MainLoop::_bind_methods() {
 	BIND_CONSTANT(NOTIFICATION_OS_MEMORY_WARNING);
@@ -57,6 +58,7 @@ void MainLoop::set_initialize_script(const Ref<Script> &p_initialize_script) {
 }
 
 void MainLoop::initialize() {
+	ZoneScoped;
 	if (initialize_script.is_valid()) {
 		set_script(initialize_script);
 	}
@@ -65,18 +67,21 @@ void MainLoop::initialize() {
 }
 
 bool MainLoop::physics_process(double p_time) {
+	ZoneScoped;
 	bool quit = false;
 	GDVIRTUAL_CALL(_physics_process, p_time, quit);
 	return quit;
 }
 
 bool MainLoop::process(double p_time) {
+	ZoneScoped;
 	bool quit = false;
 	GDVIRTUAL_CALL(_process, p_time, quit);
 	return quit;
 }
 
 void MainLoop::finalize() {
+	ZoneScoped;
 	GDVIRTUAL_CALL(_finalize);
 
 	if (get_script_instance()) {
