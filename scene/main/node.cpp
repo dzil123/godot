@@ -1759,11 +1759,11 @@ void Node::add_to_group(const StringName &p_identifier, bool p_persistent) {
 }
 
 void Node::remove_from_group(const StringName &p_identifier) {
-	ERR_FAIL_COND(!data.grouped.has(p_identifier));
-
 	HashMap<StringName, GroupData>::Iterator E = data.grouped.find(p_identifier);
 
-	ERR_FAIL_COND(!E);
+	if (!E) {
+		return;
+	}
 
 	if (data.tree) {
 		data.tree->remove_from_group(E->key, this);
@@ -2652,7 +2652,7 @@ PackedStringArray Node::get_configuration_warnings() const {
 
 String Node::get_configuration_warnings_as_string() const {
 	PackedStringArray warnings = get_configuration_warnings();
-	String all_warnings = String();
+	String all_warnings;
 	for (int i = 0; i < warnings.size(); i++) {
 		if (i > 0) {
 			all_warnings += "\n\n";

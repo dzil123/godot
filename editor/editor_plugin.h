@@ -39,6 +39,7 @@ class Node3D;
 class Button;
 class PopupMenu;
 class EditorCommandPalette;
+class EditorDebuggerPlugin;
 class EditorExport;
 class EditorExportPlugin;
 class EditorFileSystem;
@@ -93,8 +94,9 @@ public:
 	EditorCommandPalette *get_command_palette() const;
 
 	void select_file(const String &p_file);
-	String get_selected_path() const;
+	Vector<String> get_selected_paths() const;
 	String get_current_path() const;
+	String get_current_directory() const;
 
 	void inspect_object(Object *p_obj, const String &p_for_property = String(), bool p_inspector_only = false);
 
@@ -302,8 +304,8 @@ public:
 	void add_autoload_singleton(const String &p_name, const String &p_path);
 	void remove_autoload_singleton(const String &p_name);
 
-	void add_debugger_plugin(const Ref<Script> &p_script);
-	void remove_debugger_plugin(const Ref<Script> &p_script);
+	void add_debugger_plugin(const Ref<EditorDebuggerPlugin> &p_plugin);
+	void remove_debugger_plugin(const Ref<EditorDebuggerPlugin> &p_plugin);
 
 	void enable_plugin();
 	void disable_plugin();
