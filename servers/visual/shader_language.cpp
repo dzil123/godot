@@ -2786,7 +2786,17 @@ ShaderLanguage::DataType ShaderLanguage::get_scalar_type(DataType p_type) {
 		TYPE_INT,
 		TYPE_UINT,
 		TYPE_FLOAT,
+		TYPE_INT,
+		TYPE_UINT,
+		TYPE_FLOAT,
+		TYPE_INT,
+		TYPE_UINT,
+		TYPE_FLOAT,
+		TYPE_FLOAT,
+		TYPE_VOID,
 	};
+
+	static_assert(sizeof(scalar_types) / sizeof(*scalar_types) == TYPE_MAX);
 
 	return scalar_types[p_type];
 }
@@ -2817,7 +2827,17 @@ int ShaderLanguage::get_cardinality(DataType p_type) {
 		1,
 		1,
 		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
 	};
+
+	static_assert(sizeof(cardinality_table) / sizeof(*cardinality_table) == TYPE_MAX);
 
 	return cardinality_table[p_type];
 }
