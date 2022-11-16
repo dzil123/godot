@@ -54,7 +54,7 @@ void PCKPacker::_bind_methods() {
 
 Error PCKPacker::pck_start(const String &p_file, int p_alignment, const String &p_key, bool p_encrypt_directory) {
 	ERR_FAIL_COND_V_MSG((p_key.is_empty() || !p_key.is_valid_hex_number(false) || p_key.length() != 64), ERR_CANT_CREATE, "Invalid Encryption Key (must be 64 characters long).");
-	ERR_FAIL_COND_V_MSG(p_alignment <= 0, ERR_CANT_CREATE, "Invalid alignment, must be greater then 0.");
+	ERR_FAIL_COND_V_MSG(p_alignment <= 0, ERR_CANT_CREATE, "Invalid alignment, must be greater than 0.");
 
 	String _key = p_key.to_lower();
 	key.resize(32);
@@ -107,6 +107,8 @@ Error PCKPacker::pck_start(const String &p_file, int p_alignment, const String &
 }
 
 Error PCKPacker::add_file(const String &p_file, const String &p_src, bool p_encrypt) {
+	ERR_FAIL_COND_V_MSG(file.is_null(), ERR_INVALID_PARAMETER, "File must be opened before use.");
+
 	Ref<FileAccess> f = FileAccess::open(p_src, FileAccess::READ);
 	if (f.is_null()) {
 		return ERR_FILE_CANT_OPEN;
