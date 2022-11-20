@@ -9289,6 +9289,10 @@ void RenderingDeviceVulkan::_flush(bool p_current_frame) {
 }
 
 void RenderingDeviceVulkan::initialize(VulkanContext *p_context, bool p_local_device) {
+	if (singleton == nullptr && !p_local_device) { // there may be more rendering devices later
+		singleton = this;
+	}
+
 	// Get our device capabilities.
 	{
 		device_capabilities.version_major = p_context->get_vulkan_major();

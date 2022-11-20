@@ -136,10 +136,10 @@ private:
 	static ShaderCacheFunction cache_function;
 	static ShaderSPIRVGetCacheKeyFunction get_spirv_cache_key_function;
 
-	static RenderingDevice *singleton;
-
 protected:
 	static void _bind_methods();
+
+	static RenderingDevice *singleton;
 
 	Capabilities device_capabilities;
 

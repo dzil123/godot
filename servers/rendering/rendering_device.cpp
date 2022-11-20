@@ -993,7 +993,4 @@ void RenderingDevice::_bind_methods() {
 }
 
 RenderingDevice::RenderingDevice() {
-	if (singleton == nullptr) { // there may be more rendering devices later
-		singleton = this;
-	}
 }
