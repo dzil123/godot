@@ -1475,10 +1475,43 @@ RenderingDevice *RenderingServer::get_rendering_device() const {
 	return RenderingDevice::get_singleton();
 }
 
+#if defined(VULKAN_ENABLED) && defined(X11_ENABLED)
+#include "drivers/vulkan/rendering_device_vulkan.h"
+#include "x11/vulkan_context_x11.h"
+
+static RenderingDevice *create_local_rendering_device_headless() {
+	static VulkanContext *context_vulkan = nullptr; // todo: run finalizer
+	static bool is_init = false;
+
+	if (!is_init) {
+		is_init = true;
+
+		context_vulkan = memnew(VulkanContextX11);
+		if (context_vulkan->initialize_headless() != OK) {
+			memdelete(context_vulkan);
+			context_vulkan = nullptr;
+			ERR_FAIL_V_MSG(nullptr, "Could not initialize Vulkan");
+		}
+	}
+
+	if (!context_vulkan) {
+		return nullptr;
+	}
+
+	RenderingDeviceVulkan *rd = memnew(RenderingDeviceVulkan);
+	rd->initialize(context_vulkan, true);
+	return rd;
+}
+#else
+static RenderingDevice *create_local_rendering_device_headless() {
+	return nullptr;
+}
+#endif
+
 RenderingDevice *RenderingServer::create_local_rendering_device() const {
 	RenderingDevice *device = RenderingDevice::get_singleton();
 	if (!device) {
-		return nullptr;
+		return create_local_rendering_device_headless();
 	}
 	return device->create_local_device();
 }

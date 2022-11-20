@@ -319,6 +319,7 @@ public:
 	Error prepare_buffers();
 	Error swap_buffers();
 	Error initialize();
+	Error initialize_headless();
 
 	void command_begin_label(VkCommandBuffer p_command_buffer, String p_label_name, const Color p_color);
 	void command_insert_label(VkCommandBuffer p_command_buffer, String p_label_name, const Color p_color);
